@@ -1,0 +1,94 @@
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #275a24;
+}
+
+a {
+  color: var(--bs-green) !important;
+}
+
+a:hover {
+  color: #1fa164 !important;
+}
+
+.table-flush td,
+.table-flush th {
+  border-right: 0;
+  border-left: 0;
+}
+.table-flush tbody tr:first-child td,
+.table-flush tbody tr:first-child th {
+  border-top: 0;
+}
+.table-flush tbody tr:last-child td,
+.table-flush tbody tr:last-child th {
+  border-bottom: 0;
+}
+
+/* Menggeser teks input agar tidak tumpang tindih dengan ikon */
+/* .form-group.has-icon-left .form-control {
+  padding-left: 3rem !important;
+} */
+
+/* Mengatur jarak ikon dari kiri input */
+.form-group.has-icon-left .form-control-icon {
+  position: absolute !important;
+  top: 50% !important;
+  /* transform: translateY(-50%) !important; */
+  /* left: 0.75rem !important; */
+}
+
+/* Menggeser teks input agar tidak tumpang tindih dengan pesan kesalahan */
+.form-group.has-icon-left .form-control.is-invalid {
+  padding-right: 3rem !important;
+}
+
+/* Mengatur pesan kesalahan berada di bawah input */
+.form-group.has-icon-left .form-control.is-invalid + .invalid-feedback {
+  position: absolute !important;
+  top: 100% !important;
+  left: 0 !important;
+}
+
+.sidebar-header .logo img {
+  height: 50px !important;
+  width: 200px !important;
+}
+
+.sidebar-wrapper .menu .sidebar-item.active .sidebar-link {
+  background-color: var(--bs-green) !important;
+}
+.burger-btn {
+  color: var(--bs-green) !important;
+}
+
+.form-control:focus {
+  color: #71867c !important;
+  background-color: #fff;
+  border-color: #7eb57c !important;
+}
+
+.sidebar-wrapper .menu .sidebar-title {
+  color: #256f25;
+}
+.sidebar-wrapper .menu .sidebar-link {
+  color: #256f25;
+}
+.sidebar-wrapper .menu .sidebar-link i,
+.sidebar-wrapper .menu .sidebar-link svg {
+  color: #7eb57c;
+}

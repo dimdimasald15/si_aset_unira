@@ -11,15 +11,15 @@ $routes = Services::routes();
  * --------------------------------------------------------------------
  */
 $routes->setDefaultNamespace('App\Controllers');
-$routes->setDefaultController('Home');
+$routes->setDefaultController('Auth');
 $routes->setDefaultMethod('index');
 $routes->setTranslateURIDashes(false);
 $routes->set404Override();
+$routes->setAutoRoute(true);
 // The Auto Routing (Legacy) is very dangerous. It is easy to create vulnerable apps
 // where controller filters or CSRF protection are bypassed.
 // If you don't want to define all routes, please use the Auto Routing (Improved).
 // Set `$autoRoutesImproved` to true in `app/Config/Feature.php` and set the following to true.
-// $routes->setAutoRoute(false);
 
 /*
  * --------------------------------------------------------------------
@@ -29,7 +29,34 @@ $routes->set404Override();
 
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
-$routes->get('/', 'Home::index');
+// $routes->group('', ['filter' => 'login'], function ($routes) {
+// });
+$routes->get('auth', 'Auth::index');
+$routes->get('logout', 'Auth::logout');
+$routes->group('admin', ['filter' => 'ceklogin'], function ($routes) {
+    // $routes->post('tampildataruang', 'RuangController::tampildataruang');
+    $routes->get('dashboard', 'DashboardController::index');
+    //data ruang
+});
+
+$routes->group('admin/ruang', ['filter' => 'ceklogin'], function ($routes) {
+    $routes->get('/', 'RuangController::index');
+    $routes->get('tampildataruang', 'RuangController::listdataruang');
+    $routes->post('simpan', 'RuangController::simpandata');
+    $routes->post('update/(:any)', 'RuangController::updatedata/$1');
+    $routes->post('hapus/(:any)', 'RuangController::hapusdata/$1');
+    // $routes->post('ceknamaruang', 'RuangController::ceknamaruang');
+});
+$routes->group('admin/gedung', ['filter' => 'ceklogin'], function ($routes) {
+    $routes->get('/', 'GedungController::index');
+    $routes->get('listdatagedung', 'GedungController::listdatagedung');
+    $routes->post('simpan', 'GedungController::simpandata');
+    $routes->match(['get', 'post'], 'pilihkategori', 'GedungController::pilihkategori');
+    $routes->post('update/(:any)', 'GedungController::updatedata/$1');
+    $routes->post('hapus/(:any)', 'GedungController::hapusdata/$1');
+    // $routes->post('ceknamaGedung', 'GedungController::ceknamaruang');
+});
+
 
 /*
  * --------------------------------------------------------------------

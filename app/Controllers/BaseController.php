@@ -2,6 +2,9 @@
 
 namespace App\Controllers;
 
+
+namespace App\Controllers;
+
 use CodeIgniter\Controller;
 use CodeIgniter\HTTP\CLIRequest;
 use CodeIgniter\HTTP\IncomingRequest;
@@ -35,17 +38,14 @@ abstract class BaseController extends Controller
      *
      * @var array
      */
-    protected $helpers = [];
+    protected $helpers = ['form', 'url'];
+    protected $session, $db;
 
     /**
      * Be sure to declare properties for any property fetch you initialized.
      * The creation of dynamic property is deprecated in PHP 8.2.
      */
-    // protected $session;
 
-    /**
-     * Constructor.
-     */
     public function initController(RequestInterface $request, ResponseInterface $response, LoggerInterface $logger)
     {
         // Do Not Edit This Line
@@ -54,5 +54,7 @@ abstract class BaseController extends Controller
         // Preload any models, libraries, etc, here.
 
         // E.g.: $this->session = \Config\Services::session();
+        $this->session = \Config\Services::session();
+        $this->db = \Config\Database::connect();
     }
 }
