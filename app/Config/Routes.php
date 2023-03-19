@@ -56,6 +56,16 @@ $routes->group('admin/gedung', ['filter' => 'ceklogin'], function ($routes) {
     $routes->post('hapus/(:any)', 'GedungController::hapusdata/$1');
     // $routes->post('ceknamaGedung', 'GedungController::ceknamaruang');
 });
+$routes->group('admin/kategori', ['filter' => 'ceklogin'], function ($routes) {
+    $routes->get('/', 'KategoriController::index');
+    $routes->get('listdatakategori', 'KategoriController::listdataKategori');
+    $routes->post('getnamakategori', 'KategoriController::getnamakategori');
+    $routes->post('simpan', 'KategoriController::simpandata');
+    // $routes->match(['get', 'post'], 'pilihkategori', 'KategoriController::pilihkategori');
+    $routes->post('update/(:any)', 'KategoriController::updatedata/$1');
+    $routes->post('hapus/(:any)', 'KategoriController::hapusdata/$1');
+    // $routes->post('ceknamaGedung', 'GedungController::ceknamaruang');
+});
 
 
 /*

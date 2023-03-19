@@ -77,6 +77,7 @@
         </form>
       </div>
     </div>
+  </section>
 </div>
 <div class="card mb-3 datalist-gedung">
   <div class="card-header">
@@ -92,25 +93,25 @@
       </div>
     </div>
   </div>
-</div>
-<div class="card-body">
-  <div class="table-responsive py-4">
-    <table class="table table-flush" id="table-gedung" width="100%">
-      <thead class=" thead-light">
-        <tr>
-          <!-- <th style="width: 50px;">No.</th> -->
-          <th>No.</th>
-          <th>Nama Gedung</th>
-          <th>Prefix Gedung</th>
-          <th>Kategori</th>
-          <th>Created By</th>
-          <th>Created At </th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-      </tbody>
-    </table>
+  <div class="card-body">
+    <div class="table-responsive py-4">
+      <table class="table table-flush" id="table-gedung" width="100%">
+        <thead class=" thead-light">
+          <tr>
+            <!-- <th style="width: 50px;">No.</th> -->
+            <th>No.</th>
+            <th>Nama Gedung</th>
+            <th>Prefix Gedung</th>
+            <th>Kategori</th>
+            <th>Created By</th>
+            <th>Created At </th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 <?= $this->endSection() ?>
@@ -120,7 +121,7 @@
   let saveMethod, globalId;
 
   function edit(id) {
-    console.log('edit :' + id);
+    // console.log('edit :' + id);
     clear_is_invalid();
     formtambah.show(500);
     saveMethod = "update";
@@ -150,7 +151,6 @@
     formtambah.find("input[name='id']").val(id)
     formtambah.find("input[name='nama_gedung']").val(nama_gedung)
     formtambah.find("input[name='prefix']").val(prefix)
-    // formtambah.find("select[name*='kat_id']").val(kat_id)
     formtambah.find("select[name*='kat_id']").html('<option value = "' + kat_id + '" selected >' + nama_kategori + '</option>');
 
   }
@@ -164,17 +164,16 @@
     if (formtambah.find('input').hasClass('is-invalid') || formtambah.find('select').hasClass('is-invalid')) {
       formtambah.find('input').removeClass('is-invalid');
       formtambah.find('select').removeClass('is-invalid');
-      $('.form-control-icon').css("transform", "translate(0,-15px)");
     }
   }
 
   function defaultform() {
-    formtambah.find('.card-title').html('Tambah Data Ruangan');
+    formtambah.find('.card-title').html('Tambah Data Gedung');
     formtambah.find("button[type='submit']").html('Simpan');
   }
 
   function hapus(id, namagedung) {
-    console.log(id + " & " + namagedung);
+    // console.log(id + " & " + namagedung);
     // console.log('delete : ' + namagedung);
     Swal.fire({
       title: `Apakah kamu yakin ingin menghapus data ${namagedung}?`,
@@ -292,8 +291,6 @@
 
     $('#formTambahGedung').submit(function(e) {
       e.preventDefault();
-      // console.log('test');
-      e.preventDefault();
       let url = "";
       if (saveMethod == "update") {
         url = "gedung/update/" + globalId;
@@ -312,10 +309,8 @@
         complete: function() {
           $('.btnsimpan').removeAttr('disable');
           $('.btnsimpan').html('Simpan');
-          $('.form-control-icon').css("transform", "translate(0,-27px)");
         },
         success: function(response) {
-          console.log(response);
           if (response.error) {
             if (response.error.namagedung) {
               $('#namagedung').addClass('is-invalid');
@@ -346,7 +341,6 @@
               'success'
             ).then((result) => {
               datagedung.ajax.reload();
-              $('.form-control-icon').css("transform", "translate(0,-15px)");
             })
           }
         },

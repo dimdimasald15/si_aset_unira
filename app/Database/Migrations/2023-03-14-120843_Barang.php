@@ -1,0 +1,133 @@
+<?php
+
+namespace App\Database\Migrations;
+
+use CodeIgniter\Database\Migration;
+
+class Barang extends Migration
+{
+    public function up()
+    {
+        $this->forge->addField([
+            'id' => [
+                'type' => 'int',
+                'constraint' => 11,
+                'auto_increment' => TRUE,
+            ],
+            'kat_id' => [
+                'type' => 'int',
+                'constraint' => 11,
+            ],
+            'ruang_id' => [
+                'type' => 'int',
+                'constraint' => 11,
+            ],
+            'satuan_id' => [
+                'type' => 'int',
+                'constraint' => 11,
+            ],
+            'kode_brg' => [
+                'type' => 'varchar',
+                'constraint' => 20,
+            ],
+            'nama_brg' => [
+                'type' => 'varchar',
+                'constraint' => 100,
+            ],
+            'stok' => [
+                'type' => 'int',
+                'constraint' => 11,
+            ],
+            'merk' => [
+                'type' => 'varchar',
+                'constraint' => 100,
+                'null' => TRUE,
+            ],
+            'warna' => [
+                'type' => 'varchar',
+                'constraint' => 50,
+                'null' => TRUE,
+            ],
+            'harga_beli' => [
+                'type' => 'decimal',
+                'constraint' => 14.2,
+                'null' => TRUE,
+            ],
+            'kondisi' => [
+                'type' => 'varchar',
+                'constraint' => 20,
+            ],
+            'tindakan_kerusakan' => [
+                'type' => 'varchar',
+                'constraint' => 20,
+                'null' => TRUE,
+            ],
+            'toko' => [
+                'type' => 'varchar',
+                'constraint' => 50,
+                'null' => TRUE,
+            ],
+            'instansi' => [
+                'type' => 'varchar',
+                'constraint' => 100,
+                'null' => TRUE,
+            ],
+            'no_seri' => [
+                'type' => 'varchar',
+                'constraint' => 100,
+                'null' => TRUE,
+            ],
+            'no_dokumen' => [
+                'type' => 'varchar',
+                'constraint' => 100,
+                'null' => TRUE,
+            ],
+            'foto_barang' => [
+                'type' => 'varchar',
+                'constraint' => 100,
+                'null' => TRUE,
+            ],
+            'tgl_pembelian' => [
+                'type' => 'datetime',
+                'null' => TRUE,
+            ],
+            'created_by' => [
+                'type' => 'varchar',
+                'constraint' => 100,
+                'null' => TRUE,
+            ],
+            'created_at' => [
+                'type' => 'datetime',
+                'null' => TRUE,
+            ],
+            'updated_by' => [
+                'type' => 'varchar',
+                'constraint' => 100,
+                'null' => TRUE,
+            ],
+            'updated_at' => [
+                'type' => 'datetime',
+                'null' => TRUE,
+            ],
+            'deleted_by' => [
+                'type' => 'varchar',
+                'constraint' => 100,
+                'null' => TRUE,
+            ],
+            'deleted_at' => [
+                'type' => 'datetime',
+                'null' => TRUE,
+            ],
+        ]);
+        $this->forge->addKey('id');
+        $this->forge->addForeignKey('kat_id', 'kategori', 'id');
+        $this->forge->addForeignKey('ruang_id', 'ruang', 'id');
+        $this->forge->addForeignKey('satuan_id', 'satuan', 'id');
+        $this->forge->createTable('barang');
+    }
+
+    public function down()
+    {
+        $this->forge->dropTable('barang');
+    }
+}
