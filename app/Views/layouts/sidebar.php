@@ -57,8 +57,8 @@
       </li>
 
       <li class="sidebar-title">Pengaturan</li>
-      <li class="sidebar-item">
-        <a href="" class='sidebar-link'>
+      <li class="sidebar-item <?= $nav == 'pengguna' ? 'active' : '' ?>">
+        <a href="pengguna" class='sidebar-link'>
           <i class="bi bi-gear-fill"></i>
           <span>Pengguna</span>
         </a>
