@@ -4,7 +4,7 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class Gedung extends Migration
+class Satuan extends Migration
 {
     public function up()
     {
@@ -13,17 +13,16 @@ class Gedung extends Migration
                 'type' => 'INT',
                 'constraint' => 11,
                 'auto_increment' => TRUE,
-                'unsigned' => TRUE,
             ],
-            'kat_id' => [
+            'kd_satuan' => [
                 'type' => 'int',
                 'constraint' => 11,
             ],
-            'nama_gedung' => [
+            'nama_satuan' => [
                 'type' => 'varchar',
-                'constraint' => 50,
+                'constraint' => 20,
             ],
-            'prefix' => [
+            'deskripsi' => [
                 'type' => 'varchar',
                 'constraint' => 100,
             ],
@@ -31,17 +30,31 @@ class Gedung extends Migration
                 'type' => 'datetime',
                 'null' => TRUE,
             ],
+            'updated_by' => [
+                'type' => 'varchar',
+                'constraint' => '100',
+                'null' => TRUE,
+            ],
             'updated_at' => [
+                'type' => 'datetime',
+                'null' => TRUE,
+            ],
+            'deleted_by' => [
+                'type' => 'varchar',
+                'constraint' => '100',
+                'null' => TRUE,
+            ],
+            'deleted_at' => [
                 'type' => 'datetime',
                 'null' => TRUE,
             ],
         ]);
         $this->forge->addKey('id', true);
-        $this->forge->createTable('gedung');
+        $this->forge->createTable('satuan');
     }
 
     public function down()
     {
-        $this->forge->dropTable('gedung');
+        $this->forge->dropTable('satuan');
     }
 }

@@ -20,23 +20,23 @@
             <span>Dashboard</span>
           </a>
         </li>
-        <li class="sidebar-item has-sub">
+        <li class="sidebar-item <?= ($nav == 'kategori') ? 'active' : '' ?> has-sub">
           <a href="#" class='sidebar-link'>
             <i class="bi bi-stack"></i>
             <span>Kelola Barang</span>
           </a>
-          <ul class="submenu">
-            <li class="submenu-item ">
-              <a href="">Kategori Barang</a>
+          <ul class="submenu <?= ($nav == 'kategori') ? 'active' : '' ?>">
+            <li class="submenu-item <?= ($nav == 'kategori') ? 'active' : '' ?>">
+              <a href="kategori">Kategori Barang</a>
             </li>
             <li class="submenu-item">
-              <a href="">Barang</a>
+              <a href="barang">Barang</a>
             </li>
             <li class="submenu-item ">
-              <a href="">Peminjaman Barang</a>
+              <a href="peminjaman">Peminjaman Barang</a>
             </li>
             <li class="submenu-item ">
-              <a href="">Permintaan Barang</a>
+              <a href="permintaan">Permintaan Barang</a>
             </li>
           </ul>
         </li>
@@ -45,7 +45,7 @@
             <i class="bi bi-building"></i>
             <span>Kelola Ruang</span>
           </a>
-          <ul class="submenu">
+          <ul class="submenu <?= ($nav == 'ruang' || $nav == 'gedung') ? 'active' : '' ?>">
             <li class="submenu-item <?= ($nav == 'ruang') ? 'active' : '' ?>">
               <a href="ruang">Ruang</a>
             </li>
