@@ -54,17 +54,24 @@ $routes->group('admin/gedung', ['filter' => 'ceklogin'], function ($routes) {
     $routes->match(['get', 'post'], 'pilihkategori', 'GedungController::pilihkategori');
     $routes->post('update/(:any)', 'GedungController::updatedata/$1');
     $routes->post('hapus/(:any)', 'GedungController::hapusdata/$1');
-    // $routes->post('ceknamaGedung', 'GedungController::ceknamaruang');
 });
+
 $routes->group('admin/kategori', ['filter' => 'ceklogin'], function ($routes) {
     $routes->get('/', 'KategoriController::index');
     $routes->get('listdatakategori', 'KategoriController::listdataKategori');
     $routes->post('getnamakategori', 'KategoriController::getnamakategori');
     $routes->post('simpan', 'KategoriController::simpandata');
-    // $routes->match(['get', 'post'], 'pilihkategori', 'KategoriController::pilihkategori');
     $routes->post('update/(:any)', 'KategoriController::updatedata/$1');
     $routes->post('hapus/(:any)', 'KategoriController::hapusdata/$1');
-    // $routes->post('ceknamaGedung', 'GedungController::ceknamaruang');
+});
+
+$routes->group('admin/barang', ['filter' => 'ceklogin'], function ($routes) {
+    $routes->get('/', 'BarangController::index');
+    $routes->get('listdatabarang', 'BarangController::listdatabarang');
+    // $routes->post('getnamabarang', 'BarangController::getnamabarang');
+    // $routes->post('simpan', 'BarangController::simpandata');
+    // $routes->post('update/(:any)', 'BarangController::updatedata/$1');
+    // $routes->post('hapus/(:any)', 'BarangController::hapusdata/$1');
 });
 
 $routes->group('admin/pengguna', ['filter' => 'ceklogin'], function ($routes) {

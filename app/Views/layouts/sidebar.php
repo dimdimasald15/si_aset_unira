@@ -20,16 +20,16 @@
             <span>Dashboard</span>
           </a>
         </li>
-        <li class="sidebar-item <?= ($nav == 'kategori') ? 'active' : '' ?> has-sub">
+        <li class="sidebar-item <?= ($nav == 'kategori' || $nav == 'barang') ? 'active' : '' ?> has-sub">
           <a href="#" class='sidebar-link'>
             <i class="bi bi-stack"></i>
             <span>Kelola Barang</span>
           </a>
-          <ul class="submenu <?= ($nav == 'kategori') ? 'active' : '' ?>">
+          <ul class="submenu <?= ($nav == 'kategori' || $nav == 'barang') ? 'active' : '' ?>">
             <li class="submenu-item <?= ($nav == 'kategori') ? 'active' : '' ?>">
               <a href="kategori">Kategori Barang</a>
             </li>
-            <li class="submenu-item">
+            <li class="submenu-item <?= ($nav == 'barang') ? 'active' : '' ?>">
               <a href="barang">Barang</a>
             </li>
             <li class="submenu-item ">
