@@ -67,7 +67,13 @@ $routes->group('admin/kategori', ['filter' => 'ceklogin'], function ($routes) {
     // $routes->post('ceknamaGedung', 'GedungController::ceknamaruang');
 });
 
-
+$routes->group('admin/pengguna', ['filter' => 'ceklogin'], function ($routes) {
+    $routes->get('/', 'PenggunaController::index');
+    $routes->get('listdatapengguna', 'PenggunaController::listdatapengguna');
+    $routes->post('simpan', 'PenggunaController::simpandata');
+    $routes->post('update/(:any)', 'PenggunaController::updatedata/$1');
+    $routes->post('hapus/(:any)', 'PenggunaController::hapusdata/$1');
+});
 /*
  * --------------------------------------------------------------------
  * Additional Routing
