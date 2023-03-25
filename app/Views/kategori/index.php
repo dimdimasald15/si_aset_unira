@@ -11,8 +11,13 @@
       <div class="col-12 col-md-4 order-md-2 order-first">
         <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
           <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="dashboard">Dashboard</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Kelola Kategori</li>
+            <?php foreach ($breadcrumb as $crumb) : ?>
+              <?php if (end($breadcrumb) == $crumb) : ?>
+                <div class="breadcrumb-item"><?= $crumb['name'] ?></div>
+              <?php else : ?>
+                <div class="breadcrumb-item active"><a href="#"><?= $crumb['name'] ?></a></div>
+              <?php endif ?>
+            <?php endforeach ?>
           </ol>
         </nav>
       </div>
@@ -38,9 +43,12 @@
                 <div class="row mb-1">
                   <div class="col-md-3 position-relative">
                     <div class="input-group has-validation">
-                      <span class="input-group-text p-2"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-1-circle" viewBox="0 0 16 16">
-                          <path d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8Zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0ZM9.283 4.002V12H7.971V5.338h-.065L6.072 6.656V5.385l1.899-1.383h1.312Z" />
-                        </svg></span>
+                      <span class="input-group-text" id="basic-addon1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-1-square" viewBox="0 0 16 16">
+                          <path d="M9.283 4.002V12H7.971V5.338h-.065L6.072 6.656V5.385l1.899-1.383h1.312Z"></path>
+                          <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2Zm15 0a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2Z"></path>
+                        </svg>
+                      </span>
                       <select class="form-select" id="subkode1"></select>
                       <input type="text" class="form-control" placeholder="opsi lain" id="subkode1-other" style="display: none;">
                       <div class="invalid-feedback errsk1"></div>
@@ -48,9 +56,12 @@
                   </div>
                   <div class="col-md-3 position-relative">
                     <div class="input-group has-validation">
-                      <span class="input-group-text p-2"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-1-circle" viewBox="0 0 16 16">
-                          <path d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8Zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0ZM9.283 4.002V12H7.971V5.338h-.065L6.072 6.656V5.385l1.899-1.383h1.312Z" />
-                        </svg></span>
+                      <span class="input-group-text" id="basic-addon1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-2-square" viewBox="0 0 16 16">
+                          <path d="M6.646 6.24v.07H5.375v-.064c0-1.213.879-2.402 2.637-2.402 1.582 0 2.613.949 2.613 2.215 0 1.002-.6 1.667-1.287 2.43l-.096.107-1.974 2.22v.077h3.498V12H5.422v-.832l2.97-3.293c.434-.475.903-1.008.903-1.705 0-.744-.557-1.236-1.313-1.236-.843 0-1.336.615-1.336 1.306Z"></path>
+                          <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2Zm15 0a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2Z"></path>
+                        </svg>
+                      </span>
                       <select class="form-select" id="subkode2"></select>
                       <input type="text" class="form-control" placeholder="opsi lain" id="subkode2-other" style="display: none;">
                       <div class="invalid-feedback errsk2"></div>
@@ -58,9 +69,12 @@
                   </div>
                   <div class="col-md-3 position-relative">
                     <div class="input-group has-validation">
-                      <span class="input-group-text p-2"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-1-circle" viewBox="0 0 16 16">
-                          <path d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8Zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0ZM9.283 4.002V12H7.971V5.338h-.065L6.072 6.656V5.385l1.899-1.383h1.312Z" />
-                        </svg></span>
+                      <span class="input-group-text" id="basic-addon1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-3-square" viewBox="0 0 16 16">
+                          <path d="M7.918 8.414h-.879V7.342h.838c.78 0 1.348-.522 1.342-1.237 0-.709-.563-1.195-1.348-1.195-.79 0-1.312.498-1.348 1.055H5.275c.036-1.137.95-2.115 2.625-2.121 1.594-.012 2.608.885 2.637 2.062.023 1.137-.885 1.776-1.482 1.875v.07c.703.07 1.71.64 1.734 1.917.024 1.459-1.277 2.396-2.93 2.396-1.705 0-2.707-.967-2.754-2.144H6.33c.059.597.68 1.06 1.541 1.066.973.006 1.6-.563 1.588-1.354-.006-.779-.621-1.318-1.541-1.318Z"></path>
+                          <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2Zm15 0a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2Z"></path>
+                        </svg>
+                      </span>
                       <select class="form-select" id="subkode3"></select>
                       <input type="text" class="form-control" placeholder="opsi lain" id="subkode3-other" style="display: none;">
                       <div class="invalid-feedback errsk3"></div>
@@ -68,9 +82,12 @@
                   </div>
                   <div class="col-md-3 position-relative">
                     <div class="input-group has-validation">
-                      <span class="input-group-text p-2"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-1-circle" viewBox="0 0 16 16">
-                          <path d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8Zm15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0ZM9.283 4.002V12H7.971V5.338h-.065L6.072 6.656V5.385l1.899-1.383h1.312Z" />
-                        </svg></span>
+                      <span class="input-group-text" id="basic-addon1">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-4-square" viewBox="0 0 16 16">
+                          <path d="M7.519 5.057c.22-.352.439-.703.657-1.055h1.933v5.332h1.008v1.107H10.11V12H8.85v-1.559H4.978V9.322c.77-1.427 1.656-2.847 2.542-4.265ZM6.225 9.281v.053H8.85V5.063h-.065c-.867 1.33-1.787 2.806-2.56 4.218Z"></path>
+                          <path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2Zm15 0a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V2Z"></path>
+                        </svg>
+                      </span>
                       <select class="form-select" id="subkode4"></select>
                       <input type="text" class="form-control" placeholder="opsi lain" id="subkode4-other" style="display: none;">
                       <div class="invalid-feedback errsk4"></div>
@@ -126,7 +143,9 @@
       </div>
       <div class="col-lg-3 d-flex flex-row-reverse">
         <button type="button" class="btn btn-success" id="btn-tambahkategori">
-          <i class="bi bi-layers"></i>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-layers" viewBox="0 0 16 16">
+            <path d="M8.235 1.559a.5.5 0 0 0-.47 0l-7.5 4a.5.5 0 0 0 0 .882L3.188 8 .264 9.559a.5.5 0 0 0 0 .882l7.5 4a.5.5 0 0 0 .47 0l7.5-4a.5.5 0 0 0 0-.882L12.813 8l2.922-1.559a.5.5 0 0 0 0-.882l-7.5-4zm3.515 7.008L14.438 10 8 13.433 1.562 10 4.25 8.567l3.515 1.874a.5.5 0 0 0 .47 0l3.515-1.874zM8 9.433 1.562 6 8 2.567 14.438 6 8 9.433z"></path>
+          </svg>
           Tambah Kategori
         </button>
       </div>
@@ -228,7 +247,7 @@
   }
 
   function defaultform() {
-    formtambah.find('.card-title').html('Tambah Data Ruangan');
+    formtambah.find('.card-title').html('Tambah Data Kategori');
     formtambah.find("button[type='submit']").html('Simpan');
     slctSubkode1other.hide();
     slctSubkode2other.hide();

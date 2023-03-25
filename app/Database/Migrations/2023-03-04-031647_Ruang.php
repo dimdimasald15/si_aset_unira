@@ -16,20 +16,19 @@ class Ruang extends Migration
             ],
             'nama_ruang' => [
                 'type' => 'varchar',
-                'constraint' => '20',
-                'unique' => TRUE,
+                'constraint' => '50',
             ],
             'nama_lantai' => [
                 'type' => 'varchar',
-                'constraint' => '100',
+                'constraint' => '2',
             ],
             'gedung_id' => [
                 'type' => 'int',
-                'unsigned' => TRUE,
+                'constraint' => '2',
             ],
             'created_by' => [
                 'type' => 'varchar',
-                'constraint' => '100',
+                'constraint' => '50',
                 'null' => TRUE,
             ],
             'created_at' => [
@@ -38,7 +37,7 @@ class Ruang extends Migration
             ],
             'updated_by' => [
                 'type' => 'varchar',
-                'constraint' => '100',
+                'constraint' => '50',
                 'null' => TRUE,
             ],
             'updated_at' => [
@@ -47,7 +46,7 @@ class Ruang extends Migration
             ],
             'deleted_by' => [
                 'type' => 'varchar',
-                'constraint' => '100',
+                'constraint' => '50',
                 'null' => TRUE,
             ],
             'deleted_at' => [

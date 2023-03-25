@@ -15,16 +15,20 @@ class Satuan extends Migration
                 'auto_increment' => TRUE,
             ],
             'kd_satuan' => [
-                'type' => 'int',
-                'constraint' => 11,
+                'type' => 'varchar',
+                'constraint' => 10,
             ],
             'nama_satuan' => [
                 'type' => 'varchar',
                 'constraint' => 20,
             ],
             'deskripsi' => [
+                'type' => 'text',
+            ],
+            'created_by' => [
                 'type' => 'varchar',
-                'constraint' => 100,
+                'constraint' => '20',
+                'null' => TRUE,
             ],
             'created_at' => [
                 'type' => 'datetime',
@@ -32,7 +36,7 @@ class Satuan extends Migration
             ],
             'updated_by' => [
                 'type' => 'varchar',
-                'constraint' => '100',
+                'constraint' => '20',
                 'null' => TRUE,
             ],
             'updated_at' => [
@@ -41,7 +45,7 @@ class Satuan extends Migration
             ],
             'deleted_by' => [
                 'type' => 'varchar',
-                'constraint' => '100',
+                'constraint' => '20',
                 'null' => TRUE,
             ],
             'deleted_at' => [
@@ -49,7 +53,7 @@ class Satuan extends Migration
                 'null' => TRUE,
             ],
         ]);
-        $this->forge->addKey('id', true);
+        $this->forge->addPrimaryKey('id', true);
         $this->forge->createTable('satuan');
     }
 

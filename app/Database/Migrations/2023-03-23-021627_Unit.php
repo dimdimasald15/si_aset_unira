@@ -4,40 +4,34 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class Petugas extends Migration
+class Unit extends Migration
 {
     public function up()
     {
         $this->forge->addField([
             'id' => [
                 'type' => 'int',
-                'constraint' => '11',
+                'constraint' => 11,
                 'auto_increment' => TRUE,
             ],
-            'nip' => [
+            'nama_unit' => [
                 'type' => 'varchar',
-                'constraint' => '20',
-                'unique' => TRUE,
+                'constraint' => 255,
             ],
-            'email' => [
+            'singkatan' => [
                 'type' => 'varchar',
-                'constraint' => '100',
+                'constraint' => 20,
             ],
-            'username' => [
-                'type' => 'varchar',
-                'constraint' => '100',
+            'deskripsi' => [
+                'type' => 'text',
             ],
-            'password' => [
+            'kategori_unit' => [
                 'type' => 'varchar',
-                'constraint' => '100',
-            ],
-            'role' => [
-                'type' => 'varchar',
-                'constraint' => '50',
+                'constraint' => 50,
             ],
             'created_by' => [
                 'type' => 'varchar',
-                'constraint' => '50',
+                'constraint' => 50,
                 'null' => TRUE,
             ],
             'created_at' => [
@@ -46,7 +40,7 @@ class Petugas extends Migration
             ],
             'updated_by' => [
                 'type' => 'varchar',
-                'constraint' => '50',
+                'constraint' => 50,
                 'null' => TRUE,
             ],
             'updated_at' => [
@@ -55,7 +49,7 @@ class Petugas extends Migration
             ],
             'deleted_by' => [
                 'type' => 'varchar',
-                'constraint' => '50',
+                'constraint' => 50,
                 'null' => TRUE,
             ],
             'deleted_at' => [
@@ -64,11 +58,11 @@ class Petugas extends Migration
             ],
         ]);
         $this->forge->addPrimaryKey('id');
-        $this->forge->createTable('petugas');
+        $this->forge->createTable('unit');
     }
 
     public function down()
     {
-        $this->forge->dropTable('petugas');
+        $this->forge->dropTable('unit');
     }
 }

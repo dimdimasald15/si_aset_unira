@@ -42,9 +42,14 @@ $routes->group('admin', ['filter' => 'ceklogin'], function ($routes) {
 $routes->group('admin/ruang', ['filter' => 'ceklogin'], function ($routes) {
     $routes->get('/', 'RuangController::index');
     $routes->get('tampildataruang', 'RuangController::listdataruang');
+    $routes->get('tampildatarestore', 'RuangController::listdatarestore');
     $routes->post('simpan', 'RuangController::simpandata');
     $routes->post('update/(:any)', 'RuangController::updatedata/$1');
     $routes->post('hapus/(:any)', 'RuangController::hapusdata/$1');
+    $routes->post('restore/(:any)', 'RuangController::restoredata/$1');
+    $routes->match(['get', 'post'], 'restore', 'RuangController::restoredata');
+    $routes->post('hapuspermanen/(:any)', 'RuangController::hapuspermanen/$1');
+    $routes->match(['get', 'post'], 'hapuspermanen', 'RuangController::hapuspermanen');
     // $routes->post('ceknamaruang', 'RuangController::ceknamaruang');
 });
 $routes->group('admin/gedung', ['filter' => 'ceklogin'], function ($routes) {
@@ -68,6 +73,7 @@ $routes->group('admin/kategori', ['filter' => 'ceklogin'], function ($routes) {
 $routes->group('admin/barang', ['filter' => 'ceklogin'], function ($routes) {
     $routes->get('/', 'BarangController::index');
     $routes->get('listdatabarang', 'BarangController::listdatabarang');
+    $routes->match(['get', 'post'], 'pilihkategori', 'BarangController::pilihkategori');
     // $routes->post('getnamabarang', 'BarangController::getnamabarang');
     // $routes->post('simpan', 'BarangController::simpandata');
     // $routes->post('update/(:any)', 'BarangController::updatedata/$1');
