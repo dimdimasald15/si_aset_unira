@@ -16,7 +16,7 @@ class PenggunaController extends BaseController
     }
     public function index()
     {
-        $segments = $this->request->uri->getSegments();
+        $segments = $this->uri->getSegments();
         $breadcrumb = [];
         $link = '';
 
@@ -27,7 +27,7 @@ class PenggunaController extends BaseController
         $data = [
             'title' => 'Pengguna',
             'nav' => 'pengguna',
-            'breadcrumb' => $breadcrumb
+            'breadcrumb' => $breadcrumb,
         ];
 
         return view('pengguna/index', $data);

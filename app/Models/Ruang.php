@@ -29,7 +29,7 @@ class Ruang extends Model
             !empty($username) &&
             !array_key_exists('created_by', $data)
         ) {
-            $data['data']['created_at'] = date('Y-m-d H:i:s');
+            $data['data']['created_at'] = strtotime(date('Y-m-d H:i:s'));
             $data['data']['created_by'] = $username;
         }
         return $data;

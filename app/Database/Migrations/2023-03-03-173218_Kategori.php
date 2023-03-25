@@ -12,24 +12,22 @@ class Kategori extends Migration
             'id' => [
                 'type' => 'int',
                 'constraint' => 11,
-                'unsigned' => TRUE,
                 'auto_increment' => TRUE,
             ],
             'kd_kategori' => [
                 'type' => 'varchar',
-                'constraint' => 20,
+                'constraint' => 50,
             ],
             'nama_kategori' => [
                 'type' => 'varchar',
-                'constraint' => 100,
+                'constraint' => 255,
             ],
             'deskripsi' => [
-                'type' => 'varchar',
-                'constraint' => 100,
+                'type' => 'text',
             ],
             'created_by' => [
                 'type' => 'varchar',
-                'constraint' => 100,
+                'constraint' => 50,
                 'null' => TRUE,
             ],
             'created_at' => [
@@ -38,7 +36,7 @@ class Kategori extends Migration
             ],
             'updated_by' => [
                 'type' => 'varchar',
-                'constraint' => 100,
+                'constraint' => 50,
                 'null' => TRUE,
             ],
             'updated_at' => [
@@ -47,7 +45,7 @@ class Kategori extends Migration
             ],
             'deleted_by' => [
                 'type' => 'varchar',
-                'constraint' => 100,
+                'constraint' => 50,
                 'null' => TRUE,
             ],
             'deleted_at' => [
@@ -55,7 +53,7 @@ class Kategori extends Migration
                 'null' => TRUE,
             ],
         ]);
-        $this->forge->addKey('id');
+        $this->forge->addPrimaryKey('id');
         $this->forge->createTable('kategori');
     }
 

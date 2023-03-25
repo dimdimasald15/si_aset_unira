@@ -10,8 +10,13 @@
       <div class="col-12 col-md-4 order-md-2 order-first">
         <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
           <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="dashboard">Dashboard</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Kelola Gedung</li>
+            <?php foreach ($breadcrumb as $crumb) : ?>
+              <?php if (end($breadcrumb) == $crumb) : ?>
+                <div class="breadcrumb-item"><?= $crumb['name'] ?></div>
+              <?php else : ?>
+                <div class="breadcrumb-item active"><a href="#"><?= $crumb['name'] ?></a></div>
+              <?php endif ?>
+            <?php endforeach ?>
           </ol>
         </nav>
       </div>
@@ -62,7 +67,6 @@
                 <div class="row mb-1">
                   <div class="input-group mb-3">
                     <label class="input-group-text" for="inputGroupSelect01"><i class="bi bi-layers"></i></label>
-                    <!-- <span class="input-group-text" id="basic-addon1"><i class="bi bi-layers"></i></span> -->
                     <select name="kat_id" class="form-select p-2" id="katid" style="width: 400px;"></select>
                     <div class="invalid-feedback errkatid"></div>
                   </div>
@@ -285,7 +289,7 @@
             results: data
           };
         },
-        // cache: true
+        cache: true
       }
     });
 

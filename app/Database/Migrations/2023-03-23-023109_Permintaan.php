@@ -4,7 +4,7 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class Petugas extends Migration
+class Permintaan extends Migration
 {
     public function up()
     {
@@ -14,26 +14,21 @@ class Petugas extends Migration
                 'constraint' => '11',
                 'auto_increment' => TRUE,
             ],
-            'nip' => [
-                'type' => 'varchar',
-                'constraint' => '20',
-                'unique' => TRUE,
+            'barang_id' => [
+                'type' => 'int',
+                'constraint' => '11',
             ],
-            'email' => [
-                'type' => 'varchar',
-                'constraint' => '100',
+            'unit_id' => [
+                'type' => 'int',
+                'constraint' => '11',
             ],
-            'username' => [
-                'type' => 'varchar',
-                'constraint' => '100',
-            ],
-            'password' => [
-                'type' => 'varchar',
-                'constraint' => '100',
-            ],
-            'role' => [
+            'nama_peminta' => [
                 'type' => 'varchar',
                 'constraint' => '50',
+            ],
+            'jml_barang' => [
+                'type' => 'int',
+                'constraint' => '3',
             ],
             'created_by' => [
                 'type' => 'varchar',
@@ -64,11 +59,13 @@ class Petugas extends Migration
             ],
         ]);
         $this->forge->addPrimaryKey('id');
-        $this->forge->createTable('petugas');
+        $this->forge->addForeignKey('barang_id', 'barang', 'id');
+        $this->forge->addForeignKey('unit_id', 'unit', 'id');
+        $this->forge->createTable('permintaan');
     }
 
     public function down()
     {
-        $this->forge->dropTable('petugas');
+        $this->forge->dropTable('permintaan');
     }
 }

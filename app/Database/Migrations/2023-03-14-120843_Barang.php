@@ -32,7 +32,7 @@ class Barang extends Migration
             ],
             'nama_brg' => [
                 'type' => 'varchar',
-                'constraint' => 100,
+                'constraint' => 255,
             ],
             'stok' => [
                 'type' => 'int',
@@ -48,7 +48,17 @@ class Barang extends Migration
                 'constraint' => 50,
                 'null' => TRUE,
             ],
+            'asal' => [
+                'type' => 'varchar',
+                'constraint' => 20,
+                'null' => TRUE,
+            ],
             'harga_beli' => [
+                'type' => 'decimal',
+                'constraint' => 14.2,
+                'null' => TRUE,
+            ],
+            'harga_jual' => [
                 'type' => 'decimal',
                 'constraint' => 14.2,
                 'null' => TRUE,
@@ -93,7 +103,7 @@ class Barang extends Migration
             ],
             'created_by' => [
                 'type' => 'varchar',
-                'constraint' => 100,
+                'constraint' => 50,
                 'null' => TRUE,
             ],
             'created_at' => [
@@ -102,7 +112,7 @@ class Barang extends Migration
             ],
             'updated_by' => [
                 'type' => 'varchar',
-                'constraint' => 100,
+                'constraint' => 50,
                 'null' => TRUE,
             ],
             'updated_at' => [
@@ -111,7 +121,7 @@ class Barang extends Migration
             ],
             'deleted_by' => [
                 'type' => 'varchar',
-                'constraint' => 100,
+                'constraint' => 50,
                 'null' => TRUE,
             ],
             'deleted_at' => [
@@ -119,7 +129,7 @@ class Barang extends Migration
                 'null' => TRUE,
             ],
         ]);
-        $this->forge->addKey('id');
+        $this->forge->addPrimaryKey('id');
         $this->forge->addForeignKey('kat_id', 'kategori', 'id');
         $this->forge->addForeignKey('ruang_id', 'ruang', 'id');
         $this->forge->addForeignKey('satuan_id', 'satuan', 'id');

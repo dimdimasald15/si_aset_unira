@@ -9,16 +9,26 @@ use \Hermawan\DataTables\DataTable;
 
 class GedungController extends BaseController
 {
-    protected $gedung;
+    protected $gedung, $uri;
     public function __construct()
     {
         $this->gedung = new Gedung();
+        $this->uri = service('uri');
     }
     public function index()
     {
+        $segments = $this->uri->getSegments();
+        $breadcrumb = [];
+        $link = '';
+
+        foreach ($segments as $segment) {
+            $link .= '/' . $segment;
+            $breadcrumb[] = ['name' => ucfirst($segment), 'link' => $link];
+        }
         $data = [
             'title' => 'Gedung',
             'nav' => 'gedung',
+            'breadcrumb' => $breadcrumb,
         ];
 
         return view('gedung/index', $data);

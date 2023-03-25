@@ -11,15 +11,20 @@
       <div class="col-12 col-md-4 order-md-2 order-first">
         <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
           <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="dashboard">Dashboard</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Kelola Ruang</li>
+            <?php foreach ($breadcrumb as $crumb) : ?>
+              <?php if (end($breadcrumb) == $crumb) : ?>
+                <div class="breadcrumb-item"><?= $crumb['name'] ?></div>
+              <?php else : ?>
+                <div class="breadcrumb-item active"><a href="#"><?= $crumb['name'] ?></a></div>
+              <?php endif ?>
+            <?php endforeach ?>
           </ol>
         </nav>
       </div>
     </div>
   </div>
   <section class="section">
-    <div class="card mb-3" id="tampilformtambah" style="display:none">
+    <div class="card shadow-3 mb-3" id="tampilformtambah" style="display:none">
       <div class="card-header">
         <div class="row">
           <h4 class="card-title">Tambah Data Ruangan</h4>
@@ -90,29 +95,55 @@
     </div>
   </section>
 </div>
-<div class="card mb-3 datalist-ruangan">
+<div class="card shadow-sm mb-3 datalist-ruangan">
   <div class="card-header">
     <div class="row justify-content-between align-items-center">
-      <div class="col-lg-9">
+      <div class="col-lg-7">
         <h4 class="card-title">Data Ruangan</h4>
       </div>
-      <div class="col-lg-3 d-flex flex-row-reverse">
-        <button type="button" class="btn btn-success" id="btn-tambahruang">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-door-closed" viewBox="0 0 16 16">
-            <path d="M3 2a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v13h1.5a.5.5 0 0 1 0 1h-13a.5.5 0 0 1 0-1H3V2zm1 13h8V2H4v13z"></path>
-            <path d="M9 9a1 1 0 1 0 2 0 1 1 0 0 0-2 0z"></path>
-          </svg>
-          Tambah Ruangan
-        </button>
+      <div class="col-lg-5 d-flex flex-row mb-3 justify-content-end">
+        <div class="col-lg-auto btn-dataruang">
+          <button type="button" class="btn btn-success" id="btn-tambahruang">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-door-closed" viewBox="0 0 16 16">
+              <path d="M3 2a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v13h1.5a.5.5 0 0 1 0 1h-13a.5.5 0 0 1 0-1H3V2zm1 13h8V2H4v13z"></path>
+              <path d="M9 9a1 1 0 1 0 2 0 1 1 0 0 0-2 0z"></path>
+            </svg>
+            Tambah Ruangan
+          </button>
+          <button type="button" class="btn btn-danger" id="btn-restore"><i class="fa fa-trash-o"></i>Trash</button>
+        </div>
+        <div class="col-lg-auto btn-datarestoreruang" style="display:none;">
+          <button class="btn btn-success" onclick="restoreall()"><i class="fa fa-undo"></i> Pulihkan semua</button>
+          <button class="btn btn-danger" onclick="hapuspermanenall()"><i class="fa fa-trash"></i> Hapus semua permanen</button>
+        </div>
       </div>
     </div>
   </div>
-  <div class="card-body">
+  <div class="card-body table-restore" style="display:none;">
+    <div class="table-responsive py-4">
+      <table class="table table-flush" id="table-restore" width="100%">
+        <thead class=" thead-light">
+          <tr>
+            <th>No.</th>
+            <th>Nama Ruangan</th>
+            <th>Nama Lantai</th>
+            <th>Prefix Gedung</th>
+            <th>Nama Gedung</th>
+            <th>Deleted By</th>
+            <th>Deleted At </th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="card-body table-ruang">
     <div class="table-responsive py-4">
       <table class="table table-flush" id="table-ruang" width="100%">
         <thead class=" thead-light">
           <tr>
-            <!-- <th style="width: 50px;">No.</th> -->
             <th>No.</th>
             <th>Nama Ruangan</th>
             <th>Nama Lantai</th>
@@ -127,6 +158,9 @@
         </tbody>
       </table>
     </div>
+  </div>
+  <div class="row m-2 btn-datarestoreruang" style="display:none;">
+    <a href="ruang">&laquo; Kembali ke data ruangan</a>
   </div>
 </div>
 <?= $this->endSection() ?>
@@ -171,8 +205,6 @@
   }
 
   function hapus(id, namaruang) {
-    console.log(id + " & " + namaruang);
-    // console.log('delete : ' + namaruang);
     Swal.fire({
       title: `Apakah kamu yakin ingin menghapus data ${namaruang}?`,
       icon: 'warning',
@@ -189,6 +221,86 @@
           data: {
             nama_ruang: namaruang
           },
+          dataType: 'json',
+          success: function(response) {
+            if (response.sukses) {
+              Swal.fire(
+                'Berhasil', response.sukses, 'success'
+              ).then((result) => {
+                dataruang.ajax.reload();
+              })
+            } else if (response.error) {
+              Swal.fire(
+                'Gagal!',
+                response.error,
+                'error'
+              );
+            }
+          },
+          error: function(xhr, ajaxOptions, thrownError) {
+            alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
+          }
+        });
+      }
+    });
+  }
+
+  function restore(id, namaruang) {
+    // console.log('restore : ' + id);
+    Swal.fire({
+      title: `Memulihkan data ${namaruang}?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Ya!',
+      cancelButtonText: 'Batalkan',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        $.ajax({
+          type: "post",
+          url: "ruang/restore/" + id,
+          data: {
+            nama_ruang: namaruang
+          },
+          dataType: 'json',
+          success: function(response) {
+            if (response.sukses) {
+              Swal.fire(
+                'Berhasil', response.sukses, 'success'
+              ).then((result) => {
+                location.reload();
+              })
+            } else if (response.error) {
+              Swal.fire(
+                'Gagal!',
+                response.error,
+                'error'
+              );
+            }
+          },
+          error: function(xhr, ajaxOptions, thrownError) {
+            alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
+          }
+        });
+      }
+    });
+  }
+
+  function restoreall() {
+    Swal.fire({
+      title: `Apakah anda ingin memulihkan semua data yang telah terhapus?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Ya!',
+      cancelButtonText: 'Batalkan',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        $.ajax({
+          // type: "post",
+          url: "ruang/restore",
           dataType: 'json',
           success: function(response) {
             if (response.sukses) {
@@ -231,10 +343,20 @@
     formtambah.find("button[type='submit']").html('Simpan');
   }
 
+  function defaultshow() {
+    formtambah.hide();
+    $('.datalist-ruangan h4').html('Data Ruangan');
+    $('.btn-dataruang').show();
+    $('.btn-datarestoreruang').hide();
+    // $('.backtoruang').hide();
+    // $('#btn-restore').show();
+  }
+
+  var datarestore = '';
+  var dataruang = '';
+
   $(document).ready(function() {
-    // console.log('awal : ' + formtambah.find('input').hasClass('is-invalid'));
-    // listdataruang();
-    var dataruang = $('#table-ruang').DataTable({
+    dataruang = $('#table-ruang').DataTable({
       processing: true,
       serverSide: true,
       ajax: {
@@ -261,7 +383,25 @@
           data: 'created_by'
         },
         {
-          data: 'created_at'
+          data: 'created_at',
+          render: function(data, type, full, meta) {
+            var date = new Date(data * 1000);
+            var day = date.getDate();
+            var month = date.getMonth() + 1;
+            var year = date.getFullYear();
+            var hours = date.getHours();
+            var minutes = "0" + date.getMinutes();
+            var seconds = "0" + date.getSeconds();
+            var options = {
+              weekday: 'long',
+              year: 'numeric',
+              month: 'long',
+              day: 'numeric'
+            };
+            var formattedDate = new Date(data * 1000).toLocaleDateString('id-ID', options);
+
+            return formattedDate;
+          }
         },
         {
           data: 'action',
@@ -269,8 +409,9 @@
         },
       ]
     });
+    // $('.paginate_button.page-item').addClass('btn btn-success');
 
-    formtambah.hide();
+    defaultshow();
 
     $('#btn-tambahruang').click(function() {
       clear_is_invalid();
@@ -352,6 +493,154 @@
       return false;
     })
 
+    $('#btn-restore').on('click', function() {
+      $('.table-ruang').hide();
+      $('.table-restore').show();
+      $('.datalist-ruangan h4').html('Restore Data Ruangan');
+      formtambah.hide();
+      $('.btn-dataruang').hide();
+      $('.btn-datarestoreruang').show();
+      // $('#btn-restore').hide();
+      // console.log($('.datalist-ruangan h4').html());
+      datarestore = $('#table-restore').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+          url: 'ruang/tampildatarestore',
+        },
+        order: [],
+        columns: [{
+            data: 'no',
+            orderable: false
+          },
+          {
+            data: 'nama_ruang'
+          },
+          {
+            data: 'nama_lantai'
+          },
+          {
+            data: 'prefix'
+          },
+          {
+            data: 'nama_gedung'
+          },
+          {
+            data: 'deleted_by'
+          },
+          {
+            data: 'deleted_at',
+            render: function(data, type, full, meta) {
+              var dateParts = data.split(/[- :]/);
+              var year = parseInt(dateParts[0]);
+              var month = parseInt(dateParts[1]) - 1;
+              var day = parseInt(dateParts[2]);
+              var hours = parseInt(dateParts[3]);
+              var minutes = parseInt(dateParts[4]);
+              var seconds = parseInt(dateParts[5]);
+              var options = {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              };
+              var formattedDate = new Date(year, month, day, hours, minutes, seconds).toLocaleDateString('id-ID', options);
+              return formattedDate;
+            }
+          },
+          {
+            data: 'action',
+            orderable: false
+          },
+        ]
+      });
+    });
   });
+
+
+  function hapuspermanen(id, namaruang) {
+    console.log(datarestore);
+    Swal.fire({
+      title: `Menghapus data ${namaruang} secara permanen?`,
+      icon: 'warning',
+      text: 'Data akan terhapus selamanya dan tidak dapat dipulihkan lagi!',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Ya!',
+      cancelButtonText: 'Batalkan',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        $.ajax({
+          type: "post",
+          url: "ruang/hapuspermanen/" + id,
+          data: {
+            nama_ruang: namaruang
+          },
+          dataType: 'json',
+          success: function(response) {
+            console.log(response);
+            if (response.sukses) {
+              Swal.fire(
+                'Berhasil', response.sukses, 'success'
+              ).then((result) => {
+                datarestore.ajax.reload();
+              })
+            } else if (response.error) {
+              Swal.fire(
+                'Gagal!',
+                response.error,
+                'error'
+              );
+            }
+          },
+          error: function(xhr, ajaxOptions, thrownError) {
+            alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
+          }
+        });
+      }
+    });
+  }
+
+  function hapuspermanenall() {
+    console.log(datarestore);
+    Swal.fire({
+      title: `Bersihkan semua data secara permanen?`,
+      icon: 'warning',
+      text: 'Data akan terhapus selamanya dan tidak dapat dipulihkan lagi!',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Ya!',
+      cancelButtonText: 'Batalkan',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        $.ajax({
+          type: "post",
+          url: "ruang/hapuspermanen",
+          dataType: 'json',
+          success: function(response) {
+            console.log(response);
+            if (response.sukses) {
+              Swal.fire(
+                'Berhasil', response.sukses, 'success'
+              ).then((result) => {
+                datarestore.ajax.reload();
+              })
+            } else if (response.error) {
+              Swal.fire(
+                'Gagal!',
+                response.error,
+                'error'
+              );
+            }
+          },
+          error: function(xhr, ajaxOptions, thrownError) {
+            alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
+          }
+        });
+      }
+    });
+  }
 </script>
 <?= $this->endSection() ?>

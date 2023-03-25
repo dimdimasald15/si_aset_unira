@@ -8,18 +8,28 @@ use App\Controllers\BaseController;
 
 class KategoriController extends BaseController
 {
-    protected $kategori;
+    protected $kategori, $uri;
     public function __construct()
     {
         $this->kategori = new Kategori();
+        $this->uri = service('uri');
     }
 
     public function index()
     {
-        // return "Ini adalah halaman Kategori";
+        $segments = $this->uri->getSegments();
+        $breadcrumb = [];
+        $link = '';
+
+        foreach ($segments as $segment) {
+            $link .= '/' . $segment;
+            $breadcrumb[] = ['name' => ucfirst($segment), 'link' => $link];
+        }
+
         $data = [
             'nav' => 'kategori',
             'title' => 'Kategori',
+            'breadcrumb' => $breadcrumb
         ];
 
         return view('kategori/index', $data);

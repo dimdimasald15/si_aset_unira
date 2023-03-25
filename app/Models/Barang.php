@@ -6,37 +6,49 @@ use CodeIgniter\Model;
 
 class Barang extends Model
 {
-    protected $DBGroup          = 'default';
-    protected $table            = 'barangs';
-    protected $primaryKey       = 'id';
-    protected $useAutoIncrement = true;
-    protected $insertID         = 0;
-    protected $returnType       = 'array';
-    protected $useSoftDeletes   = false;
-    protected $protectFields    = true;
-    protected $allowedFields    = [];
-
-    // Dates
+    protected $table = "barang";
+    protected $primaryKey = 'id';
+    protected $allowedFields = ['id', 'kat_id', 'nama_barang', 'prefix', 'created_at', 'created_by', 'updated_by', 'deleted_by', 'deleted_at'];
+    protected $useSoftDeletes   = true;
     protected $useTimestamps = false;
-    protected $dateFormat    = 'datetime';
     protected $createdField  = 'created_at';
-    protected $updatedField  = 'updated_at';
+    protected $updatedField  = null;
     protected $deletedField  = 'deleted_at';
 
-    // Validation
-    protected $validationRules      = [];
-    protected $validationMessages   = [];
-    protected $skipValidation       = false;
-    protected $cleanValidationRules = true;
-
-    // Callbacks
+    protected $beforeInsert = ['setInsertData'];
+    protected $beforeUpdate = ['setUpdateData'];
     protected $allowCallbacks = true;
-    protected $beforeInsert   = [];
-    protected $afterInsert    = [];
-    protected $beforeUpdate   = [];
-    protected $afterUpdate    = [];
-    protected $beforeFind     = [];
-    protected $afterFind      = [];
-    protected $beforeDelete   = [];
-    protected $afterDelete    = [];
+
+    public function setInsertData(array $data)
+    {
+        $username = session()->get('username');
+        if (
+            !empty($username) &&
+            !array_key_exists('created_by', $data)
+        ) {
+            $data['data']['created_at'] = date('Y-m-d H:i:s');
+            $data['data']['created_by'] = $username;
+        }
+        return $data;
+    }
+
+    public function setUpdateData(array $data)
+    {
+        $username = session()->get('username');
+        if (!empty($username) && !array_key_exists('updated_by', $data)) {
+            $data['data']['updated_at'] = date('Y-m-d H:i:s');
+            $data['data']['updated_by'] = $username;
+        }
+        return $data;
+    }
+
+    public function setSoftDelete($id)
+    {
+        $session = \Config\Services::session();
+        $data = [
+            'deleted_by' => $session->get('username'),
+            'deleted_at' => date("Y-m-d H:i:s", time())
+        ];
+        $this->update($id, $data);
+    }
 }
