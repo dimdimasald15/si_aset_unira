@@ -39,67 +39,86 @@ class RuangController extends BaseController
     public function listdataruang()
     {
         if ($this->request->isAJAX()) {
-
-            $builder = $this->db->table('ruang')
-                ->select('ruang.id,nama_ruang, nama_lantai, ruang.created_at, ruang.created_by, ruang.deleted_at, gedung.prefix, gedung.nama_gedung')
-                ->join('gedung', 'ruang.gedung_id = gedung.id');
-
-            return DataTable::of($builder)
-                ->filter(function ($builder) {
-                    $builder->where('ruang.deleted_at', null);
-                })
-                ->postQuery(function ($builder) {
-                    // $builder->orderBy('customerNumber', 'desc');
-                    $builder->orderBy('ruang.id', 'desc');
-                })
-                //<button type="button" class="btn btn-primary btn-sm" onclick="alert(\'edit customer: '.$row->customerName.'\') ><i class="fas fa-edit"></i></button>
-                ->addNumbering('no')
-                ->add('action', function ($row) {
-                    return '<button type="button" class="btn btn-warning btn-sm btn-editruang" onclick="edit(' . $row->id . ')"> <i class="fa fa-pencil-square-o"></i></button>
-                    <button type="button" class="btn btn-danger btn-sm" onclick="hapus(' . $row->id . ', \'' . htmlspecialchars($row->nama_ruang) . '\')"><i class="fa fa-trash-o"></i></button>';
-                })
-                ->toJson(true);
-        } else {
-            exit('Maaf tidak dapat diproses');
-        }
-    }
-
-    public function listdatarestore()
-    {
-        if ($this->request->isAJAX()) {
+            $isRestore = filter_var($this->request->getGet('isRestore'), FILTER_VALIDATE_BOOLEAN);
 
             $builder = $this->db->table('ruang')
                 ->select('ruang.id,nama_ruang, nama_lantai, ruang.created_at, ruang.created_by, ruang.deleted_by, ruang.deleted_at, gedung.prefix, gedung.nama_gedung')
                 ->join('gedung', 'ruang.gedung_id = gedung.id');
 
             return DataTable::of($builder)
-                ->filter(function ($builder) {
-                    $builder->where('ruang.deleted_at IS NOT NULL');
+                ->filter(function ($builder) use ($isRestore) {
+                    if ($isRestore) {
+                        $builder->where('ruang.deleted_at IS NOT NULL');
+                    } else {
+                        $builder->where('ruang.deleted_at', null);
+                    }
                 })
                 ->postQuery(function ($builder) {
-                    // $builder->orderBy('customerNumber', 'desc');
                     $builder->orderBy('ruang.id', 'desc');
                 })
-                //<button type="button" class="btn btn-primary btn-sm" onclick="alert(\'edit customer: '.$row->customerName.'\') ><i class="fas fa-edit"></i></button>
                 ->addNumbering('no')
-                ->add('action', function ($row) {
-                    return '
-                    <div class="btn-group">
-                    <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                ->add('action', function ($row) use ($isRestore) {
+                    if ($isRestore) {
+                        return '
+                    <div class="btn-group mb-1">
+                    <button type="button" class="btn btn-success dropdown-toggle me-1" data-bs-toggle="dropdown" aria-expanded="false">
                         Action
                     </button>
                     <ul class="dropdown-menu shadow-lg">
                         <li><a class="dropdown-item" onclick="restore(' . $row->id . ', \'' . htmlspecialchars($row->nama_ruang) . '\')"><i class="fa fa-undo"></i> Pulihkan</a></li>
-                        <li><a class="dropdown-item" onclick="hapuspermanen(' . $row->id . ', \'' . htmlspecialchars($row->nama_ruang) . '\')"><i class="fa fa-trash-o"></i>Hapus Permanen</a></li>
+                        <li><a class="dropdown-item" onclick="hapuspermanen(' . $row->id . ', \'' . htmlspecialchars($row->nama_ruang) . '\')"><i class="fa fa-trash-o"></i> Hapus Permanen</a></li>
                     </ul>
                     </div>
                     ';
+                    } else {
+                        return '<button type="button" class="btn btn-warning btn-sm btn-editruang" onclick="edit(' . $row->id . ')"> <i class="fa fa-pencil-square-o"></i></button>
+                    <button type="button" class="btn btn-danger btn-sm" onclick="hapus(' . $row->id . ', \'' . htmlspecialchars($row->nama_ruang) . '\')"><i class="fa fa-trash-o"></i></button>';
+                    }
                 })
                 ->toJson(true);
         } else {
-            exit('Maaf tidak dapat diproses');
+            $data = [
+                'title' => 'Error 404',
+                'msg' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/mazer/error-404', $data);
         }
     }
+
+    // public function listdatarestore()
+    // {
+    //     if ($this->request->isAJAX()) {
+
+    //         $builder = $this->db->table('ruang')
+    //             ->select('ruang.id,nama_ruang, nama_lantai, ruang.created_at, ruang.created_by, ruang.deleted_by, ruang.deleted_at, gedung.prefix, gedung.nama_gedung')
+    //             ->join('gedung', 'ruang.gedung_id = gedung.id');
+
+    //         return DataTable::of($builder)
+    //             ->filter(function ($builder) {
+    //                 $builder->where('ruang.deleted_at IS NOT NULL');
+    //             })
+    //             ->postQuery(function ($builder) {
+    //                 $builder->orderBy('ruang.id', 'desc');
+    //             })
+    //             ->addNumbering('no')
+    //             ->add('action', function ($row) {
+    //                 return '
+    //                 <div class="btn-group mb-1">
+    //                 <button type="button" class="btn btn-success dropdown-toggle me-1" data-bs-toggle="dropdown" aria-expanded="false">
+    //                     Action
+    //                 </button>
+    //                 <ul class="dropdown-menu shadow-lg">
+    //                     <li><a class="dropdown-item" onclick="restore(' . $row->id . ', \'' . htmlspecialchars($row->nama_ruang) . '\')"><i class="fa fa-undo"></i> Pulihkan</a></li>
+    //                     <li><a class="dropdown-item" onclick="hapuspermanen(' . $row->id . ', \'' . htmlspecialchars($row->nama_ruang) . '\')"><i class="fa fa-trash-o"></i> Hapus Permanen</a></li>
+    //                 </ul>
+    //                 </div>
+    //                 ';
+    //             })
+    //             ->toJson(true);
+    //     } else {
+    //         exit('Maaf tidak dapat diproses');
+    //     }
+    // }
 
     public function restoredata($id = null)
     {
@@ -121,14 +140,27 @@ class RuangController extends BaseController
                     ->set($restoredata)
                     ->where('deleted_at is NOT NULL', NULL, FALSE)
                     ->update();
+                $jmldata = $this->db->affectedRows();
 
-                $msg = [
-                    'sukses' => 'Data ruangan berhasil dipulihkan semuanya',
-                ];
+                if ($jmldata > 0) {
+                    $msg = [
+                        'sukses' => "$jmldata data ruangan berhasil dipulihkan semuanya",
+                    ];
+                } else {
+                    $msg = [
+                        'error' => 'Tidak ada data ruangan yang bisa dipulihkan'
+                    ];
+                }
             }
 
             return json_encode($msg);
-        } else exit("Maaf tidak dapat diproses");
+        } else {
+            $data = [
+                'title' => 'Error 404',
+                'msg' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/mazer/error-404', $data);
+        }
     }
 
     public function hapuspermanen($id = null)
@@ -144,13 +176,20 @@ class RuangController extends BaseController
                 ];
             } else {
                 $this->ruang->purgeDeleted();
+                $jmlhapus = $this->ruang->db->affectedRows();
                 $msg = [
-                    'sukses' => "Data ruangan berhasil dihapus secara permanen",
+                    'sukses' => "$jmlhapus data ruangan berhasil dihapus secara permanen",
                 ];
             }
 
             return json_encode($msg);
-        } else exit("Maaf tidak dapat diproses");
+        } else {
+            $data = [
+                'title' => 'Error 404',
+                'msg' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/mazer/error-404', $data);
+        }
     }
 
     // public function ceknamaruang()
@@ -224,7 +263,11 @@ class RuangController extends BaseController
             }
             echo json_encode($msg);
         } else {
-            exit('Maaf tidak dapat diproses');
+            $data = [
+                'title' => 'Error 404',
+                'msg' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/mazer/error-404', $data);
         }
     }
 
@@ -291,7 +334,11 @@ class RuangController extends BaseController
             }
             echo json_encode($msg);
         } else {
-            exit('Maaf tidak dapat diproses');
+            $data = [
+                'title' => 'Error 404',
+                'msg' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/mazer/error-404', $data);
         }
     }
 

@@ -8,7 +8,7 @@ class Kategori extends Model
 {
     protected $table = "kategori";
     protected $primaryKey = 'id';
-    protected $allowedFields = ['id', 'kd_kategori', 'nama_kategori', 'deskripsi', 'created_at', 'created_by', 'updated_by', 'deleted_by', 'deleted_at'];
+    protected $allowedFields = ['id', 'kd_kategori', 'nama_kategori', 'deskripsi', 'jenis', 'created_at', 'created_by', 'updated_by', 'deleted_by', 'deleted_at'];
     protected $useSoftDeletes   = true;
     protected $useTimestamps = false;
     protected $createdField  = 'created_at';

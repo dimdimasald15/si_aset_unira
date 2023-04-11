@@ -4,40 +4,36 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class Petugas extends Migration
+class Kategori extends Migration
 {
     public function up()
     {
         $this->forge->addField([
             'id' => [
                 'type' => 'int',
-                'constraint' => '11',
+                'constraint' => 11,
                 'auto_increment' => TRUE,
             ],
-            'nip' => [
+            'kd_kategori' => [
                 'type' => 'varchar',
-                'constraint' => '20',
-                'unique' => TRUE,
+                'constraint' => 50,
             ],
-            'email' => [
+            'nama_kategori' => [
                 'type' => 'varchar',
-                'constraint' => '100',
+                'constraint' => 255,
             ],
-            'username' => [
-                'type' => 'varchar',
-                'constraint' => '100',
+            'deskripsi' => [
+                'type' => 'text',
+                'null' => true,
             ],
-            'password' => [
-                'type' => 'varchar',
-                'constraint' => '100',
-            ],
-            'role' => [
-                'type' => 'varchar',
-                'constraint' => '50',
+            'jenis' => [
+                'type' => 'ENUM',
+                'constraint' => ['Barang Tetap', 'Barang Persediaan'],
+                'null' => false
             ],
             'created_by' => [
                 'type' => 'varchar',
-                'constraint' => '50',
+                'constraint' => 50,
                 'null' => TRUE,
             ],
             'created_at' => [
@@ -46,7 +42,7 @@ class Petugas extends Migration
             ],
             'updated_by' => [
                 'type' => 'varchar',
-                'constraint' => '50',
+                'constraint' => 50,
                 'null' => TRUE,
             ],
             'updated_at' => [
@@ -55,7 +51,7 @@ class Petugas extends Migration
             ],
             'deleted_by' => [
                 'type' => 'varchar',
-                'constraint' => '50',
+                'constraint' => 50,
                 'null' => TRUE,
             ],
             'deleted_at' => [
@@ -64,11 +60,11 @@ class Petugas extends Migration
             ],
         ]);
         $this->forge->addPrimaryKey('id');
-        $this->forge->createTable('petugas');
+        $this->forge->createTable('kategori');
     }
 
     public function down()
     {
-        $this->forge->dropTable('petugas');
+        $this->forge->dropTable('kategori');
     }
 }

@@ -12,7 +12,7 @@
   <meta name="keywords" content="sistem informasi, manajemen aset, labelling assets, qr code, perguruan tinggi, UNIRA, malang, universitas">
   <meta name="description" content="Sistem Informasi Manajemen Aset Universitas Islam Raden Rahmat Malang">
   <!-- Schema.org markup for Google+ -->
-  <meta itemprop="name" content="Tracer Study">
+  <meta itemprop="name" content="Sistem Informasi Manajemen Aset">
   <meta itemprop="description" content="Sistem Informasi Manajemen Aset Universitas Islam Raden Rahmat Malang">
   <meta itemprop="image" content="<?= base_url('assets/images/unira.png') ?>">
   <!-- Favicon -->
@@ -37,12 +37,16 @@
 
   <!-- fontawesome -->
   <link href="<?= base_url() ?>/assets/vendors/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  <!-- <link href="<?= base_url() ?>/assets/vendors/fontawesome/all.min.css" rel="stylesheet" type="text/css"> -->
   <script src="<?= base_url() ?>/assets/vendors/jquery/jquery.min.js"></script>
   <!-- Select2 -->
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
-  <!-- <script src="https://unpkg.com/feather-icons"></script> -->
   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.4/css/dataTables.bootstrap5.min.css">
+
+  <!-- Cropper.js -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" integrity="sha512-cyzxRvewl+FOKTtpBzYjW6x6IAYUCZy3sGP40hn+DQkqeluGRCax7qztK2ImL64SA+C7kVWdLI6wvdlStawhyw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js" integrity="sha512-6lplKUSl86rUVprDIjiW8DuOniNX8UDoRATqZSds/7t6zCQZfaCe3e5zcGaQwxa8Kpn5RTM9Fvl3X2lLV4grPQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
 </head>
 
@@ -128,18 +132,18 @@
   </div>
   <!-- Core -->
   <script src="<?= base_url() ?>/assets/vendors/perfect-scrollbar/perfect-scrollbar.min.js"></script>
-  <script src="<?= base_url() ?>/assets/js/bootstrap.bundle.min.js"></script>
+  <script src="<?= base_url() ?>assets/js/bootstrap.bundle.min.js"></script>
   <script src="<?= base_url() ?>/assets/js/main.js"></script>
 
   <!-- Optional Js -->
   <script src="<?= base_url() ?>/assets/vendors/DataTables/datatables.min.js"></script>
+  <!-- <script src="<?= base_url() ?>/assets/vendors/fontawesome/all.min.js"></script> -->
   <script src="<?= base_url() ?>/assets/vendors/DataTables/DataTables-1.13.3/js/jquery.dataTables.min.js"></script>
   <script src="<?= base_url() ?>/assets/vendors/sweetalert2/sweetalert2.all.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment-with-locales.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/locale/id.min.js" integrity="sha512-he8U4ic6kf3kustvJfiERUpojM8barHoz0WYpAUDWQVn61efpm3aVAD8RWL8OloaDDzMZ1gZiubF9OSdYBqHfQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <?= $this->renderSection('javascript') ?>
-  <!-- <script>
-    feather.replace()
-  </script> -->
 </body>
 
 </html>

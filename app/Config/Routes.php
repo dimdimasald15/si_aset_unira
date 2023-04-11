@@ -42,7 +42,7 @@ $routes->group('admin', ['filter' => 'ceklogin'], function ($routes) {
 $routes->group('admin/ruang', ['filter' => 'ceklogin'], function ($routes) {
     $routes->get('/', 'RuangController::index');
     $routes->get('tampildataruang', 'RuangController::listdataruang');
-    $routes->get('tampildatarestore', 'RuangController::listdatarestore');
+    $routes->get('tampildatarestore', 'RuangController::listdataruang');
     $routes->post('simpan', 'RuangController::simpandata');
     $routes->post('update/(:any)', 'RuangController::updatedata/$1');
     $routes->post('hapus/(:any)', 'RuangController::hapusdata/$1');
@@ -61,23 +61,47 @@ $routes->group('admin/gedung', ['filter' => 'ceklogin'], function ($routes) {
     $routes->post('hapus/(:any)', 'GedungController::hapusdata/$1');
 });
 
-$routes->group('admin/kategori', ['filter' => 'ceklogin'], function ($routes) {
-    $routes->get('/', 'KategoriController::index');
+$routes->group('admin/kategori-tetap', ['filter' => 'ceklogin'], function ($routes) {
+    $routes->get('/', 'KategoriController::indexkategoritetap');
     $routes->get('listdatakategori', 'KategoriController::listdataKategori');
     $routes->post('getnamakategori', 'KategoriController::getnamakategori');
     $routes->post('simpan', 'KategoriController::simpandata');
     $routes->post('update/(:any)', 'KategoriController::updatedata/$1');
     $routes->post('hapus/(:any)', 'KategoriController::hapusdata/$1');
+    $routes->get('tampildatarestore', 'KategoriController::listdatakategori');
+    $routes->post('restore/(:any)', 'KategoriController::restoredata/$1');
+    $routes->match(['get', 'post'], 'restore', 'KategoriController::restoredata');
+    $routes->post('hapuspermanen/(:any)', 'KategoriController::hapuspermanen/$1');
+    $routes->match(['get', 'post'], 'hapuspermanen', 'KategoriController::hapuspermanen');
 });
 
-$routes->group('admin/barang', ['filter' => 'ceklogin'], function ($routes) {
-    $routes->get('/', 'BarangController::index');
+$routes->group('admin/kategori-persediaan', ['filter' => 'ceklogin'], function ($routes) {
+    $routes->get('/', 'KategoriController::indexkategoripersediaan');
+    $routes->get('listdatakategori', 'KategoriController::listdataKategori');
+    $routes->post('getnamakategori', 'KategoriController::getnamakategori');
+    $routes->post('simpan', 'KategoriController::simpandata');
+    $routes->post('update/(:any)', 'KategoriController::updatedata/$1');
+    $routes->post('hapus/(:any)', 'KategoriController::hapusdata/$1');
+    $routes->get('tampildatarestore', 'KategoriController::listdatakategori');
+    $routes->post('restore/(:any)', 'KategoriController::restoredata/$1');
+    $routes->match(['get', 'post'], 'restore', 'KategoriController::restoredata');
+    $routes->post('hapuspermanen/(:any)', 'KategoriController::hapuspermanen/$1');
+    $routes->match(['get', 'post'], 'hapuspermanen', 'KategoriController::hapuspermanen');
+});
+
+$routes->group('admin/barang-tetap', ['filter' => 'ceklogin'], function ($routes) {
+    $routes->get('/', 'BarangController::indexbarangtetap');
     $routes->get('listdatabarang', 'BarangController::listdatabarang');
     $routes->match(['get', 'post'], 'pilihkategori', 'BarangController::pilihkategori');
     // $routes->post('getnamabarang', 'BarangController::getnamabarang');
-    // $routes->post('simpan', 'BarangController::simpandata');
-    // $routes->post('update/(:any)', 'BarangController::updatedata/$1');
-    // $routes->post('hapus/(:any)', 'BarangController::hapusdata/$1');
+    $routes->post('simpan', 'BarangController::simpandata');
+    $routes->post('update/(:any)', 'BarangController::updatedata/$1');
+    $routes->post('hapus/(:any)', 'BarangController::hapusdata/$1');
+    $routes->get('tampildatarestore', 'BarangController::listdatabarang');
+    $routes->post('restore/(:any)', 'BarangController::restoredata/$1');
+    $routes->match(['get', 'post'], 'restore', 'BarangController::restoredata');
+    $routes->post('hapuspermanen/(:any)', 'BarangController::hapuspermanen/$1');
+    $routes->match(['get', 'post'], 'hapuspermanen', 'BarangController::hapuspermanen');
 });
 
 $routes->group('admin/pengguna', ['filter' => 'ceklogin'], function ($routes) {

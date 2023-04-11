@@ -53,7 +53,11 @@ class PenggunaController extends BaseController
                 })
                 ->toJson(true);
         } else {
-            exit('Maaf tidak dapat diproses');
+            $data = [
+                'title' => 'Error 404',
+                'msg' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/mazer/error-404', $data);
         }
     }
 
@@ -129,7 +133,11 @@ class PenggunaController extends BaseController
             }
             echo json_encode($msg);
         } else {
-            exit('Maaf tidak dapat diproses');
+            $data = [
+                'title' => 'Error 404',
+                'msg' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/mazer/error-404', $data);
         }
     }
 
@@ -197,7 +205,11 @@ class PenggunaController extends BaseController
             }
             echo json_encode($msg);
         } else {
-            echo 'Maaf tidak dapat diproses';
+            $data = [
+                'title' => 'Error 404',
+                'msg' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/mazer/error-404', $data);
         }
     }
 
@@ -220,7 +232,11 @@ class PenggunaController extends BaseController
 
             echo json_encode($data);
         } else {
-            exit('Maaf tidak dapat diproses');
+            $data = [
+                'title' => 'Error 404',
+                'msg' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/mazer/error-404', $data);
         }
     }
 
@@ -241,6 +257,12 @@ class PenggunaController extends BaseController
                 ];
                 echo json_encode($msg);
             }
-        } else exit('Maaf tidak dapat diproses');
+        } else {
+            $data = [
+                'title' => 'Error 404',
+                'msg' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/mazer/error-404', $data);
+        }
     }
 }

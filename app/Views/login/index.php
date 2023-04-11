@@ -25,30 +25,21 @@
           </div>
           <h1 class="auth-title">Login.</h1>
           <p class="auth-subtitle mb-5">Selamat datang di Sistem Informasi Manajemen Aset
-            <!-- <form action="auth/login" class="formLogin"> -->
             <?= form_open('auth/login', ['class' => 'formLogin']) ?>
             <?= csrf_field() ?>
           <div class="form-group position-relative mb-4">
-            <!-- <input type="email" class="form-control form-control-xl" placeholder="Email" name="email" id="email" autofocus>
-            <div class="invalid-feedback erremail"></div>
-            <div class="form-control-icon">
-              <i class="bi bi-person"></i>
-            </div> -->
             <div class="input-group has-validation">
               <span class="input-group-text"><i class="bi bi-envelope"></i></span>
               <input type="email" class="form-control form-control-xl" placeholder="Email" name="email" id="email" aria-describedby="inputGroupPrepend" required>
               <div class="invalid-feedback erremail"></div>
             </div>
           </div>
-          <!-- <div class="form-group position-relative has-icon-left mb-4"> -->
           <div class="form-group position-relative mb-4">
             <div class="input-group has-validation">
               <span class="input-group-text">
                 <i class="bi bi-shield-lock"></i>
               </span>
               <input type="password" class="form-control form-control-xl" placeholder="Password" name="password" id="password">
-              <!-- <div class="form-control-icon"> -->
-              <!-- </div> -->
               <div class="invalid-feedback errpassword"></div>
             </div>
           </div>
@@ -78,7 +69,6 @@
 </body>
 <script>
   $(document).ready(function() {
-    // console.log($('.formLogin').attr('action'));
     $('.formLogin').submit(function(e) {
       e.preventDefault();
       $.ajax({
