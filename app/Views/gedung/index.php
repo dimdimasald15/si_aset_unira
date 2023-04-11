@@ -23,8 +23,8 @@
     </div>
   </div>
   <section class="section">
-    <div class="card mb-3" id="tampilformtambahgedung" style="display:none">
-      <div class="card-header">
+    <div class="card shadow mb-3" id="tampilformtambahgedung" style="display:none">
+      <div class="card-header shadow-sm">
         <div class="row">
           <h4 class="card-title">Tambah Data Gedung</h4>
         </div>
@@ -67,7 +67,7 @@
                 <div class="row mb-1">
                   <div class="input-group mb-3">
                     <label class="input-group-text" for="inputGroupSelect01"><i class="bi bi-layers"></i></label>
-                    <select name="kat_id" class="form-select p-2" id="katid" style="width: 400px;"></select>
+                    <select name="kat_id" class="form-select p-2" id="katid" value="Gedung" readonly></select>
                     <div class="invalid-feedback errkatid"></div>
                   </div>
                 </div>
@@ -83,8 +83,8 @@
     </div>
   </section>
 </div>
-<div class="card mb-3 datalist-gedung">
-  <div class="card-header">
+<div class="card shadow mb-3 datalist-gedung">
+  <div class="card-header shadow-sm">
     <div class="row justify-content-between align-items-center">
       <div class="col-lg-9">
         <h4 class="card-title">Data Gedung</h4>
@@ -156,7 +156,6 @@
     formtambah.find("input[name='nama_gedung']").val(nama_gedung)
     formtambah.find("input[name='prefix']").val(prefix)
     formtambah.find("select[name*='kat_id']").html('<option value = "' + kat_id + '" selected >' + nama_kategori + '</option>');
-
   }
 
   function clearForm() {
@@ -219,6 +218,19 @@
     });
   }
 
+  function formatResult(data) {
+    if (!data.id) {
+      return data.text;
+    }
+
+    var $result = $(
+      `<span><i class="bi bi-layers"> ${data.text}</i></span>`
+    );
+
+    return $result;
+  }
+
+
   $(document).ready(function() {
     formtambah.hide();
 
@@ -272,7 +284,7 @@
 
     $('#katid').select2({
       placeholder: 'Piih Nama Kategori',
-      minimumInputLength: 3,
+      minimumInputLength: 1,
       allowClear: true,
       width: "90%",
       ajax: {
@@ -290,7 +302,8 @@
           };
         },
         cache: true
-      }
+      },
+      templateResult: formatResult,
     });
 
     $('#formTambahGedung').submit(function(e) {
@@ -357,6 +370,26 @@
 
     })
 
+    $('#namagedung').on('input', function() {
+      if ($(this).val().trim() !== '') {
+        $(this).removeClass('is-invalid');
+        $('.errnamagedung').html('');
+      }
+    });
+
+    $('#prefix').on('input', function() {
+      if ($(this).val().trim() !== '') {
+        $(this).removeClass('is-invalid');
+        $('.errprefix').html('');
+      }
+    });
+
+    $('#katid').on('change', function() {
+      if ($(this).val() !== '') {
+        $(this).removeClass('is-invalid');
+        $('.errkatid').html('');
+      }
+    });
 
   });
 </script>

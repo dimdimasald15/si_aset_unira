@@ -24,8 +24,8 @@
     </div>
   </div>
   <section class="section">
-    <div class="card shadow-3 mb-3" id="tampilformtambah" style="display:none">
-      <div class="card-header">
+    <div class="card shadow mb-3" id="tampilformtambah" style="display:none">
+      <div class="card-header shadow-sm">
         <div class="row">
           <h4 class="card-title">Tambah Data Ruangan</h4>
         </div>
@@ -37,49 +37,48 @@
             <div class="row">
               <div class="col-12">
                 <input type="hidden" name="id" id="id">
-                <div class="form-group has-icon-left">
-                  <label for="nama_ruang mb-2">Nama Ruangan</label>
-                  <div class="position-relative">
+                <!-- <div class="form-group has-icon-left"> -->
+                <div class="row mb-1">
+                  <label for="namaruang">Nama Ruang</label>
+                </div>
+                <div class="row mb-1">
+                  <div class="input-group mb-3">
+                    <span class="input-group-text" id="basic-addon1"><i class="bi bi-door-closed"></i></span>
                     <input type="text" class="form-control" placeholder="Nama ruang" id="namaruang" name="nama_ruang">
-                    <div class="form-control-icon position-absolute top-50 start-0">
-                      <i class="bi bi-door-closed"></i>
-                    </div>
-                    <!-- <div class="text-danger mt-2" id="err-ceknamaruang">
-                    </div> -->
                     <div class="invalid-feedback errnamaruang"></div>
                   </div>
                 </div>
               </div>
               <div class="col-12">
-                <div class="form-group has-icon-left">
-                  <label for="nama-lantai mb-2">Nama Lantai</label>
-                  <div class="position-relative">
-                    <select name="nama_lantai" class="form-select" placeholder="Nama lantai" style="padding-left: 2.6rem !important;" id="namalantai">
+                <div class="row mb-1">
+                  <label for="namalantai mb-2">Nama Lantai</label>
+                </div>
+                <div class="row mb-1">
+                  <div class="input-group mb-3">
+                    <label class="input-group-text" for="inputGroupSelect01"><i class="bi bi-layers"></i></label>
+                    <select name="nama_lantai" class="form-select" placeholder="Nama lantai" id="namalantai">
                       <option value="" selected>Pilih Lantai</option>
                       <option value="1">Lantai 1</option>
                       <option value="2">Lantai 2</option>
                       <option value="3">Lantai 3</option>
                     </select>
-                    <div class="form-control-icon">
-                      <i class="bi bi-layers"></i>
-                    </div>
                     <div class="invalid-feedback errnamalantai"></div>
                   </div>
                 </div>
               </div>
               <div class="col-12">
-                <div class="form-group has-icon-left">
-                  <label for="nama-gedung mb-2">Nama Gedung</label>
-                  <div class="position-relative">
-                    <select class="form-select" style="padding-left: 2.6rem !important;" name="gedung_id" id="namagedung">
+                <div class="row mb-1">
+                  <label for="namagedung mb-2">Nama Gedung</label>
+                </div>
+                <div class="row mb-1">
+                  <div class="input-group mb-3">
+                    <label class="input-group-text" for="inputGroupSelect01"><i class="bi bi-building"></i></label>
+                    <select class="form-select" name="gedung_id" id="namagedung">
                       <option value="" selected>Pilih Gedung</option>
                       <option value="1">Gedung KH KH. Mahmud Zubaidi (A)</option>
                       <option value="2">Gedung KH. M. Tolchah Hasan (B)</option>
                       <option value="3">Gedung KH. M. Tolchah Hasan (C)</option>
                     </select>
-                    <div class="form-control-icon">
-                      <i class="bi bi-building"></i>
-                    </div>
                     <div class="invalid-feedback errnamagedung"></div>
                   </div>
                 </div>
@@ -95,13 +94,13 @@
     </div>
   </section>
 </div>
-<div class="card shadow-sm mb-3 datalist-ruangan">
-  <div class="card-header">
+<div class="card shadow mb-3 datalist-ruangan">
+  <div class="card-header shadow-sm">
     <div class="row justify-content-between align-items-center">
       <div class="col-lg-7">
         <h4 class="card-title">Data Ruangan</h4>
       </div>
-      <div class="col-lg-5 d-flex flex-row mb-3 justify-content-end">
+      <div class="col-lg-5 d-flex flex-row justify-content-end">
         <div class="col-lg-auto btn-dataruang">
           <button type="button" class="btn btn-success" id="btn-tambahruang">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-door-closed" viewBox="0 0 16 16">
@@ -110,7 +109,7 @@
             </svg>
             Tambah Ruangan
           </button>
-          <button type="button" class="btn btn-danger" id="btn-restore"><i class="fa fa-trash-o"></i>Trash</button>
+          <button type="button" class="btn btn-danger" id="btn-restore"><i class="fa fa-trash-o"></i> Trash</button>
         </div>
         <div class="col-lg-auto btn-datarestoreruang" style="display:none;">
           <button class="btn btn-success" onclick="restoreall()"><i class="fa fa-undo"></i> Pulihkan semua</button>
@@ -169,9 +168,10 @@
 <script>
   let formtambah = $('#tampilformtambah');
   let saveMethod, globalId;
+  var datarestore = '';
+  var dataruang = '';
 
   function edit(id) {
-    console.log('edit :' + id);
     clear_is_invalid();
     formtambah.show(500);
     saveMethod = "update";
@@ -185,7 +185,6 @@
       url: "<?= site_url('ruangcontroller/get_ruang_by_id/') ?>" + id,
       dataType: "json",
       success: function(response) {
-        console.log(response);
         isiForm(response);
       }
     });
@@ -246,7 +245,6 @@
   }
 
   function restore(id, namaruang) {
-    // console.log('restore : ' + id);
     Swal.fire({
       title: `Memulihkan data ${namaruang}?`,
       icon: 'warning',
@@ -288,41 +286,44 @@
   }
 
   function restoreall() {
-    Swal.fire({
-      title: `Apakah anda ingin memulihkan semua data yang telah terhapus?`,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Ya!',
-      cancelButtonText: 'Batalkan',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        $.ajax({
-          // type: "post",
-          url: "ruang/restore",
-          dataType: 'json',
-          success: function(response) {
-            if (response.sukses) {
-              Swal.fire(
-                'Berhasil', response.sukses, 'success'
-              ).then((result) => {
-                location.reload();
-              })
-            } else if (response.error) {
-              Swal.fire(
-                'Gagal!',
-                response.error,
-                'error'
-              );
+    var jumlahbaris = $('#table-restore').DataTable().rows();
+    if (jumlahbaris.count() === 0) { // jika tidak ada data
+      Swal.fire(
+        'Gagal!',
+        'Tidak ada data ruangan yang dapat dipulihkan',
+        'error'
+      );
+    } else {
+      Swal.fire({
+        title: `Apakah anda ingin memulihkan semua data yang telah terhapus?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya!',
+        cancelButtonText: 'Batalkan',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            // type: "post",
+            url: "ruang/restore",
+            dataType: 'json',
+            success: function(response) {
+              if (response.sukses) {
+                Swal.fire(
+                  'Berhasil', response.sukses, 'success'
+                ).then((result) => {
+                  location.reload();
+                })
+              }
+            },
+            error: function(xhr, ajaxOptions, thrownError) {
+              alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
             }
-          },
-          error: function(xhr, ajaxOptions, thrownError) {
-            alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
-          }
-        });
-      }
-    });
+          });
+        }
+      });
+    }
   }
 
   function clearForm() {
@@ -334,7 +335,6 @@
     if (formtambah.find('input').hasClass('is-invalid') || formtambah.find('select').hasClass('is-invalid')) {
       formtambah.find('input').removeClass('is-invalid');
       formtambah.find('select').removeClass('is-invalid');
-      $('.form-control-icon').css("transform", "translate(0,-15px)");
     }
   }
 
@@ -348,19 +348,14 @@
     $('.datalist-ruangan h4').html('Data Ruangan');
     $('.btn-dataruang').show();
     $('.btn-datarestoreruang').hide();
-    // $('.backtoruang').hide();
-    // $('#btn-restore').show();
   }
-
-  var datarestore = '';
-  var dataruang = '';
 
   $(document).ready(function() {
     dataruang = $('#table-ruang').DataTable({
       processing: true,
       serverSide: true,
       ajax: {
-        url: 'ruang/tampildataruang',
+        url: 'ruang/tampildataruang?isRestore=0',
       },
       order: [],
       columns: [{
@@ -385,21 +380,20 @@
         {
           data: 'created_at',
           render: function(data, type, full, meta) {
-            var date = new Date(data * 1000);
-            var day = date.getDate();
-            var month = date.getMonth() + 1;
-            var year = date.getFullYear();
-            var hours = date.getHours();
-            var minutes = "0" + date.getMinutes();
-            var seconds = "0" + date.getSeconds();
+            var dateParts = data.split(/[- :]/);
+            var year = parseInt(dateParts[0]);
+            var month = parseInt(dateParts[1]) - 1;
+            var day = parseInt(dateParts[2]);
+            var hours = parseInt(dateParts[3]);
+            var minutes = parseInt(dateParts[4]);
+            var seconds = parseInt(dateParts[5]);
             var options = {
               weekday: 'long',
               year: 'numeric',
               month: 'long',
               day: 'numeric'
             };
-            var formattedDate = new Date(data * 1000).toLocaleDateString('id-ID', options);
-
+            var formattedDate = new Date(year, month, day, hours, minutes, seconds).toLocaleDateString('id-ID', options);
             return formattedDate;
           }
         },
@@ -447,10 +441,8 @@
         complete: function() {
           $('.btnsimpan').removeAttr('disable');
           $('.btnsimpan').html('Simpan');
-          $('.form-control-icon').css("transform", "translate(0,-27px)");
         },
         success: function(response) {
-          console.log(response);
           if (response.error) {
             if (response.error.namaruang) {
               $('#namaruang').addClass('is-invalid');
@@ -481,7 +473,6 @@
               'success'
             ).then((result) => {
               dataruang.ajax.reload();
-              $('.form-control-icon').css("transform", "translate(0,-15px)");
             })
           }
         },
@@ -493,6 +484,26 @@
       return false;
     })
 
+    $('#namaruang').on('input', function() {
+      if ($(this).val().trim() !== '') {
+        $(this).removeClass('is-invalid');
+        $('.errnamaruang').html('');
+      }
+    });
+
+    $('#namalantai').on('change', function() {
+      if ($(this).val() !== '') {
+        $(this).removeClass('is-invalid');
+        $('.errnamalantai').html('');
+      }
+    });
+    $('#namagedung').on('change', function() {
+      if ($(this).val() !== '') {
+        $(this).removeClass('is-invalid');
+        $('.errnamagedung').html('');
+      }
+    });
+
     $('#btn-restore').on('click', function() {
       $('.table-ruang').hide();
       $('.table-restore').show();
@@ -500,13 +511,11 @@
       formtambah.hide();
       $('.btn-dataruang').hide();
       $('.btn-datarestoreruang').show();
-      // $('#btn-restore').hide();
-      // console.log($('.datalist-ruangan h4').html());
       datarestore = $('#table-restore').DataTable({
         processing: true,
         serverSide: true,
         ajax: {
-          url: 'ruang/tampildatarestore',
+          url: 'ruang/tampildatarestore?isRestore=1',
         },
         order: [],
         columns: [{
@@ -559,7 +568,6 @@
 
 
   function hapuspermanen(id, namaruang) {
-    console.log(datarestore);
     Swal.fire({
       title: `Menghapus data ${namaruang} secara permanen?`,
       icon: 'warning',
@@ -579,7 +587,6 @@
           },
           dataType: 'json',
           success: function(response) {
-            console.log(response);
             if (response.sukses) {
               Swal.fire(
                 'Berhasil', response.sukses, 'success'
@@ -603,44 +610,51 @@
   }
 
   function hapuspermanenall() {
-    console.log(datarestore);
-    Swal.fire({
-      title: `Bersihkan semua data secara permanen?`,
-      icon: 'warning',
-      text: 'Data akan terhapus selamanya dan tidak dapat dipulihkan lagi!',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Ya!',
-      cancelButtonText: 'Batalkan',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        $.ajax({
-          type: "post",
-          url: "ruang/hapuspermanen",
-          dataType: 'json',
-          success: function(response) {
-            console.log(response);
-            if (response.sukses) {
-              Swal.fire(
-                'Berhasil', response.sukses, 'success'
-              ).then((result) => {
-                datarestore.ajax.reload();
-              })
-            } else if (response.error) {
-              Swal.fire(
-                'Gagal!',
-                response.error,
-                'error'
-              );
+    var jumlahbaris = $('#table-restore').DataTable().rows();
+    if (jumlahbaris.count() === 0) { // jika tidak ada data
+      Swal.fire(
+        'Gagal!',
+        'Tidak ada data ruangan yang dapat dihapus secara permanen',
+        'error'
+      );
+    } else {
+      Swal.fire({
+        title: `Bersihkan semua data secara permanen?`,
+        icon: 'warning',
+        text: 'Data akan terhapus selamanya dan tidak dapat dipulihkan lagi!',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya!',
+        cancelButtonText: 'Batalkan',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            type: "post",
+            url: "ruang/hapuspermanen",
+            dataType: 'json',
+            success: function(response) {
+              if (response.sukses) {
+                Swal.fire(
+                  'Berhasil', response.sukses, 'success'
+                ).then((result) => {
+                  datarestore.ajax.reload();
+                })
+              } else if (response.error) {
+                Swal.fire(
+                  'Gagal!',
+                  response.error,
+                  'error'
+                );
+              }
+            },
+            error: function(xhr, ajaxOptions, thrownError) {
+              alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
             }
-          },
-          error: function(xhr, ajaxOptions, thrownError) {
-            alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
-          }
-        });
-      }
-    });
+          });
+        }
+      });
+    }
   }
 </script>
 <?= $this->endSection() ?>

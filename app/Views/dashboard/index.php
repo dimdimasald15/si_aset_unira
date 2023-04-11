@@ -19,11 +19,11 @@
     </div>
   </div>
   <section class="section">
-    <div class="card">
-      <div class="card-header">
+    <div class="card shadow">
+      <div class="card-header shadow-sm">
         <h4 class="card-title">Example Content</h4>
       </div>
-      <div class="card-body">
+      <div class="card-body mt-3">
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Consectetur quas omnis laudantium tempore
         exercitationem, expedita aspernatur sed officia asperiores unde tempora maxime odio reprehenderit
         distinctio incidunt! Vel aspernatur dicta consequatur!

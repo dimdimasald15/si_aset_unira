@@ -53,7 +53,7 @@ class Satuan extends Migration
                 'null' => TRUE,
             ],
         ]);
-        $this->forge->addPrimaryKey('id', true);
+        $this->forge->addPrimaryKey('id');
         $this->forge->createTable('satuan');
     }
 
