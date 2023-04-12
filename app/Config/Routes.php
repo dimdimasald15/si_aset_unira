@@ -87,6 +87,14 @@ $routes->group('admin/pengguna', ['filter' => 'ceklogin'], function ($routes) {
     $routes->post('update/(:any)', 'PenggunaController::updatedata/$1');
     $routes->post('hapus/(:any)', 'PenggunaController::hapusdata/$1');
 });
+
+$routes->group('admin/profile', ['filter' => 'ceklogin'], function ($routes) {
+    $routes->get('/', 'ProfileController::index');
+    $routes->post('ubahpassword', 'ProfileController::ubahpassword');
+    $routes->post('gantifoto', 'ProfileController::gantifoto');
+});
+
+
 /*
  * --------------------------------------------------------------------
  * Additional Routing

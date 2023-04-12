@@ -50,7 +50,10 @@
               <!-- <div class="form-control-icon"> -->
               <!-- </div> -->
               <div class="invalid-feedback errpassword"></div>
+
             </div>
+            <input type="checkbox" id="show-password" class="m-1">
+            <label for="show-password"> Show password </label>
           </div>
           <!-- <div class="form-check form-check-lg d-flex align-items-end">
               <input class="form-check-input me-2" type="checkbox" value="" id="flexCheckDefault">
@@ -78,6 +81,15 @@
 </body>
 <script>
   $(document).ready(function() {
+
+    $('#show-password').click(function() {
+      if ($(this).is(':checked')) {
+        $('#password').attr('type', 'text');
+      } else {
+        $('#password').attr('type', 'password');
+      }
+    });
+
     // console.log($('.formLogin').attr('action'));
     $('.formLogin').submit(function(e) {
       e.preventDefault();
