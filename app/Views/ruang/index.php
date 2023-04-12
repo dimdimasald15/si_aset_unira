@@ -149,7 +149,7 @@
             <th>Prefix Gedung</th>
             <th>Nama Gedung</th>
             <th>Created By</th>
-            <th>Created At </th>
+            <th>Created At</th>
             <th>Action</th>
           </tr>
         </thead>

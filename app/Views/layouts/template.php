@@ -107,14 +107,11 @@
                   <li>
                     <h6 class="dropdown-header">Hello, <?= $_SESSION['username'] ?></h6>
                   </li>
-                  <li><a class="dropdown-item" href="#"><i class="icon-mid bi bi-person me-2"></i> My
+                  <li><a class="dropdown-item" href="profile"><i class="icon-mid bi bi-person me-2"></i> My
                       Profile</a></li>
-                  <li><a class="dropdown-item" href="#"><i class="icon-mid bi bi-gear me-2"></i>
+                  <li><a class="dropdown-item" href="settings"><i class="icon-mid bi bi-gear me-2"></i>
                       Settings</a></li>
-                  <li><a class="dropdown-item" href="#"><i class="icon-mid bi bi-wallet me-2"></i>
-                      Wallet</a></li>
-                  <li>
-                    <hr class="dropdown-divider">
+                  <hr class="dropdown-divider">
                   </li>
                   <li><a class="dropdown-item" href="<?= site_url('logout') ?>"><i class="icon-mid bi bi-box-arrow-left me-2"></i> Logout</a></li>
                 </ul>

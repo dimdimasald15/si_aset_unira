@@ -29,59 +29,60 @@
           <h4 class="card-title">Tambah Data Gedung</h4>
         </div>
       </div>
-      <div class="card-body">
-        <form class="form form-vertical" id="formTambahGedung">
-          <?= csrf_field() ?>
-          <div class="form-body">
-            <div class="row">
-              <div class="col-12">
-                <input type="hidden" name="id" id="id">
-                <!-- <div class="form-group has-icon-left"> -->
-                <div class="row mb-1">
-                  <label for="namagedung">Nama Gedung</label>
-                </div>
-                <div class="row mb-1">
-                  <div class="input-group mb-3">
-                    <span class="input-group-text" id="basic-addon1"><i class="bi bi-building"></i></span>
-                    <input type="text" class="form-control" placeholder="Nama gedung" id="namagedung" name="nama_gedung">
-                    <div class="invalid-feedback errnamagedung"></div>
-                  </div>
-                </div>
+    </div>
+    <div class="card-body">
+      <form class="form form-vertical" id="formTambahGedung">
+        <?= csrf_field() ?>
+        <div class="form-body">
+          <div class="row">
+            <div class="col-12">
+              <input type="hidden" name="id" id="id">
+              <!-- <div class="form-group has-icon-left"> -->
+              <div class="row mb-1">
+                <label for="namagedung">Nama Gedung</label>
               </div>
-              <div class="col-12">
-                <div class="row mb-1">
-                  <label for="prefix">Nama Singkat Gedung (Prefix)</label>
+              <div class="row mb-1">
+                <div class="input-group mb-3">
+                  <span class="input-group-text" id="basic-addon1"><i class="bi bi-building"></i></span>
+                  <input type="text" class="form-control" placeholder="Nama gedung" id="namagedung" name="nama_gedung">
+                  <div class="invalid-feedback errnamagedung"></div>
                 </div>
-                <div class="row mb-1">
-                  <div class="input-group mb-3">
-                    <span class="input-group-text" id="basic-addon1"><i class="bi bi-arrow-down-left-square"></i></span>
-                    <input type="text" class="form-control" placeholder="Nama Singkat Gedung" id="prefix" name="prefix">
-                    <div class="invalid-feedback errprefix"></div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-12">
-                <div class="row mb-1">
-                  <label for="katid mb-2">Nama Kategori</label>
-                </div>
-                <div class="row mb-1">
-                  <div class="input-group mb-3">
-                    <label class="input-group-text" for="inputGroupSelect01"><i class="bi bi-layers"></i></label>
-                    <select name="kat_id" class="form-select p-2" id="katid" value="Gedung" readonly></select>
-                    <div class="invalid-feedback errkatid"></div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-12 d-flex justify-content-end">
-                <button type="button" class="btn btn-white my-4 batal-form">Batal</button>
-                <button type="submit" class="btn btn-success my-4 btnsimpan">Simpan</button>
               </div>
             </div>
+            <div class="col-12">
+              <div class="row mb-1">
+                <label for="prefix">Nama Singkat Gedung (Prefix)</label>
+              </div>
+              <div class="row mb-1">
+                <div class="input-group mb-3">
+                  <span class="input-group-text" id="basic-addon1"><i class="bi bi-arrow-down-left-square"></i></span>
+                  <input type="text" class="form-control" placeholder="Nama Singkat Gedung" id="prefix" name="prefix">
+                  <div class="invalid-feedback errprefix"></div>
+                </div>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="row mb-1">
+                <label for="katid mb-2">Nama Kategori</label>
+              </div>
+              <div class="row mb-1">
+                <div class="input-group mb-3">
+                  <label class="input-group-text" for="inputGroupSelect01"><i class="bi bi-layers"></i></label>
+                  <select name="kat_id" class="form-select p-2" id="katid" style="width: 400px;"></select>
+                  <div class="invalid-feedback errkatid"></div>
+                </div>
+              </div>
+            </div>
+            <div class="col-12 d-flex justify-content-end">
+              <button type="button" class="btn btn-white my-4 batal-form">Batal</button>
+              <button type="submit" class="btn btn-success my-4 btnsimpan">Simpan</button>
+            </div>
           </div>
-        </form>
-      </div>
+        </div>
+      </form>
     </div>
-  </section>
+  </div>
+</section>
 </div>
 <div class="card shadow mb-3 datalist-gedung">
   <div class="card-header shadow-sm">

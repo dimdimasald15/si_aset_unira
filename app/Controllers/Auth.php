@@ -82,9 +82,12 @@ class Auth extends BaseController
                         //Jika password benar, maka buat session
                         $login = [
                             'isLoggedIn' => 1,
+                            'id' => $row->id,
+                            'email' => $row->email,
                             'nip' => $row->nip,
                             'username' => $row->username,
                             'role' => $row->role,
+                            'foto' => $row->foto
                         ];
                         $this->session->set($login);
 

@@ -8,7 +8,7 @@ class Pengguna extends Model
 {
     protected $table            = 'petugas';
     protected $primaryKey       = 'id';
-    protected $allowedFields    = ['id', 'nip', 'email', 'username', 'password', 'role', 'created_by', 'created_at', 'update_by', 'update_at', 'deleted_by', 'deleted_at'];
+    protected $allowedFields    = ['id', 'nip', 'email', 'username', 'password', 'role', 'created_by', 'created_at', 'update_by', 'update_at', 'deleted_by', 'deleted_at', 'foto'];
     protected $useSoftDeletes   = true;
     protected $useTimestamps    = false;
     protected $createdField     = 'created_at';
@@ -51,4 +51,19 @@ class Pengguna extends Model
         ];
         $this->update($id, $data);
     }
+
+    public function updatePassword($id, $newPassword)
+    {
+        $builder = $this->db->table($this->table);
+
+        $builder->where('id', $id);
+        $builder->update(['password' => password_hash($newPassword, PASSWORD_DEFAULT)]);
+    }
+
+    // public function updateFoto($id, $fileName)
+    // {
+    //     $this->set('foto', $fileName);
+    //     $this->where('id', $id);
+    //     $this->update();
+    // }
 }
