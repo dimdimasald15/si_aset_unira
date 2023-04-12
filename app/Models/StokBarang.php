@@ -4,11 +4,11 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class Barang extends Model
+class StokBarang extends Model
 {
-    protected $table = "barang";
+    protected $table = "stok_barang";
     protected $primaryKey = 'id';
-    protected $allowedFields = ['id', 'kat_id', 'kode_brg', 'nama_brg', 'merk', 'warna', 'asal', 'harga_beli', 'harga_jual', 'kondisi', 'tindakan_kerusakan', 'toko', 'instansi', 'no_seri', 'no_dokumen', 'foto_barang', 'tgl_pembelian', 'created_at', 'created_by', 'updated_by', 'updated_at', 'deleted_by', 'deleted_at'];
+    protected $allowedFields = ['id', 'barang_id', 'satuan_id', 'ruang_id', 'jumlah_masuk', 'jumlah_keluar', 'sisa_stok', 'created_at', 'created_by', 'updated_by', 'updated_at', 'deleted_by', 'deleted_at'];
     protected $useSoftDeletes   = true;
     protected $useTimestamps = false;
     protected $createdField  = 'created_at';

@@ -92,3 +92,7 @@ a:hover {
 .sidebar-wrapper .menu .sidebar-link svg {
   color: #7eb57c;
 }
+
+.dropdown-menu {
+  cursor: pointer;
+}

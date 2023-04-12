@@ -15,7 +15,7 @@ class KategoriController extends BaseController
         $this->uri = service('uri');
     }
 
-    public function index()
+    public function indexkategoritetap()
     {
         $segments = $this->uri->getSegments();
         $breadcrumb = [];
@@ -23,51 +23,184 @@ class KategoriController extends BaseController
 
         foreach ($segments as $segment) {
             $link .= '/' . $segment;
-            $breadcrumb[] = ['name' => ucfirst($segment), 'link' => $link];
+            $name = ucwords(str_replace('-', ' ', $segment));
+            $breadcrumb[] = ['name' => $name, 'link' => $link];
         }
 
         $data = [
-            'nav' => 'kategori',
-            'title' => 'Kategori',
+            'nav' => 'kategori-tetap',
+            'title' => 'Kategori Tetap',
+            'menu' => 'Kategori Barang Tetap',
+            'jenis' => 'Barang Tetap',
             'breadcrumb' => $breadcrumb
         ];
 
-        return view('kategori/index', $data);
+        return view('kategori/kategoribarangtetap', $data);
     }
 
+    // Menu kategori barang persediaan
+    public function indexkategoripersediaan()
+    {
+        $segments = $this->uri->getSegments();
+        $breadcrumb = [];
+        $link = '';
+
+        foreach ($segments as $segment) {
+            $link .= '/' . $segment;
+            $name = ucwords(str_replace('-', ' ', $segment));
+            $breadcrumb[] = ['name' => $name, 'link' => $link];
+        }
+
+        $data = [
+            'nav' => 'kategori-persediaan',
+            'title' => 'Kategori Persediaan',
+            'menu' => 'Kategori Barang Persediaan',
+            'jenis' => 'Barang Persediaan',
+            'breadcrumb' => $breadcrumb
+        ];
+
+        return view('kategori/kategoribarangpersediaan', $data);
+    }
+
+    // public function listdataKategori($jenis, $isRestore)
     public function listdataKategori()
     {
         if ($this->request->isAJAX()) {
-            $this->db = \Config\Database::connect();
-            $builder = $this->db->table('kategori')->select('id,kd_kategori, nama_kategori, deskripsi, created_by, created_at, deleted_at');
+            $jenis = $this->request->getGet('jenis');
+            $isRestore = filter_var($this->request->getGet('isRestore'), FILTER_VALIDATE_BOOLEAN);
+            $builder = $this->db->table('kategori')->select('id,kd_kategori, nama_kategori, deskripsi, created_by, created_at, deleted_by, deleted_at');
 
             return DataTable::of($builder)
                 ->addNumbering('no')
-                ->filter(function ($builder) {
-                    $builder->where('deleted_at', null);
+                ->filter(function ($builder) use ($jenis, $isRestore) { // tambahkan parameter $jenis dan $isRestore pada closure 
+                    if ($isRestore) {
+                        $builder->where('deleted_at IS NOT NULL');
+                        $builder->where('jenis', $jenis);
+                    } else {
+                        $builder->where('deleted_at', null);
+                        $builder->where('jenis', $jenis);
+                    }
                 })
                 ->postQuery(function ($builder) {
                     $builder->orderBy('created_at', 'desc');
                 })
-                ->add('action', function ($row) {
-                    return '<button type="button" class="btn btn-warning btn-sm btn-editgedung" onclick="edit(' . $row->id . ')"> <i class="fa fa-pencil-square-o"></i></button>
+                ->add('action', function ($row) use ($isRestore) {
+                    if ($isRestore) {
+                        return '
+                    <div class="btn-group mb-1">
+                    <button type="button" class="btn btn-success btn-sm dropdown-toggle me-1" data-bs-toggle="dropdown" aria-expanded="false">
+                        Action
+                    </button>
+                    <ul class="dropdown-menu shadow-lg">
+                        <li><a class="dropdown-item" onclick="restore(' . $row->id . ', \'' . htmlspecialchars($row->nama_kategori) . '\')"><i class="fa fa-undo"></i> Pulihkan</a>
+                        </li>
+                        <li><a class="dropdown-item" onclick="hapuspermanen(' . $row->id . ', \'' . htmlspecialchars($row->nama_kategori) . '\')"><i class="fa fa-trash-o"></i> Hapus Permanen</a>
+                        </li>
+                    </ul>
+                    </div>
+                    ';
+                    } else {
+                        return '<button type="button" class="btn btn-warning btn-sm btn-editgedung" onclick="edit(' . $row->id . ')"> <i class="fa fa-pencil-square-o"></i></button>
                     <button type="button" class="btn btn-danger btn-sm" onclick="hapus(' . $row->id . ', \'' . htmlspecialchars($row->nama_kategori) . '\')"><i class="fa fa-trash-o"></i></button>';
+                    }
                 })
                 ->toJson(true);
         } else {
-            exit("Maaf tidak dapat diproses");
+            $data = [
+                'title' => 'Error 404',
+                'msg' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/mazer/error-404', $data);
         }
     }
 
-    public function getsubkode1()
+    public function restoredata($id = null)
     {
         if ($this->request->isAJAX()) {
-            $query = $this->db->query('SELECT DISTINCT SUBSTRING(kd_kategori, 1, 1) AS kode FROM kategori ORDER BY kode');
-            $result = $query->getResultArray();
+            $restoredata = [
+                'deleted_by' => null,
+                'deleted_at' => null,
+            ];
+            $jenis = $this->request->getVar('jenis');
+
+            if ($id != null) {
+                $nama_kategori = $this->request->getVar('nama_kategori');
+                $this->kategori->update($id, $restoredata);
+
+                $msg = [
+                    'sukses' => "Data kategori $jenis : " . $nama_kategori . '  berhasil dipulihkan',
+                ];
+            } else {
+                $this->db->table('kategori')
+                    ->set($restoredata)
+                    ->where('deleted_at is NOT NULL', NULL, FALSE)
+                    ->update();
+                $jmldata = $this->db->affectedRows();
+
+                if ($jmldata > 0) {
+                    $msg = [
+                        'sukses' => "$jmldata data kategori $jenis berhasil dipulihkan semuanya",
+                    ];
+                } else {
+                    $msg = [
+                        'error' => 'Tidak ada data kategori tetap yang bisa dipulihkan'
+                    ];
+                }
+            }
+
+            return json_encode($msg);
+        } else exit("Maaf tidak dapat diproses");
+    }
+
+    public function hapuspermanen($id = null)
+    {
+        if ($this->request->isAJAX()) {
+            if ($id != null) {
+                $nama_kategori = $this->request->getVar('nama_kategori');
+
+                $this->kategori->delete($id, true);
+
+                $msg = [
+                    'sukses' => "Data kategori: $nama_kategori berhasil dihapus secara permanen",
+                ];
+            } else {
+                $this->kategori->purgeDeleted();
+                $jmlhapus = $this->kategori->db->affectedRows();
+                $msg = [
+                    'sukses' => "$jmlhapus data kategori berhasil dihapus secara permanen",
+                ];
+            }
+
+            return json_encode($msg);
+        } else exit("Maaf tidak dapat diproses");
+    }
+
+
+    public function getsubkode1($jenisbarang)
+    {
+        if ($this->request->isAJAX()) {
+            // echo $jenisbarang;
+            if ($jenisbarang == 'Barang Tetap') {
+                $query = $this->db->query("SELECT DISTINCT SUBSTRING(kd_kategori, 1, 1) AS subkode1 
+                    FROM kategori 
+                    WHERE jenis = '$jenisbarang' 
+                    ORDER BY subkode1");
+                $result = $query->getResultArray();
+            } else if ($jenisbarang == 'Barang Persediaan') {
+                $query = $this->db->query("SELECT DISTINCT LEFT(SUBSTRING_INDEX(kd_kategori, '.', 1), 3) AS subkode1 
+                    FROM kategori
+                    WHERE jenis = '$jenisbarang'
+                    ORDER BY subkode1;");
+                $result = $query->getResultArray();
+            }
 
             echo json_encode($result);
         } else {
-            exit("Maaf, tidak dapat diproses.");
+            $data = [
+                'title' => 'Error 404',
+                'msg' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/mazer/error-404', $data);
         }
     }
 
@@ -83,7 +216,11 @@ class KategoriController extends BaseController
             $result = $query->getResult();
             echo json_encode($result);
         } else {
-            echo "Maaf, tidak dapat diproses.";
+            $data = [
+                'title' => 'Error 404',
+                'msg' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/mazer/error-404', $data);
         }
     }
 
@@ -100,7 +237,11 @@ class KategoriController extends BaseController
             $result = $query->getResult();
             echo json_encode($result);
         } else {
-            echo "Maaf, tidak dapat diproses.";
+            $data = [
+                'title' => 'Error 404',
+                'msg' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/mazer/error-404', $data);
         }
     }
 
@@ -120,7 +261,11 @@ class KategoriController extends BaseController
             $result = $query->getResult();
             echo json_encode($result);
         } else {
-            echo "Maaf, tidak dapat diproses.";
+            $data = [
+                'title' => 'Error 404',
+                'msg' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/mazer/error-404', $data);
         }
     }
 
@@ -131,6 +276,7 @@ class KategoriController extends BaseController
             $subkode2 = $this->request->getPost('subkode2');
             $subkode3 = $this->request->getPost('subkode3');
             $subkode4 = $this->request->getPost('subkode4');
+            $jenis = $this->request->getPost('jenis');
             $kode = '';
             if ($subkode2 == '' && $subkode3 == '' && $subkode4 == '') {
                 $kode = $subkode1;
@@ -141,14 +287,19 @@ class KategoriController extends BaseController
             } else {
                 $kode = $subkode1 . '.' . $subkode2 . '.' . $subkode3 . '.' . $subkode4;
             }
-
+            // if($jenis == 'Barang Tetap'){}
             $query = $this->db->table('kategori')
                 ->where('kd_kategori', $kode)
+                ->where('jenis', $jenis)
                 ->get();
             $result = $query->getRow();
             echo json_encode($result);
         } else {
-            echo "Maaf, tidak dapat diproses.";
+            $data = [
+                'title' => 'Error 404',
+                'msg' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/mazer/error-404', $data);
         }
     }
 
@@ -180,7 +331,6 @@ class KategoriController extends BaseController
                     'error' => [
                         'kdkat' => $validation->getError('kd_kategori'),
                         'nama_kategori' => $validation->getError('nama_kategori'),
-                        'deskripsi' => $validation->getError('deskripsi'),
                     ],
                 ];
             } else {
@@ -188,6 +338,7 @@ class KategoriController extends BaseController
                     'kd_kategori' => $this->request->getVar('kd_kategori'),
                     'nama_kategori' => $this->request->getVar('nama_kategori'),
                     'deskripsi' => $this->request->getVar('deskripsi'),
+                    'jenis' => $this->request->getVar('jenis'),
                 ];
 
                 // Panggil fungsi setInsertData dari model sebelum data disimpan
@@ -199,7 +350,11 @@ class KategoriController extends BaseController
             }
             echo json_encode($msg);
         } else {
-            exit('Maaf tidak dapat diproses');
+            $data = [
+                'title' => 'Error 404',
+                'msg' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/mazer/error-404', $data);
         }
     }
 
@@ -215,9 +370,14 @@ class KategoriController extends BaseController
 
             echo json_encode($row);
         } else {
-            exit('Maaf tidak dapat diproses');
+            $data = [
+                'title' => 'Error 404',
+                'msg' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/mazer/error-404', $data);
         }
     }
+
     public function updatedata($id)
     {
         if ($this->request->isAJAX()) {
@@ -230,7 +390,6 @@ class KategoriController extends BaseController
                         'rules' => 'required',
                         'errors' => [
                             'required' => '{field} tidak boleh kosong',
-                            // 'is_unique' => '{field} sudah ada dan tidak boleh sama',
                         ],
                     ],
                     'nama_kategori' => [
@@ -247,7 +406,6 @@ class KategoriController extends BaseController
                         'error' => [
                             'kdkat' => $validation->getError('kd_kategori'),
                             'nama_kategori' => $validation->getError('nama_kategori'),
-                            'deskripsi' => $validation->getError('deskripsi'),
                         ],
                     ];
                 } else {
@@ -255,6 +413,7 @@ class KategoriController extends BaseController
                         'kd_kategori' => $this->request->getVar('kd_kategori'),
                         'nama_kategori' => $this->request->getVar('nama_kategori'),
                         'deskripsi' => $this->request->getVar('deskripsi'),
+                        'jenis' => $this->request->getVar('jenis'),
                     ];
 
                     // Panggil fungsi setInsertData dari model sebelum data diupdate
@@ -262,12 +421,14 @@ class KategoriController extends BaseController
                     // update data ke database
                     $this->kategori->update($id, $ubahdata);
 
-
                     $msg = ['sukses' => 'Data kategori: ' . $updatedata['nama_kategori'] . ' berhasil terupdate'];
                 }
                 echo json_encode($msg);
             } else {
-                echo 'Maaf tidak dapat diproses';
+                $data = [
+                    'message' => 'Maaf tidak dapat diproses',
+                ];
+                return view('errors/html/error_404', $data);
             }
         }
     }
@@ -289,6 +450,12 @@ class KategoriController extends BaseController
                 ];
                 echo json_encode($msg);
             }
-        } else exit('Maaf tidak dapat diproses');
+        } else {
+            $data = [
+                'title' => 'Error 404',
+                'msg' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/mazer/error-404', $data);
+        }
     }
 }

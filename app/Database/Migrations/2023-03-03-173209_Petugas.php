@@ -4,30 +4,45 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class Kategori extends Migration
+class Petugas extends Migration
 {
     public function up()
     {
         $this->forge->addField([
             'id' => [
                 'type' => 'int',
-                'constraint' => 11,
+                'constraint' => '11',
                 'auto_increment' => TRUE,
             ],
-            'kd_kategori' => [
+            'nip' => [
                 'type' => 'varchar',
-                'constraint' => 50,
+                'constraint' => '20',
+                'unique' => TRUE,
             ],
-            'nama_kategori' => [
+            'email' => [
                 'type' => 'varchar',
-                'constraint' => 255,
+                'constraint' => '100',
             ],
-            'deskripsi' => [
-                'type' => 'text',
+            'username' => [
+                'type' => 'varchar',
+                'constraint' => '100',
+            ],
+            'password' => [
+                'type' => 'varchar',
+                'constraint' => '100',
+            ],
+            'role' => [
+                'type' => 'enum',
+                'constraint' => ['Administrator', 'Petugas'],
+            ],
+            'foto' => [
+                'type' => 'varchar',
+                'constraint' => '250',
+                'null' => true
             ],
             'created_by' => [
                 'type' => 'varchar',
-                'constraint' => 50,
+                'constraint' => '50',
                 'null' => TRUE,
             ],
             'created_at' => [
@@ -36,7 +51,7 @@ class Kategori extends Migration
             ],
             'updated_by' => [
                 'type' => 'varchar',
-                'constraint' => 50,
+                'constraint' => '50',
                 'null' => TRUE,
             ],
             'updated_at' => [
@@ -45,7 +60,7 @@ class Kategori extends Migration
             ],
             'deleted_by' => [
                 'type' => 'varchar',
-                'constraint' => 50,
+                'constraint' => '50',
                 'null' => TRUE,
             ],
             'deleted_at' => [
@@ -54,11 +69,11 @@ class Kategori extends Migration
             ],
         ]);
         $this->forge->addPrimaryKey('id');
-        $this->forge->createTable('kategori');
+        $this->forge->createTable('petugas');
     }
 
     public function down()
     {
-        $this->forge->dropTable('kategori');
+        $this->forge->dropTable('petugas');
     }
 }

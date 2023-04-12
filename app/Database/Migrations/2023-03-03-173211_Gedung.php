@@ -10,7 +10,7 @@ class Gedung extends Migration
     {
         $this->forge->addField([
             'id' => [
-                'type' => 'INT',
+                'type' => 'int',
                 'constraint' => 11,
                 'auto_increment' => TRUE,
             ],
@@ -54,12 +54,14 @@ class Gedung extends Migration
                 'null' => TRUE,
             ],
         ]);
-        $this->forge->addPrimaryKey('id', true);
+        $this->forge->addPrimaryKey('id');
+        $this->forge->addForeignKey('kat_id', 'kategori', 'id', 'CASCADE', 'CASCADE');
         $this->forge->createTable('gedung');
     }
 
     public function down()
     {
+        $this->forge->dropForeignKey('gedung', 'gedung_kat_id_foreign');
         $this->forge->dropTable('gedung');
     }
 }

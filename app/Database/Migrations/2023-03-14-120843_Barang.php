@@ -18,14 +18,6 @@ class Barang extends Migration
                 'type' => 'int',
                 'constraint' => 11,
             ],
-            'ruang_id' => [
-                'type' => 'int',
-                'constraint' => 11,
-            ],
-            'satuan_id' => [
-                'type' => 'int',
-                'constraint' => 11,
-            ],
             'kode_brg' => [
                 'type' => 'varchar',
                 'constraint' => 20,
@@ -33,10 +25,6 @@ class Barang extends Migration
             'nama_brg' => [
                 'type' => 'varchar',
                 'constraint' => 255,
-            ],
-            'stok' => [
-                'type' => 'int',
-                'constraint' => 11,
             ],
             'merk' => [
                 'type' => 'varchar',
@@ -61,15 +49,6 @@ class Barang extends Migration
             'harga_jual' => [
                 'type' => 'decimal',
                 'constraint' => 14.2,
-                'null' => TRUE,
-            ],
-            'kondisi' => [
-                'type' => 'varchar',
-                'constraint' => 20,
-            ],
-            'tindakan_kerusakan' => [
-                'type' => 'varchar',
-                'constraint' => 20,
                 'null' => TRUE,
             ],
             'toko' => [
@@ -98,7 +77,7 @@ class Barang extends Migration
                 'null' => TRUE,
             ],
             'tgl_pembelian' => [
-                'type' => 'datetime',
+                'type' => 'date',
                 'null' => TRUE,
             ],
             'created_by' => [
@@ -130,14 +109,13 @@ class Barang extends Migration
             ],
         ]);
         $this->forge->addPrimaryKey('id');
-        $this->forge->addForeignKey('kat_id', 'kategori', 'id');
-        $this->forge->addForeignKey('ruang_id', 'ruang', 'id');
-        $this->forge->addForeignKey('satuan_id', 'satuan', 'id');
+        $this->forge->addForeignKey('kat_id', 'kategori', 'id', 'CASCADE', 'CASCADE');
         $this->forge->createTable('barang');
     }
 
     public function down()
     {
+        $this->forge->dropForeignKey('barang', 'barang_kat_id_foreign');
         $this->forge->dropTable('barang');
     }
 }

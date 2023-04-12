@@ -25,8 +25,8 @@
     </div>
 </div>
 <section class="section">
-    <div class="card mb-3" id="tampilformtambahpengguna" style="display:none">
-        <div class="card-header">
+    <div class="card shadow mb-3" id="tampilformtambahpengguna" style="display:none">
+        <div class="card-header shadow-sm">
             <div class="row">
                 <h4 class="card-title">Tambah Data Pengguna</h4>
             </div>
@@ -112,8 +112,8 @@
     </div>
 </section>
 <section class="section">
-    <div class="card mb-3 datalist-pengguna">
-        <div class="card-header">
+    <div class="card shadow mb-3 datalist-pengguna">
+        <div class="card-header shadow-sm">
             <div class="row justify-content-between align-items-center">
                 <div class="col-lg-9">
                     <h4 class="card-title">Data Pengguna</h4>
