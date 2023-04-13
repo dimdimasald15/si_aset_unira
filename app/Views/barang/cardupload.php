@@ -66,7 +66,6 @@
         $('#cardupload').hide(500);
       });
 
-
       var $modal = $('#modal_crop');
       var crop_image = document.getElementById('sample_image');
       var cropper;
@@ -86,8 +85,14 @@
         }
       });
       $modal.on('shown.bs.modal', function() {
+        var aspectRatio = '';
+        if (jenis_kat === 'Barang Tetap') {
+          aspectRatio = 16 / 9;
+        } else if (jenis_kat === 'Barang Persediaan') {
+          aspectRatio = 1;
+        }
         cropper = new Cropper(crop_image, {
-          aspectRatio: 16 / 9,
+          aspectRatio: aspectRatio,
           viewMode: 3,
           preview: '.preview'
         });

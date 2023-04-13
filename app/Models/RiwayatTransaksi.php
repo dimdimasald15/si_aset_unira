@@ -27,4 +27,52 @@ class RiwayatTransaksi extends Model
         }
         return $data;
     }
+
+    public function inserthistori($id, $data_lama, $data_baru, $jenistrx, $lastQuery, $field_update)
+    {
+        // $id = (int) $id; // casting $id menjadi integer
+        $datasimpan = [];
+        // echo strpos($lastQuery, 'DELETE');
+
+        if (strpos($lastQuery, 'INSERT') !== false) {
+            $datasimpan = [
+                'stokbrg_id' => $id,
+                'jenis_transaksi' => $jenistrx,
+                'field' => 'Semua field',
+                'old_value' => '',
+                'new_value' => json_encode($data_baru),
+            ];
+        } else if (strpos($lastQuery, 'UPDATE') !== false) {
+            //Tambahkan data pada table riwayat_barang
+            $old_value = [];
+            $new_value = [];
+
+            foreach ($field_update as $field) {
+                if (array_key_exists($field, $data_lama)) {
+                    $old_value[$field] = $data_lama[$field];
+                }
+                if (array_key_exists($field, $data_baru)) {
+                    $new_value[$field] = $data_baru[$field];
+                }
+            }
+            $datasimpan = [
+                'stokbrg_id' => $id,
+                'jenis_transaksi' => $jenistrx,
+                'field' => json_encode(array_keys($new_value)),
+                'old_value' => json_encode($old_value),
+                'new_value' => json_encode($new_value),
+            ];
+        } else if (strpos($lastQuery, 'DELETE') !== false) {
+            $datasimpan = [
+                'stokbrg_id' => $id,
+                'jenis_transaksi' => $jenistrx,
+                'field' => 'delete data',
+                'old_value' => json_encode($data_lama),
+                'new_value' => '',
+            ];
+        }
+
+        $insertdatasimpan = $this->setInsertData($datasimpan);
+        $this->save($insertdatasimpan);
+    }
 }

@@ -41,6 +41,10 @@ class Stokbarang extends Migration
                 'default' => 0,
                 'unsigned' => TRUE, // Ditambahkan unsigned agar nilai selalu positif 
             ],
+            'tgl_beli' => [
+                'type' => 'date',
+                'null' => TRUE,
+            ],
             'created_by' => [
                 'type' => 'varchar',
                 'constraint' => 50,

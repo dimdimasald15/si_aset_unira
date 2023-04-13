@@ -20,16 +20,16 @@
             <span>Dashboard</span>
           </a>
         </li>
-        <li class="sidebar-item <?= ($nav == 'barang-teta-pmasuk') ? 'active' : '' ?> has-sub">
+        <li class="sidebar-item <?= ($nav == 'barang-tetap-masuk') ? 'active' : '' ?> has-sub">
           <a href="#" class='sidebar-link'>
             <i class="bi bi-bounding-box"></i>
             <span>Kelola Transaksi Barang</span>
           </a>
           <ul class="submenu <?= ($nav == 'barang-tetap-masuk') ? 'active' : '' ?>">
-            <li class="submenu-item <?= ($nav == 'barangtetapmasuk') ? 'active' : '' ?>">
+            <li class="submenu-item <?= ($nav == 'barang-tetap-masuk') ? 'active' : '' ?>">
               <a href="barang-tetap-masuk">Barang Tetap Masuk</a>
             </li>
-            <li class="submenu-item <?= ($nav == 'barang-persediaa-nmasuk') ? 'active' : '' ?>">
+            <li class="submenu-item <?= ($nav == 'barang-persediaan-masuk') ? 'active' : '' ?>">
               <a href="barang-persediaan-masuk">Barang Persediaan Masuk</a>
             </li>
             <li class="submenu-item ">

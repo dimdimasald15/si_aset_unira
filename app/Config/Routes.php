@@ -93,7 +93,6 @@ $routes->group('admin/barang-tetap', ['filter' => 'ceklogin'], function ($routes
     $routes->get('/', 'BarangController::indexbarangtetap');
     $routes->get('listdatabarang', 'BarangController::listdatabarang');
     $routes->match(['get', 'post'], 'pilihkategori', 'BarangController::pilihkategori');
-    // $routes->post('getnamabarang', 'BarangController::getnamabarang');
     $routes->post('simpan', 'BarangController::simpandata');
     $routes->post('update/(:any)', 'BarangController::updatedata/$1');
     $routes->post('hapus/(:any)', 'BarangController::hapusdata/$1');
@@ -102,6 +101,35 @@ $routes->group('admin/barang-tetap', ['filter' => 'ceklogin'], function ($routes
     $routes->match(['get', 'post'], 'restore', 'BarangController::restoredata');
     $routes->post('hapuspermanen/(:any)', 'BarangController::hapuspermanen/$1');
     $routes->match(['get', 'post'], 'hapuspermanen', 'BarangController::hapuspermanen');
+});
+
+$routes->group('admin/barang-persediaan', ['filter' => 'ceklogin'], function ($routes) {
+    $routes->get('/', 'BarangController::indexbarangpersediaan');
+    $routes->get('listdatabarang', 'BarangController::listdatabarang');
+    $routes->match(['get', 'post'], 'pilihkategori', 'BarangController::pilihkategori');
+    $routes->post('simpan', 'BarangController::simpandata');
+    $routes->post('update/(:any)', 'BarangController::updatedata/$1');
+    $routes->post('hapus/(:any)', 'BarangController::hapusdata/$1');
+    $routes->get('tampildatarestore', 'BarangController::listdatabarang');
+    $routes->post('restore/(:any)', 'BarangController::restoredata/$1');
+    $routes->match(['get', 'post'], 'restore', 'BarangController::restoredata');
+    $routes->post('hapuspermanen/(:any)', 'BarangController::hapuspermanen/$1');
+    $routes->match(['get', 'post'], 'hapuspermanen', 'BarangController::hapuspermanen');
+});
+
+$routes->group('admin/barang-tetap-masuk', ['filter' => 'ceklogin'], function ($routes) {
+    $routes->get('/', 'StokbarangController::indexbarangtetapmasuk');
+    $routes->get('listdatastokbarang', 'StokbarangController::listdatastokbarang');
+    $routes->match(['get', 'post'], 'pilihkategori', 'StokbarangController::pilihkategori');
+    $routes->match(['get', 'post'], 'pilihbarang', 'StokbarangController::pilihbarang');
+    $routes->post('simpan', 'StokbarangController::simpandata');
+    $routes->post('update/(:any)', 'StokbarangController::updatedata/$1');
+    $routes->post('hapus/(:any)', 'StokbarangController::hapusdata/$1');
+    // $routes->get('tampildatarestore', 'StokbarangController::listdatabarang');
+    // $routes->post('restore/(:any)', 'StokbarangController::restoredata/$1');
+    // $routes->match(['get', 'post'], 'restore', 'StokbarangController::restoredata');
+    // $routes->post('hapuspermanen/(:any)', 'StokbarangController::hapuspermanen/$1');
+    // $routes->match(['get', 'post'], 'hapuspermanen', 'StokbarangController::hapuspermanen');
 });
 
 $routes->group('admin/pengguna', ['filter' => 'ceklogin'], function ($routes) {

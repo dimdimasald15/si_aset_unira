@@ -164,7 +164,7 @@
                       </div>
                     </div>
                   </div>
-                  <div class="col-md-7 radiobelibekas" style="display:none;">
+                  <div class="col-md-7 mb-3 radiobelibekas" style="display:none;">
                     <label for=" merk" class="form-label">Beli bekas dimana?</label>
                     <div class="form-check">
                       <input class="form-check-input" type="radio" id="radiotoko">
@@ -179,7 +179,7 @@
                       </label>
                     </div>
                   </div>
-                  <div class="col-md-7 mb-3 belibaru" style="display:none;">
+                  <div class="col-md-7 belibaru" style="display:none;">
                     <label for="toko" class="form-label">Nama Toko</label>
                     <div class="input-group mb-3">
                       <span class="input-group-text" id="basic-addon1"><i class="bi bi-shop"></i></span>
@@ -200,30 +200,10 @@
               <div class="col-12">
                 <div class="row g-2 mb-1">
                   <div class="col-md-6">
-                    <label for="noseri" class="form-label">Nomor seri barang</label>
-                    <div class="input-group mb-3">
-                      <span class="input-group-text" id="basic-addon1"><i class="bi bi-hash"></i></span>
-                      <input type="text" class="form-control" placeholder="Masukkan No Seri" id="noseri" name="no_seri">
-                      <div class="invalid-feedback errnoseri"></div>
-                    </div>
-                  </div>
-                  <div class="col-md-6">
-                    <label for="nodokumen" class="form-label">Nomor Dokumen</label>
-                    <div class="input-group mb-3">
-                      <span class="input-group-text" id="basic-addon1"><i class="bi bi-file-earmark-text"></i></span>
-                      <input type="text" class="form-control" placeholder="Masukkan No Dokumen" id="nodokumen" name="no_dokumen">
-                      <div class="invalid-feedback errnodokumen"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-12">
-                <div class="row g-2 mb-1">
-                  <div class="col-md-6">
                     <label for="hargabeli" class="form-label">Harga Beli Barang</label>
                     <div class="input-group mb-3">
                       <span class="input-group-text" id="basic-addon1">Rp</span>
-                      <input type="number" step="500" min="5000" class="form-control" placeholder="Masukkan Harga Beli" id="hargabeli" name="harga_beli">
+                      <input type="number" step="50" min="50" class="form-control" placeholder="Masukkan Harga Beli" id="hargabeli" name="harga_beli">
                       <div class="invalid-feedback errhargabeli"></div>
                     </div>
                   </div>
@@ -231,7 +211,7 @@
                     <label for="hargajual" class="form-label">Harga Jual Barang</label>
                     <div class="input-group mb-3">
                       <span class="input-group-text" id="basic-addon1">Rp</span>
-                      <input type="number" step="500" min="5000" class="form-control" placeholder="Masukkan Harga Jual" id="hargajual" name="harga_jual">
+                      <input type="number" step="50" min="50" class="form-control" placeholder="Masukkan Harga Jual" id="hargajual" name="harga_jual">
                       <div class="invalid-feedback errhargajual"></div>
                     </div>
                   </div>
@@ -264,7 +244,7 @@
   </section>
 </div>
 
-<div class="col-12 col-md-12 modal" style="display:none;">
+<div class="col-12 col-md-12 imageupload" style="display:none;">
 </div>
 
 <div class="card mb-3 shadow">
@@ -450,8 +430,6 @@
     toko,
     instansi,
     asal,
-    no_dokumen,
-    no_seri,
     harga_beli,
     harga_jual,
     tgl_pembelian,
@@ -1051,7 +1029,7 @@
       },
       dataType: "json",
       success: function(response) {
-        $('.modal').html(response.sukses).show(500);
+        $('.imageupload').html(response.sukses).show(500);
       }
     });
   }
@@ -1272,18 +1250,7 @@
   }
 
   function qrcode(id) {
-    $.ajax({
-      type: "post",
-      url: "<?= base_url() ?>/barangcontroller/tampilqrcode",
-      data: {
-        id: id,
-        jenis_kat: jenis_kat,
-      },
-      dataType: 'json',
-      success: function(response) {
-        $('.viewmodal').html(response.sukses).show(500);
-      }
-    });
+    console.log(id);
   }
 </script>
 <?= $this->endSection() ?>

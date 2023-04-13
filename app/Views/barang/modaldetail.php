@@ -52,7 +52,7 @@
 
         $('.modal-body-detail').append(`
         <div class="card mb-3">
-        ${response.foto_barang ? `<img src="<?= base_url() ?>/assets/images/foto_barang/${response.foto_barang}" alt="Gambar Barang" class="rounded mx-auto d-block">` : `<img src="https://via.placeholder.com/150x150.png?text=No+Image" alt="No Image" class="rounded mx-auto d-block">`}
+        ${response.foto_barang ? `<img src="<?= base_url() ?>/assets/images/foto_barang/${response.foto_barang}" alt="Gambar Barang" class="rounded mx-auto d-block" style="width:300px; height:auto;">` : `<img src="https://via.placeholder.com/150x150.png?text=No+Image" alt="No Image" class="rounded mx-auto d-block">`}
           <div class="card-body">
             <h5 class="card-title">${response.nama_brg}</h5>
             <div class="card-text mb-3">
