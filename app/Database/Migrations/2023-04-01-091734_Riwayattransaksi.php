@@ -19,8 +19,8 @@ class Riwayattransaksi extends Migration
                 'constraint' => 11,
             ],
             'jenis_transaksi' => [
-                'type' => 'enum',
-                'constraint' => ['barang tetap masuk', 'barang persediaan masuk', 'permintaan barang', 'peminjaman barang', 'perbaikan barang rusak', 'penghapusan barang rusak'],
+                'type' => 'varchar',
+                'constraint' => 50,
             ],
             'field' => [
                 'type' => 'varchar',

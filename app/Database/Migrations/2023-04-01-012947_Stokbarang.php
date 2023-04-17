@@ -80,25 +80,27 @@ class Stokbarang extends Migration
         $this->forge->createTable('stok_barang');
 
         // Menambahkan trigger untuk menghitung nilai sisa_stok
-        $this->db->query("
-            CREATE TRIGGER `trigger_stok_barang`
-            BEFORE INSERT ON `stok_barang`
-            FOR EACH ROW BEGIN
-                SET NEW.sisa_stok = (
-                    SELECT COALESCE(SUM(jumlah_masuk), 0) - COALESCE(SUM(jumlah_keluar), 0) 
-                    FROM stok_barang
-                    WHERE barang_id = NEW.barang_id
-                );
-            END
-        ");
+        // $this->db->query("
+        //     CREATE TRIGGER update_stok_data
+        //     AFTER INSERT ON stok_barang
+        //     FOR EACH ROW
+        //     BEGIN
+        //         UPDATE barang SET sisa_stok = COALESCE((
+        //             SELECT SUM(jumlah_masuk) - SUM(jumlah_keluar)
+        //             FROM stok_barang
+        //             WHERE barang_id = NEW.barang_id AND ruang_id = NEW.ruang_id
+        //         ), 0)
+        //         WHERE id = NEW.barang_id AND id_ruang = NEW.ruang_id;
+        //     END;
+        // ");
     }
 
     public function down()
     {
         // Menghapus trigger sebelum menghapus tabel
-        $this->db->query("
-            DROP TRIGGER IF EXISTS `trigger_stok_barang`
-        ");
+        // $this->db->query("
+        //     DROP TRIGGER IF EXISTS `trigger_stok_barang`
+        // ");
         $this->forge->dropForeignKey('stok_barang', 'stok_barang_barang_id_foreign');
         $this->forge->dropForeignKey('stok_barang', 'stok_barang_ruang_id_foreign');
         $this->forge->dropForeignKey('stok_barang', 'stok_barang_satuan_id_foreign');

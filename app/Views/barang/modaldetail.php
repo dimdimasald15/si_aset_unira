@@ -35,6 +35,7 @@
       },
       dataType: "json",
       success: function(response) {
+        console.log(response);
         let tgl = new Date(response.tgl_pembelian);
         let buying_date = '';
         if (response.tgl_pembelian !== null) {
@@ -98,7 +99,7 @@
                 <li>
                   <div class="row mt-2">
                     <div class="col-5">Warna</div>
-                    <div class="col-7">:  ${response.warna}</div>
+                    <div class="col-7 d-flex">:&nbsp; <div id="circle" style="width: 50px;height: 25px;border-radius: 10%;border: 2px solid rgba(0, 0, 0, 0.5);background-color: ${response.warna};box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);"></div></div>
                   </div>
                 </li>
                 <li>

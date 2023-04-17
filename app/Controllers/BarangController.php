@@ -108,8 +108,6 @@ class BarangController extends BaseController
                         <ul class="dropdown-menu shadow-lg">
                             <li><a class="dropdown-item" onclick="detailbarang(' . $row->id . ')"><i class="fa fa-info-circle"></i> Detail Barang</a>
                             </li>
-                            <li><a class="dropdown-item" onclick="qrcode(' . $row->id . ')"><i class="fa fa-qrcode"></i> Cetak Label Barang</a>
-                            </li>
                             <li><a class="dropdown-item" onclick="edit(' . $row->id . ')"><i class="fa fa-pencil-square-o"></i> Update Barang</a>
                             </li>
                             <li><a class="dropdown-item" onclick="upload(' . $row->id . ', \'' . htmlspecialchars($row->nama_brg) . '\')"><i class="bi bi-image"></i> Update Gambar Barang</a>
@@ -155,6 +153,34 @@ class BarangController extends BaseController
         }
     }
 
+    // public function detailbarang($kdbrg)
+    // {
+    //     $kode_brg = str_replace('-', '.', $kdbrg);
+    //     $query   = $this->db->table('barang b')->select('SUM(sb.jumlah_masuk) as total_jumlah_masuk, SUM(sb.sisa_stok) as jumlah_sisa_stok, b.*, k.nama_kategori, sb.jumlah_masuk, sb.sisa_stok, GROUP_CONCAT(DISTINCT r.nama_ruang SEPARATOR ", ") as nama_ruang, s.kd_satuan')
+    //         ->join('stok_barang sb', 'sb.barang_id = b.id')
+    //         ->join('kategori k', 'b.kat_id=k.id')
+    //         ->join('ruang r', 'sb.ruang_id = r.id')
+    //         ->join('satuan s', 'sb.satuan_id = s.id')
+    //         ->where('b.kode_brg', $kode_brg)
+    //         ->groupBy('b.id')
+    //         ->get();
+    //     // dd($query->getRow);
+
+    //     $result = $query->getRow();
+    //     if ($result) {
+    //         $title = 'Detail Barang ' . $result->nama_brg;
+    //     } else {
+    //         $title = 'Detail Barang';
+    //     }
+
+    //     $data = [
+    //         'title' => $title,
+    //         'barang' => $result,
+    //     ];
+
+    //     return view('barang/detailbarang', $data);
+    // }
+
     public function tampildetailbarang()
     {
         if ($this->request->isAJAX()) {
@@ -173,7 +199,7 @@ class BarangController extends BaseController
         }
     }
 
-    public function tampilqrcode()
+    public function tampillabelbarang()
     {
         if ($this->request->isAJAX()) {
             $id = $this->request->getVar('id');
@@ -184,7 +210,7 @@ class BarangController extends BaseController
                 'title' => $jenis,
             ];
             $msg = [
-                'sukses' => view('stokbarang/modalqrcode', $data),
+                'sukses' => view('barang/modallabel', $data),
             ];
 
             echo json_encode($msg);
@@ -197,25 +223,15 @@ class BarangController extends BaseController
         }
     }
 
-    public function getbarangbykdbarang()
+    public function getdatabarangbyid()
     {
         if ($this->request->isAJAX()) {
-            $kode_brg = $this->request->getVar('kode_brg');
-            $ruang_id = $this->request->getVar('ruang_id');
+            $id = $this->request->getVar('id');
             $barang = $this->db->table('barang b')
                 ->select('b.id, b.kat_id, b.kode_brg, b.nama_brg, b.merk, b.warna, b.asal, b.harga_beli, b.harga_jual, b.toko, b.instansi, b.no_seri, b.no_dokumen, b.foto_barang, b.tgl_pembelian')
-                ->where('kode_brg', $kode_brg);
-
-            if (!empty($ruang_id)) {
-                $barang = $barang->select('sb.satuan_id, sb.ruang_id, sb.sisa_stok, s.kd_satuan, r.nama_ruang')
-                    ->join('stok_barang sb', 'b.id=sb.barang_id')
-                    ->join('ruang r', 'r.id=sb.ruang_id')
-                    ->join('satuan s', 's.id=sb.satuan_id')
-                    ->where('ruang_id', $ruang_id);
-            }
+                ->where('id', $id);
 
             $result = $barang->get()->getRow();
-            // var_dump($barang);
             echo json_encode($result);
         } else {
             $data = [
@@ -231,12 +247,6 @@ class BarangController extends BaseController
         if ($this->request->isAJAX()) {
             $kode_brg = $this->request->getVar('kode_brg');
             $id = $this->request->getVar('id');
-            // echo '<pre>';
-            // var_dump($id);
-            // var_dump(!empty($id));
-            // var_dump($kode_brg);
-            // var_dump(!empty($kode_brg));
-            // echo '</pre>';
             $getbarang = '';
             if (!empty($id)) {
                 $getbarang = $this->db->table('barang b')->select('b.id, b.foto_barang, b.nama_brg, b.kat_id, b.kode_brg,k.kd_kategori, k.nama_kategori, b.warna, b.merk, b.toko, b.instansi, b.asal, b.no_dokumen, b.no_seri, b.harga_beli, b.harga_jual, b.tgl_pembelian, b.created_at, b.created_by, b.updated_at,b.updated_by')
@@ -767,7 +777,7 @@ class BarangController extends BaseController
                     ];
                 } else {
                     $msg = [
-                        'error' => 'Tidak ada data kategori tetap yang bisa dipulihkan'
+                        'error' => 'Tidak ada data barang tetap yang bisa dipulihkan'
                     ];
                 }
             }

@@ -75,4 +75,22 @@ class RiwayatTransaksi extends Model
         $insertdatasimpan = $this->setInsertData($datasimpan);
         $this->save($insertdatasimpan);
     }
+
+    public function deletehistorimultiple($id, $data_lama, $jenistrx)
+    {
+        foreach ($id as $stokbrg_id) {
+            $data_lama_filtered = array_filter($data_lama, function ($data) use ($stokbrg_id) {
+                return $data['id'] == $stokbrg_id;
+            });
+            $datasimpan = [
+                'stokbrg_id' => $stokbrg_id,
+                'jenis_transaksi' => $jenistrx,
+                'field' => 'delete data',
+                'old_value' => json_encode(array_values($data_lama_filtered)),
+                'new_value' => '',
+            ];
+            $insertdatasimpan = $this->setInsertData($datasimpan);
+            $this->save($insertdatasimpan);
+        }
+    }
 }

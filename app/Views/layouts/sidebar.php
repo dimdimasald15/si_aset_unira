@@ -49,7 +49,7 @@
             <li class="submenu-item <?= ($nav == 'barang-tetap') ? 'active' : '' ?>">
               <a href="barang-tetap">Barang Tetap</a>
             </li>
-            <li class="submenu-item <?= ($nav == 'barangpersediaan') ? 'active' : '' ?>">
+            <li class="submenu-item <?= ($nav == 'barang-persediaan') ? 'active' : '' ?>">
               <a href="barang-persediaan">Barang Persediaan</a>
             </li>
           </ul>
@@ -76,10 +76,10 @@
           </a>
           <ul class="submenu <?= ($nav == 'kategori-tetap' || $nav == 'kategori-persediaan') ? 'active' : '' ?>">
             <li class="submenu-item <?= ($nav == 'kategori-tetap') ? 'active' : '' ?>">
-              <a href=" kategori-tetap">Kategori Tetap</a>
+              <a href="kategori-tetap">Kategori Tetap</a>
             </li>
             <li class="submenu-item <?= ($nav == 'kategori-persediaan') ? 'active' : '' ?>">
-              <a href=" kategori-persediaan">Kategori Persediaan</a>
+              <a href="kategori-persediaan">Kategori Persediaan</a>
             </li>
           </ul>
         </li>
