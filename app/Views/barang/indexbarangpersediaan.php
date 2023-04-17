@@ -128,11 +128,11 @@
                       <div class="invalid-feedback errmerk"></div>
                     </div>
                   </div>
-                  <div class="col-md-3">
+                  <div class="col-md-6">
                     <label for="warna" class="form-label">Warna</label>
                     <div class="input-group mb-3">
                       <span class="input-group-text" id="basic-addon1"><i class="bi bi-palette"></i></span>
-                      <input type="color" class="form-control" placeholder="Masukkan Warna" id="warna" name="warna">
+                      <input type="text" class="form-control" placeholder="Masukkan Warna" id="warna" name="warna">
                       <div class="invalid-feedback errwarna">
                       </div>
                     </div>
@@ -164,7 +164,7 @@
                       </div>
                     </div>
                   </div>
-                  <div class="col-md-7 radiobelibekas" style="display:none;">
+                  <div class="col-md-7 mb-3 radiobelibekas" style="display:none;">
                     <label for=" merk" class="form-label">Beli bekas dimana?</label>
                     <div class="form-check">
                       <input class="form-check-input" type="radio" id="radiotoko">
@@ -179,7 +179,7 @@
                       </label>
                     </div>
                   </div>
-                  <div class="col-md-7 mb-3 belibaru" style="display:none;">
+                  <div class="col-md-7 belibaru" style="display:none;">
                     <label for="toko" class="form-label">Nama Toko</label>
                     <div class="input-group mb-3">
                       <span class="input-group-text" id="basic-addon1"><i class="bi bi-shop"></i></span>
@@ -200,30 +200,10 @@
               <div class="col-12">
                 <div class="row g-2 mb-1">
                   <div class="col-md-6">
-                    <label for="noseri" class="form-label">Nomor seri barang</label>
-                    <div class="input-group mb-3">
-                      <span class="input-group-text" id="basic-addon1"><i class="bi bi-hash"></i></span>
-                      <input type="text" class="form-control" placeholder="Masukkan No Seri" id="noseri" name="no_seri">
-                      <div class="invalid-feedback errnoseri"></div>
-                    </div>
-                  </div>
-                  <div class="col-md-6">
-                    <label for="nodokumen" class="form-label">Nomor Dokumen</label>
-                    <div class="input-group mb-3">
-                      <span class="input-group-text" id="basic-addon1"><i class="bi bi-file-earmark-text"></i></span>
-                      <input type="text" class="form-control" placeholder="Masukkan No Dokumen" id="nodokumen" name="no_dokumen">
-                      <div class="invalid-feedback errnodokumen"></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-12">
-                <div class="row g-2 mb-1">
-                  <div class="col-md-6">
                     <label for="hargabeli" class="form-label">Harga Beli Barang</label>
                     <div class="input-group mb-3">
                       <span class="input-group-text" id="basic-addon1">Rp</span>
-                      <input type="number" step="500" min="5000" class="form-control" placeholder="Masukkan Harga Beli" id="hargabeli" name="harga_beli">
+                      <input type="number" step="50" min="50" class="form-control" placeholder="Masukkan Harga Beli" id="hargabeli" name="harga_beli">
                       <div class="invalid-feedback errhargabeli"></div>
                     </div>
                   </div>
@@ -231,7 +211,7 @@
                     <label for="hargajual" class="form-label">Harga Jual Barang</label>
                     <div class="input-group mb-3">
                       <span class="input-group-text" id="basic-addon1">Rp</span>
-                      <input type="number" step="500" min="5000" class="form-control" placeholder="Masukkan Harga Jual" id="hargajual" name="harga_jual">
+                      <input type="number" step="50" min="50" class="form-control" placeholder="Masukkan Harga Jual" id="hargajual" name="harga_jual">
                       <div class="invalid-feedback errhargajual"></div>
                     </div>
                   </div>
@@ -264,7 +244,7 @@
   </section>
 </div>
 
-<div class="col-12 col-md-12 tampilupload" style="display:none;">
+<div class="col-12 col-md-12 imageupload" style="display:none;">
 </div>
 
 <div class="card mb-3 shadow">
@@ -335,7 +315,6 @@
           <tr>
             <!-- <th style="width: 50px;">No.</th> -->
             <th>No.</th>
-            <!-- <th>Qr Code</th> -->
             <th>Kode Barang</th>
             <th>Nama Barang</th>
             <th>Kategori</th>
@@ -375,6 +354,8 @@
 
 
   function hapus(id, namabrg) {
+    // console.log(id + " & " + namabrg);
+    // console.log('delete : ' + namabrg);
     Swal.fire({
       title: `Apakah kamu yakin ingin menghapus data ${namabrg}?`,
       icon: 'warning',
@@ -449,8 +430,6 @@
     toko,
     instansi,
     asal,
-    no_dokumen,
-    no_seri,
     harga_beli,
     harga_jual,
     tgl_pembelian,
@@ -548,6 +527,7 @@
   }
 
   function getsubkdbarang(idkategori, kode1) {
+    console.log('cek function getsubkdbarang 0 = ' + idkategori);
     $.ajax({
       url: "<?= site_url('barangcontroller/getsubkdbarang') ?>",
       type: "POST",
@@ -556,9 +536,12 @@
       },
       dataType: "json",
       success: function(response) {
+        console.log(response);
         $('#skbarang').empty();
         $('#skbarang').append('<option value="">Sub-Kode Barang</option>');
         if (response.subkdbarang == undefined) {
+          console.log(response[0].kd_kategori);
+          // console.log(response.kd_kategori);
           $('#subkdkategori').val(response[0].kd_kategori);
           // $('#skbarang').append('<option value="">Sub-Kode Barang</option>');
           // $('#skbarang').append('<option value="otherbrg">Lainnya</option>');
@@ -628,19 +611,6 @@
     return $result;
   }
 
-  function imgQR(qrCanvas, centerImage, factor) {
-    var h = qrCanvas.height;
-    //center size
-    var cs = h * factor;
-    // Center offset
-    var co = (h - cs) / 2;
-    var ctx = qrCanvas.getContext("2d");
-    ctx.drawImage(centerImage, 0, 0, centerImage.width, centerImage.height, co, co, cs, cs + 10);
-    ctx.strokeStyle = "#ffffff";
-    ctx.lineWidth = 2 // ketebalan garis tepi 2 piksel
-    ctx.strokeRect(co, co, cs, cs + 10); // membuat garis tepi persegi panjang di sekitar gambar
-  }
-
   $(document).ready(function() {
     formtambah.hide();
 
@@ -651,25 +621,13 @@
         url: `barang-tetap/listdatabarang?jenis_kat=${jenis_kat}&isRestore=0`,
         data: function(d) {
           d.kategori = $('#selectkategori').val()
-        },
-        dataSrc: function(json) {
-          json.data.forEach(function(item) {
-            item.id = item.id;
-          });
-          return json.data;
         }
       },
       order: [],
       columns: [{
           data: 'no',
-          orderable: false,
+          orderable: false
         },
-        // {
-        //   data: null,
-        //   render: function(data, type, row) {
-        //     return '<div id="qrcode-' + row.id + '"></div>';
-        //   }
-        // },
         {
           data: 'kode_brg'
         },
@@ -712,32 +670,7 @@
           data: 'action',
           orderable: false
         },
-      ],
-      // drawCallback: function(settings) {
-      //   var api = this.api();
-      //   api.rows().every(function(rowIdx, tableLoop, rowLoop) {
-      //     var rowData = this.data();
-      //     var id = rowData.id;
-      //     var kodebarang = rowData.kode_brg;
-      //     const kdbrg = kodebarang.split(".").join("-");
-      //     const logo = "<?= base_url('assets/images/logo/logounira.jpg') ?>";
-
-      //     const icon = new Image();
-      //     icon.onload = function() {
-      //       // create qr code with logo
-      //       var qrcode = new QRCode(document.getElementById('qrcode-' + id), {
-      //         text: `<?= base_url() ?>/public/detail-barang/${kdbrg}`,
-      //         width: 200,
-      //         height: 200,
-      //         correctLevel: QRCode.CorrectLevel.H,
-      //         colorDark: "#000000",
-      //         colorLight: "#ffffff",
-      //       });
-      //       imgQR(qrcode._oDrawing._elCanvas, this, 0.2);
-      //     }
-      //     icon.src = logo;
-      //   });
-      // }
+      ]
     });
 
     $('#btn-tambahbarang').click(function(e) {
@@ -839,7 +772,6 @@
     $('#selectkategori').on('change', function(e) {
       e.preventDefault();
       databarang.ajax.reload();
-      datarestore.ajax.reload();
     })
 
     $('.batal-form').click(function(e) {
@@ -864,6 +796,7 @@
           }
         },
         processResults: function(data, page) {
+          // console.log(data);
           return {
             results: data
           };
@@ -911,6 +844,7 @@
           },
           dataType: "json",
           success: function(response) {
+            console.log(response);
             isiForm(response)
           }
         });
@@ -931,6 +865,8 @@
         $('.hibah').hide();
         formtambah.find("input[name='toko']").val('')
         formtambah.find("input[name='instansi']").val('')
+        // $('#radiotoko').prop('checked', false);
+        // $('#radioinstansi').prop('checked', false);
       } else if ($(this).attr('id') == 'hibah') {
         $('.belibaru').hide();
         $('.radiobelibekas').hide();
@@ -975,6 +911,9 @@
         var asal = '';
       }
 
+      console.log(kd_brg);
+      console.log(kode_brg);
+
       formdata.append('kode_brg', kode_brg);
       formdata.append('asal', asal);
 
@@ -996,6 +935,7 @@
           $('.btnsimpan').html('Simpan');
         },
         success: function(response) {
+          console.log(response);
           if (response.error) {
             if (response.error.katid) {
               $('#katid').addClass('is-invalid');
@@ -1063,14 +1003,7 @@
 
   });
 
-  // function detailbarang(kd_brg) {
-  //   const kdbrg = kd_brg.split(".").join("-");
-
-  //   window.location.href = `barang-tetap/detail-barang/${kdbrg}`;
-  // }
-
   function detailbarang(id) {
-    // console.log(id);
     $.ajax({
       type: "get",
       url: "<?= base_url() ?>/barangcontroller/tampildetailbarang",
@@ -1083,6 +1016,7 @@
         $('#modaldetail').modal('show');
       }
     });
+
   }
 
   function upload(id, nama_brg) {
@@ -1095,7 +1029,7 @@
       },
       dataType: "json",
       success: function(response) {
-        $('.tampilupload').html(response.sukses).show(500);
+        $('.imageupload').html(response.sukses).show(500);
       }
     });
   }
@@ -1247,6 +1181,8 @@
       return d.nama_brg;
     })
 
+    console.log(id);
+    console.log(nama_brg);
     if (api.count() === 0) { // jika tidak ada data
       Swal.fire(
         'Gagal!',
@@ -1254,6 +1190,7 @@
         'error'
       );
     } else if (api.count() === 1) {
+      console.log('ok');
       Swal.fire({
         width: 700,
         title: `Bersihkan semua data <?= strtolower($title); ?> secara permanen?`,
@@ -1288,6 +1225,7 @@
             },
             dataType: 'json',
             success: function(response) {
+              console.log(response);
               if (response.sukses) {
                 Swal.fire(
                   'Berhasil', response.sukses, 'success'
@@ -1311,20 +1249,8 @@
     }
   }
 
-  // function cetaklabel(id) {
-  //   $.ajax({
-  //     type: "post",
-  //     url: "<?= base_url() ?>/barangcontroller/tampillabelbarang",
-  //     data: {
-  //       id: id,
-  //       jenis_kat: jenis_kat,
-  //     },
-  //     dataType: 'json',
-  //     success: function(response) {
-  //       $('.viewmodal').html(response.sukses).show(500);
-  //       $('#modallabel').modal('show');
-  //     }
-  //   });
-  // }
+  function qrcode(id) {
+    console.log(id);
+  }
 </script>
 <?= $this->endSection() ?>

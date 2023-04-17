@@ -35,6 +35,7 @@
       },
       dataType: "json",
       success: function(response) {
+        console.log(response);
         let tgl = new Date(response.tgl_pembelian);
         let buying_date = '';
         if (response.tgl_pembelian !== null) {
@@ -52,7 +53,7 @@
 
         $('.modal-body-detail').append(`
         <div class="card mb-3">
-        ${response.foto_barang ? `<img src="<?= base_url() ?>/assets/images/foto_barang/${response.foto_barang}" alt="Gambar Barang" class="rounded mx-auto d-block">` : `<img src="https://via.placeholder.com/150x150.png?text=No+Image" alt="No Image" class="rounded mx-auto d-block">`}
+        ${response.foto_barang ? `<img src="<?= base_url() ?>/assets/images/foto_barang/${response.foto_barang}" alt="Gambar Barang" class="rounded mx-auto d-block" style="width:300px; height:auto;">` : `<img src="https://via.placeholder.com/150x150.png?text=No+Image" alt="No Image" class="rounded mx-auto d-block">`}
           <div class="card-body">
             <h5 class="card-title">${response.nama_brg}</h5>
             <div class="card-text mb-3">
@@ -98,7 +99,7 @@
                 <li>
                   <div class="row mt-2">
                     <div class="col-5">Warna</div>
-                    <div class="col-7">:  ${response.warna}</div>
+                    <div class="col-7 d-flex">:&nbsp; <div id="circle" style="width: 50px;height: 25px;border-radius: 10%;border: 2px solid rgba(0, 0, 0, 0.5);background-color: ${response.warna};box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);"></div></div>
                   </div>
                 </li>
                 <li>

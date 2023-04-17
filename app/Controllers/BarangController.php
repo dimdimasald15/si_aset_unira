@@ -3,7 +3,6 @@
 namespace App\Controllers;
 
 use App\Models\Barang;
-use App\Models\StokBarang;
 use App\Models\RiwayatBarang;
 use App\Models\Kategori;
 use \Hermawan\DataTables\DataTable;
@@ -15,7 +14,6 @@ class BarangController extends BaseController
     public function __construct()
     {
         $this->barang = new Barang();
-        $this->stokbarang = new StokBarang();
         $this->riwayatbarang = new RiwayatBarang();
         $this->kategori = new Kategori();
         $this->uri = service('uri');
@@ -38,6 +36,26 @@ class BarangController extends BaseController
         ];
 
         return view('barang/indexbarangtetap', $data);
+    }
+
+    public function indexbarangpersediaan()
+    {
+        $segments = $this->uri->getSegments();
+        $breadcrumb = [];
+        $link = '';
+
+        foreach ($segments as $segment) {
+            $link .= '/' . $segment;
+            $name = ucwords(str_replace('-', ' ', $segment));
+            $breadcrumb[] = ['name' => $name, 'link' => $link];
+        }
+        $data = [
+            'title' => 'Barang Persediaan',
+            'nav' => 'barang-persediaan',
+            'breadcrumb' => $breadcrumb
+        ];
+
+        return view('barang/indexbarangpersediaan', $data);
     }
 
     public function listdatabarang()
@@ -90,8 +108,6 @@ class BarangController extends BaseController
                         <ul class="dropdown-menu shadow-lg">
                             <li><a class="dropdown-item" onclick="detailbarang(' . $row->id . ')"><i class="fa fa-info-circle"></i> Detail Barang</a>
                             </li>
-                            <li><a class="dropdown-item" onclick="qrcode(' . $row->id . ')"><i class="fa fa-qrcode"></i> Cetak Label Barang</a>
-                            </li>
                             <li><a class="dropdown-item" onclick="edit(' . $row->id . ')"><i class="fa fa-pencil-square-o"></i> Update Barang</a>
                             </li>
                             <li><a class="dropdown-item" onclick="upload(' . $row->id . ', \'' . htmlspecialchars($row->nama_brg) . '\')"><i class="bi bi-image"></i> Update Gambar Barang</a>
@@ -137,6 +153,34 @@ class BarangController extends BaseController
         }
     }
 
+    // public function detailbarang($kdbrg)
+    // {
+    //     $kode_brg = str_replace('-', '.', $kdbrg);
+    //     $query   = $this->db->table('barang b')->select('SUM(sb.jumlah_masuk) as total_jumlah_masuk, SUM(sb.sisa_stok) as jumlah_sisa_stok, b.*, k.nama_kategori, sb.jumlah_masuk, sb.sisa_stok, GROUP_CONCAT(DISTINCT r.nama_ruang SEPARATOR ", ") as nama_ruang, s.kd_satuan')
+    //         ->join('stok_barang sb', 'sb.barang_id = b.id')
+    //         ->join('kategori k', 'b.kat_id=k.id')
+    //         ->join('ruang r', 'sb.ruang_id = r.id')
+    //         ->join('satuan s', 'sb.satuan_id = s.id')
+    //         ->where('b.kode_brg', $kode_brg)
+    //         ->groupBy('b.id')
+    //         ->get();
+    //     // dd($query->getRow);
+
+    //     $result = $query->getRow();
+    //     if ($result) {
+    //         $title = 'Detail Barang ' . $result->nama_brg;
+    //     } else {
+    //         $title = 'Detail Barang';
+    //     }
+
+    //     $data = [
+    //         'title' => $title,
+    //         'barang' => $result,
+    //     ];
+
+    //     return view('barang/detailbarang', $data);
+    // }
+
     public function tampildetailbarang()
     {
         if ($this->request->isAJAX()) {
@@ -155,25 +199,39 @@ class BarangController extends BaseController
         }
     }
 
-    public function getbarangbykdbarang()
+    public function tampillabelbarang()
     {
         if ($this->request->isAJAX()) {
-            $kode_brg = $this->request->getVar('kode_brg');
-            $ruang_id = $this->request->getVar('ruang_id');
+            $id = $this->request->getVar('id');
+            $jenis = $this->request->getVar('jenis_kat');
+
+            $data = [
+                'id' => $id,
+                'title' => $jenis,
+            ];
+            $msg = [
+                'sukses' => view('barang/modallabel', $data),
+            ];
+
+            echo json_encode($msg);
+        } else {
+            $data = [
+                'title' => 'Error 404',
+                'msg' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/mazer/error-404', $data);
+        }
+    }
+
+    public function getdatabarangbyid()
+    {
+        if ($this->request->isAJAX()) {
+            $id = $this->request->getVar('id');
             $barang = $this->db->table('barang b')
                 ->select('b.id, b.kat_id, b.kode_brg, b.nama_brg, b.merk, b.warna, b.asal, b.harga_beli, b.harga_jual, b.toko, b.instansi, b.no_seri, b.no_dokumen, b.foto_barang, b.tgl_pembelian')
-                ->where('kode_brg', $kode_brg);
-
-            if (!empty($ruang_id)) {
-                $barang = $barang->select('sb.satuan_id, sb.ruang_id, sb.sisa_stok, s.kd_satuan, r.nama_ruang')
-                    ->join('stok_barang sb', 'b.id=sb.barang_id')
-                    ->join('ruang r', 'r.id=sb.ruang_id')
-                    ->join('satuan s', 's.id=sb.satuan_id')
-                    ->where('ruang_id', $ruang_id);
-            }
+                ->where('id', $id);
 
             $result = $barang->get()->getRow();
-            // var_dump($barang);
             echo json_encode($result);
         } else {
             $data = [
@@ -189,12 +247,6 @@ class BarangController extends BaseController
         if ($this->request->isAJAX()) {
             $kode_brg = $this->request->getVar('kode_brg');
             $id = $this->request->getVar('id');
-            // echo '<pre>';
-            // var_dump($id);
-            // var_dump(!empty($id));
-            // var_dump($kode_brg);
-            // var_dump(!empty($kode_brg));
-            // echo '</pre>';
             $getbarang = '';
             if (!empty($id)) {
                 $getbarang = $this->db->table('barang b')->select('b.id, b.foto_barang, b.nama_brg, b.kat_id, b.kode_brg,k.kd_kategori, k.nama_kategori, b.warna, b.merk, b.toko, b.instansi, b.asal, b.no_dokumen, b.no_seri, b.harga_beli, b.harga_jual, b.tgl_pembelian, b.created_at, b.created_by, b.updated_at,b.updated_by')
@@ -229,19 +281,34 @@ class BarangController extends BaseController
         if ($this->request->isAJAX()) {
             $caridata = $this->request->getGet('search');
             $jenis = $this->request->getGet('jenis_kat');
-            if (!empty($caridata)) {
-                $datakategori = $this->db->table('kategori')
-                    ->like('nama_kategori', $caridata)
-                    ->where('jenis', $jenis)
-                    ->where('SUBSTRING(kd_kategori, 1, 1) !=', 'A')
-                    ->where('LENGTH(kd_kategori) >=', 7)
-                    ->get();
-            } else {
-                $datakategori = $this->db->table('kategori')
-                    ->where('jenis', $jenis)
-                    ->where('SUBSTRING(kd_kategori, 1, 1) !=', 'A')
-                    ->where('LENGTH(kd_kategori) >=', 7)
-                    ->get();
+            if ($jenis == 'Barang Tetap') {
+                if (!empty($caridata)) {
+                    $datakategori = $this->db->table('kategori')
+                        ->like('nama_kategori', $caridata)
+                        ->where('jenis', $jenis)
+                        ->where('SUBSTRING(kd_kategori, 1, 1) !=', 'A')
+                        ->where('LENGTH(kd_kategori) >=', 7)
+                        ->get();
+                } else {
+                    $datakategori = $this->db->table('kategori')
+                        ->where('jenis', $jenis)
+                        ->where('SUBSTRING(kd_kategori, 1, 1) !=', 'A')
+                        ->where('LENGTH(kd_kategori) >=', 7)
+                        ->get();
+                }
+            } else if ($jenis == 'Barang Persediaan') {
+                if (!empty($caridata)) {
+                    $datakategori = $this->db->table('kategori')
+                        ->like('nama_kategori', $caridata)
+                        ->where('jenis', $jenis)
+                        ->where('LENGTH(kd_kategori) >=', 4)
+                        ->get();
+                } else {
+                    $datakategori = $this->db->table('kategori')
+                        ->where('jenis', $jenis)
+                        ->where('LENGTH(kd_kategori) >=', 4)
+                        ->get();
+                }
             }
 
             if ($datakategori->getNumRows() > 0) {
@@ -710,7 +777,7 @@ class BarangController extends BaseController
                     ];
                 } else {
                     $msg = [
-                        'error' => 'Tidak ada data kategori tetap yang bisa dipulihkan'
+                        'error' => 'Tidak ada data barang tetap yang bisa dipulihkan'
                     ];
                 }
             }
@@ -732,12 +799,16 @@ class BarangController extends BaseController
             $jenis = $this->request->getVar('jenis_kat');
             $datalama = [];
             $id = explode(",", $ids);
-            if (count($id) == 1) {
+            if (count($id) === 1) {
                 $baranglama = $this->barang->select('*')->where('id', $id)->get()->getRowArray();
                 array_push($datalama, $baranglama);
                 $nama_brg = $this->request->getVar('nama_brg');
 
                 $this->barang->delete($id, true);
+
+                if ($baranglama['foto_barang'] != NULL) {
+                    unlink(FCPATH . 'assets/images/foto_barang/' . $baranglama['foto_barang']);
+                }
 
                 $lastQuery = $this->db->getLastQuery();
 
@@ -747,15 +818,23 @@ class BarangController extends BaseController
                     'sukses' => "Data $jenis: $nama_brg berhasil dihapus secara permanen",
                 ];
             } else {
+                $data_lama = [];
                 foreach ($id as $brg_id) {
                     $baranglama = $this->barang->select('*')->where('id', $brg_id)->get()->getRowArray();
-                    array_push($datalama, $baranglama);
+                    array_push($data_lama, $baranglama);
+
+                    // echo "data_lama : ";
+                    // var_dump($data_lama);
 
                     $this->barang->delete($brg_id, true);
 
-                    $lastQuery = $this->db->getLastQuery();
+                    if ($baranglama['foto_barang'] != NULL) {
+                        unlink(FCPATH . 'assets/images/foto_barang/' . $baranglama['foto_barang']);
+                    }
 
-                    $this->riwayatbarang->inserthistori($brg_id, $datalama, null, $lastQuery, null);
+                    // $lastQuery = $this->db->getLastQuery();
+
+                    $this->riwayatbarang->deletehistorimultiple([$brg_id], $data_lama);
                 }
 
                 $msg = [

@@ -8,7 +8,7 @@ class RiwayatBarang extends Model
 {
     protected $table = "riwayat_barang";
     protected $primaryKey = 'id';
-    protected $allowedFields = ['id', 'barang_id',    'jenis_transaksi', 'field', 'old_value', 'new_value', 'created_by', 'created_at'];
+    protected $allowedFields = ['id', 'barang_id', 'field', 'old_value', 'new_value', 'created_by', 'created_at'];
     protected $useTimestamps = false;
     protected $createdField  = 'created_at';
 
@@ -30,7 +30,10 @@ class RiwayatBarang extends Model
 
     public function inserthistori($id, $data_lama, $data_baru, $lastQuery, $field_update)
     {
+        // $id = (int) $id; // casting $id menjadi integer
         $datasimpan = [];
+        // echo strpos($lastQuery, 'DELETE');
+
         if (strpos($lastQuery, 'INSERT') !== false) {
             $datasimpan = [
                 'barang_id' => $id,
@@ -64,11 +67,27 @@ class RiwayatBarang extends Model
                 'old_value' => json_encode($data_lama),
                 'new_value' => '',
             ];
+            // var_dump($datasimpan);
         }
-
-        // array_push($datasimpan, $data);
 
         $insertdatasimpan = $this->setInsertData($datasimpan);
         $this->save($insertdatasimpan);
+    }
+
+    public function deletehistorimultiple($id, $data_lama)
+    {
+        foreach ($id as $id_brg) {
+            $data_lama_filtered = array_filter($data_lama, function ($data) use ($id_brg) {
+                return $data['id'] == $id_brg;
+            });
+            $datasimpan = [
+                'barang_id' => $id_brg,
+                'field' => 'delete data',
+                'old_value' => json_encode(array_values($data_lama_filtered)),
+                'new_value' => '',
+            ];
+            $insertdatasimpan = $this->setInsertData($datasimpan);
+            $this->save($insertdatasimpan);
+        }
     }
 }
