@@ -28,18 +28,37 @@ class ProfileController extends BaseController
             $breadcrumb[] = ['name' => ucfirst($segment), 'link' => $link];
         }
 
-        $petugas = $this->pengguna->select('id, foto')->where('username', $_SESSION['username'])->get()->getRow();
+        $petugas = $this->pengguna->select('id, nip, username, email, foto, role')->where('username', $_SESSION['username'])->get()->getRow();
 
         // var_dump($petugas);
 
         $data = [
             'title' => 'My Profile',
-            'nav' => 'profile',
-            'id' => $petugas->id,
-            'foto' => $petugas->foto,
+            'petugas' => $petugas,
             'breadcrumb' => $breadcrumb,
         ];
         return view('profile/index', $data);
+    }
+
+    public function getfotobyusername()
+    {
+        if ($this->request->isAJAX()) {
+            $username = $this->request->getVar('username');
+
+            $profil = $this->db->table('petugas')->select('foto')->where('username', $username)->get()->getRow();
+
+            $msg = [
+                'foto' => $profil->foto,
+            ];
+
+            echo json_encode($msg);
+        } else {
+            $data = [
+                'title' => 'Error 404',
+                'msg' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/mazer/error-404', $data);
+        }
     }
 
     public function ubahpassword()

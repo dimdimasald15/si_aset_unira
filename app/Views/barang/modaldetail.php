@@ -35,7 +35,6 @@
       },
       dataType: "json",
       success: function(response) {
-        console.log(response);
         let tgl = new Date(response.tgl_pembelian);
         let buying_date = '';
         if (response.tgl_pembelian !== null) {

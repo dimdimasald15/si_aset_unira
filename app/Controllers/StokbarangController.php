@@ -43,11 +43,31 @@ class StokbarangController extends BaseController
 
         return view('stokbarang/indextetap', $data);
     }
+    public function indexbarangpersediaanmasuk()
+    {
+        $segments = $this->uri->getSegments();
+        $breadcrumb = [];
+        $link = '';
+
+        foreach ($segments as $segment) {
+            $link .= '/' . $segment;
+            $name = ucwords(str_replace('-', ' ', $segment));
+            $breadcrumb[] = ['name' => $name, 'link' => $link];
+        }
+        $data = [
+            'title' => 'Barang Persediaan Masuk',
+            'nav' => 'barang-persediaan-masuk',
+            'breadcrumb' => $breadcrumb
+        ];
+
+        return view('stokbarang/indexpersediaan', $data);
+    }
 
     public function listdatastokbarang()
     {
         if ($this->request->isAJAX()) {
             $jenis = $this->request->getVar('jenis_kat');
+            // echo $jenis;
             $isRestore = filter_var($this->request->getGet('isRestore'), FILTER_VALIDATE_BOOLEAN);
             $builder = $this->db->table('stok_barang sb')
                 ->select('sb.id, sb.barang_id, k.nama_kategori, b.nama_brg, b.harga_beli, b.kode_brg, jumlah_masuk,sisa_stok, b.kat_id, sb.ruang_id, r.nama_ruang, satuan_id, s.kd_satuan, sb.created_at, sb.created_by, sb.deleted_at, sb.deleted_by')
@@ -82,7 +102,7 @@ class StokbarangController extends BaseController
                 ->postQuery(function ($builder) {
                     $builder->orderBy('sb.id', 'desc');
                 })
-                ->add('action', function ($row) use ($isRestore) {
+                ->add('action', function ($row) use ($isRestore, $jenis) {
                     if ($isRestore) {
                         return '
                     <div class="btn-group mb-1">
@@ -98,21 +118,25 @@ class StokbarangController extends BaseController
                     </div>
                     ';
                     } else {
-                        return '<div class="btn-group btn-group-sm mb-1">
-                        <button type="button" class="btn btn-success dropdown-toggle me-1" data-bs-toggle="dropdown" aria-expanded="false">
-                            Action
-                        </button>
-                        <ul class="dropdown-menu shadow-lg">
-                            <li><a class="dropdown-item" onclick="detailstokbarang(\'' . htmlspecialchars($row->kode_brg) . '\',' . $row->ruang_id . ')"><i class="fa fa-info-circle"></i> Detail Stok Barang</a>
-                            </li>
-                            <li><a class="dropdown-item" onclick="cetaklabel(' . $row->id . ')"><i class="fa fa-qrcode"></i> Cetak Label Barang</a>
-                            </li>
-                            <li><a class="dropdown-item" onclick="edit(' . $row->id . ')"><i class="fa fa-pencil-square-o"></i> Update Barang</a>
-                            </li>
-                            <li><a class="dropdown-item" onclick="hapus(' . $row->id . ', \'' . htmlspecialchars($row->nama_brg) . '\', \'' . htmlspecialchars($row->nama_ruang) . '\')"><i class="fa fa-trash-o"></i> Hapus Barang</a>
-                            </li>
-                        </ul>
-                        </div>';
+                        $action = '<div class="btn-group btn-group-sm mb-1">
+                    <button type="button" class="btn btn-success dropdown-toggle me-1" data-bs-toggle="dropdown" aria-expanded="false">
+                        Action
+                    </button>
+                    <ul class="dropdown-menu shadow-lg">
+                        <li><a class="dropdown-item" onclick="detailstokbarang(\'' . htmlspecialchars($row->kode_brg) . '\',' . $row->ruang_id . ')"><i class="fa fa-info-circle"></i> Detail Stok Barang</a>
+                        </li>';
+                        if ($jenis == "Barang Tetap") {
+                            $action .= '<li><a class="dropdown-item" onclick="cetaklabel(' . $row->id . ')"><i class="fa fa-qrcode"></i> Cetak Label Barang</a>
+                        </li>';
+                        }
+                        $action .= '<li><a class="dropdown-item" onclick="edit(' . $row->id . ')"><i class="fa fa-pencil-square-o"></i> Update Barang</a>
+                        </li>
+                        <li><a class="dropdown-item" onclick="hapus(' . $row->id . ', \'' . htmlspecialchars($row->nama_brg) . '\', \'' . htmlspecialchars($row->nama_ruang) . '\')"><i class="fa fa-trash-o"></i> Hapus Barang</a>
+                        </li>
+                    </ul>
+                </div>';
+
+                        return $action;
                     }
                 })
                 ->toJson(true);
@@ -215,6 +239,12 @@ class StokbarangController extends BaseController
                     $databarang = $this->db->table('barang b')->select('b.id, b.nama_brg')->join('kategori k', 'k.id = b.kat_id')->where('k.jenis', $jenis)->get();
                 }
             } else if ($jenis == 'Barang Persediaan') {
+                if (!empty($search)) {
+                    $databarang = $this->db->table('barang b')->select('b.id, b.nama_brg')->join('kategori k', 'k.id = b.kat_id')->where('k.jenis', $jenis)
+                        ->like('b.nama_brg', $search)->get();
+                } else {
+                    $databarang = $this->db->table('barang b')->select('b.id, b.nama_brg')->join('kategori k', 'k.id = b.kat_id')->where('k.jenis', $jenis)->get();
+                }
             }
             // var_dump($databarang);
             if ($databarang->getNumRows() > 0) {
@@ -433,6 +463,7 @@ class StokbarangController extends BaseController
                 $namabrg = $query_barang['nama_brg'];
                 $query_ruang = $this->ruang->find($ruang_id);
                 $namaruang = $query_ruang['nama_ruang'];
+                $jenistrx = $this->request->getVar('jenis_transaksi');
 
                 $stokbarang = $this->db->table('stok_barang sb')->select('sb.id, sb.jumlah_keluar, sb.jumlah_masuk, b.nama_brg,r.nama_ruang')
                     ->join('ruang r', 'r.id = sb.ruang_id')
@@ -454,6 +485,12 @@ class StokbarangController extends BaseController
                     $stokbrg_id = '';
                 }
                 $sisa_stok = $jml_masuk - $jml_keluar;
+                $tglbeli = $this->request->getVar('tgl_beli');
+                if ($tglbeli) {
+                    $tgl_beli = $tglbeli;
+                } else
+                    $tgl_beli = '';
+
 
                 $simpandata = [
                     'id' => $stokbrg_id,
@@ -463,6 +500,7 @@ class StokbarangController extends BaseController
                     'jumlah_masuk' => $jml_masuk,
                     'jumlah_keluar' => $jml_keluar,
                     'sisa_stok' => $sisa_stok,
+                    'tgl_beli' => $tgl_beli,
                 ];
 
                 if ($stokbarang) {
@@ -483,7 +521,7 @@ class StokbarangController extends BaseController
                     $lastQuery = $this->db->getLastQuery();
 
                     // jenis transaksi : 'barang tetap masuk','barang persediaan masuk','permintaan barang','peminjaman barang','perbaikan barang rusak','penghapusan barang rusak'
-                    $this->riwayattrx->inserthistori($stokbrg_id, $stokbarang, $simpandata, 'barang tetap masuk update', $lastQuery, $field_update);
+                    $this->riwayattrx->inserthistori($stokbrg_id, $stokbarang, $simpandata, "$jenistrx update", $lastQuery, $field_update);
 
                     $msg = ['sukses' => "Data barang: $namabrg di $namaruang berhasil terupdate"];
                 } else {
@@ -494,7 +532,6 @@ class StokbarangController extends BaseController
                     $this->stokbarang->save($insertdata);
 
                     $stokbrg_id = $this->stokbarang->insertID();
-                    $jenistrx = $this->request->getVar('jenis_transaksi');
 
                     $lastQuery = $this->db->getLastQuery();
 
@@ -559,6 +596,13 @@ class StokbarangController extends BaseController
                 $jml_keluar = $stokbrglama['jumlah_keluar'];
                 $namabrg = $stokbrglama['nama_brg'];
                 $sisa_stok = $jml_masuk - $jml_keluar;
+                $jenistrx = $this->request->getVar('jenis_transaksi');
+                $tglbeli = $this->request->getVar('tgl_beli');
+                if ($tglbeli) {
+                    $tgl_beli = $tglbeli;
+                } else
+                    $tgl_beli = '';
+
 
                 $updatedata = [
                     'barang_id' => $barang_id,
@@ -566,6 +610,7 @@ class StokbarangController extends BaseController
                     'satuan_id' => $satuan_id,
                     'jumlah_masuk' => $jml_masuk,
                     'sisa_stok' => $sisa_stok,
+                    'tgl_beli' => $tgl_beli,
                 ];
 
                 $ubahdata = $this->stokbarang->setUpdateData($updatedata);
@@ -585,7 +630,7 @@ class StokbarangController extends BaseController
                 $lastQuery = $this->db->getLastQuery();
 
                 // jenis transaksi : 'barang tetap masuk','barang persediaan masuk','permintaan barang','peminjaman barang','perbaikan barang rusak','penghapusan barang rusak'
-                $this->riwayattrx->inserthistori($id, $stokbrglama, $updatedata, 'barang tetap masuk update', $lastQuery, $field_update);
+                $this->riwayattrx->inserthistori($id, $stokbrglama, $updatedata, "$jenistrx update", $lastQuery, $field_update);
 
                 $msg = ['sukses' => "Data stok barang: $namabrg berhasil terupdate"];
             }
@@ -676,6 +721,7 @@ class StokbarangController extends BaseController
         if ($this->request->isAJAX()) {
             $ids = $this->request->getVar('id');
             $jenis = $this->request->getVar('jenis_kat');
+            $jenistrx = $this->request->getVar('jenis_transaksi');
             $datalama = [];
             $id = explode(",", $ids);
             if (count($id) === 1) {
@@ -688,7 +734,7 @@ class StokbarangController extends BaseController
 
                 $lastQuery = $this->db->getLastQuery();
 
-                $this->riwayattrx->inserthistori($id, $datalama, null, 'hapus stok barang tetap masuk', $lastQuery, null);
+                $this->riwayattrx->inserthistori($id, $datalama, null, "hapus stok $jenistrx", $lastQuery, null);
 
                 $msg = [
                     'sukses' => "Data stok $jenis: $nama_brg di $nama_ruang berhasil dihapus secara permanen",
@@ -702,7 +748,7 @@ class StokbarangController extends BaseController
                     $this->stokbarang->delete($stokbrg_id, true);
                     // $lastQuery = $this->db->getLastQuery();
 
-                    $this->riwayattrx->deletehistorimultiple([$stokbrg_id], $data_lama, 'hapus stok barang tetap masuk');
+                    $this->riwayattrx->deletehistorimultiple([$stokbrg_id], $data_lama, "hapus stok $jenistrx");
                 }
 
                 $msg = [

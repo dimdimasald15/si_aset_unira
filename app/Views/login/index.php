@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="<?= base_url() ?>/assets/vendors/bootstrap-icons/bootstrap-icons.css">
   <link rel="stylesheet" href="<?= base_url() ?>/assets/css/app.css">
   <link rel="stylesheet" href="<?= base_url() ?>/assets/css/pages/auth.css">
+  <link rel="stylesheet" href="<?= base_url() ?>/assets/css/mystyle/mystyle.css">
 
   <!-- JQuery -->
   <script src="<?= base_url() ?>/assets/js/jquery-3.6.3.js"></script>
@@ -43,15 +44,16 @@
               <div class="invalid-feedback errpassword"></div>
 
             </div>
-            <input type="checkbox" id="show-password" class="m-1">
-            <label for="show-password"> Show password </label>
           </div>
-          <!-- <div class="form-check form-check-lg d-flex align-items-end">
-              <input class="form-check-input me-2" type="checkbox" value="" id="flexCheckDefault">
-              <label class="form-check-label text-gray-600" for="flexCheckDefault">
-                Keep me logged in
-              </label>
-            </div> -->
+
+          <div class="form-check form-check-lg d-flex align-items-end">
+            <input class="form-check-input me-2" type="checkbox" id="show-password" class="m-1">
+            <label class="form-check-label text-gray-600" for="show-password"> Show password </label>
+            <!-- <input class="form-check-input me-2" type="checkbox" value="" id="flexCheckDefault">
+            <label class="form-check-label text-gray-600" for="flexCheckDefault">
+              Keep me logged in
+            </label> -->
+          </div>
           <button class="btn btn-success btn-block btn-lg shadow-lg mt-5 btnlogin" type="submit">Log in</button>
           <!-- </form> -->
           <?= form_close(); ?>

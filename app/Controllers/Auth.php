@@ -75,16 +75,12 @@ class Auth extends BaseController
                 if (count($result) > 0) {
                     //Jika username ada maka lanjutkan verifikasi password
                     $row = $query_email->getRow();
-                    // dd($row);
                     $password_user = $row->password;
 
                     if (password_verify($password, $password_user)) {
                         //Jika password benar, maka buat session
                         $login = [
                             'isLoggedIn' => 1,
-                            'id' => $row->id,
-                            'email' => $row->email,
-                            'nip' => $row->nip,
                             'username' => $row->username,
                             'role' => $row->role,
                             'foto' => $row->foto

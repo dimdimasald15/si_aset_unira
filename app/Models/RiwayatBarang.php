@@ -90,4 +90,25 @@ class RiwayatBarang extends Model
             $this->save($insertdatasimpan);
         }
     }
+
+    public function insertmultiplehistori($id, $data_baru)
+    {
+        // echo "Model Riwayat Barang : $id";
+        // echo "<pre>";
+        // var_dump($data_baru);
+        // echo "</pre>";
+        foreach ($id as $id_brg) {
+            $data_baru_filtered = array_filter($data_baru, function ($data) use ($id_brg) {
+                return $data['id'] == $id_brg;
+            });
+            $datasimpan = [
+                'barang_id' => $id_brg,
+                'field' => 'Semua field',
+                'old_value' => '',
+                'new_value' => json_encode(array_values($data_baru_filtered)),
+            ];
+            $insertdatasimpan = $this->setInsertData($datasimpan);
+            $this->save($insertdatasimpan);
+        }
+    }
 }

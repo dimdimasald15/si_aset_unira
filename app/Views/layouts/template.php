@@ -42,7 +42,7 @@
   <!-- Select2 -->
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
-  <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.4/css/dataTables.bootstrap5.min.css">
+  <!-- <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.11.4/css/dataTables.bootstrap5.min.css"> -->
 
   <!-- Cropper.js -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" integrity="sha512-cyzxRvewl+FOKTtpBzYjW6x6IAYUCZy3sGP40hn+DQkqeluGRCax7qztK2ImL64SA+C7kVWdLI6wvdlStawhyw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -109,8 +109,7 @@
                       <p class="mb-0 text-sm text-gray-600"><?= $_SESSION['role'] ?></p>
                     </div>
                     <div class="user-img d-flex align-items-center">
-                      <div class="avatar avatar-md">
-                        <img src="<?= base_url() ?>/assets/images/faces/2.jpg">
+                      <div class="avatar avatar-md" id="avatar">
                       </div>
                     </div>
                   </div>
@@ -152,7 +151,30 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment-with-locales.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/locale/id.min.js" integrity="sha512-he8U4ic6kf3kustvJfiERUpojM8barHoz0WYpAUDWQVn61efpm3aVAD8RWL8OloaDDzMZ1gZiubF9OSdYBqHfQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script>
+    $(document).ready(function() {
+      var username = "<?= $_SESSION['username'] ?>"
+      $.ajax({
+        type: "post",
+        url: "<?= base_url('') ?>/profilecontroller/getfotobyusername",
+        data: {
+          username: username,
+        },
+        dataType: "json",
+        success: function(response) {
+          $('#avatar').append(`
+            ${response.foto?`<img src="<?= base_url(); ?>/uploads/${response.foto}" alt="Profile Picture">` : `<img src="<?= base_url() ?>/uploads/default.jpg">`
+              }                
+          `);
+        },
+        error: function(xhr, ajaxOptions, thrownError) {
+          alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
+        }
+      });
+    });
+  </script>
   <?= $this->renderSection('javascript') ?>
+
 </body>
 
 </html>

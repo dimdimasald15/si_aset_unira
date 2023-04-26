@@ -41,8 +41,8 @@
   <div class="page-title">
     <div class="row">
       <div class="col-12 col-md-8 order-md-1 order-last">
-        <h3>Daftar Barang</h3>
-        <p class="text-subtitle text-muted">Kelola menu <?= $title; ?> di Universitas Islam Raden Rahmat Malang</p>
+        <h3>Daftar <?= $title; ?></h3>
+        <p class="text-subtitle text-muted">Kelola menu <?= strtolower($title); ?> di Universitas Islam Raden Rahmat Malang</p>
       </div>
       <div class="col-12 col-md-4 order-md-2 order-first">
         <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
@@ -128,11 +128,11 @@
                       <div class="invalid-feedback errmerk"></div>
                     </div>
                   </div>
-                  <div class="col-md-6">
+                  <div class="col-md-3">
                     <label for="warna" class="form-label">Warna</label>
                     <div class="input-group mb-3">
                       <span class="input-group-text" id="basic-addon1"><i class="bi bi-palette"></i></span>
-                      <input type="text" class="form-control" placeholder="Masukkan Warna" id="warna" name="warna">
+                      <input type="color" class="form-control" placeholder="Masukkan Warna" id="warna" name="warna">
                       <div class="invalid-feedback errwarna">
                       </div>
                     </div>
@@ -217,7 +217,7 @@
                   </div>
                 </div>
               </div>
-              <div class="col-12">
+              <!-- <div class="col-12">
                 <div class="row g-2 mb-1">
                   <div class="col-md-auto">
                     <label for="tglbeli" class="mb-1">Tanggal Pembelian</label>
@@ -228,7 +228,7 @@
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> -->
             </div>
           </div>
           <!-- </div> -->
@@ -244,7 +244,7 @@
   </section>
 </div>
 
-<div class="col-12 col-md-12 imageupload" style="display:none;">
+<div class="col-12 col-md-12 viewdata" style="display:none;">
 </div>
 
 <div class="card mb-3 shadow">
@@ -271,12 +271,18 @@
       <div class="col-lg-5 d-flex flex-row justify-content-end">
         <div class="col-lg-auto d-flex flex-row justify-content-end">
           <div class="col-lg-auto btn-databarang">
-            <button type="button" class="btn btn-success" id="btn-tambahbarang">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-boxes" viewBox="0 0 16 16">
-                <path d="M7.752.066a.5.5 0 0 1 .496 0l3.75 2.143a.5.5 0 0 1 .252.434v3.995l3.498 2A.5.5 0 0 1 16 9.07v4.286a.5.5 0 0 1-.252.434l-3.75 2.143a.5.5 0 0 1-.496 0l-3.502-2-3.502 2.001a.5.5 0 0 1-.496 0l-3.75-2.143A.5.5 0 0 1 0 13.357V9.071a.5.5 0 0 1 .252-.434L3.75 6.638V2.643a.5.5 0 0 1 .252-.434L7.752.066ZM4.25 7.504 1.508 9.071l2.742 1.567 2.742-1.567L4.25 7.504ZM7.5 9.933l-2.75 1.571v3.134l2.75-1.571V9.933Zm1 3.134 2.75 1.571v-3.134L8.5 9.933v3.134Zm.508-3.996 2.742 1.567 2.742-1.567-2.742-1.567-2.742 1.567Zm2.242-2.433V3.504L8.5 5.076V8.21l2.75-1.572ZM7.5 8.21V5.076L4.75 3.504v3.134L7.5 8.21ZM5.258 2.643 8 4.21l2.742-1.567L8 1.076 5.258 2.643ZM15 9.933l-2.75 1.571v3.134L15 13.067V9.933ZM3.75 14.638v-3.134L1 9.933v3.134l2.75 1.571Z"></path>
-              </svg>
-              Tambah Barang
-            </button>
+            <div class="btn-group">
+              <button type="button" class="btn btn-success dropdown-toggle me-1" data-bs-toggle="dropdown" aria-expanded="false">
+                Input <?= $title; ?>
+              </button>
+              <ul class="dropdown-menu shadow-lg">
+                <li><a class="dropdown-item" id="btn-tambahbarang"><i class="fa fa-plus-square"></i> Tambah Barang
+                  </a>
+                </li>
+                <li><a class="dropdown-item" onclick="multipleinsert()"><i class="fa fa-file-text"></i> Input Multiple</a>
+                </li>
+              </ul>
+            </div>
             <button type="button" class="btn btn-danger" id="btn-restore"><i class="fa fa-trash-o"></i> Trash</button>
           </div>
         </div>
@@ -330,7 +336,7 @@
     </div>
   </div>
   <div class="row m-2 btn-datarestorebarang" style="display:none;">
-    <a href="barang-tetap">&laquo; Kembali ke data <?= strtolower($title); ?></a>
+    <a href="barang-persediaan">&laquo; Kembali ke data <?= strtolower($title); ?></a>
   </div>
 </div>
 
@@ -413,6 +419,7 @@
       },
       dataType: "json",
       success: function(response) {
+        console.log(response);
         isiForm(response);
       }
     });
@@ -456,19 +463,8 @@
     formtambah.find("input[name='merk']").val(merk)
     formtambah.find("input[name='toko']").val(toko)
     formtambah.find("input[name='instansi']").val(instansi)
-    formtambah.find("input[name='no_seri']").val(no_seri)
-    formtambah.find("input[name='no_dokumen']").val(no_dokumen)
     formtambah.find("input[name='harga_beli']").val(harga_beli)
     formtambah.find("input[name='harga_jual']").val(harga_jual)
-
-    let inputtglbeli = '';
-    if (tgl_pembelian !== null) {
-      inputtglbeli = tgl_pembelian;
-      inputtglbeli = inputtglbeli.split(" ")[0]; // ambil tanggal saja
-    } else {
-      inputtglbeli = tgl_pembelian;
-    }
-    formtambah.find("input[name='tgl_pembelian']").val(inputtglbeli);
 
     if (asal === 'Beli baru') {
       $('#belibaru').prop('checked', true);
@@ -497,7 +493,6 @@
       $('.belibaru').hide();
       $('.radiobelibekas').hide();
     }
-    // }
   }
 
   function hideskbrgother() {
@@ -594,9 +589,6 @@
     formtambah.find("input[name='merk']").val('');
     formtambah.find("input[name='toko']").val('');
     formtambah.find("input[name='instansi']").val('');
-    formtambah.find("input[name='no_seri']").val('');
-    formtambah.find("input[name='no_dokumen']").val('');
-    formtambah.find("input[name='tgl_pembelian']").val('');
   }
 
   function formatResult(data) {
@@ -1029,7 +1021,7 @@
       },
       dataType: "json",
       success: function(response) {
-        $('.imageupload').html(response.sukses).show(500);
+        $('.viewdata').html(response.sukses).show(500);
       }
     });
   }
@@ -1249,8 +1241,22 @@
     }
   }
 
-  function qrcode(id) {
-    console.log(id);
+  function multipleinsert() {
+    $.ajax({
+      url: "<?= base_url() ?>/barangcontroller/tampilMultipleInsert",
+      data: {
+        jenis_kat: jenis_kat,
+        nav: "<?= $nav ?>",
+      },
+      dataType: "json",
+      success: function(response) {
+        formtambah.hide(500);
+        $('.viewdata').html(response.data).show(500);
+      },
+      error: function(xhr, ajaxOptions, thrownError) {
+        alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
+      }
+    });
   }
 </script>
 <?= $this->endSection() ?>

@@ -7,6 +7,7 @@ use App\Models\RiwayatBarang;
 use App\Models\Kategori;
 use \Hermawan\DataTables\DataTable;
 use App\Controllers\BaseController;
+use PHPUnit\Framework\Constraint\Count;
 
 class BarangController extends BaseController
 {
@@ -119,6 +120,28 @@ class BarangController extends BaseController
                     }
                 })
                 ->toJson(true);
+        } else {
+            $data = [
+                'title' => 'Error 404',
+                'msg' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/mazer/error-404', $data);
+        }
+    }
+
+    public function tampilMultipleInsert()
+    {
+        if ($this->request->isAJAX()) {
+            $title = $this->request->getVar('jenis_kat');
+            $nav = $this->request->getVar('nav');
+            $data = [
+                'title' => $title,
+                'nav' => $nav,
+            ];
+            $msg = [
+                'data' => view('barang/formmultipleinsert', $data)
+            ];
+            echo json_encode($msg);
         } else {
             $data = [
                 'title' => 'Error 404',
@@ -380,18 +403,17 @@ class BarangController extends BaseController
 
                 $msg = [
                     'subkdkat' => $kd_kat['kd_kategori'],
-                    'subkdbrg' => '001',
+                    'subkdbrgother' => '001',
                 ];
             } else {
                 // mengambil angka dari string lalu menambahkannya dengan 1
-                // var_dump($getkdbarang);
                 $subkdbarang = (int)($getkdbarang->subkdbarang) + 1;
                 // mengubah angka menjadi string dengan 3 karakter dan diisi dengan "0" jika kurang dari 3 karakter
                 $sbkdbrgbaru = str_pad((string)$subkdbarang, 3, "0", STR_PAD_LEFT);
 
                 $msg = [
                     'subkdkat' => $getkdbarang->kd_kategori,
-                    'subkdbrg' => $sbkdbrgbaru,
+                    'subkdbrgother' => $sbkdbrgbaru,
                 ];
             }
 
@@ -843,6 +865,168 @@ class BarangController extends BaseController
             }
 
             return json_encode($msg);
+        } else {
+            $data = [
+                'title' => 'Error 404',
+                'msg' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/mazer/error-404', $data);
+        }
+    }
+
+    public function insertmultiple()
+    {
+        if ($this->request->isAJAX()) {
+            $kat_id = array();
+            $kode_brg = array();
+            $nama_brg = array();
+            $merk = array();
+            $warna = array();
+            $toko = array();
+            $instansi = array();
+            $no_seri = array();
+            $no_dokumen = array();
+            $harga_beli = array();
+            $harga_jual = array();
+            $tgl_pembelian = array();
+            $asal = array();
+
+            $jmldata = intval($this->request->getVar('jmldata'));
+            for ($j = 1; $j <= $jmldata; $j++) {
+                $val = $this->request->getVar("kat_id$j") ?? '';
+                array_push($kat_id, $val);
+                array_push($kode_brg, $this->request->getVar("kode_brg$j"));
+                array_push($nama_brg, $this->request->getVar("nama_brg$j"));
+                array_push($merk, $this->request->getVar("merk$j"));
+                array_push($warna, $this->request->getVar("warna$j"));
+                array_push($toko, $this->request->getVar("toko$j"));
+                array_push($instansi, $this->request->getVar("instansi$j"));
+                array_push($no_seri, $this->request->getVar("no_seri$j"));
+                array_push($no_dokumen, $this->request->getVar("no_dokumen$j"));
+                array_push($harga_beli, $this->request->getVar("harga_beli$j"));
+                array_push($harga_jual, $this->request->getVar("harga_jual$j"));
+                array_push($tgl_pembelian, $this->request->getVar("tgl_pembelian$j"));
+                array_push($asal, $this->request->getVar("asal_$j"));
+            }
+
+            $validation =  \Config\Services::validation();
+            $errors = array();
+            for ($a = 1; $a <= $jmldata; $a++) {
+                $rules = [
+                    'kat_id' . $a => [
+                        'label' => 'Kode Kategori',
+                        'rules' => 'required',
+                        'errors' => [
+                            'required' => "{field} form $a tidak boleh kosong",
+                        ],
+                    ],
+                    'kode_brg' . $a => [
+                        'label' => 'Kode Barang',
+                        'rules' => 'required|is_unique[barang.kode_brg]',
+                        'errors' => [
+                            'required' => "{field} form $a tidak boleh kosong",
+                            'is_unique' => "{field} form $a sudah ada dan tidak boleh sama",
+                        ],
+                    ],
+                    'nama_brg' . $a => [
+                        'label' => 'Nama Barang',
+                        'rules' => 'required|is_unique[barang.nama_brg]',
+                        'errors' => [
+                            'required' => "{field} form $a tidak boleh kosong",
+                            'is_unique' => "{field} sudah ada dan tidak boleh sama",
+                        ]
+                    ],
+                    'merk' . $a => [
+                        'label' => 'Merk barang',
+                        'rules' => 'required',
+                        'errors' => [
+                            'required' => "{field} form $a tidak boleh kosong",
+                        ]
+                    ],
+                    'harga_beli' . $a => [
+                        'label' => 'Harga beli barang',
+                        'rules' => 'required',
+                        'errors' => [
+                            'required' => "{field} form $a tidak boleh kosong",
+                        ]
+                    ],
+                    'harga_jual' . $a => [
+                        'label' => 'Harga jual barang',
+                        'rules' => 'required',
+                        'errors' => [
+                            'required' => "{field} form $a tidak boleh kosong",
+                        ]
+                    ],
+                    'asal_' . $a => [
+                        'label' => 'Asal barang',
+                        'rules' => 'required',
+                        'errors' => [
+                            'required' => "{field} form $a tidak boleh kosong",
+                        ]
+                    ],
+                ];
+                if (!$this->validate($rules)) {
+                    $errors = $validation->getErrors();
+                }
+            }
+
+            // check for errors
+            if (!empty($errors)) {
+                $msg = [
+                    'jmldata' => $jmldata,
+                    'error' => $errors
+                ];
+            } else {
+                $this->db->transStart();
+
+                for ($i = 0; $i < $jmldata; $i++) {
+                    // echo "sukses";
+                    $simpandatamt = [
+                        'kat_id' => $kat_id[$i],
+                        'kode_brg' => $kode_brg[$i],
+                        'nama_brg' => $nama_brg[$i],
+                        'merk' => $merk[$i],
+                        'warna' => $warna[$i],
+                        'asal' => $asal[$i],
+                        'toko' => $toko[$i],
+                        'instansi' => $instansi[$i],
+                        'no_seri' => $no_seri[$i],
+                        'no_dokumen' => $no_dokumen[$i],
+                        'harga_beli' => $harga_beli[$i],
+                        'harga_jual' => $harga_jual[$i],
+                        'tgl_pembelian' => $tgl_pembelian[$i],
+                    ];
+
+                    // Panggil fungsi setInsertData dari model sebelum data disimpan
+                    $insertdata = $this->barang->setInsertData($simpandatamt);
+                    // Simpan data ke database
+                    $this->barang->save($insertdata);
+
+                    // $barang_id[] = $this->barang->insertID();
+                    // echo "barang_id = $barang_id";
+
+                    // $lastQuery = $this->db->getLastQuery();
+                    // $this->riwayatbarang->insertmultiplehistori([$this->barang->insertID()], $simpandatamt);
+                    // Simpan ke dalam tabel riwayat_barang
+                    $data_riwayat = $insertdata;
+                    $data_riwayat['barang_id'] = $this->barang->insertID();
+                    $data_riwayat['field'] = 'Semua field';
+                    $data_riwayat['old_value'] = '';
+                    $data_riwayat['new_value'] = json_encode($insertdata);
+                    $this->riwayatbarang->insert($data_riwayat);
+                }
+                // Commit transaction
+                $this->db->transComplete();
+
+                if ($this->db->transStatus() === false) {
+                    // Jika terjadi kesalahan pada transaction
+                    $msg = ['error' => 'Gagal menyimpan data barang'];
+                } else {
+                    // Jika berhasil disimpan
+                    $msg = ['sukses' => "Sukses $jmldata data barang berhasil tersimpan"];
+                }
+            }
+            echo json_encode($msg);
         } else {
             $data = [
                 'title' => 'Error 404',
