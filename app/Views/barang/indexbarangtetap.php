@@ -41,8 +41,8 @@
   <div class="page-title">
     <div class="row">
       <div class="col-12 col-md-8 order-md-1 order-last">
-        <h3>Daftar Barang</h3>
-        <p class="text-subtitle text-muted">Kelola menu <?= $title; ?> di Universitas Islam Raden Rahmat Malang</p>
+        <h3>Daftar <?= $title; ?></h3>
+        <p class="text-subtitle text-muted">Kelola menu <?= strtolower($title); ?> di Universitas Islam Raden Rahmat Malang</p>
       </div>
       <div class="col-12 col-md-4 order-md-2 order-first">
         <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
@@ -71,7 +71,6 @@
           <?= csrf_field() ?>
           <div class="form-body">
             <div class="row d-flex justify-content-between">
-              <!-- <div class="col-lg-6"> -->
               <div class="col-12">
                 <input type="hidden" name="id" id="id">
                 <div class="row mb-1">
@@ -188,7 +187,7 @@
                     </div>
                   </div>
                   <div class="col-md-7 hibah" style="display:none;">
-                    <label for="warna" class="form-label">Nama Instansi</label>
+                    <label for="instansi" class="form-label">Nama Instansi</label>
                     <div class="input-group mb-3">
                       <span class="input-group-text" id="basic-addon1"><i class="bi bi-building"></i></span>
                       <input type="text" class="form-control" placeholder="Masukkan Nama Instansi" id="instansi" name="instansi">
@@ -264,7 +263,7 @@
   </section>
 </div>
 
-<div class="col-12 col-md-12 tampilupload" style="display:none;">
+<div class="col-12 col-md-12 viewdata" style="display:none;">
 </div>
 
 <div class="card mb-3 shadow">
@@ -291,12 +290,18 @@
       <div class="col-lg-5 d-flex flex-row justify-content-end">
         <div class="col-lg-auto d-flex flex-row justify-content-end">
           <div class="col-lg-auto btn-databarang">
-            <button type="button" class="btn btn-success" id="btn-tambahbarang">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-boxes" viewBox="0 0 16 16">
-                <path d="M7.752.066a.5.5 0 0 1 .496 0l3.75 2.143a.5.5 0 0 1 .252.434v3.995l3.498 2A.5.5 0 0 1 16 9.07v4.286a.5.5 0 0 1-.252.434l-3.75 2.143a.5.5 0 0 1-.496 0l-3.502-2-3.502 2.001a.5.5 0 0 1-.496 0l-3.75-2.143A.5.5 0 0 1 0 13.357V9.071a.5.5 0 0 1 .252-.434L3.75 6.638V2.643a.5.5 0 0 1 .252-.434L7.752.066ZM4.25 7.504 1.508 9.071l2.742 1.567 2.742-1.567L4.25 7.504ZM7.5 9.933l-2.75 1.571v3.134l2.75-1.571V9.933Zm1 3.134 2.75 1.571v-3.134L8.5 9.933v3.134Zm.508-3.996 2.742 1.567 2.742-1.567-2.742-1.567-2.742 1.567Zm2.242-2.433V3.504L8.5 5.076V8.21l2.75-1.572ZM7.5 8.21V5.076L4.75 3.504v3.134L7.5 8.21ZM5.258 2.643 8 4.21l2.742-1.567L8 1.076 5.258 2.643ZM15 9.933l-2.75 1.571v3.134L15 13.067V9.933ZM3.75 14.638v-3.134L1 9.933v3.134l2.75 1.571Z"></path>
-              </svg>
-              Tambah Barang
-            </button>
+            <div class="btn-group">
+              <button type="button" class="btn btn-success dropdown-toggle me-1" data-bs-toggle="dropdown" aria-expanded="false">
+                Input <?= $title; ?>
+              </button>
+              <ul class="dropdown-menu shadow-lg">
+                <li><a class="dropdown-item" id="btn-tambahbarang"><i class="fa fa-plus-square"></i> Tambah Barang
+                  </a>
+                </li>
+                <li><a class="dropdown-item" onclick="multipleinsert()"><i class="fa fa-file-text"></i> Input Multiple</a>
+                </li>
+              </ul>
+            </div>
             <button type="button" class="btn btn-danger" id="btn-restore"><i class="fa fa-trash-o"></i> Trash</button>
           </div>
         </div>
@@ -351,7 +356,7 @@
     </div>
   </div>
   <div class="row m-2 btn-datarestorebarang" style="display:none;">
-    <a href="barang-tetap">&laquo; Kembali ke data <?= strtolower($title); ?></a>
+    <a href="<?= $nav ?>">&laquo; Kembali ke data <?= strtolower($title); ?></a>
   </div>
 </div>
 
@@ -372,8 +377,6 @@
   let asalbrg2 = $('#belibekas').val();
   let asalbrg3 = $('#hibah').val();
 
-
-
   function hapus(id, namabrg) {
     Swal.fire({
       title: `Apakah kamu yakin ingin menghapus data ${namabrg}?`,
@@ -387,7 +390,7 @@
       if (result.isConfirmed) {
         $.ajax({
           type: "post",
-          url: "barang-tetap/hapus/" + id,
+          url: "<?= $nav ?>/hapus/" + id,
           data: {
             nama_brg: namabrg
           },
@@ -526,6 +529,7 @@
   }
 
   function clearForm() {
+    formtambah.find("#warna").val('#000000');
     formtambah.find("input").val("")
     formtambah.find("select").html("")
     formtambah.find("input[type='radio']").prop('checked', false);
@@ -586,17 +590,19 @@
   }
 
   function getsubkdotherbarang(idkategori) {
-    $.ajax({
-      type: "post",
-      url: "<?= base_url() ?>/barangcontroller/getkdbrgbykdkat",
-      data: {
-        katid: idkategori,
-      },
-      dataType: "json",
-      success: function(response) {
-        kdbrgother = response.subkdbrg;
-      }
-    });
+    if (idkategori !== null) {
+      $.ajax({
+        type: "post",
+        url: "<?= base_url() ?>/barangcontroller/getkdbrgbykdkat",
+        data: {
+          katid: idkategori,
+        },
+        dataType: "json",
+        success: function(response) {
+          kdbrgother = response.subkdbrgother;
+        }
+      });
+    }
   }
 
   function clearformwithtrigger() {
@@ -607,7 +613,7 @@
     formtambah.find("input[name='nama_brg']").val('');
     formtambah.find("input[name='harga_beli']").val('');
     formtambah.find("input[name='harga_jual']").val('');
-    formtambah.find("input[name='warna']").val('');
+    formtambah.find("#warna").val('#000000');
     formtambah.find("input[name='merk']").val('');
     formtambah.find("input[name='toko']").val('');
     formtambah.find("input[name='instansi']").val('');
@@ -628,18 +634,19 @@
     return $result;
   }
 
-  function imgQR(qrCanvas, centerImage, factor) {
-    var h = qrCanvas.height;
-    //center size
-    var cs = h * factor;
-    // Center offset
-    var co = (h - cs) / 2;
-    var ctx = qrCanvas.getContext("2d");
-    ctx.drawImage(centerImage, 0, 0, centerImage.width, centerImage.height, co, co, cs, cs + 10);
-    ctx.strokeStyle = "#ffffff";
-    ctx.lineWidth = 2 // ketebalan garis tepi 2 piksel
-    ctx.strokeRect(co, co, cs, cs + 10); // membuat garis tepi persegi panjang di sekitar gambar
-  }
+  // function imgQR(qrCanvas, centerImage, factor) {
+  //   var h = qrCanvas.height;
+  //   //center size
+  //   var cs = h * factor;
+  //   // Center offset
+  //   var co = (h - cs) / 2;
+  //   var ctx = qrCanvas.getContext("2d");
+  //   ctx.drawImage(centerImage, 0, 0, centerImage.width, centerImage.height, co, co, cs, cs + 10);
+  //   ctx.strokeStyle = "#ffffff";
+  //   ctx.lineWidth = 2 // ketebalan garis tepi 2 piksel
+  //   ctx.strokeRect(co, co, cs, cs + 10); // membuat garis tepi persegi panjang di sekitar gambar
+  // }
+  var katid = '';
 
   $(document).ready(function() {
     formtambah.hide();
@@ -648,7 +655,7 @@
       processing: true,
       serverSide: true,
       ajax: {
-        url: `barang-tetap/listdatabarang?jenis_kat=${jenis_kat}&isRestore=0`,
+        url: `<?= $nav ?>/listdatabarang?jenis_kat=${jenis_kat}&isRestore=0`,
         data: function(d) {
           d.kategori = $('#selectkategori').val()
         },
@@ -745,6 +752,7 @@
       clear_is_invalid();
       defaultform();
       clearForm();
+      $('.viewdata').hide();
       $('#belibaru').val(asalbrg1);
       $('#belibekas').val(asalbrg2);
       $('#hibah').val(asalbrg3);
@@ -763,7 +771,7 @@
         processing: true,
         serverSide: true,
         ajax: {
-          url: `barang-tetap/tampildatarestore?jenis_kat=${jenis_kat}&isRestore=1`,
+          url: `<?= $nav ?>/tampildatarestore?jenis_kat=${jenis_kat}&isRestore=1`,
           data: function(d) {
             d.kategori = $('#selectkategori').val()
           }
@@ -853,8 +861,14 @@
       minimumInputLength: 1,
       allowClear: true,
       width: "50%",
+      initSelection: function(element, callback) {
+        callback({
+          id: '',
+          text: ''
+        });
+      },
       ajax: {
-        url: `barang-tetap/pilihkategori`,
+        url: `<?= $nav ?>/pilihkategori`,
         dataType: 'json',
         delay: 250,
         data: function(params) {
@@ -875,7 +889,7 @@
 
     $('#katid').on('change', function(e) {
       e.preventDefault();
-      var katid = $(this).val();
+      katid = $(this).val();
       if (katid == null) {
         kd_brg = '';
         clearForm();
@@ -894,14 +908,14 @@
         clearformwithtrigger();
         hideskbrgother();
       } else if ($('#skbarang').val() == 'otherbrg') {
+        clearformwithtrigger();
         $('#skbarang-other').show();
         $('#skbarang-other').val(kdbrgother);
         kd_brg = `${$('#subkdkategori').val()}.${$('#skbarang-other').val()}`;
-        clearformwithtrigger();
       } else {
+        clearformwithtrigger();
         kd_brg = `${$('#subkdkategori').val()}.${$('#skbarang').val()}`
         hideskbrgother()
-        clearformwithtrigger();
 
         $.ajax({
           type: "post",
@@ -962,9 +976,9 @@
       e.preventDefault();
       let url = "";
       if (saveMethod == "update") {
-        url = "barang-tetap/update/" + globalId;
+        url = "<?= $nav ?>/update/" + globalId;
       } else if (saveMethod == "add") {
-        url = "barang-tetap/simpan";
+        url = "<?= $nav ?>/simpan";
       }
       var kode_brg = kd_brg;
 
@@ -975,6 +989,8 @@
         var asal = '';
       }
 
+      // console.log((katid == '') ? true : false);
+      // formdata.append('kat_id', katid);
       formdata.append('kode_brg', kode_brg);
       formdata.append('asal', asal);
 
@@ -982,11 +998,8 @@
         type: "post",
         url: url,
         data: formdata,
-        enctype: 'multipart/form-data',
         processData: false,
         contentType: false,
-        cache: false,
-        dataType: "json",
         beforeSend: function() {
           $('.btnsimpan').attr('disable', 'disabled');
           $('.btnsimpan').html('<i class="fa fa-spin fa-spinner"></i>');
@@ -995,7 +1008,8 @@
           $('.btnsimpan').removeAttr('disable');
           $('.btnsimpan').html('Simpan');
         },
-        success: function(response) {
+        success: function(result) {
+          var response = JSON.parse(result);
           if (response.error) {
             if (response.error.katid) {
               $('#katid').addClass('is-invalid');
@@ -1055,9 +1069,7 @@
           alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
         }
       });
-
       return false;
-
     })
 
 
@@ -1066,11 +1078,10 @@
   // function detailbarang(kd_brg) {
   //   const kdbrg = kd_brg.split(".").join("-");
 
-  //   window.location.href = `barang-tetap/detail-barang/${kdbrg}`;
+  //   window.location.href = `<?= $nav ?>/detail-barang/${kdbrg}`;
   // }
 
   function detailbarang(id) {
-    // console.log(id);
     $.ajax({
       type: "get",
       url: "<?= base_url() ?>/barangcontroller/tampildetailbarang",
@@ -1095,7 +1106,8 @@
       },
       dataType: "json",
       success: function(response) {
-        $('.tampilupload').html(response.sukses).show(500);
+        formtambah.hide();
+        $('.viewdata').html(response.sukses).show(500);
       }
     });
   }
@@ -1113,7 +1125,7 @@
       if (result.isConfirmed) {
         $.ajax({
           type: "post",
-          url: "barang-tetap/restore/" + id,
+          url: "<?= $nav ?>/restore/" + id,
           data: {
             nama_brg: namabrg,
             jenis_kat: jenis_kat,
@@ -1163,7 +1175,7 @@
         if (result.isConfirmed) {
           $.ajax({
             type: "post",
-            url: "barang-tetap/restore",
+            url: "<?= $nav ?>/restore",
             data: {
               jenis_kat: jenis_kat,
             },
@@ -1208,7 +1220,7 @@
       if (result.isConfirmed) {
         $.ajax({
           type: "post",
-          url: "barang-tetap/hapuspermanen",
+          url: "<?= $nav ?>/hapuspermanen",
           data: {
             id: id,
             nama_brg: namabrg,
@@ -1282,7 +1294,7 @@
         if (result.isConfirmed) {
           $.ajax({
             type: "post",
-            url: "barang-tetap/hapuspermanen",
+            url: "<?= $nav ?>/hapuspermanen",
             data: {
               id: id.join(","),
             },
@@ -1309,6 +1321,24 @@
         }
       });
     }
+  }
+
+  function multipleinsert() {
+    $.ajax({
+      url: "<?= base_url() ?>/barangcontroller/tampilMultipleInsert",
+      data: {
+        jenis_kat: jenis_kat,
+        nav: "<?= $nav ?>",
+      },
+      dataType: "json",
+      success: function(response) {
+        formtambah.hide(500);
+        $('.viewdata').html(response.data).show(500);
+      },
+      error: function(xhr, ajaxOptions, thrownError) {
+        alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
+      }
+    });
   }
 
   // function cetaklabel(id) {

@@ -116,20 +116,20 @@
                   </div>
                 </div>
               </div>
-              <!-- <div class="col-lg-6">
+              <div class="col-lg-6">
                 <div class="col-12">
                   <div class="row g-2 mb-1">
                     <div class="col-md-auto">
-                      <label for="tglbeli" class="mb-1">Tanggal Pembelian</label>
+                      <label for="tglbeli" class="mb-1">Tanggal Pembelian <?= $title ?></label>
                       <div class="input-group mb-3">
                         <span class="input-group-text" id="basic-addon1"><i class="bi bi-calendar3"></i></span>
-                        <input type="date" class="form-control" placeholder="Masukkan Tanggal" id="tglbeli" name="tgl_pembelian">
+                        <input type="date" class="form-control" placeholder="Masukkan Tanggal" id="tglbeli" name="tgl_beli">
                         <div class="invalid-feedback errtglbeli"></div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div> -->
+              </div>
             </div>
           </div>
           <div class="row">
@@ -167,11 +167,7 @@
           <select id="selectlokasi" class="form-select"></select>
         </div>
       </div>
-      <div class="col-lg-4"></div>
     </div>
-    <!-- <h5 class="card-title">Special title treatment</h5>
-    <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-    <a href="#" class="btn btn-primary">Go somewhere</a> -->
   </div>
 </div>
 <div class="card mb-3 shadow datalist-stok">
@@ -224,10 +220,9 @@
         <thead class=" thead-dark">
           <tr>
             <th>No.</th>
-            <th>QR Code</th>
             <th>Kode Barang</th>
             <th>Nama Barang</th>
-            <!-- <th>Kategori</th> -->
+            <th>Kategori</th>
             <th>Jumlah Masuk</th>
             <th>Satuan</th>
             <th>Lokasi</th>
@@ -255,7 +250,7 @@
   let saveMethod, globalId;
   let kd_brg = '';
   let jenistrx = '<?= strtolower($title); ?>';
-  let jenis_kat = 'Barang Tetap';
+  let jenis_kat = 'Barang Persediaan';
   let datastok = '';
   let datarestore = '';
 
@@ -370,19 +365,6 @@
     return $result;
   }
 
-  function imgQR(qrCanvas, centerImage, factor) {
-    var h = qrCanvas.height;
-    //center size
-    var cs = h * factor;
-    // Center offset
-    var co = (h - cs) / 2;
-    var ctx = qrCanvas.getContext("2d");
-    ctx.drawImage(centerImage, 0, 0, centerImage.width, centerImage.height, co, co, cs, cs + 10);
-    ctx.strokeStyle = "#ffffff";
-    ctx.lineWidth = 2 // ketebalan garis tepi 2 piksel
-    ctx.strokeRect(co, co, cs, cs + 10); // membuat garis tepi persegi panjang di sekitar gambar
-  }
-
   $(document).ready(function() {
     formtambah.hide();
 
@@ -409,20 +391,14 @@
           orderable: false
         },
         {
-          data: null,
-          render: function(data, type, row) {
-            return '<div id="qrcode-' + row.id + '"></div>';
-          }
-        },
-        {
           data: 'kode_brg'
         },
         {
           data: 'nama_brg'
         },
-        // {
-        //   data: 'nama_kategori'
-        // },
+        {
+          data: 'nama_kategori'
+        },
         {
           data: 'jumlah_masuk',
         },
@@ -460,32 +436,6 @@
           orderable: false
         },
       ],
-      drawCallback: function(settings) {
-        var api = this.api();
-        api.rows().every(function(rowIdx, tableLoop, rowLoop) {
-          var rowData = this.data();
-          var id = rowData.id;
-          var kodebarang = rowData.kode_brg;
-          var loc_id = rowData.ruang_id;
-          const kdbrg = kodebarang.split(".").join("-");
-          const logo = "<?= base_url('assets/images/logo/logounira.jpg') ?>";
-
-          const icon = new Image();
-          icon.onload = function() {
-            // create qr code with logo
-            var qrcode = new QRCode(document.getElementById('qrcode-' + id), {
-              text: `<?= base_url() ?>/public/detail-barang/${kdbrg}-${loc_id}`,
-              width: 200,
-              height: 200,
-              correctLevel: QRCode.CorrectLevel.H,
-              colorDark: "#000000",
-              colorLight: "#ffffff",
-            });
-            imgQR(qrcode._oDrawing._elCanvas, this, 0.2);
-          }
-          icon.src = logo;
-        });
-      }
     });
 
     $.ajax({
@@ -563,7 +513,7 @@
     });
 
     $('#idbrg').select2({
-      placeholder: 'Piih Nama Barang tetap',
+      placeholder: 'Piih Nama Barang Persediaan',
       minimumInputLength: 1,
       allowClear: true,
       width: "50%",
@@ -696,6 +646,7 @@
       }
       $('#satuan').prop('disabled', false);
 
+
       let url = "";
       if (saveMethod == "update") {
         url = "<?= $nav ?>/update/" + globalId;
@@ -721,7 +672,7 @@
           $('.btnsimpan').html('Simpan');
         },
         success: function(result) {
-          var response = JSON.parse(result)
+          response = JSON.parse(result)
           if (response.error) {
             if (response.error.idbrg) {
               $('#idbrg').addClass('is-invalid');
@@ -969,6 +920,7 @@
             nama_brg: namabrg,
             nama_brg: namaruang,
             jenis_kat: jenis_kat,
+            jenis_transaksi: jenistrx,
           },
           dataType: 'json',
           success: function(response) {
@@ -1005,7 +957,6 @@
     var nama_ruang = api.data().toArray().map(function(d) {
       return d.nama_ruang;
     })
-    console.log(`${id} + ${nama_brg} + ${nama_ruang}`);
 
     if (api.count() === 0) { // jika tidak ada data
       Swal.fire(
@@ -1045,6 +996,7 @@
             url: "<?= $nav ?>/hapuspermanen",
             data: {
               id: id.join(","),
+              jenis_transaksi: jenistrx,
             },
             dataType: 'json',
             success: function(response) {

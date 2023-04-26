@@ -93,6 +93,17 @@ a:hover {
   color: #7eb57c;
 }
 
+.form-check-input:checked {
+  background-color: #198754 !important;
+  border-color: #198754 !important;
+}
+
+.form-check-input[type='checkbox']:indeterminate {
+  background-color: #198754;
+  border-color: #198754;
+  background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M6 10h8'/%3E%3C/svg%3E");
+}
+
 .dropdown-menu {
   cursor: pointer;
 }

@@ -23,77 +23,78 @@
       </div>
     </div>
   </div>
-  <section class="section">
-    <div class="card shadow mb-3" id="tampilformtambah" style="display:none">
-      <div class="card-header shadow-sm">
-        <div class="row">
-          <h4 class="card-title">Tambah Data Ruangan</h4>
-        </div>
-      </div>
-      <div class="card-body">
-        <form class="form form-vertical" id="formTambah">
-          <?= csrf_field() ?>
-          <div class="form-body">
-            <div class="row">
-              <div class="col-12">
-                <input type="hidden" name="id" id="id">
-                <!-- <div class="form-group has-icon-left"> -->
-                <div class="row mb-1">
-                  <label for="namaruang">Nama Ruang</label>
-                </div>
-                <div class="row mb-1">
-                  <div class="input-group mb-3">
-                    <span class="input-group-text" id="basic-addon1"><i class="bi bi-door-closed"></i></span>
-                    <input type="text" class="form-control" placeholder="Nama ruang" id="namaruang" name="nama_ruang">
-                    <div class="invalid-feedback errnamaruang"></div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-12">
-                <div class="row mb-1">
-                  <label for="namalantai mb-2">Nama Lantai</label>
-                </div>
-                <div class="row mb-1">
-                  <div class="input-group mb-3">
-                    <label class="input-group-text" for="inputGroupSelect01"><i class="bi bi-layers"></i></label>
-                    <select name="nama_lantai" class="form-select" placeholder="Nama lantai" id="namalantai">
-                      <option value="" selected>Pilih Lantai</option>
-                      <option value="1">Lantai 1</option>
-                      <option value="2">Lantai 2</option>
-                      <option value="3">Lantai 3</option>
-                    </select>
-                    <div class="invalid-feedback errnamalantai"></div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-12">
-                <div class="row mb-1">
-                  <label for="namagedung mb-2">Nama Gedung</label>
-                </div>
-                <div class="row mb-1">
-                  <div class="input-group mb-3">
-                    <label class="input-group-text" for="inputGroupSelect01"><i class="bi bi-building"></i></label>
-                    <select class="form-select" name="gedung_id" id="namagedung">
-                      <option value="" selected>Pilih Gedung</option>
-                      <option value="1">Gedung KH KH. Mahmud Zubaidi (A)</option>
-                      <option value="2">Gedung KH. M. Tolchah Hasan (B)</option>
-                      <option value="3">Gedung KH. M. Tolchah Hasan (C)</option>
-                    </select>
-                    <div class="invalid-feedback errnamagedung"></div>
-                  </div>
-                </div>
-              </div>
-              <div class="col-12 d-flex justify-content-end">
-                <button type="button" class="btn btn-white my-4 batal-form">Batal</button>
-                <button type="submit" class="btn btn-success my-4 btnsimpan">Simpan</button>
-              </div>
-            </div>
-          </div>
-        </form>
+</div>
+
+<section class="section">
+  <div class="card shadow mb-3" id="tampilformtambah" style="display:none">
+    <div class="card-header shadow-sm">
+      <div class="row">
+        <h4 class="card-title">Tambah Data Ruangan</h4>
       </div>
     </div>
-  </section>
-</div>
+    <div class="card-body">
+      <form class="form form-vertical" id="formTambah">
+        <?= csrf_field() ?>
+        <div class="form-body">
+          <div class="row">
+            <div class="col-12">
+              <input type="hidden" name="id" id="id">
+              <!-- <div class="form-group has-icon-left"> -->
+              <div class="row mb-1">
+                <label for="namaruang">Nama Ruang</label>
+              </div>
+              <div class="row mb-1">
+                <div class="input-group mb-3">
+                  <span class="input-group-text" id="basic-addon1"><i class="bi bi-door-closed"></i></span>
+                  <input type="text" class="form-control" placeholder="Nama ruang" id="namaruang" name="nama_ruang">
+                  <div class="invalid-feedback errnamaruang"></div>
+                </div>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="row mb-1">
+                <label for="namalantai mb-2">Nama Lantai</label>
+              </div>
+              <div class="row mb-1">
+                <div class="input-group mb-3">
+                  <label class="input-group-text" for="inputGroupSelect01"><i class="bi bi-layers"></i></label>
+                  <select name="nama_lantai" class="form-select" placeholder="Nama lantai" id="namalantai">
+                    <option value="" selected>Pilih Lantai</option>
+                    <option value="1">Lantai 1</option>
+                    <option value="2">Lantai 2</option>
+                    <option value="3">Lantai 3</option>
+                  </select>
+                  <div class="invalid-feedback errnamalantai"></div>
+                </div>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="row mb-1">
+                <label for="namagedung mb-2">Nama Gedung</label>
+              </div>
+              <div class="row mb-1">
+                <div class="input-group mb-3">
+                  <label class="input-group-text" for="inputGroupSelect01"><i class="bi bi-building"></i></label>
+                  <select class="form-select" name="gedung_id" id="namagedung">
+                    <option value="" selected>Pilih Gedung</option>
+                    <option value="1">Gedung KH KH. Mahmud Zubaidi (A)</option>
+                    <option value="2">Gedung KH. M. Tolchah Hasan (B)</option>
+                    <option value="3">Gedung KH. M. Tolchah Hasan (C)</option>
+                  </select>
+                  <div class="invalid-feedback errnamagedung"></div>
+                </div>
+              </div>
+            </div>
+            <div class="col-12 d-flex justify-content-end">
+              <button type="button" class="btn btn-white my-4 batal-form">Batal</button>
+              <button type="submit" class="btn btn-success my-4 btnsimpan">Simpan</button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
 <div class="card shadow mb-3 datalist-ruangan">
   <div class="card-header shadow-sm">
     <div class="row justify-content-between align-items-center">

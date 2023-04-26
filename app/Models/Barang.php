@@ -21,6 +21,10 @@ class Barang extends Model
 
     public function setInsertData(array $data)
     {
+        // echo "Model Barang : ";
+        // echo "<pre>";
+        // var_dump($data);
+        // echo "</pre>";
         $username = session()->get('username');
         if (
             !empty($username) &&

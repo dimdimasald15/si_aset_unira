@@ -170,10 +170,21 @@
                           <tr>
                             <th class="table-light" style="max-width:150px;" scope="row">Tanggal Pembelian</th>
                             <td class="table-light" style="width:10px"> <strong>:</strong> </td>
-                            <td><?php $tanggal = $barang->tgl_pembelian;
-                                $tanggal_beli = date('j F Y', strtotime($tanggal));
+                            <td>
+                              <?php
+                              $tglbrgtetap = $barang->tgl_pembelian;
+                              $tglbrgpersediaan = $barang->tgl_beli;
+                              $tanggal_beli = '';
+                              if ($barang->tgl_beli) {
+                                $tanggal_beli = date('j F Y', strtotime($tglbrgpersediaan));
                                 echo $tanggal_beli;
-                                ?></td>
+                              } else if ($barang->tgl_pembelian) {
+                                $tanggal = $barang->tgl_pembelian;
+                                $tanggal_beli = date('j F Y', strtotime($tglbrgtetap));
+                                echo $tanggal_beli;
+                              }
+                              ?>
+                            </td>
                           </tr>
                           <?php if ($barang->updated_at !== null) { ?>
                             <tr>
@@ -218,7 +229,6 @@
   </div>
   </div>
   <script src="<?= base_url() ?>assets/js/bootstrap.bundle.min.js"></script>
-  <script src="<?= base_url() ?>/assets/js/main.js"></script>
 
   <!-- Optional Js -->
   <script src="<?= base_url() ?>/assets/vendors/DataTables/datatables.min.js"></script>
