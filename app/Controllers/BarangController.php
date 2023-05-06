@@ -5,20 +5,27 @@ namespace App\Controllers;
 use App\Models\Barang;
 use App\Models\RiwayatBarang;
 use App\Models\Kategori;
+use App\Models\Ruang;
+use App\Models\StokBarang;
+use App\Models\RiwayatTransaksi;
 use \Hermawan\DataTables\DataTable;
 use App\Controllers\BaseController;
 use PHPUnit\Framework\Constraint\Count;
 
 class BarangController extends BaseController
 {
-    protected $barang, $kategori, $uri, $stokbarang, $riwayatbarang;
+    protected $barang, $kategori, $uri, $stokbarang, $riwayatbarang, $ruang, $riwayattrx;
     public function __construct()
     {
         $this->barang = new Barang();
         $this->riwayatbarang = new RiwayatBarang();
         $this->kategori = new Kategori();
+        $this->ruang = new Ruang();
+        $this->stokbarang = new StokBarang();
+        $this->riwayattrx = new RiwayatTransaksi();
         $this->uri = service('uri');
     }
+
     public function indexbarangtetap()
     {
         $segments = $this->uri->getSegments();
@@ -31,12 +38,13 @@ class BarangController extends BaseController
             $breadcrumb[] = ['name' => $name, 'link' => $link];
         }
         $data = [
-            'title' => 'Barang Tetap',
-            'nav' => 'barang-tetap',
+            'title' => 'Barang Tetap Masuk',
+            'nav' => 'barang-tetap-masuk',
+            'jenis_kat' => 'Barang Tetap',
             'breadcrumb' => $breadcrumb
         ];
 
-        return view('barang/indexbarangtetap', $data);
+        return view('barang/index', $data);
     }
 
     public function indexbarangpersediaan()
@@ -51,42 +59,60 @@ class BarangController extends BaseController
             $breadcrumb[] = ['name' => $name, 'link' => $link];
         }
         $data = [
-            'title' => 'Barang Persediaan',
-            'nav' => 'barang-persediaan',
+            'title' => 'Barang Persediaan Masuk',
+            'nav' => 'barang-persediaan-masuk',
+            'jenis_kat' => 'Barang Persediaan',
             'breadcrumb' => $breadcrumb
         ];
 
-        return view('barang/indexbarangpersediaan', $data);
+        return view('barang/index', $data);
     }
 
     public function listdatabarang()
     {
         if ($this->request->isAJAX()) {
-            $jenis = $this->request->getGet('jenis_kat');
+            $jenis = $this->request->getVar('jenis_kat');
+
             $isRestore = filter_var($this->request->getGet('isRestore'), FILTER_VALIDATE_BOOLEAN);
-            $builder = $this->db->table('barang b')
-                ->select('b.id, k.nama_kategori,k.jenis, b.nama_brg, b.harga_beli, b.kode_brg, b.kat_id, b.created_at, b.created_by, b.deleted_at, b.deleted_by')
+            $builder = $this->db->table('stok_barang sb')
+                ->select('sb.id, sb.barang_id, k.nama_kategori, b.nama_brg, b.harga_beli, b.kode_brg, jumlah_masuk, jumlah_keluar, sisa_stok, b.kat_id, sb.ruang_id, r.nama_ruang, satuan_id, s.kd_satuan, sb.created_at, sb.created_by, sb.deleted_at, sb.deleted_by')
+                ->join('barang b', 'sb.barang_id = b.id')
                 ->join('kategori k', 'b.kat_id = k.id')
+                ->join('ruang r', 'sb.ruang_id = r.id')
+                ->join('satuan s', 'sb.satuan_id = s.id')
+                ->where('r.id', 54)
                 ->where('k.jenis', $jenis);
 
             return DataTable::of($builder)
                 ->addNumbering('no')
                 ->filter(function ($builder, $request) use ($jenis, $isRestore) {
-                    if ($request->kategori) {
-                        $builder->where('b.kat_id', $request->kategori);
+                    if (isset($request->barang) || isset($request->kategori)) {
+                        if ($request->barang) {
+                            $builder->where('sb.barang_id', $request->barang);
+                        }
+                        if ($request->kategori) {
+                            $builder->where('b.kat_id', $request->kategori);
+                        }
                     }
                     if ($isRestore) {
+                        $builder->where('sb.deleted_at IS NOT NULL');
                         $builder->where('b.deleted_at IS NOT NULL');
                         $builder->where('k.jenis', $jenis);
                     } else {
+                        $builder->where('sb.deleted_at', null);
                         $builder->where('b.deleted_at', null);
                         $builder->where('k.jenis', $jenis);
                     }
                 })
                 ->postQuery(function ($builder) {
-                    $builder->orderBy('b.id', 'desc');
+                    $builder->orderBy('sb.id', 'desc');
                 })
-                ->add('action', function ($row) use ($isRestore) {
+                ->add('checkrow', function ($row) use ($isRestore) {
+                    if (!$isRestore) {
+                        return '<input type="checkbox" name="id[]" class="checkrow" value="' . $row->id . '">';
+                    }
+                })
+                ->add('action', function ($row) use ($isRestore, $jenis) {
                     if ($isRestore) {
                         return '
                     <div class="btn-group mb-1">
@@ -94,54 +120,38 @@ class BarangController extends BaseController
                         Action
                     </button>
                     <ul class="dropdown-menu shadow-lg">
-                        <li><a class="dropdown-item" onclick="restore(' . $row->id . ', \'' . htmlspecialchars($row->nama_brg) . '\')"><i class="fa fa-undo"></i> Pulihkan</a>
+                        <li><a class="dropdown-item" onclick="restore(' . $row->id . ', \'' . htmlspecialchars($row->nama_brg) . '\', \'' . htmlspecialchars($row->nama_ruang) . '\')"><i class="fa fa-undo"></i> Pulihkan</a>
                         </li>
-                        <li><a class="dropdown-item" onclick="hapuspermanen(' . $row->id . ', \'' . htmlspecialchars($row->nama_brg) . '\')"><i class="fa fa-trash-o"></i> Hapus Permanen</a>
+                        <li><a class="dropdown-item" onclick="hapuspermanen(' . $row->id . ', \'' . htmlspecialchars($row->nama_brg) . '\', \'' . htmlspecialchars($row->nama_ruang) . '\')"><i class="fa fa-trash-o"></i> Hapus Permanen</a>
                         </li>
                     </ul>
                     </div>
                     ';
                     } else {
-                        return ' <div class="btn-group btn-group-sm mb-1">
-                        <button type="button" class="btn btn-success dropdown-toggle me-1" data-bs-toggle="dropdown" aria-expanded="false">
-                            Action
-                        </button>
-                        <ul class="dropdown-menu shadow-lg">
-                            <li><a class="dropdown-item" onclick="detailbarang(' . $row->id . ')"><i class="fa fa-info-circle"></i> Detail Barang</a>
-                            </li>
-                            <li><a class="dropdown-item" onclick="edit(' . $row->id . ')"><i class="fa fa-pencil-square-o"></i> Update Barang</a>
-                            </li>
-                            <li><a class="dropdown-item" onclick="upload(' . $row->id . ', \'' . htmlspecialchars($row->nama_brg) . '\')"><i class="bi bi-image"></i> Update Gambar Barang</a>
-                            </li>
-                            <li><a class="dropdown-item" onclick="hapus(' . $row->id . ', \'' . htmlspecialchars($row->nama_brg) . '\')"><i class="fa fa-trash-o"></i> Hapus Barang</a>
-                            </li>
-                        </ul>
-                        </div>';
+                        $action = '<div class="btn-group btn-group-sm mb-1">
+                    <button type="button" class="btn btn-success dropdown-toggle me-1" data-bs-toggle="dropdown" aria-expanded="false">
+                        Action
+                    </button>
+                    <ul class="dropdown-menu shadow-lg">
+                        <li><a class="dropdown-item" onclick="detailstokbarang(\'' . htmlspecialchars($row->kode_brg) . '\',' . $row->ruang_id . ')"><i class="fa fa-info-circle"></i> Detail Stok Barang</a>
+                        </li>';
+                        if ($jenis == "Barang Tetap") {
+                            $action .= '<li><a class="dropdown-item" onclick="cetaklabel(' . $row->id . ')"><i class="fa fa-qrcode"></i> Cetak Label Barang</a>
+                        </li>';
+                        }
+                        $action .= '<li><a class="dropdown-item" onclick="edit(' . $row->barang_id . ')"><i class="fa fa-pencil-square-o"></i> Update Barang</a>
+                        </li>
+                        <li><a class="dropdown-item" onclick="upload(' . $row->barang_id . ', \'' . htmlspecialchars($row->nama_brg) . '\')"><i class="bi bi-image"></i> Update Gambar Barang</a>
+                        </li>
+                        <li><a class="dropdown-item" onclick="hapus(' . $row->id . ', \'' . htmlspecialchars($row->nama_brg) . '\', \'' . htmlspecialchars($row->nama_ruang) . '\')"><i class="fa fa-trash-o"></i> Hapus Barang</a>
+                        </li>
+                    </ul>
+                </div>';
+
+                        return $action;
                     }
                 })
                 ->toJson(true);
-        } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
-            return view('errors/mazer/error-404', $data);
-        }
-    }
-
-    public function tampilMultipleInsert()
-    {
-        if ($this->request->isAJAX()) {
-            $title = $this->request->getVar('jenis_kat');
-            $nav = $this->request->getVar('nav');
-            $data = [
-                'title' => $title,
-                'nav' => $nav,
-            ];
-            $msg = [
-                'data' => view('barang/formmultipleinsert', $data)
-            ];
-            echo json_encode($msg);
         } else {
             $data = [
                 'title' => 'Error 404',
@@ -176,50 +186,36 @@ class BarangController extends BaseController
         }
     }
 
-    // public function detailbarang($kdbrg)
-    // {
-    //     $kode_brg = str_replace('-', '.', $kdbrg);
-    //     $query   = $this->db->table('barang b')->select('SUM(sb.jumlah_masuk) as total_jumlah_masuk, SUM(sb.sisa_stok) as jumlah_sisa_stok, b.*, k.nama_kategori, sb.jumlah_masuk, sb.sisa_stok, GROUP_CONCAT(DISTINCT r.nama_ruang SEPARATOR ", ") as nama_ruang, s.kd_satuan')
-    //         ->join('stok_barang sb', 'sb.barang_id = b.id')
-    //         ->join('kategori k', 'b.kat_id=k.id')
-    //         ->join('ruang r', 'sb.ruang_id = r.id')
-    //         ->join('satuan s', 'sb.satuan_id = s.id')
-    //         ->where('b.kode_brg', $kode_brg)
-    //         ->groupBy('b.id')
-    //         ->get();
-    //     // dd($query->getRow);
-
-    //     $result = $query->getRow();
-    //     if ($result) {
-    //         $title = 'Detail Barang ' . $result->nama_brg;
-    //     } else {
-    //         $title = 'Detail Barang';
-    //     }
-
-    //     $data = [
-    //         'title' => $title,
-    //         'barang' => $result,
-    //     ];
-
-    //     return view('barang/detailbarang', $data);
-    // }
-
-    public function tampildetailbarang()
+    public function detailbarang($url)
     {
-        if ($this->request->isAJAX()) {
-            $id = $this->request->getGet('id');
-            $data = [
-                'id' => $id,
-                'data' => view('barang/modaldetail'),
-            ];
-            echo json_encode($data);
+        $kdbrg = substr($url, 0, strrpos($url, "-")); // mendapatkan string "C-02-06-01-001"
+        $kode_brg = str_replace('-', '.', $kdbrg);
+        $ruang_id = substr($url, strrpos($url, "-") + 1); // mendapatkan string "6"
+
+        $query   = $this->db->table('stok_barang sb')->select('sb.*, k.nama_kategori, b.nama_brg, b.kode_brg, b.foto_barang, b.harga_beli, b.harga_jual, b.asal, b.toko, b.instansi, b.no_seri, b.no_dokumen, b.merk, b.tgl_pembelian, b.warna, r.nama_ruang, satuan_id, s.kd_satuan, b.created_at, b.created_by, b.deleted_at')
+            ->join('barang b', 'sb.barang_id = b.id')
+            ->join('kategori k', 'b.kat_id = k.id')
+            ->join('ruang r', 'sb.ruang_id = r.id')
+            ->join('satuan s', 'sb.satuan_id = s.id')
+            ->where('b.kode_brg', $kode_brg)
+            ->where('sb.ruang_id', $ruang_id)
+            ->groupBy('b.id')
+            ->get();
+        // dd($query->getRow());
+
+        $result = $query->getRow();
+        if ($result) {
+            $title = 'Detail Barang ' . $result->nama_brg . ' di ' . $result->nama_ruang;
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
-            return view('errors/mazer/error-404', $data);
+            $title = 'Detail Barang';
         }
+
+        $data = [
+            'title' => $title,
+            'barang' => $result,
+        ];
+
+        return view('barang/detailstokbarang', $data);
     }
 
     public function tampillabelbarang()
@@ -265,6 +261,28 @@ class BarangController extends BaseController
         }
     }
 
+    public function getdatastokbarangbyid()
+    {
+        if ($this->request->isAJAX()) {
+            $id = $this->request->getVar('id');
+            $stokbrg = $this->db->table('stok_barang sb')->select('sb.*, k.nama_kategori, b.nama_brg, b.kode_brg, b.foto_barang, b.harga_beli, b.harga_jual, b.asal, b.toko, b.instansi, b.no_seri, b.no_dokumen, b.merk, b.tgl_pembelian, b.warna, r.nama_ruang, satuan_id, s.kd_satuan, b.created_at, b.created_by, b.deleted_at')
+                ->join('barang b', 'sb.barang_id = b.id')
+                ->join('kategori k', 'b.kat_id = k.id')
+                ->join('ruang r', 'sb.ruang_id = r.id')
+                ->join('satuan s', 'sb.satuan_id = s.id')
+                ->where('sb.id', $id);
+
+            $result = $stokbrg->get()->getRow();
+            echo json_encode($result);
+        } else {
+            $data = [
+                'title' => 'Error 404',
+                'msg' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/mazer/error-404', $data);
+        }
+    }
+
     public function getbarangbyany()
     {
         if ($this->request->isAJAX()) {
@@ -272,9 +290,13 @@ class BarangController extends BaseController
             $id = $this->request->getVar('id');
             $getbarang = '';
             if (!empty($id)) {
-                $getbarang = $this->db->table('barang b')->select('b.id, b.foto_barang, b.nama_brg, b.kat_id, b.kode_brg,k.kd_kategori, k.nama_kategori, b.warna, b.merk, b.toko, b.instansi, b.asal, b.no_dokumen, b.no_seri, b.harga_beli, b.harga_jual, b.tgl_pembelian, b.created_at, b.created_by, b.updated_at,b.updated_by')
-                    ->join('kategori k', 'k.id = b.kat_id')
-                    ->where('b.id', $id)
+                $getbarang = $this->db->table('stok_barang sb')
+                    ->select('b.*, k.nama_kategori, k.kd_kategori, sb.jumlah_masuk, sb.satuan_id, sb.ruang_id, r.nama_ruang, s.kd_satuan')
+                    ->join('barang b', 'sb.barang_id = b.id')
+                    ->join('kategori k', 'b.kat_id = k.id')
+                    ->join('ruang r', 'sb.ruang_id = r.id')
+                    ->join('satuan s', 'sb.satuan_id = s.id')
+                    ->where('sb.id', $id)
                     ->get();
             } else if (!empty($kode_brg)) {
                 $getbarang = $this->db->table('barang b')
@@ -299,11 +321,62 @@ class BarangController extends BaseController
         }
     }
 
+    public function pilihbarang()
+    {
+        if ($this->request->isAJAX()) {
+            $search = $this->request->getGet('search');
+            $jenis = $this->request->getGet('jenis_kat');
+
+            if ($jenis == 'Barang Tetap') {
+                if (!empty($search)) {
+                    $databarang = $this->db->table('barang b')->select('b.id, b.nama_brg')->join('kategori k', 'k.id = b.kat_id')->where('b.deleted_at', null)->where('k.jenis', $jenis)
+                        ->orderBy('nama_brg', 'ASC')
+                        ->like('b.nama_brg', $search)->get();
+                } else {
+                    $databarang = $this->db->table('barang b')->select('b.id, b.nama_brg')->join('kategori k', 'k.id = b.kat_id')->where('b.deleted_at', null)->where('k.jenis', $jenis)
+                        ->orderBy('nama_brg', 'ASC')->get();
+                }
+            } else if ($jenis == 'Barang Persediaan') {
+                if (!empty($search)) {
+                    $databarang = $this->db->table('barang b')->select('b.id, b.nama_brg')->join('kategori k', 'k.id = b.kat_id')->where('b.deleted_at', null)->where('k.jenis', $jenis)
+                        ->orderBy('nama_brg', 'ASC')
+                        ->like('b.nama_brg', $search)->get();
+                } else {
+                    $databarang = $this->db->table('barang b')->select('b.id, b.nama_brg')->join('kategori k', 'k.id = b.kat_id')->where('b.deleted_at', null)->where('k.jenis', $jenis)
+                        ->orderBy('nama_brg', 'ASC')->get();
+                }
+            }
+            // var_dump($databarang);
+            if ($databarang->getNumRows() > 0) {
+                $list = [];
+                $key = 0;
+                foreach ($databarang->getResultArray() as $row) {
+                    $list[$key]['id'] = $row['id'];
+                    $list[$key]['text'] = $row['nama_brg'];
+
+                    $key++;
+                }
+            } else {
+                $list = [
+                    ['id' => '', 'text' => 'Maaf keyword yang anda cari tidak ditemukan'],
+                ];
+            }
+            echo json_encode($list);
+        } else {
+            $data = [
+                'title' => 'Error 404',
+                'msg' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/mazer/error-404', $data);
+        }
+    }
+
     public function pilihkategori()
     {
         if ($this->request->isAJAX()) {
             $caridata = $this->request->getGet('search');
             $jenis = $this->request->getGet('jenis_kat');
+            $datakategori = '';
             if ($jenis == 'Barang Tetap') {
                 if (!empty($caridata)) {
                     $datakategori = $this->db->table('kategori')
@@ -311,12 +384,16 @@ class BarangController extends BaseController
                         ->where('jenis', $jenis)
                         ->where('SUBSTRING(kd_kategori, 1, 1) !=', 'A')
                         ->where('LENGTH(kd_kategori) >=', 7)
+                        ->where('deleted_at', null)
+                        ->orderBy('nama_kategori', 'ASC')
                         ->get();
                 } else {
                     $datakategori = $this->db->table('kategori')
                         ->where('jenis', $jenis)
                         ->where('SUBSTRING(kd_kategori, 1, 1) !=', 'A')
                         ->where('LENGTH(kd_kategori) >=', 7)
+                        ->where('deleted_at', null)
+                        ->orderBy('nama_kategori', 'ASC')
                         ->get();
                 }
             } else if ($jenis == 'Barang Persediaan') {
@@ -325,11 +402,15 @@ class BarangController extends BaseController
                         ->like('nama_kategori', $caridata)
                         ->where('jenis', $jenis)
                         ->where('LENGTH(kd_kategori) >=', 4)
+                        ->where('deleted_at', null)
+                        ->orderBy('nama_kategori', 'ASC')
                         ->get();
                 } else {
                     $datakategori = $this->db->table('kategori')
                         ->where('jenis', $jenis)
                         ->where('LENGTH(kd_kategori) >=', 4)
+                        ->where('deleted_at', null)
+                        ->orderBy('nama_kategori', 'ASC')
                         ->get();
                 }
             }
@@ -355,6 +436,93 @@ class BarangController extends BaseController
                 'msg' => 'Maaf tidak dapat diproses',
             ];
             return view('errors/mazer/error-404', $data);
+        }
+    }
+
+    public function pilihlokasi()
+    {
+        if ($this->request->isAJAX()) {
+            $search = $this->request->getGet('search');
+            if (!empty($search)) {
+                $datalokasi = $this->db->table('ruang')->where('deleted_at', null)->orderBy('nama_ruang', 'ASC')
+                    ->like('nama_ruang', $search)->get();
+            } else {
+                $datalokasi = $this->db->table('ruang')->where('deleted_at', null)->orderBy('nama_ruang', 'ASC')->get();
+            }
+            // var_dump($datalokasi);
+            if ($datalokasi->getNumRows() > 0) {
+                $list = [];
+                $key = 0;
+                foreach ($datalokasi->getResultArray() as $row) {
+                    $list[$key]['id'] = $row['id'];
+                    $list[$key]['text'] = $row['nama_ruang'];
+
+                    $key++;
+                }
+            } else {
+                $list = [
+                    ['id' => '', 'text' => 'Maaf keyword yang anda cari tidak ditemukan'],
+                ];
+            }
+            echo json_encode($list);
+        } else {
+            $data = [
+                'message' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/html/error_404', $data);
+        }
+    }
+
+    public function pilihsatuan()
+    {
+        if ($this->request->isAJAX()) {
+            $search = $this->request->getGet('search');
+            $datasatuan = $this->db->table('satuan')
+                ->like('kd_satuan', $search)->get();
+            // var_dump($datasatuan);
+            if ($datasatuan->getNumRows() > 0) {
+                $list = [];
+                $key = 0;
+                foreach ($datasatuan->getResultArray() as $row) {
+                    $list[$key]['id'] = $row['id'];
+                    $list[$key]['text'] = $row['kd_satuan'];
+
+                    $key++;
+                }
+            } else {
+                $list = [
+                    ['id' => '', 'text' => 'Maaf keyword yang anda cari tidak ditemukan'],
+                ];
+            }
+            echo json_encode($list);
+        } else {
+            $data = [
+                'message' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/html/error_404', $data);
+        }
+    }
+
+    public function cekbrgdanruang()
+    {
+        if ($this->request->isAJAX()) {
+            $barang_id = $this->request->getVar('barang_id');
+            $ruang_id = $this->request->getVar('ruang_id');
+
+            $stokbarang = $this->db->table('stok_barang sb')->select('sb.id, sb.sisa_stok, sb.tgl_beli, b.nama_brg,r.nama_ruang, sb.satuan_id, s.kd_satuan')
+                ->join('ruang r', 'r.id = sb.ruang_id')
+                ->join('satuan s', 's.id = sb.satuan_id')
+                ->join('barang b', 'b.id = sb.barang_id')
+                ->where('sb.barang_id', $barang_id)
+                ->where('sb.ruang_id', $ruang_id)
+                ->get()->getRow();
+
+            echo json_encode($stokbarang);
+        } else {
+            $data = [
+                'message' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/html/error_404', $data);
         }
     }
 
@@ -439,7 +607,157 @@ class BarangController extends BaseController
         }
     }
 
-    public function simpandata()
+    public function tampiltambahstok()
+    {
+        if ($this->request->isAJAX()) {
+            $title = $this->request->getVar('title');
+            $jenis_kat = $this->request->getVar('jenis_kat');
+            $jenistrx = $this->request->getVar('jenistrx');
+            $nav = $this->request->getVar('nav');
+            $saveMethod = $this->request->getVar('saveMethod');
+
+            $data = [
+                'title' => $title,
+                'jenis_kat' => $jenis_kat,
+                'jenistrx' => $jenistrx,
+                'nav' => $nav,
+                'saveMethod' => $saveMethod,
+            ];
+
+            $msg = [
+                'data' => view('barang/formtambahstok', $data),
+            ];
+
+            echo json_encode($msg);
+        } else {
+            $data = [
+                'title' => 'Error 404',
+                'msg' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/mazer/error-404', $data);
+        }
+    }
+
+    public function tampiltambahbarangmultiple()
+    {
+        if ($this->request->isAJAX()) {
+            $title = $this->request->getVar('title');
+            $jenis_kat = $this->request->getVar('jenis_kat');
+            $jenistrx = $this->request->getVar('jenistrx');
+            $nav = $this->request->getVar('nav');
+            $saveMethod = $this->request->getVar('saveMethod');
+
+            $data = [
+                'title' => $title,
+                'jenis_kat' => $jenis_kat,
+                'jenistrx' => $jenistrx,
+                'nav' => $nav,
+                'saveMethod' => $saveMethod,
+            ];
+
+            $msg = [
+                'data' => view('barang/formmultipleinsert', $data),
+            ];
+
+            echo json_encode($msg);
+        } else {
+            $data = [
+                'title' => 'Error 404',
+                'msg' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/mazer/error-404', $data);
+        }
+    }
+
+    public function tampiltambahstokmultiple()
+    {
+        if ($this->request->isAJAX()) {
+            $title = $this->request->getVar('title');
+            $jenis_kat = $this->request->getVar('jenis_kat');
+            $jenistrx = $this->request->getVar('jenistrx');
+            $nav = $this->request->getVar('nav');
+            $saveMethod = $this->request->getVar('saveMethod');
+
+            $data = [
+                'title' => $title,
+                'jenis_kat' => $jenis_kat,
+                'jenistrx' => $jenistrx,
+                'nav' => $nav,
+                'saveMethod' => $saveMethod,
+            ];
+
+            $msg = [
+                'data' => view('barang/formtambahstokmultiple', $data),
+            ];
+
+            echo json_encode($msg);
+        } else {
+            $data = [
+                'title' => 'Error 404',
+                'msg' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/mazer/error-404', $data);
+        }
+    }
+
+    public function tampilsingleform()
+    {
+        if ($this->request->isAJAX()) {
+            $title = $this->request->getVar('jenis_kat');
+            $nav = $this->request->getVar('nav');
+            $jenistrx = $this->request->getVar('jenistrx');
+            $saveMethod = $this->request->getVar('saveMethod');
+            $data = [
+                'title' => $title,
+                'nav' => $nav,
+                'jenistrx' => $jenistrx,
+                'saveMethod' => $saveMethod,
+            ];
+            $msg = [
+                'data' => view('barang/formsingleinsert', $data)
+            ];
+            echo json_encode($msg);
+        } else {
+            $data = [
+                'title' => 'Error 404',
+                'msg' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/mazer/error-404', $data);
+        }
+    }
+
+    public function tampileditform()
+    {
+        if ($this->request->isAJAX()) {
+            $id = $this->request->getVar('id');
+            $title = $this->request->getVar('jenis_kat');
+            $nav = $this->request->getVar('nav');
+            $jenistrx = "Update " . $this->request->getVar('jenistrx');
+            $saveMethod = $this->request->getVar('saveMethod');
+
+            $data = [
+                'id' => $id,
+                'title' => $title,
+                'nav' => $nav,
+                'jenistrx' => $jenistrx,
+                'saveMethod' => $saveMethod,
+            ];
+            $msg = [
+                'data' => view('barang/formsingleedit', $data)
+            ];
+            echo json_encode($msg);
+        } else {
+            $data = [
+                'title' => 'Error 404',
+                'msg' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/mazer/error-404', $data);
+        }
+    }
+
+
+
+    public function simpandatabarang()
     {
         if ($this->request->isAJAX()) {
             $validation =  \Config\Services::validation();
@@ -475,15 +793,43 @@ class BarangController extends BaseController
                         'required' => '{field} tidak boleh kosong',
                     ]
                 ],
-                'warna' => [
-                    'label' => 'Warna barang',
+                'asal' => [
+                    'label' => 'Asal barang',
                     'rules' => 'required',
                     'errors' => [
                         'required' => '{field} tidak boleh kosong',
                     ]
                 ],
-                'asal' => [
-                    'label' => 'Asal barang',
+                'harga_beli' => [
+                    'label' => 'Harga beli barang',
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => "{field} tidak boleh kosong",
+                    ]
+                ],
+                'harga_jual' => [
+                    'label' => 'Harga jual barang',
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => "{field} tidak boleh kosong",
+                    ]
+                ],
+                'ruang_id' => [
+                    'label' => 'Nama ruang',
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => '{field} tidak boleh kosong',
+                    ]
+                ],
+                'jumlah_masuk' => [
+                    'label' => 'Jumlah masuk',
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => '{field} tidak boleh kosong',
+                    ]
+                ],
+                'satuan_id' => [
+                    'label' => 'Nama satuan',
                     'rules' => 'required',
                     'errors' => [
                         'required' => '{field} tidak boleh kosong',
@@ -494,17 +840,22 @@ class BarangController extends BaseController
                 $msg = [
                     'error' => [
                         'katid' => $validation->getError('kat_id'),
-                        'skbarang' => $validation->getError('kode_brg'),
+                        'kodebrg' => $validation->getError('kode_brg'),
                         'namabarang' => $validation->getError('nama_brg'),
                         'merk' => $validation->getError('merk'),
-                        'warna' => $validation->getError('warna'),
                         'asal' => $validation->getError('asal'),
+                        'hargabeli' => $validation->getError('harga_beli'),
+                        'hargajual' => $validation->getError('harga_jual'),
+                        'jmlmasuk' => $validation->getError('jumlah_masuk'),
+                        'lokasi' => $validation->getError('ruang_id'),
+                        'satuan' => $validation->getError('satuan_id'),
                     ],
                 ];
             } else {
                 $namabrg = $this->request->getVar('nama_brg');
+                $tgl_pembelian = $this->request->getVar('tgl_pembelian');
 
-                $simpandata = [
+                $simpanbrg = [
                     'kat_id' => $this->request->getVar('kat_id'),
                     'kode_brg' => $this->request->getVar('kode_brg'),
                     'nama_brg' => $namabrg,
@@ -517,19 +868,44 @@ class BarangController extends BaseController
                     'no_dokumen' => $this->request->getVar('no_dokumen'),
                     'harga_beli' => $this->request->getVar('harga_beli'),
                     'harga_jual' => $this->request->getVar('harga_jual'),
-                    'tgl_pembelian' => $this->request->getVar('tgl_pembelian'),
+                    'tgl_pembelian' => $tgl_pembelian,
                 ];
 
                 // Panggil fungsi setInsertData dari model sebelum data disimpan
-                $insertdata = $this->barang->setInsertData($simpandata);
+                $insertbrg = $this->barang->setInsertData($simpanbrg);
                 // Simpan data ke database
-                $this->barang->save($insertdata);
+                $this->barang->save($insertbrg);
 
                 $barang_id = $this->barang->insertID();
 
+                $jenistrx = $this->request->getVar('jenistrx');
+                $jml_keluar = 0;
+                $jml_masuk = intval($this->request->getVar('jumlah_masuk'));
+                $sisa_stok = $jml_masuk - $jml_keluar;
+
+                $simpanstok = [
+                    'barang_id' => $barang_id,
+                    'ruang_id' => $this->request->getVar('ruang_id'),
+                    'satuan_id' => $this->request->getVar('satuan_id'),
+                    'jumlah_masuk' => $this->request->getVar('jumlah_masuk'),
+                    'jumlah_keluar' => $jml_keluar,
+                    'sisa_stok' => $sisa_stok,
+                    'tgl_beli' => $tgl_pembelian,
+                ];
+
+                // Panggil fungsi setInsertData dari model sebelum data disimpan
+                $insertstok = $this->stokbarang->setInsertData($simpanstok);
+
+                // Simpan data ke database
+                $this->stokbarang->save($insertstok);
+
+                $stokbrg_id = $this->stokbarang->insertID();
+
                 $lastQuery = $this->db->getLastQuery();
 
-                $this->riwayatbarang->inserthistori($barang_id, null, $simpandata, $lastQuery, null);
+                $this->riwayatbarang->inserthistori($barang_id, null, $simpanbrg, $lastQuery, null);
+
+                $this->riwayattrx->inserthistori($stokbrg_id, null, $simpanstok, $jenistrx, $lastQuery, null);
 
                 $msg = ['sukses' => 'Data barang berhasil tersimpan'];
             }
@@ -543,7 +919,443 @@ class BarangController extends BaseController
         }
     }
 
-    public function updatedata($id)
+    public function updatedatastok($id)
+    {
+        if ($this->request->isAJAX()) {
+            $validation =  \Config\Services::validation();
+
+            $valid = $this->validate([
+                'barang_id' => [
+                    'label' => 'Nama barang',
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => '{field} tidak boleh kosong',
+                    ],
+                ],
+                'jumlah_masuk' => [
+                    'label' => 'Jumlah masuk',
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => '{field} tidak boleh kosong',
+                    ]
+                ],
+                'tgl_pembelian' => [
+                    'label' => 'Tanggal Pembelian',
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => '{field} tidak boleh kosong',
+                    ]
+                ],
+
+            ]);
+
+            if (!$valid) {
+                $msg = [
+                    'error' => [
+                        'idbrg' => $validation->getError('barang_id'),
+                        'jmlmasuk' => $validation->getError('jumlah_masuk'),
+                        'tglbeli' => $validation->getError('tgl_pembelian'),
+                    ],
+                ];
+            } else {
+                $stokbrglama = $this->db->table('stok_barang sb')->select('sb.*, b.nama_brg')->join('barang b', 'b.id = sb.barang_id')->where('sb.id', $id)->get()->getRowArray();
+
+                $jml_masuk = intval($stokbrglama['jumlah_masuk']) + intval($this->request->getVar('jumlah_masuk'));
+                $jml_keluar = $stokbrglama['jumlah_keluar'];
+                $namabrg = $stokbrglama['nama_brg'];
+                $sisa_stok = $jml_masuk - $jml_keluar;
+                $jenistrx = $this->request->getVar('jenis_transaksi');
+                $tglbeli = $this->request->getVar('tgl_pembelian');
+                if ($tglbeli) {
+                    $tgl_beli = $tglbeli;
+                } else
+                    $tgl_beli = '';
+
+                $updatedata = [
+                    'jumlah_masuk' => $jml_masuk,
+                    'sisa_stok' => $sisa_stok,
+                    'tgl_beli' => $tgl_beli,
+                ];
+
+                $ubahdata = $this->stokbarang->setUpdateData($updatedata);
+
+                //periksa perubahan data
+                $data_lama = $stokbrglama;
+                $data_baru = $updatedata;
+                $field_update = [];
+                foreach ($data_baru as $key => $value) {
+                    if (isset($data_lama[$key]) && $data_lama[$key] !== $value) {
+                        $field_update[] = $key;
+                    }
+                }
+                // update data ke database
+                $this->stokbarang->update($id, $ubahdata);
+                // Periksa apakah query terakhir adalah operasi update
+                $lastQuery = $this->db->getLastQuery();
+
+                // jenis transaksi : 'barang tetap masuk','barang persediaan masuk','permintaan barang','peminjaman barang','perbaikan barang rusak','penghapusan barang rusak'
+                $this->riwayattrx->inserthistori($id, $stokbrglama, $updatedata, "$jenistrx", $lastQuery, $field_update);
+
+                $msg = ['sukses' => "Data stok barang: $namabrg berhasil terupdate"];
+            }
+
+            echo json_encode($msg);
+        } else {
+            $data = [
+                'title' => 'Error 404',
+                'msg' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/mazer/error-404', $data);
+        }
+    }
+
+    public function updatedatastokmultiple()
+    {
+        if ($this->request->isAJAX()) {
+            $jenistrx = $this->request->getVar('jenistrx');
+            $jmldata = $this->request->getVar('jmldata');
+
+            $validation =  \Config\Services::validation();
+            $errors = array();
+            for ($a = 1; $a <= $jmldata; $a++) {
+                $rules = [
+                    'barang_id' . $a => [
+                        'label' => 'Nama Barang',
+                        'rules' => 'required',
+                        'errors' => [
+                            'required' => "{field} form $a tidak boleh kosong",
+                        ]
+                    ],
+                    'ruang_id_' . $a => [
+                        'label' => 'Nama ruang',
+                        'rules' => 'required',
+                        'errors' => [
+                            'required' => "{field} form $a tidak boleh kosong",
+                        ]
+                    ],
+                    'jumlah_masuk_' . $a => [
+                        'label' => 'Jumlah masuk',
+                        'rules' => 'required',
+                        'errors' => [
+                            'required' => "{field} form $a tidak boleh kosong",
+                        ]
+                    ],
+                    'tgl_pembelian_' . $a => [
+                        'label' => 'Tanggal pembelian baru',
+                        'rules' => 'required',
+                        'errors' => [
+                            'required' => "{field} form $a tidak boleh kosong",
+                        ],
+                    ],
+                ];
+                if (!$this->validate($rules)) {
+                    $errors = $validation->getErrors();
+                }
+            }
+
+            // check for errors
+            if (!empty($errors)) {
+                $msg = [
+                    'jmldata' => $jmldata,
+                    'error' => $errors
+                ];
+            } else {
+                $id = array();
+                // $barang_id = array();
+                $ruang_id = array();
+                $satuan_id = array();
+                $jmlmskbaru = array();
+                $jmlkeluarbaru = array();
+                $tglbelibaru = array();
+
+                $jmldata = intval($this->request->getVar('jmldata'));
+                for ($x = 1; $x <= $jmldata; $x++) {
+                    array_push($id, $this->request->getVar("id_$x"));
+                    array_push($tglbelibaru, $this->request->getVar("tgl_pembelian_$x"));
+                    array_push($jmlmskbaru, $this->request->getVar("jumlah_masuk_$x"));
+                    array_push($satuan_id, $this->request->getVar("satuan_id$x"));
+                }
+
+                $stoklama = array();
+                for ($y = 0; $y < $jmldata; $y++) {
+                    $stoklama[] = $this->db->table('stok_barang')->select('*')->where('id', $id[$y])->get()->getRowArray();
+                }
+
+                $jumlah_masuk = array();
+                $jumlah_keluar = array();
+                $sisa_stok = array();
+                for ($z = 0; $z < $jmldata; $z++) {
+                    array_push($jumlah_masuk, (intval($jmlmskbaru[$z]) + $stoklama[$z]["jumlah_masuk"]));
+                    array_push($sisa_stok, (intval($jmlmskbaru[$z]) + $stoklama[$z]["jumlah_masuk"] - $stoklama[$z]["jumlah_keluar"]));
+                }
+
+                $this->db->transStart();
+
+                for ($i = 0; $i < $jmldata; $i++) {
+                    $updatedata = [
+                        'jumlah_masuk' => $jumlah_masuk[$i],
+                        'sisa_stok' => $sisa_stok[$i],
+                        'tgl_beli' => $tglbelibaru[$i],
+                    ];
+                    $ubahdata = $this->stokbarang->setUpdateData($updatedata);
+
+                    //periksa perubahan data
+                    $data_lama = $stoklama[$i];
+                    $data_baru = $updatedata;
+                    $field_update = [];
+                    foreach ($data_baru as $key => $value) {
+                        if (isset($data_lama[$key]) && $data_lama[$key] !== $value) {
+                            $field_update[] = $key;
+                        }
+                    }
+                    // update data ke database
+                    $this->stokbarang->update($id[$i], $ubahdata);
+
+                    // Periksa apakah query terakhir adalah operasi update
+                    $lastQuery = $this->db->getLastQuery();
+
+                    // jenis transaksi : 'barang tetap masuk','barang persediaan masuk','permintaan barang','peminjaman barang','perbaikan barang rusak','penghapusan barang rusak'
+                    $this->riwayattrx->inserthistori($id[$i], $stoklama[$i], $updatedata, $jenistrx, $lastQuery, $field_update);
+                }
+
+                $this->db->transComplete();
+                if ($this->db->transStatus() === false) {
+                    // Jika terjadi kesalahan pada transaction
+                    $msg = ['error' => 'Gagal menyimpan data stok barang'];
+                } else {
+                    // Jika berhasil disimpan
+                    $msg = ['sukses' => "Sukses $jmldata data stok barang berhasil di update"];
+                }
+            }
+            echo json_encode($msg);
+        } else {
+            $data = [
+                'title' => 'Error 404',
+                'msg' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/mazer/error-404', $data);
+        }
+    }
+
+    public function transfermultiplebarang()
+    {
+        if ($this->request->isAJAX()) {
+            $jenis = $this->request->getVar('jenis');
+            $jenistrx = $this->request->getVar('jenistrx');
+            $jmldata = $this->request->getVar('jmldata');
+
+            $validation =  \Config\Services::validation();
+            $errors = array();
+            for ($a = 1; $a <= $jmldata; $a++) {
+                $rules = [
+                    'ruang_id_' . $a => [
+                        'label' => 'Nama ruang',
+                        'rules' => 'required',
+                        'errors' => [
+                            'required' => "{field} form $a tidak boleh kosong",
+                        ]
+                    ],
+                ];
+            }
+            if (!$this->validate($rules)) {
+                $errors = $validation->getErrors();
+            }
+            // check for errors
+            if (!empty($errors)) {
+                $msg = [
+                    'jmldata' => $jmldata,
+                    'error' => $errors
+                ];
+            } else {
+                $id = array();
+                $barang_id = array();
+                $ruang_id = array();
+                $satuan_id = array();
+                $jumlah_keluar_sarpras = array();
+                $sisa_stok_sarpras = array();
+                $stoksarpras = array();
+                $jumlah_masuk = array();
+                $jumlah_keluar = array();
+                $sisa_stok = array();
+                $tgl_beli = array();
+
+                // persiapan update stok barang dengan sisa stok baru
+                for ($x = 1; $x <= $jmldata; $x++) {
+                    array_push($id, $this->request->getVar("id_$x"));
+                    $stoksarpras[] = $this->db->table('stok_barang')->select('*')->where('id', $this->request->getVar("id_$x"))->get()->getRowArray();
+                    // echo $stoksarpras[$x - 1]['barang_id'];
+                    array_push($jumlah_keluar_sarpras, (intval($this->request->getVar("jumlah_keluar_$x")) + $stoksarpras[$x - 1]['jumlah_keluar']));
+                    array_push($sisa_stok_sarpras, $this->request->getVar("sisa_stok$x"));
+                }
+
+                // persiapan tambah stok barang dengan data baru
+                for ($y = 1; $y <= $jmldata; $y++) {
+                    array_push($barang_id, $stoksarpras[$y - 1]['barang_id']);
+                    array_push($ruang_id, $this->request->getVar("ruang_id_$y"));
+                    array_push($jumlah_masuk, $this->request->getVar("jumlah_keluar_$y"));
+                    array_push($jumlah_keluar, 0);
+                    array_push($sisa_stok, $this->request->getVar("jumlah_keluar_$y") - 0);
+                    array_push($satuan_id, $stoksarpras[$y - 1]['satuan_id']);
+                    array_push($tgl_beli, $this->request->getVar("tgl_belilama$y"));
+                }
+
+                $stokbrgall = $this->stokbarang->select('*')->get()->getResultArray();
+
+                $this->db->transStart();
+                $datalamastokbrg = array();
+                for ($i = 0; $i < $jmldata; $i++) {
+                    $updatedata1 = [
+                        'jumlah_keluar' => $jumlah_keluar_sarpras[$i],
+                        'sisa_stok' => $sisa_stok_sarpras[$i],
+                    ];
+
+                    $ubahdata1 = $this->stokbarang->setUpdateData($updatedata1);
+
+                    //periksa perubahan data
+                    $data_lama1 = $stoksarpras[$i];
+                    $data_baru1 = $updatedata1;
+                    $field_update1 = [];
+                    foreach ($data_baru1 as $key => $value) {
+                        if (isset($data_lama1[$key]) && $data_lama1[$key] !== $value) {
+                            $field_update1[] = $key;
+                        }
+                    }
+                    // update data ke database
+                    $this->stokbarang->update($id[$i], $ubahdata1);
+
+                    // Periksa apakah query terakhir adalah operasi update
+                    $lastQuery1 = $this->db->getLastQuery();
+
+                    $this->riwayattrx->inserthistori($id[$i], $stoksarpras[$i], $updatedata1, "update $jenis masuk", $lastQuery1, $field_update1);
+
+                    $data_ditemukan = false;
+                    $isDeleted = false;
+                    $isSarpras = false;
+                    for ($j = 0; $j < count($stokbrgall); $j++) {
+                        // echo ($barang_id[$i] == $stokbrgall[$j]['barang_id'] && $ruang_id[$i] == 54) ? true : false;
+                        if ($barang_id[$i] == $stokbrgall[$j]['barang_id'] && $ruang_id[$i] == 54 && $stokbrgall[$j]['deleted_at'] == null) {
+                            $data_ditemukan = true;
+                            $isSarpras = true;
+                            $isDeleted = false;
+                        } else if ($barang_id[$i] == $stokbrgall[$j]['barang_id'] && $ruang_id[$i] == $stokbrgall[$j]['ruang_id'] && $stokbrgall[$j]['deleted_at'] == null) {
+                            $data_ditemukan = true;
+                            $isSarpras = false;
+                            $isDeleted = false;
+                            array_push($datalamastokbrg, $stokbrgall[$j]);
+                        } else if ($barang_id[$i] == $stokbrgall[$j]['barang_id'] && $ruang_id[$i] == $stokbrgall[$j]['ruang_id'] && $stokbrgall[$j]['deleted_at'] !== null) {
+                            $data_ditemukan = true;
+                            $isDeleted = true;
+                            $isSarpras = false;
+                            array_push($datalamastokbrg, $stokbrgall[$j]);
+                        }
+                    }
+
+                    if (!$data_ditemukan) {
+                        $simpandata = [
+                            'barang_id' => $barang_id[$i],
+                            'ruang_id' => $ruang_id[$i],
+                            'satuan_id' => $satuan_id[$i],
+                            'jumlah_masuk' => $jumlah_masuk[$i],
+                            'jumlah_keluar' => $jumlah_keluar[$i],
+                            'sisa_stok' => $sisa_stok[$i],
+                            'tgl_beli' => $tgl_beli[$i],
+                        ];
+                        // Panggil fungsi setInsertData dari model sebelum data disimpan
+                        $insertdata = $this->stokbarang->setInsertData($simpandata);
+                        // Simpan data ke database
+                        $this->stokbarang->save($insertdata);
+                        //Simpan ke dalam table riwayat_transaksi
+                        $data_riwayat = $insertdata;
+                        $data_riwayat['stokbrg_id'] = $this->barang->insertID();
+                        $data_riwayat['jenis_transaksi'] = $jenistrx;
+                        $data_riwayat['field'] = 'Semua field';
+                        $data_riwayat['old_value'] = '';
+                        $data_riwayat['new_value'] = json_encode($insertdata);
+                        $setdatariwayat = $this->riwayattrx->setInsertData($data_riwayat);
+                        $this->riwayattrx->save($setdatariwayat);
+                    } else if ($data_ditemukan && !$isSarpras && !$isDeleted) {
+                        $updatedata2 = [
+                            'jumlah_masuk' => ($datalamastokbrg[$i]['jumlah_masuk'] + intval($jumlah_masuk[$i])),
+                            'jumlah_keluar' => 0,
+                            'sisa_stok' => (intval($datalamastokbrg[$i]['sisa_stok']) + intval($jumlah_masuk[$i])),
+                        ];
+                        $ubahdata2 = $this->stokbarang->setUpdateData($updatedata2);
+
+                        //periksa perubahan data
+                        $data_lama2 = $datalamastokbrg[$i];
+                        $data_baru2 = $updatedata2;
+                        $field_update2 = [];
+                        foreach ($data_baru2 as $key => $value) {
+                            if (isset($data_lama2[$key]) && $data_lama2[$key] !== $value) {
+                                $field_update2[] = $key;
+                            }
+                        }
+                        // update data ke database
+                        $this->stokbarang->update($datalamastokbrg[$i]['id'], $ubahdata2);
+
+                        // Periksa apakah query terakhir adalah operasi update
+                        $lastQuery2 = $this->db->getLastQuery();
+
+                        $this->riwayattrx->inserthistori($datalamastokbrg[$i]['id'], $datalamastokbrg[$i], $updatedata2, "update $jenistrx", $lastQuery2, $field_update2);
+                    } else if ($data_ditemukan && !$isSarpras && $isDeleted) {
+                        $updatedata2 = [
+                            'jumlah_masuk' => ($datalamastokbrg[$i]['jumlah_masuk'] + intval($jumlah_masuk[$i])),
+                            'jumlah_keluar' => 0,
+                            'sisa_stok' => (intval($datalamastokbrg[$i]['sisa_stok']) + intval($jumlah_masuk[$i])),
+                            'deleted_by' => null,
+                            'deleted_at' => null,
+                        ];
+                        $ubahdata2 = $this->stokbarang->setUpdateData($updatedata2);
+
+                        //periksa perubahan data
+                        $data_lama2 = $datalamastokbrg[$i];
+                        $data_baru2 = $updatedata2;
+                        $field_update2 = [];
+                        foreach ($data_baru2 as $key => $value) {
+                            if (isset($data_lama2[$key]) && $data_lama2[$key] !== $value) {
+                                $field_update2[] = $key;
+                            }
+                        }
+                        // update data ke database
+                        $this->stokbarang->update($datalamastokbrg[$i]['id'], $ubahdata2);
+
+                        // Periksa apakah query terakhir adalah operasi update
+                        $lastQuery2 = $this->db->getLastQuery();
+
+                        $this->riwayattrx->inserthistori($datalamastokbrg[$i]['id'], $datalamastokbrg[$i], $updatedata2, "update $jenistrx", $lastQuery2, $field_update2);
+                    }
+                }
+
+                if ($data_ditemukan && $isSarpras && !$isDeleted) {
+                    $msg = [
+                        'error' =>
+                        [
+                            'isSarpras' => 'Tidak boleh memasukkan ruang yang sama!',
+                        ]
+                    ];
+                } else {
+                    $this->db->transComplete();
+                    if ($this->db->transStatus() === false) {
+                        // Jika terjadi kesalahan pada transaction
+                        $msg = ['error' => 'Gagal menyimpan data stok barang'];
+                    } else {
+                        // Jika berhasil disimpan
+                        $msg = ['sukses' => "Sukses $jmldata data stok barang berhasil di pindahkan dari Sarana dan Prasarana"];
+                    }
+                }
+            }
+
+            echo json_encode($msg);
+        } else {
+            $data = [
+                'title' => 'Error 404',
+                'msg' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/mazer/error-404', $data);
+        }
+    }
+
+    public function updatedatabarang($id)
     {
         if ($this->request->isAJAX()) {
             $validation =  \Config\Services::validation();
@@ -577,15 +1389,43 @@ class BarangController extends BaseController
                         'required' => '{field} tidak boleh kosong',
                     ]
                 ],
-                'warna' => [
-                    'label' => 'Warna barang',
+                'asal' => [
+                    'label' => 'Asal barang',
                     'rules' => 'required',
                     'errors' => [
                         'required' => '{field} tidak boleh kosong',
                     ]
                 ],
-                'asal' => [
-                    'label' => 'Asal barang',
+                'harga_beli' => [
+                    'label' => 'Harga beli barang',
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => "{field} tidak boleh kosong",
+                    ]
+                ],
+                'harga_jual' => [
+                    'label' => 'Harga jual barang',
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => "{field} tidak boleh kosong",
+                    ]
+                ],
+                'ruang_id' => [
+                    'label' => 'Nama ruang',
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => '{field} tidak boleh kosong',
+                    ]
+                ],
+                'jumlah_masuk' => [
+                    'label' => 'Jumlah masuk',
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => '{field} tidak boleh kosong',
+                    ]
+                ],
+                'satuan_id' => [
+                    'label' => 'Nama satuan',
                     'rules' => 'required',
                     'errors' => [
                         'required' => '{field} tidak boleh kosong',
@@ -596,19 +1436,24 @@ class BarangController extends BaseController
                 $msg = [
                     'error' => [
                         'katid' => $validation->getError('kat_id'),
-                        'skbarang' => $validation->getError('kode_brg'),
+                        'kodebrg' => $validation->getError('kode_brg'),
                         'namabarang' => $validation->getError('nama_brg'),
                         'merk' => $validation->getError('merk'),
-                        'warna' => $validation->getError('warna'),
                         'asal' => $validation->getError('asal'),
+                        'hargabeli' => $validation->getError('harga_beli'),
+                        'hargajual' => $validation->getError('harga_jual'),
+                        'jmlmasuk' => $validation->getError('jumlah_masuk'),
+                        'lokasi' => $validation->getError('ruang_id'),
+                        'satuan' => $validation->getError('satuan_id'),
                     ],
                 ];
             } else {
-                // $barang_lama = $this->db->table('barang')->where('id', $id)->get()->getRowArray();
+                //update data barang
                 $barang_lama = $this->barang->find($id);
+                $ruang_id = $this->request->getVar('ruang_id');
                 $namabrg = $this->request->getVar('nama_brg');
 
-                $updatedata = [
+                $updatebarang = [
                     'kat_id' => $this->request->getVar('kat_id'),
                     'kode_brg' => $this->request->getVar('kode_brg'),
                     'nama_brg' => $namabrg,
@@ -625,25 +1470,71 @@ class BarangController extends BaseController
                 ];
 
                 // Panggil fungsi setInsertData dari model sebelum data diupdate
-                $ubahdata = $this->barang->setUpdateData($updatedata);
+                $ubahbarang = $this->barang->setUpdateData($updatebarang);
 
                 //periksa perubahan data
-                $data_lama = $barang_lama;
-                $data_baru = $updatedata;
+                $databrg_lama = $barang_lama;
+                $databrg_baru = $updatebarang;
+                $fieldbrg_update = [];
+                foreach ($databrg_baru as $key => $value) {
+                    if (isset($databrg_lama[$key]) && $databrg_lama[$key] !== $value) {
+                        $fieldbrg_update[] = $key;
+                    }
+                }
+                // update data ke database
+                $this->barang->update($id, $ubahbarang);
+                // Periksa apakah query terakhir adalah operasi update
+                $lastQuery = $this->db->getLastQuery();
+
+                $this->riwayatbarang->inserthistori($id, $barang_lama, $updatebarang, $lastQuery, $fieldbrg_update);
+
+                //update stok barang
+                $stokbrglama = $this->db->table('stok_barang sb')->select('sb.*, b.nama_brg, r.nama_ruang')->join('barang b', 'b.id = sb.barang_id')->join('ruang r', 'r.id=sb.ruang_id')->where('sb.barang_id', $id)->where('sb.ruang_id', $ruang_id)->get()->getRowArray();
+                $sb_id = $stokbrglama['id'];
+                $nama_ruang = $stokbrglama['nama_ruang'];
+                $barang_id = $id;
+                $ruang_id = $this->request->getVar('ruang_id');
+                $satuan_id = $this->request->getVar('satuan_id');
+                $jml_masuk = intval($this->request->getVar('jumlah_masuk'));
+                $jml_keluar = $stokbrglama['jumlah_keluar'];
+                $namabrg = $stokbrglama['nama_brg'];
+                $sisa_stok = $jml_masuk - $jml_keluar;
+                $jenistrx = $this->request->getVar('jenistrx');
+                $tglbeli = $this->request->getVar('tgl_pembelian');
+                if ($tglbeli) {
+                    $tgl_beli = $tglbeli;
+                } else
+                    $tgl_beli = '';
+
+                $updatestok = [
+                    'barang_id' => $barang_id,
+                    'ruang_id' => $ruang_id,
+                    'satuan_id' => $satuan_id,
+                    'jumlah_masuk' => $jml_masuk,
+                    'sisa_stok' => $sisa_stok,
+                    'tgl_beli' => $tgl_beli,
+                ];
+
+                $ubahstok = $this->stokbarang->setUpdateData($updatestok);
+
+                //periksa perubahan data
+                $datastok_lama = $stokbrglama;
+                $datastok_baru = $updatestok;
                 $field_update = [];
-                foreach ($data_baru as $key => $value) {
-                    if (isset($data_lama[$key]) && $data_lama[$key] !== $value) {
+                foreach ($datastok_baru as $key => $value) {
+                    if (isset($datastok_lama[$key]) && $datastok_lama[$key] !== $value) {
                         $field_update[] = $key;
                     }
                 }
                 // update data ke database
-                $this->barang->update($id, $ubahdata);
+                $this->stokbarang->update($sb_id, $ubahstok);
                 // Periksa apakah query terakhir adalah operasi update
                 $lastQuery = $this->db->getLastQuery();
 
-                $this->riwayatbarang->inserthistori($id, $barang_lama, $updatedata, $lastQuery, $field_update);
+                // jenis transaksi : 'barang tetap masuk','barang persediaan masuk','permintaan barang','peminjaman barang','perbaikan barang rusak','penghapusan barang rusak'
+                $this->riwayattrx->inserthistori($sb_id, $stokbrglama, $updatestok, $jenistrx, $lastQuery, $field_update);
 
-                $msg = ['sukses' => 'Data barang: ' . $namabrg . ' berhasil terupdate'];
+                $msg = ['sukses' => "Data barang: $namabrg di $nama_ruang berhasil terupdate"];
             }
             echo json_encode($msg);
         } else {
@@ -685,10 +1576,10 @@ class BarangController extends BaseController
                 $cekdata = $this->barang->find($id);
 
                 $fotolama = $cekdata['foto_barang'];
+
                 if ($fotolama != NULL || $fotolama != "") {
                     unlink(FCPATH . '/assets/images/foto_barang/' . $fotolama);
                 }
-
                 // tangkap file foto
                 $filefoto = $this->request->getFile('foto_barang');
                 $filename = $filefoto->getRandomName();
@@ -747,8 +1638,10 @@ class BarangController extends BaseController
     {
         if ($this->request->isAJAX()) {
             $nama_brg = $this->request->getVar('nama_brg');
+            $query = $this->stokbarang->find($id);
             try {
-                $this->barang->setSoftDelete($id);
+                $this->stokbarang->setSoftDelete($id);
+                $this->barang->setSoftDelete($query['barang_id']);
 
                 $msg = [
                     'sukses' => "Data barang : $nama_brg berhasil dihapus",
@@ -769,6 +1662,38 @@ class BarangController extends BaseController
         }
     }
 
+    public function multipledeletetemporary()
+    {
+        if ($this->request->isAJAX()) {
+            $id = $this->request->getVar('id');
+            $jenis = strtolower($this->request->getVar('jenis_kat'));
+            $jmldata = count($id);
+
+            $query = array();
+            $idbrg = array();
+            for ($i = 0; $i < $jmldata; $i++) {
+                $query[] = $this->stokbarang->find($id[$i]);
+                $idbrg[] = $query[$i]['barang_id'];
+            }
+
+            for ($j = 0; $j < $jmldata; $j++) {
+                $this->stokbarang->setSoftDelete($id[$j]);
+                $this->barang->setSoftDelete($idbrg[$j]);
+            }
+            $msg = [
+                'sukses' => "$jmldata data $jenis berhasil dihapus secara temporary",
+            ];
+
+            echo json_encode($msg);
+        } else {
+            $data = [
+                'title' => 'Error 404',
+                'msg' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/mazer/error-404', $data);
+        }
+    }
+
     public function restoredata($id = null)
     {
         if ($this->request->isAJAX()) {
@@ -778,20 +1703,20 @@ class BarangController extends BaseController
                 'deleted_at' => null,
             ];
             $jenis = $this->request->getVar('jenis_kat');
-
             if ($id != null) {
                 $nama_brg = $this->request->getVar('nama_brg');
-                $this->barang->update($id, $restoredata);
+                $query = $this->db->table('stok_barang')->select('*')->where('id', $id)->get()->getRowArray();
+
+                $this->stokbarang->update($id, $restoredata);
+                $this->barang->update($query['barang_id'], $restoredata);
 
                 $msg = [
                     'sukses' => "Data $jenis: $nama_brg berhasil dipulihkan",
                 ];
             } else {
-                $this->db->table('barang')
-                    ->set($restoredata)
-                    ->where('deleted_at is NOT NULL', NULL, FALSE)
-                    ->update();
-                $jmldata = $this->db->affectedRows();
+                $this->db->query("UPDATE stok_barang sb JOIN barang b ON b.id = sb.barang_id JOIN kategori k ON b.kat_id = k.id SET sb.deleted_by = NULL, sb.deleted_at = NULL, b.deleted_by = NULL, b.deleted_at = NULL WHERE b.deleted_at IS NOT NULL AND k.jenis = '$jenis'");
+
+                $jmldata = intval($this->db->affectedRows()) / 2;
 
                 if ($jmldata > 0) {
                     $msg = [
@@ -799,7 +1724,7 @@ class BarangController extends BaseController
                     ];
                 } else {
                     $msg = [
-                        'error' => 'Tidak ada data barang tetap yang bisa dipulihkan'
+                        'error' => "Tidak ada data $jenis yang bisa dipulihkan"
                     ];
                 }
             }
@@ -819,14 +1744,19 @@ class BarangController extends BaseController
         if ($this->request->isAJAX()) {
             $ids = $this->request->getVar('id');
             $jenis = $this->request->getVar('jenis_kat');
-            $datalama = [];
+            $datastoklama = [];
+            $databrglama = [];
             $id = explode(",", $ids);
             if (count($id) === 1) {
-                $baranglama = $this->barang->select('*')->where('id', $id)->get()->getRowArray();
-                array_push($datalama, $baranglama);
+                $stoklama = $this->stokbarang->select('*')->where('id', $id)->get()->getRowArray();
+                $baranglama = $this->barang->select('*')->where('id', $stoklama['barang_id'])->get()->getRowArray();
+                array_push($datastoklama, $stoklama);
+                array_push($databrglama, $baranglama);
+
                 $nama_brg = $this->request->getVar('nama_brg');
 
-                $this->barang->delete($id, true);
+                $this->stokbarang->delete($id, true);
+                $this->barang->delete($stoklama['barang_id'], true);
 
                 if ($baranglama['foto_barang'] != NULL) {
                     unlink(FCPATH . 'assets/images/foto_barang/' . $baranglama['foto_barang']);
@@ -834,29 +1764,30 @@ class BarangController extends BaseController
 
                 $lastQuery = $this->db->getLastQuery();
 
-                $this->riwayatbarang->inserthistori($id, $datalama, null, $lastQuery, null);
+                $this->riwayattrx->inserthistori($id, $datastoklama, null, "penghapusan permanen " . strtolower($jenis), $lastQuery, null);
+                $this->riwayatbarang->inserthistori($id, $databrglama, null, $lastQuery, null);
 
                 $msg = [
                     'sukses' => "Data $jenis: $nama_brg berhasil dihapus secara permanen",
                 ];
             } else {
-                $data_lama = [];
-                foreach ($id as $brg_id) {
-                    $baranglama = $this->barang->select('*')->where('id', $brg_id)->get()->getRowArray();
-                    array_push($data_lama, $baranglama);
+                $datastok_lama = [];
+                $databrg_lama = [];
+                foreach ($id as $stokbrg_id) {
+                    $stoklama = $this->stokbarang->select('*')->where('id', $stokbrg_id)->get()->getRowArray();
+                    $baranglama = $this->barang->select('*')->where('id', $stoklama['barang_id'])->get()->getRowArray();
+                    array_push($datastok_lama, $stoklama);
+                    array_push($databrg_lama, $baranglama);
 
-                    // echo "data_lama : ";
-                    // var_dump($data_lama);
-
-                    $this->barang->delete($brg_id, true);
+                    $this->stokbarang->delete($stokbrg_id, true);
+                    $this->barang->delete($stoklama['barang_id'], true);
 
                     if ($baranglama['foto_barang'] != NULL) {
                         unlink(FCPATH . 'assets/images/foto_barang/' . $baranglama['foto_barang']);
                     }
 
-                    // $lastQuery = $this->db->getLastQuery();
-
-                    $this->riwayatbarang->deletehistorimultiple([$brg_id], $data_lama);
+                    $this->riwayattrx->deletehistorimultiple([$stokbrg_id], $datastok_lama, "penghapusan permanen " . strtolower($jenis));
+                    $this->riwayatbarang->deletehistorimultiple([$stoklama['barang_id']], $databrg_lama);
                 }
 
                 $msg = [
@@ -874,7 +1805,7 @@ class BarangController extends BaseController
         }
     }
 
-    public function insertmultiple()
+    public function insertmultiplebarang()
     {
         if ($this->request->isAJAX()) {
             $kat_id = array();
@@ -890,6 +1821,13 @@ class BarangController extends BaseController
             $harga_jual = array();
             $tgl_pembelian = array();
             $asal = array();
+            $ruang_id = array();
+            $satuan_id = array();
+            $jenistrx = $this->request->getVar('jenistrx');
+            $jml_keluar = 0;
+            $jml_masuk = array();
+            $sisa_stok = array();
+            $jmldata = $this->request->getVar('jmldata');
 
             $jmldata = intval($this->request->getVar('jmldata'));
             for ($j = 1; $j <= $jmldata; $j++) {
@@ -907,6 +1845,10 @@ class BarangController extends BaseController
                 array_push($harga_jual, $this->request->getVar("harga_jual$j"));
                 array_push($tgl_pembelian, $this->request->getVar("tgl_pembelian$j"));
                 array_push($asal, $this->request->getVar("asal_$j"));
+                array_push($ruang_id, $this->request->getVar("ruang_id$j"));
+                array_push($jml_masuk, $this->request->getVar("jumlah_masuk$j"));
+                array_push($sisa_stok, (intval($this->request->getVar("jumlah_masuk$j")) - $jml_keluar));
+                array_push($satuan_id, $this->request->getVar("satuan_id$j"));
             }
 
             $validation =  \Config\Services::validation();
@@ -933,7 +1875,7 @@ class BarangController extends BaseController
                         'rules' => 'required|is_unique[barang.nama_brg]',
                         'errors' => [
                             'required' => "{field} form $a tidak boleh kosong",
-                            'is_unique' => "{field} sudah ada dan tidak boleh sama",
+                            'is_unique' => "{field} form $a sudah ada dan tidak boleh sama",
                         ]
                     ],
                     'merk' . $a => [
@@ -964,6 +1906,27 @@ class BarangController extends BaseController
                             'required' => "{field} form $a tidak boleh kosong",
                         ]
                     ],
+                    'ruang_id' . $a => [
+                        'label' => 'Nama ruang',
+                        'rules' => 'required',
+                        'errors' => [
+                            'required' => "{field} form $a tidak boleh kosong",
+                        ]
+                    ],
+                    'jumlah_masuk' . $a => [
+                        'label' => 'Jumlah masuk',
+                        'rules' => 'required',
+                        'errors' => [
+                            'required' => "{field} form $a tidak boleh kosong",
+                        ]
+                    ],
+                    'satuan_id' . $a => [
+                        'label' => 'Nama Satuan',
+                        'rules' => 'required',
+                        'errors' => [
+                            'required' => "{field} form $a tidak boleh kosong",
+                        ],
+                    ],
                 ];
                 if (!$this->validate($rules)) {
                     $errors = $validation->getErrors();
@@ -981,7 +1944,7 @@ class BarangController extends BaseController
 
                 for ($i = 0; $i < $jmldata; $i++) {
                     // echo "sukses";
-                    $simpandatamt = [
+                    $simpanbrgmt = [
                         'kat_id' => $kat_id[$i],
                         'kode_brg' => $kode_brg[$i],
                         'nama_brg' => $nama_brg[$i],
@@ -998,22 +1961,45 @@ class BarangController extends BaseController
                     ];
 
                     // Panggil fungsi setInsertData dari model sebelum data disimpan
-                    $insertdata = $this->barang->setInsertData($simpandatamt);
+                    $insertbrg = $this->barang->setInsertData($simpanbrgmt);
                     // Simpan data ke database
-                    $this->barang->save($insertdata);
+                    $this->barang->save($insertbrg);
 
-                    // $barang_id[] = $this->barang->insertID();
-                    // echo "barang_id = $barang_id";
-
-                    // $lastQuery = $this->db->getLastQuery();
-                    // $this->riwayatbarang->insertmultiplehistori([$this->barang->insertID()], $simpandatamt);
+                    $barang_id = $this->barang->insertID();
                     // Simpan ke dalam tabel riwayat_barang
-                    $data_riwayat = $insertdata;
-                    $data_riwayat['barang_id'] = $this->barang->insertID();
+                    $data_riwayat = $insertbrg;
+                    $data_riwayat['barang_id'] = $barang_id;
                     $data_riwayat['field'] = 'Semua field';
                     $data_riwayat['old_value'] = '';
-                    $data_riwayat['new_value'] = json_encode($insertdata);
-                    $this->riwayatbarang->insert($data_riwayat);
+                    $data_riwayat['new_value'] = json_encode($insertbrg);
+                    $setdatariwayat = $this->riwayatbarang->setInsertData($data_riwayat);
+                    $this->riwayatbarang->save($setdatariwayat);
+
+                    // Insert stok barang
+                    $simpanstok = [
+                        'barang_id' => $barang_id,
+                        'ruang_id' => $ruang_id[$i],
+                        'satuan_id' => $satuan_id[$i],
+                        'jumlah_masuk' => $jml_masuk[$i],
+                        'jumlah_keluar' => $jml_keluar,
+                        'sisa_stok' => $sisa_stok[$i],
+                        'tgl_beli' => $tgl_pembelian[$i],
+                    ];
+                    // Panggil fungsi setInsertData dari model sebelum data disimpan
+                    $insertstok = $this->stokbarang->setInsertData($simpanstok);
+
+                    // Simpan data ke database
+                    $this->stokbarang->save($insertstok);
+
+                    $stokbrg_id = $this->stokbarang->insertID();
+                    $data_riwayat = $insertstok;
+                    $data_riwayat['stokbrg_id'] = $stokbrg_id;
+                    $data_riwayat['jenis_transaksi'] = $jenistrx;
+                    $data_riwayat['field'] = 'Semua field';
+                    $data_riwayat['old_value'] = '';
+                    $data_riwayat['new_value'] = json_encode($insertstok);
+                    $setdatariwayat = $this->riwayattrx->setInsertData($data_riwayat);
+                    $this->riwayattrx->save($setdatariwayat);
                 }
                 // Commit transaction
                 $this->db->transComplete();
@@ -1026,6 +2012,51 @@ class BarangController extends BaseController
                     $msg = ['sukses' => "Sukses $jmldata data barang berhasil tersimpan"];
                 }
             }
+            echo json_encode($msg);
+        } else {
+            $data = [
+                'title' => 'Error 404',
+                'msg' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/mazer/error-404', $data);
+        }
+    }
+
+    public function tampiltransferform()
+    {
+        if ($this->request->isAJAX()) {
+            $ids = $this->request->getVar('ids');
+            $id = explode(",", $ids);
+            $title = $this->request->getVar('title');
+            $jenis_kat = $this->request->getVar('jenis_kat');
+            $jmldata = $this->request->getVar('jmldata');
+            $saveMethod = $this->request->getVar('saveMethod');
+            $nav = $this->request->getVar('nav');
+            $stoklama = [];
+            foreach ($id as $idstokbrg) {
+                $query = $this->db->table('stok_barang sb')->select('sb.*, b.nama_brg, r.nama_ruang, s.kd_satuan')
+                    ->join('barang b', 'b.id=sb.barang_id')
+                    ->join('ruang r', 'r.id=sb.ruang_id')
+                    ->join('satuan s', 's.id=sb.satuan_id')
+                    ->where('sb.id', $idstokbrg)
+                    ->get()
+                    ->getRowArray();
+                $stoklama[] = $query;
+            }
+
+            $data = [
+                'stoklama' => json_encode($stoklama),
+                'title' => $title,
+                'jenis_kat' => $jenis_kat,
+                'jmldata' => $jmldata,
+                'saveMethod' => $saveMethod,
+                'nav' => $nav,
+            ];
+
+            $msg = [
+                'data' => view('barang/formtransferbarang', $data),
+            ];
+
             echo json_encode($msg);
         } else {
             $data = [
