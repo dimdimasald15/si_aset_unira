@@ -4,7 +4,7 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class Permintaan extends Migration
+class Peminjaman extends Migration
 {
     public function up()
     {
@@ -14,21 +14,37 @@ class Permintaan extends Migration
                 'constraint' => '11',
                 'auto_increment' => TRUE,
             ],
+            'anggota_id' => [
+                'type' => 'int',
+                'constraint' => '11',
+            ],
             'barang_id' => [
                 'type' => 'int',
                 'constraint' => '11',
             ],
-            'unit_id' => [
-                'type' => 'int',
-                'constraint' => '11',
-            ],
-            'nama_peminta' => [
-                'type' => 'varchar',
-                'constraint' => '50',
-            ],
             'jml_barang' => [
                 'type' => 'int',
                 'constraint' => '3',
+            ],
+            'jml_hari' => [
+                'type' => 'int',
+                'constraint' => '3',
+            ],
+            'kondisi_pinjam' => [
+                'type' => 'varchar',
+                'constraint' => '20',
+            ],
+            'kondisi_kembali' => [
+                'type' => 'varchar',
+                'constraint' => '20',
+            ],
+            'tgl_pinjam' => [
+                'type' => 'datetime',
+                'null' => TRUE,
+            ],
+            'tgl_kembali' => [
+                'type' => 'datetime',
+                'null' => TRUE,
             ],
             'created_by' => [
                 'type' => 'varchar',
@@ -59,13 +75,13 @@ class Permintaan extends Migration
             ],
         ]);
         $this->forge->addPrimaryKey('id');
+        $this->forge->addForeignKey('anggota_id', 'anggota', 'id');
         $this->forge->addForeignKey('barang_id', 'barang', 'id');
-        $this->forge->addForeignKey('unit_id', 'unit', 'id');
-        $this->forge->createTable('permintaan');
+        $this->forge->createTable('peminjaman');
     }
 
     public function down()
     {
-        $this->forge->dropTable('permintaan');
+        $this->forge->dropTable('peminjaman');
     }
 }

@@ -2,15 +2,13 @@
 
 namespace App\Models;
 
-
 use CodeIgniter\Model;
-use CodeIgniter\Session\SessionInterface;
 
-class Ruang extends Model
+class Anggota extends Model
 {
-    protected $table = "ruang";
+    protected $table = "anggota";
     protected $primaryKey = 'id';
-    protected $allowedFields = ['id', 'nama_ruang', 'nama_lantai', 'gedung_id', 'created_at', 'created_by', 'updated_by', 'deleted_by', 'deleted_at'];
+    protected $allowedFields = ['id', 'no_anggota', 'nama_anggota', 'no_hp', 'level', 'unit_id', 'created_at', 'created_by', 'updated_by', 'updated_at', 'deleted_by', 'deleted_at'];
     protected $useSoftDeletes   = true;
     protected $useTimestamps = false;
     protected $createdField  = 'created_at';

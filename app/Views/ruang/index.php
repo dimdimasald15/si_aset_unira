@@ -94,75 +94,76 @@
       </form>
     </div>
   </div>
+
+  <div class="card shadow mb-3 datalist-ruangan">
+    <div class="card-header shadow-sm">
+      <div class="row justify-content-between align-items-center">
+        <div class="col-lg-7">
+          <h4 class="card-title">Data Ruangan</h4>
+        </div>
+        <div class="col-lg-5 d-flex flex-row justify-content-end">
+          <div class="col-lg-auto btn-dataruang">
+            <button type="button" class="btn btn-success" id="btn-tambahruang">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-door-closed" viewBox="0 0 16 16">
+                <path d="M3 2a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v13h1.5a.5.5 0 0 1 0 1h-13a.5.5 0 0 1 0-1H3V2zm1 13h8V2H4v13z"></path>
+                <path d="M9 9a1 1 0 1 0 2 0 1 1 0 0 0-2 0z"></path>
+              </svg>
+              Tambah Ruangan
+            </button>
+            <button type="button" class="btn btn-danger" id="btn-restore"><i class="fa fa-trash-o"></i> Trash</button>
+          </div>
+          <div class="col-lg-auto btn-datarestoreruang" style="display:none;">
+            <button class="btn btn-success" onclick="restoreall()"><i class="fa fa-undo"></i> Pulihkan semua</button>
+            <button class="btn btn-danger" onclick="hapuspermanenall()"><i class="fa fa-trash"></i> Hapus semua permanen</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body table-restore" style="display:none;">
+      <div class="table-responsive py-4">
+        <table class="table table-flush" id="table-restore" width="100%">
+          <thead class=" thead-light">
+            <tr>
+              <th>No.</th>
+              <th>Nama Ruangan</th>
+              <th>Nama Lantai</th>
+              <th>Prefix Gedung</th>
+              <th>Nama Gedung</th>
+              <th>Deleted By</th>
+              <th>Deleted At </th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card-body table-ruang">
+      <div class="table-responsive py-4">
+        <table class="table table-flush" id="table-ruang" width="100%">
+          <thead class=" thead-light">
+            <tr>
+              <th>No.</th>
+              <th>Nama Ruangan</th>
+              <th>Nama Lantai</th>
+              <th>Prefix Gedung</th>
+              <th>Nama Gedung</th>
+              <th>Created By</th>
+              <th>Created At</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="row m-2 btn-datarestoreruang" style="display:none;">
+      <a href="ruang">&laquo; Kembali ke data ruangan</a>
+    </div>
+  </div>
 </section>
-<div class="card shadow mb-3 datalist-ruangan">
-  <div class="card-header shadow-sm">
-    <div class="row justify-content-between align-items-center">
-      <div class="col-lg-7">
-        <h4 class="card-title">Data Ruangan</h4>
-      </div>
-      <div class="col-lg-5 d-flex flex-row justify-content-end">
-        <div class="col-lg-auto btn-dataruang">
-          <button type="button" class="btn btn-success" id="btn-tambahruang">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-door-closed" viewBox="0 0 16 16">
-              <path d="M3 2a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v13h1.5a.5.5 0 0 1 0 1h-13a.5.5 0 0 1 0-1H3V2zm1 13h8V2H4v13z"></path>
-              <path d="M9 9a1 1 0 1 0 2 0 1 1 0 0 0-2 0z"></path>
-            </svg>
-            Tambah Ruangan
-          </button>
-          <button type="button" class="btn btn-danger" id="btn-restore"><i class="fa fa-trash-o"></i> Trash</button>
-        </div>
-        <div class="col-lg-auto btn-datarestoreruang" style="display:none;">
-          <button class="btn btn-success" onclick="restoreall()"><i class="fa fa-undo"></i> Pulihkan semua</button>
-          <button class="btn btn-danger" onclick="hapuspermanenall()"><i class="fa fa-trash"></i> Hapus semua permanen</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="card-body table-restore" style="display:none;">
-    <div class="table-responsive py-4">
-      <table class="table table-flush" id="table-restore" width="100%">
-        <thead class=" thead-light">
-          <tr>
-            <th>No.</th>
-            <th>Nama Ruangan</th>
-            <th>Nama Lantai</th>
-            <th>Prefix Gedung</th>
-            <th>Nama Gedung</th>
-            <th>Deleted By</th>
-            <th>Deleted At </th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-        </tbody>
-      </table>
-    </div>
-  </div>
-  <div class="card-body table-ruang">
-    <div class="table-responsive py-4">
-      <table class="table table-flush" id="table-ruang" width="100%">
-        <thead class=" thead-light">
-          <tr>
-            <th>No.</th>
-            <th>Nama Ruangan</th>
-            <th>Nama Lantai</th>
-            <th>Prefix Gedung</th>
-            <th>Nama Gedung</th>
-            <th>Created By</th>
-            <th>Created At</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody>
-        </tbody>
-      </table>
-    </div>
-  </div>
-  <div class="row m-2 btn-datarestoreruang" style="display:none;">
-    <a href="ruang">&laquo; Kembali ke data ruangan</a>
-  </div>
-</div>
 <?= $this->endSection() ?>
 
 <?= $this->section('javascript') ?>

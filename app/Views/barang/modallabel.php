@@ -9,6 +9,7 @@
 
   .card-label {
     border: 4px solid var(--bs-success) !important;
+    border-radius: 15px !important;
     /* border-color: #1fa164; */
   }
 </style>
@@ -26,17 +27,22 @@
         <div class="row d-flex justify-content-center">
           <div class="col-11">
             <div class="card card-label">
-              <div class="card-body text-center">
+              <div class="card-body">
                 <div class="row d-flex justify-content-between align-items-center">
                   <div class="col-9">
                     <div class="infobrg"></div>
                   </div>
-                  <div class="col-3" id="qrcode">
-
+                  <div class="col-3 text-center">
+                    <div class="row mb-2" id="qrcode"></div>
+                    <div class="row" id="urlqr"></div>
                   </div>
                 </div>
               </div>
-              <div class="card-footer" style="background-color:#1fa164;"></div>
+              <div class="card-footer pb-2 pt-1" style="background-color:#1fa164;color:white !important;">
+                <div class="row text-center">
+                  <h5 class="text-white">SARANA & PRASARANA UNIRA MALANG</h5>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -58,7 +64,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
-        <button type="button" class="btn btn-primary" id="btn-download">Download</button>
+        <button type="button" class="btn btn-primary" id="btn-download"><i class="fa fa-download"></i> Download Gambar</button>
       </div>
     </div>
   </div>
@@ -67,7 +73,7 @@
   var id = "<?= $id ?>";
   var title = $('#title');
   var kdbrg = '';
-
+  var idlokasi = '';
 
   // Get the card element
   var card = $('.card-label')[0];
@@ -87,7 +93,7 @@
       // Create a download link
       var downloadLink = document.createElement('a');
       downloadLink.href = dataURL;
-      downloadLink.download = `label-${kdbrg}.png`;
+      downloadLink.download = `label-${kdbrg}-${idlokasi}.png`;
       // Trigger the download
       document.body.appendChild(downloadLink);
       downloadLink.click();
@@ -115,8 +121,8 @@
     for (let i = 0; i < qty; i++) {
       var canvas = document.createElement('canvas');
       canvas.willReadFrequently = true;
-      canvas.width = card.clientWidth;
-      canvas.height = card.clientHeight;
+      canvas.width = 800;
+      canvas.height = 400;
       canvasArray.push(canvas);
     }
 
@@ -125,7 +131,6 @@
       var canvas2 = canvasArray[i];
       var ctx = canvas2.getContext('2d');
       var scale = canvas2.width / card.clientWidth;
-      console.log(scale);
       ctx.scale(scale, scale);
       promises.push(html2canvas(card, {
         canvas: canvas2,
@@ -137,8 +142,9 @@
     }
 
     Promise.all(promises).then(function() {
-      // console.log('promises');
       var docDefinition = {
+        pageSize: 'A4',
+        pageMargins: [10, 10, 10, 10],
         pageOrientation: 'landscape',
         content: []
       };
@@ -164,48 +170,75 @@
       }
 
       docDefinition.content = content;
-      pdfMake.createPdf(docDefinition).download(`labels-${kdbrg}.pdf`);
+      pdfMake.createPdf(docDefinition).download(`labels-${kdbrg}-${idlokasi}.pdf`);
     });
   }
-
-
 
   $(document).ready(function() {
     $.ajax({
       type: "get",
-      url: "<?= base_url() ?>/barangcontroller/getdatabarangbyid",
+      url: "<?= base_url() ?>/barangcontroller/getdatastokbarangbyid",
       data: {
         id: id
       },
       dataType: "json",
       success: function(response) {
         // set title
-        $('#title').text('Cetak Label Barang - ' + response.nama_brg);
         var kodebarang = response.kode_brg;
+        idlokasi = response.ruang_id;
         kdbrg = kodebarang.split(".").join("-");
         const logo = "<?= base_url() ?>/assets/images/logo/logounira.jpg";
         namabrg = response.nama_brg;
+        const urlqrcode = `<?= base_url() ?>/public/detail-barang/${kdbrg}-${idlokasi}`;
+        const dateStr = response.tgl_pembelian;
+        const date = new Date(dateStr);
+        const options = {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric'
+        };
+        const tglbeli = date.toLocaleDateString('id-ID', options);
+
+        $('#title').text(`Cetak Label Barang - ${response.kode_brg} - ${response.nama_ruang}`);
 
         $('.infobrg').append(`
-          <hr>
-          <div class="row m-0 d-flex justify-content-start align-items-center">
+        <div class="row m-0 d-flex justify-content-start text-center">
           <div class="col-lg-2"><img src=${logo} class="mx-auto d-block" alt="Logo" width="75%"></div>
-          <div class="col-lg-10"><h3>Universitas Islam Raden Rahmat Malang</h3></div>
+          <div class="col-lg-10">
+            <h4>UNIVERSITAS ISLAM RADEN RAHMAT MALANG</h4>
           </div>
-          <hr>
+        </div>
+        <hr>
+        <div class="row text-left m-0">
+          <div class="col-lg-4"><h5>Nama Barang</h5></div>
+          <div class="col-lg-1"><h5> : </h5></div>
+          <div class="col-lg-6">
           <h5>${response.nama_brg}</h5>
-          <hr>
-          <h5>${kodebarang}</h5>
-          <hr>
-          <h6>Sarana dan Prasarana UNIRA Malang</h6>
-          <hr>
-          `);
+          </div>
+        </div>
+        <hr>
+        <div class="row text-left m-0">
+          <div class="col-lg-4"><h5>Lokasi Barang</h5></div>
+          <div class="col-lg-1"><h5> : </h5></div>
+          <div class="col-lg-6">
+          <h5>${response.nama_ruang}</h5>
+          </div>
+        </div>
+        <hr>
+        <div class="row text-left m-0">
+          <div class="col-lg-4"><h5>Tgl Pembelian</h5></div>
+          <div class="col-lg-1"><h5> : </h5></div>
+          <div class="col-lg-6">
+          <h5>${tglbeli}</h5>
+          </div>
+        </div>
+        <hr>`);
 
         const icon = new Image();
         icon.onload = function() {
           // create qr code with logo
           var qrcode = new QRCode('qrcode', {
-            text: `<?= base_url() ?>/public/detail-barang/${kdbrg}`,
+            text: `${urlqrcode}`,
             width: 200,
             height: 200,
             correctLevel: QRCode.CorrectLevel.H,
@@ -215,6 +248,11 @@
           imgQR(qrcode._oDrawing._elCanvas, this, 0.2);
         }
         icon.src = logo;
+
+        $('#urlqr').append(`<p style="font-style:italic;">${urlqrcode}</p>`);
+      },
+      error: function(xhr, ajaxOptions, thrownError) {
+        alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
       }
     });
 
