@@ -56,7 +56,7 @@
           <th>Nama Barang</th>
           <th>Jumlah Permintaan</th>
           <th>Satuan</th>
-          <th>#</th>
+          <th <?= $saveMethod == 'update' ? 'hidden' : '' ?>>#</th>
         </thead>
         <tbody id="tambahrow">
           <tr>
@@ -72,17 +72,18 @@
               <select name="satuan_id<?= $no ?>" class="form-select p-2" id="satuan<?= $no ?>"></select>
               <div class="invalid-feedback errsatuan<?= $no ?>"></div>
             </td>
-            <td style="width:1px; white-space:nowrap;">
+            <td style="width:1px; white-space:nowrap;" <?= $saveMethod == 'update' ? 'hidden' : '' ?>>
               <button type="button" class="btn btn-primary btn-sm btntambahrow"><i class="fa fa-plus"></i></button>
               <button type="button" class="btn btn-danger btn-sm btnhapusrow" style="display:none;"><i class="fa fa-times"></i></button>
             </td>
           </tr>
         </tbody>
       </table>
-      <div class="row">
+      <div class="viewalert" style="display:none;"></div>
+      <div class=" row">
         <div class="col-12 d-flex justify-content-end">
           <button type="button" class="btn btn-white my-4 back-form">&laquo; Kembali</button>
-          <button type="submit" class="btn btn-success my-4 btnsimpan">Simpan</button>
+          <button type="submit" class="btn btn-success my-4 btnsimpan"><?= $saveMethod == 'update' ? 'Ubah' : 'Simpan' ?></button>
         </div>
       </div>
     </form>
@@ -96,9 +97,12 @@
   var level = '';
 
   $(document).ready(function() {
+    let saveMethod = "<?= $saveMethod ?>";
     rowCount = $('#tambahrow tr').length;
     looping(rowCount);
-    $('.noanggota').hide()
+
+    $('.noanggota').hide();
+    $('.viewalert').hide();
     $('.back-form').on('click', function() {
       $('#tampilsingleform').hide(500);
       $('.viewform').hide(500)
@@ -205,8 +209,43 @@
         $("#tambahrow tr:last-child .btnhapusrow").show();
     })
 
+    if (saveMethod == "update") {
+      $('#tampilsingleform').find('.card-title').html('Ubah Data <?= $title ?>');
+      $('.viewalert').show().html(`
+      <div class="alert alert-info" role="alert">
+        <div class="row">
+          <div class="col-sm-1 d-flex align-items-center justify-content-end">
+            <p class="fs-1"><i class="bi bi-info-circle"></i></p>
+          </div>
+          <div class="col-sm-10 p-0">
+          <p>Jika anda mencoba mengubah nama barang sesuai dengan nama barang yang sudah ada di dalam table permintaan, maka perintah update akan terus dilanjutkan dengan menghapus data permintaan ini, lalu menambahkan jumlah permintaan data barang yang sudah ada.</p>
+          </div>
+          <div class="col-sm-1">
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        </div>
+      </div>
+      `)
+      var globalId = "<?= $globalId ?>";
+
+      $.ajax({
+        type: "get",
+        url: "<?= base_url() ?>/permintaancontroller/getpermintaanbyid?id=" + globalId,
+        dataType: "json",
+        success: function(response) {
+          isiForm(response.data, response.jmldata);
+        }
+      });
+    }
+
     $('.formpermintaan').submit(function(e) {
       e.preventDefault();
+
+      if (saveMethod == "add") {
+        url = "<?= $nav ?>/simpan";
+      } else if (saveMethod == "update") {
+        url = "<?= $nav ?>/update/" + globalId;
+      }
 
       var formdata = new FormData(this);
       formdata.append('jmlbrg', rowCount);
@@ -214,7 +253,7 @@
 
       $.ajax({
         type: "post",
-        url: "<?= $nav ?>/simpan",
+        url: url,
         data: formdata,
         contentType: false,
         processData: false,
@@ -228,7 +267,6 @@
         },
         success: function(result) {
           var response = JSON.parse(result);
-          console.log(response);
           if (response.error) {
             if (response.error.namaanggota) {
               $('#namaanggota').addClass('is-invalid');
@@ -382,7 +420,7 @@
               dataType: "json",
               success: function(response) {
                 if (response) {
-                  // $(`#satuan${j}`).prop('disabled', true);
+                  $(`#satuan${j}`).prop('disabled', true);
                   $(`#satuan${j}`).html('<option value = "' + response.satuan_id + '" selected >' + response.kd_satuan + '</option>');
                 }
               }
@@ -439,7 +477,6 @@
 
   function checkBarangDuplikat(row) {
     let idbrg = $(`#idbrg${row}`).val();
-    console.log(idbrg);
 
     if (idbrgSet.has(idbrg)) {
       Swal.fire({
@@ -465,5 +502,59 @@
     );
 
     return $result;
+  }
+
+  function isiForm({
+    id,
+    nama_anggota,
+    no_anggota,
+    unit_id,
+    level,
+    singkatan,
+    barang_id,
+    jml_barang,
+    anggota_id,
+    nama_brg,
+    satuan_id,
+    kd_satuan
+  }, jmldata) {
+    $('#id').val(id);
+    $('#namaanggota').val(nama_anggota);
+    $('#level').val(level);
+    $('.noanggota').hide().html('');
+    if (level == 'Mahasiswa') {
+      $('.noanggota').show().append(
+        `<label for="noanggota" class="form-label">NIM</label>
+        <div class="input-group mb-3">
+        <span class="input-group-text"><i class="bi bi-person"></i></span>
+        <input type="text" class="form-control" placeholder="Masukkan NIM" id="noanggota" name="no_anggota" value="${no_anggota}" readonly>
+        <div class="invalid-feedback errnoanggota"></div>
+        </div>`
+      );
+    } else if (level == 'Karyawan') {
+      $('.noanggota').show().append(
+        `<label for="noanggota" class="form-label">Nomor Pegawai</label>
+          <div class="input-group mb-3">
+          <span class="input-group-text"><i class="bi bi-person"></i></span>
+          <input type="text" class="form-control" placeholder="Masukkan Nomor Pegawai" id="noanggota" name="no_anggota" value="${no_anggota}" readonly>
+          <div class="invalid-feedback errnoanggota"></div>
+          </div>`
+      );
+    } else {
+      $('.noanggota').hide().html('');
+    }
+    $('#unit').html(`
+      <option value="${unit_id}">${singkatan}</option>
+    `);
+    for (let i = 1; i <= jmldata; i++) {
+      $(`#idbrg${i}`).html(`
+        <option value="${barang_id}">${nama_brg}</option>
+      `);
+      $(`#jumlah${i}`).val(jml_barang);
+      $(`#satuan${i}`).prop('disabled', true);
+      $(`#satuan${i}`).html(`
+        <option value="${satuan_id}">${kd_satuan}</option>
+      `);
+    }
   }
 </script>

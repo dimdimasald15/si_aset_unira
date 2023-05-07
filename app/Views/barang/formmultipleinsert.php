@@ -947,6 +947,11 @@
               }
             }
           } else {
+            $('.formtambahrow tr').slice(1).remove();
+            $('.formsimpanmultiple').hide(500);
+            $('.optionmt').show(500);
+            $('#opsi1mt').prop('checked', false);
+            $('#opsi2mt').prop('checked', false);
             $('#cardmultipleinsert').hide(500);
             Swal.fire(
               'Berhasil!',

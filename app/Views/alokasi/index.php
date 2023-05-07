@@ -365,7 +365,6 @@
       $('.table-alokasi').hide();
       $('.table-restore').show();
       $('.datalist-alokasi h4').html('Restore Data <?= $title; ?>');
-      $('#tampilformtambahalokasi').hide();
       $('.btn-dataalokasi').hide();
       $('.btn-datarestorealokasi').show();
 
@@ -633,7 +632,7 @@
           url: "<?= $nav ?>/restore",
           data: {
             id: id,
-            idbrg: idbrg,
+            barang_id: idbrg,
             nama_brg: namabrg,
             nama_ruang: namaruang,
             jenis_kat: jenis_kat,
@@ -759,7 +758,7 @@
           data: {
             id: id,
             nama_brg: namabrg,
-            nama_brg: namaruang,
+            nama_ruang: namaruang,
             jenis_kat: jenis_kat,
           },
           dataType: 'json',
