@@ -8,7 +8,7 @@ class Peminjaman extends Model
 {
     protected $table = "peminjaman";
     protected $primaryKey = 'id';
-    protected $allowedFields = ['id', 'barang_id', 'anggota_id', 'jml_barang', 'jml_hari', 'kondisi_pinjam', 'kondisi_kembali', 'tgl_pinjam', 'tgl_kembali', 'created_by', 'updated_by', 'deleted_by', 'deleted_at'];
+    protected $allowedFields = ['id', 'barang_id', 'anggota_id', 'jml_barang', 'jml_hari', 'kondisi_pinjam', 'kondisi_kembali', 'tgl_pinjam', 'tgl_kembali', 'created_by', 'created_at', 'updated_by', 'updated_at', 'deleted_by', 'deleted_at'];
     protected $useSoftDeletes   = true;
     protected $useTimestamps = false;
     protected $createdField  = 'created_at';

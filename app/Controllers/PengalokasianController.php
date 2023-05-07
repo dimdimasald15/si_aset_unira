@@ -38,8 +38,8 @@ class PengalokasianController extends BaseController
             $breadcrumb[] = ['name' => $name, 'link' => $link];
         }
         $data = [
-            'title' => 'Alokasi Barang',
-            'nav' => 'alokasi-barang',
+            'title' => 'Alokasi Barang Tetap',
+            'nav' => 'alokasi-barang-tetap',
             'jenis_kat' => 'Barang Tetap',
             'breadcrumb' => $breadcrumb
         ];
@@ -476,10 +476,11 @@ class PengalokasianController extends BaseController
 
             if (count($id) === 1) {
                 $nama_brg = $this->request->getVar('nama_brg');
-                $idbrg = $this->request->getVar('idbrg');
                 $historitrx1 = $this->riwayattrx->select('old_value')->where('stokbrg_id', $id)->where('jenis_transaksi', 'pengembalian barang ke sarpras')->orderBy('id', 'DESC')->get()->getRowArray();
-                $stoksarpras = $this->db->query("SELECT * FROM stok_barang WHERE barang_id = $idbrg and ruang_id=$idsarpras ORDER BY id DESC LIMIT 1")
-                    ->getRowArray();
+                $stoksarpras = $this->db->table('stok_barang')->select('*')
+                    ->where('barang_id', $idbrg)
+                    ->where('ruang_id', $idsarpras)->orderBy('id', 'DESC')->get()->getRowArray();
+
                 $datalamastokbrg = $this->stokbarang->select('*')->where('id', $id)->get()->getRowArray();
                 $historitrx = json_decode($historitrx1['old_value']);
                 $jumlah_masuk1 = $historitrx->jumlah_masuk;
@@ -534,15 +535,12 @@ class PengalokasianController extends BaseController
                     'sukses' => "Data $jenis: $nama_brg berhasil dipulihkan",
                 ];
             } else {
-                // echo "OK";
                 foreach ($id as $key => $stok_id) {
                     $historitrx1 = $this->riwayattrx->select('old_value')->where('stokbrg_id', $stok_id)->where('jenis_transaksi', 'pengembalian barang ke sarpras')->orderBy('id', 'DESC')->get()->getRowArray();
                     // var_dump($historitrx1);
                     $stoksarpras = $this->stokbarang->select('*')->where('barang_id', $barang_id[$key])->where('ruang_id', $idsarpras)->orderBy('id', 'DESC')->get()->getRowArray();
                     // var_dump($stoksarpras);
                     $datalamastokbrg = $this->stokbarang->select('*')->where('id', $stok_id)->get()->getRowArray();
-                    // var_dump($datalamastokbrg);
-                    // die;
                     $historitrx = json_decode($historitrx1['old_value']);
                     $jumlah_masuk1 = $historitrx->jumlah_masuk;
                     $jumlah_keluar1 = $historitrx->jumlah_keluar;

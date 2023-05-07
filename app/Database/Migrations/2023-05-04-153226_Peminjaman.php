@@ -33,10 +33,12 @@ class Peminjaman extends Migration
             'kondisi_pinjam' => [
                 'type' => 'varchar',
                 'constraint' => '20',
+                'null' => TRUE,
             ],
             'kondisi_kembali' => [
                 'type' => 'varchar',
                 'constraint' => '20',
+                'null' => TRUE,
             ],
             'tgl_pinjam' => [
                 'type' => 'datetime',

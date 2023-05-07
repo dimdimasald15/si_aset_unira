@@ -28,15 +28,13 @@ class RiwayatTransaksi extends Model
         return $data;
     }
 
-    public function inserthistori($id, $data_lama, $data_baru, $jenistrx, $lastQuery, $field_update)
+    public function inserthistori($stokbrg_id, $data_lama, $data_baru, $jenistrx, $lastQuery, $field_update)
     {
-        // $id = (int) $id; // casting $id menjadi integer
         $datasimpan = [];
-        // echo strpos($lastQuery, 'DELETE');
 
         if (strpos($lastQuery, 'INSERT') !== false) {
             $datasimpan = [
-                'stokbrg_id' => $id,
+                'stokbrg_id' => $stokbrg_id,
                 'jenis_transaksi' => $jenistrx,
                 'field' => 'Semua field',
                 'old_value' => '',
@@ -56,7 +54,7 @@ class RiwayatTransaksi extends Model
                 }
             }
             $datasimpan = [
-                'stokbrg_id' => $id,
+                'stokbrg_id' => $stokbrg_id,
                 'jenis_transaksi' => $jenistrx,
                 'field' => json_encode(array_keys($new_value)),
                 'old_value' => json_encode($old_value),
@@ -64,7 +62,7 @@ class RiwayatTransaksi extends Model
             ];
         } else if (strpos($lastQuery, 'DELETE') !== false) {
             $datasimpan = [
-                'stokbrg_id' => $id,
+                'stokbrg_id' => $stokbrg_id,
                 'jenis_transaksi' => $jenistrx,
                 'field' => 'delete data',
                 'old_value' => json_encode($data_lama),

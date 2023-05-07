@@ -68,10 +68,16 @@
   color: #fff;
   font-weight: 700;
 }
-.alert-info {
+/* .alert-info {
   background-color: #56b6f7;
   color: #fff;
+} */
+.alert-info {
+  color: #055160;
+  background-color: #cff4fc;
+  border: 1px solid #56b6f7;
 }
+
 .alert-info a {
   color: #fff;
   font-weight: 700;

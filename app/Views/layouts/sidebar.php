@@ -20,26 +20,26 @@
             <span>Dashboard</span>
           </a>
         </li>
-        <li class="sidebar-item <?= ($nav == 'barang-tetap-masuk') || $nav == 'barang-persediaan-masuk' || $nav == 'alokasi-barang' || $nav == 'permintaan-barang' ? 'active' : '' ?> has-sub">
+        <li class="sidebar-item <?= ($nav == 'barang-tetap-masuk') || $nav == 'barang-persediaan-masuk' || $nav == 'alokasi-barang-tetap' || $nav == 'permintaan-barang-persediaan' || $nav == 'peminjaman-barang-tetap' ? 'active' : '' ?> has-sub">
           <a href="#" class='sidebar-link'>
             <i class="bi bi-bounding-box"></i>
             <span>Kelola Transaksi Barang</span>
           </a>
-          <ul class="submenu <?= ($nav == 'barang-tetap-masuk') || $nav == 'barang-persediaan-masuk' || $nav == 'alokasi-barang' || $nav == 'permintaan-barang' ? 'active' : '' ?>">
+          <ul class="submenu <?= ($nav == 'barang-tetap-masuk') || $nav == 'barang-persediaan-masuk' || $nav == 'alokasi-barang-tetap' || $nav == 'permintaan-barang-persediaan' || $nav == 'peminjaman-barang-tetap' ? 'active' : '' ?>">
             <li class="submenu-item <?= ($nav == 'barang-tetap-masuk') ? 'active' : '' ?>">
               <a href="barang-tetap-masuk">Barang Tetap Masuk</a>
             </li>
             <li class="submenu-item <?= ($nav == 'barang-persediaan-masuk') ? 'active' : '' ?>">
               <a href="barang-persediaan-masuk">Barang Persediaan Masuk</a>
             </li>
-            <li class="submenu-item <?= ($nav == 'alokasi-barang') ? 'active' : '' ?>">
-              <a href="alokasi-barang">Pengalokasian Barang</a>
+            <li class="submenu-item <?= ($nav == 'alokasi-barang-tetap') ? 'active' : '' ?>">
+              <a href="alokasi-barang-tetap">Pengalokasian Barang Tetap</a>
             </li>
-            <li class="submenu-item  <?= ($nav == 'permintaan-barang') ? 'active' : '' ?>">
-              <a href="permintaan-barang">Permintaan Barang</a>
+            <li class="submenu-item  <?= ($nav == 'permintaan-barang-persediaan') ? 'active' : '' ?>">
+              <a href="permintaan-barang-persediaan">Permintaan Barang Persediaan</a>
             </li>
             <li class="submenu-item ">
-              <a href="peminjaman">Peminjaman Barang</a>
+              <a href="peminjaman-barang-tetap">Peminjaman Barang Tetap</a>
             </li>
           </ul>
         </li>

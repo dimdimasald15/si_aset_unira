@@ -107,14 +107,14 @@
           <div class="col-md-6 pb-0 pt-3 px-0 d-flex flex-row justify-content-start">
             <div class="btn-group">
               <button type="button" class="btn btn-success dropdown-toggle me-1" data-bs-toggle="dropdown" aria-expanded="false">
-                Input Peminta
+                Input Permintaan
               </button>
               <ul class="dropdown-menu shadow-lg">
-                <li><a class="dropdown-item" onclick="singleform()"><i class="fa fa-plus-square-o"></i> Tambah Peminta
+                <li><a class="dropdown-item" onclick="singleform()"><i class="fa fa-plus-square-o"></i> Tambah Permintaan
                   </a>
                 </li>
-                <li><a class="dropdown-item" onclick="multipleinsert()"><i class="fa fa-file-text"></i> Input Multiple</a>
-                </li>
+                <!-- <li><a class="dropdown-item" onclick="multipleinsert()"><i class="fa fa-file-text"></i> Input Multiple</a>
+                </li> -->
               </ul>
             </div>
           </div>
@@ -163,6 +163,29 @@
   let datarestore = "";
 
   $(document).ready(function() {
+    // Check Row
+    $('#checkall').click(function() {
+      if ($(this).is(':checked')) {
+        $('.checkrow').prop('checked', true);
+      } else {
+        $('.checkrow').prop('checked', false);
+      }
+    })
+    // Check Row
+    $('.checkrow').click(function() {
+      var allChecked = true;
+      $('.checkrow').each(function() {
+        if (!$(this).is(':checked')) {
+          allChecked = false;
+        }
+      });
+      if (allChecked) {
+        $('#checkall').prop('checked', true);
+      } else {
+        $('#checkall').prop('checked', false);
+      }
+    });
+
     dataminta = $('#table-minta').DataTable({
       processing: true,
       serverSide: true,
@@ -229,6 +252,132 @@
       ]
     });
 
+    $('#btn-restore').on('click', function(e) {
+      e.preventDefault();
+      $('.table-minta').hide();
+      $('.table-restore').show();
+      $('.datalist-minta h4').html('Restore Data <?= $title; ?>');
+      $('.btn-dataminta').hide();
+      $('.btn-datarestoreminta').show();
+
+      datarestore = $('#table-restore').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: {
+          url: `<?= $nav ?>/listdatapermintaan?jenis_kat=${jenis_kat}&isRestore=1`,
+          dataSrc: function(json) {
+            json.data.forEach(function(item) {
+              item.id = item.id;
+            });
+            return json.data;
+          }
+        },
+        order: [],
+        columns: [{
+            data: 'no',
+            orderable: false
+          },
+          {
+            data: 'nama_anggota'
+          },
+          {
+            data: 'singkatan'
+          },
+          {
+            data: 'nama_brg',
+          },
+          {
+            data: 'jml_barang'
+          },
+          {
+            data: 'kd_satuan'
+          },
+          {
+            data: 'deleted_by'
+          },
+          {
+            data: 'deleted_at',
+            render: function(data, type, full, meta) {
+              var dateParts = data.split(/[- :]/);
+              var year = parseInt(dateParts[0]);
+              var month = parseInt(dateParts[1]) - 1;
+              var day = parseInt(dateParts[2]);
+              var hours = parseInt(dateParts[3]);
+              var minutes = parseInt(dateParts[4]);
+              var seconds = parseInt(dateParts[5]);
+              var options = {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              };
+              var formattedDate = new Date(year, month, day, hours, minutes, seconds).toLocaleDateString('id-ID', options);
+              return formattedDate;
+            }
+          },
+          {
+            data: 'action',
+            orderable: false
+          },
+        ]
+      });
+    });
+
+    $('.formmultipledelete').submit(function(e) {
+      e.preventDefault();
+
+      let jmldata = $('.checkrow:checked');
+      var formdata = new FormData(this);
+      formdata.append('jenis_kat', jenis_kat);
+
+      if (jmldata.length === 0) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Perhatian',
+          text: 'Maaf silahkan pilih data <?= strtolower($title); ?> yang mau dihapus'
+        })
+      } else {
+        Swal.fire({
+          title: 'Multiple Delete',
+          text: `Apakah kamu yakin ingin menghapus ${jmldata.length} data <?= strtolower($title); ?> secara temporary?`,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Ya, Hapus saja!',
+          cancelButtonText: 'Batalkan',
+        }).then((result) => {
+          if (result.isConfirmed) {
+            $.ajax({
+              type: "post",
+              url: `<?= $nav ?>/multipledelete`,
+              data: formdata,
+              processData: false,
+              contentType: false,
+              success: function(result) {
+                var response = JSON.parse(result);
+                if (response.sukses) {
+                  Swal.fire(
+                    'Berhasil', response.sukses, 'success'
+                  ).then((result) => {
+                    dataminta.ajax.reload();
+                  })
+                }
+              },
+              error: function(xhr, ajaxOptions, thrownError) {
+                alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
+              }
+            });
+          } else {
+            Swal.fire(
+              'Gagal', 'Tidak ada data <?= strtolower($title); ?> yang dihapus', 'info'
+            )
+          }
+        });
+      }
+
+      return false;
+    })
   });
 
   function singleform() {
@@ -238,13 +387,322 @@
       data: {
         saveMethod: "add",
         nav: "<?= $nav ?>",
-        jenis_kat: "<?= $jenis_kat ?>",
+        jenis_kat: jenis_kat,
       },
       dataType: "json",
       success: function(response) {
         $('.viewform').show().html(response.data);
       }
     });
+  }
+
+  function edit(id) {
+    $.ajax({
+      type: "get",
+      url: "<?= base_url() ?>/permintaancontroller/tampilsingleform",
+      data: {
+        globalId: id,
+        saveMethod: "update",
+        nav: "<?= $nav ?>",
+        jenis_kat: jenis_kat,
+      },
+      dataType: "json",
+      success: function(response) {
+        $('.viewform').show().html(response.data);
+      }
+    });
+  }
+
+  function hapus(id, namaanggota, namabrg) {
+    console.log(namabrg);
+    Swal.fire({
+      title: `Apakah kamu yakin ingin menghapus data permintaan ${namaanggota} atas ${jenis_kat} ${namabrg}?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Ya, Hapus saja!',
+      cancelButtonText: 'Batalkan',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        $.ajax({
+          type: "post",
+          url: "<?= $nav ?>/hapus/" + id,
+          data: {
+            nama_brg: namabrg,
+            nama_anggota: namaanggota
+          },
+          dataType: 'json',
+          success: function(response) {
+            if (response.sukses) {
+              Swal.fire(
+                'Berhasil', response.sukses, 'success'
+              ).then((result) => {
+                dataminta.ajax.reload();
+              })
+            } else if (response.error) {
+              Swal.fire(
+                'Gagal!',
+                response.error,
+                'error'
+              );
+            }
+          },
+          error: function(xhr, ajaxOptions, thrownError) {
+            alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
+          }
+        });
+      }
+    });
+  }
+
+  function restore(id, idbrg, namabrg, namaanggota) {
+    Swal.fire({
+      title: `Memulihkan data ${namabrg} di ${namaanggota}?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Ya!',
+      cancelButtonText: 'Batalkan',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        $.ajax({
+          type: "post",
+          url: "<?= $nav ?>/restore",
+          data: {
+            id: id,
+            barang_id: idbrg,
+            nama_brg: namabrg,
+            nama_anggota: namaanggota,
+            jenis_kat: jenis_kat,
+          },
+          dataType: 'json',
+          success: function(response) {
+            if (response.sukses) {
+              Swal.fire(
+                'Berhasil', response.sukses, 'success'
+              ).then((result) => {
+                datarestore.ajax.reload();
+              })
+            } else if (response.error) {
+              Swal.fire(
+                'Gagal!',
+                response.error,
+                'error'
+              );
+            }
+          },
+          error: function(xhr, ajaxOptions, thrownError) {
+            alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
+          }
+        });
+      }
+    });
+  }
+
+  function restoreall() {
+    var api = $('#table-restore').DataTable().rows();
+    var id = api.data().toArray().map(function(d) {
+      return d.id;
+    });
+    var barang_id = api.data().toArray().map(function(d) {
+      return d.barang_id;
+    })
+    var nama_brg = api.data().toArray().map(function(d) {
+      return d.nama_brg;
+    })
+    var nama_anggota = api.data().toArray().map(function(d) {
+      return d.nama_anggota;
+    })
+    if (api.count() === 0) { // jika tidak ada data
+      Swal.fire(
+        'Gagal!',
+        'Tidak ada data <?= strtolower($title); ?> yang dapat dipulihkan',
+        'error'
+      );
+    } else if (api.count() === 1) {
+      Swal.fire({
+        title: `Apakah anda ingin memulihkan semua data <?= $title ?> yang telah terhapus?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya!',
+        cancelButtonText: 'Batalkan',
+      }).then((result) => {
+        restore(id.toString(), barang_id.toString(), nama_brg.toString(), nama_anggota.toString());
+      });
+    } else if (api.count() > 1) {
+      Swal.fire({
+        title: `Apakah anda ingin memulihkan semua data <?= $title ?> yang telah terhapus?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya!',
+        cancelButtonText: 'Batalkan',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            type: "post",
+            url: "<?= $nav ?>/restore",
+            data: {
+              id: id.join(","),
+              barang_id: barang_id.join(","),
+              jenis_kat: jenis_kat,
+            },
+            dataType: 'json',
+            success: function(response) {
+              if (response.sukses) {
+                Swal.fire(
+                  'Berhasil', response.sukses, 'success'
+                ).then((result) => {
+                  location.reload();
+                })
+              } else if (response.error) {
+                Swal.fire(
+                  'Gagal!',
+                  response.error,
+                  'error'
+                );
+              }
+            },
+            error: function(xhr, ajaxOptions, thrownError) {
+              alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
+            }
+          });
+        }
+      });
+    }
+  }
+
+  function hapuspermanen(id, idbrg, namabrg, namaanggota) {
+    Swal.fire({
+      width: 700,
+      title: `Menghapus data permintaan ${namaanggota} atas barang ${namabrg} secara permanen?`,
+      icon: 'warning',
+      text: 'Data akan terhapus selamanya dan tidak dapat dipulihkan lagi!',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Ya!',
+      cancelButtonText: 'Batalkan',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        $.ajax({
+          type: "post",
+          url: "<?= $nav ?>/hapuspermanen",
+          data: {
+            id: id,
+            barang_id: idbrg,
+            nama_brg: namabrg,
+            nama_anggota: namaanggota,
+            jenis_kat: jenis_kat,
+          },
+          dataType: 'json',
+          success: function(response) {
+            if (response.sukses) {
+              Swal.fire(
+                'Berhasil', response.sukses, 'success'
+              ).then((result) => {
+                datarestore.ajax.reload();
+              })
+            } else if (response.error) {
+              Swal.fire(
+                'Gagal!',
+                response.error,
+                'error'
+              );
+            }
+          },
+          error: function(xhr, ajaxOptions, thrownError) {
+            alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
+          }
+        });
+      }
+    });
+  }
+
+  function hapuspermanenall() {
+    var api = $('#table-restore').DataTable().rows();
+    var id = api.data().toArray().map(function(d) {
+      return d.id;
+    });
+    var barang_id = api.data().toArray().map(function(d) {
+      return d.barang_id;
+    })
+    var nama_brg = api.data().toArray().map(function(d) {
+      return d.nama_brg;
+    })
+    var nama_anggota = api.data().toArray().map(function(d) {
+      return d.nama_anggota;
+    })
+
+    if (api.count() === 0) { // jika tidak ada data
+      Swal.fire(
+        'Gagal!',
+        'Tidak ada data <?= strtolower($title); ?> yang dapat dihapus secara permanen',
+        'error'
+      );
+    } else if (api.count() === 1) {
+      Swal.fire({
+        width: 700,
+        title: `Bersihkan semua data <?= strtolower($title); ?> secara permanen?`,
+        icon: 'warning',
+        text: 'Data akan terhapus selamanya dan tidak dapat dipulihkan lagi!',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya!',
+        cancelButtonText: 'Batalkan',
+      }).then((result) => {
+        hapuspermanen(id.toString(), barang_id.toString(), nama_brg.toString(), nama_anggota.toString());
+      });
+    } else if (api.count() > 1) {
+      Swal.fire({
+        width: 700,
+        title: `Bersihkan semua data <?= strtolower($title); ?> secara permanen?`,
+        icon: 'warning',
+        text: 'Data akan terhapus selamanya dan tidak dapat dipulihkan lagi!',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya!',
+        cancelButtonText: 'Batalkan',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            type: "post",
+            url: "<?= $nav ?>/hapuspermanen",
+            data: {
+              id: id.join(","),
+              barang_id: barang_id.join(","),
+              jenis_kat: jenis_kat,
+            },
+            dataType: 'json',
+            success: function(response) {
+              if (response.sukses) {
+                Swal.fire(
+                  'Berhasil', response.sukses, 'success'
+                ).then((result) => {
+                  datarestore.ajax.reload();
+                })
+              } else if (response.error) {
+                Swal.fire(
+                  'Gagal!',
+                  response.error,
+                  'error'
+                );
+              }
+            },
+            error: function(xhr, ajaxOptions, thrownError) {
+              alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
+            }
+          });
+        }
+      });
+    }
   }
 </script>
 <?= $this->endSection() ?>
