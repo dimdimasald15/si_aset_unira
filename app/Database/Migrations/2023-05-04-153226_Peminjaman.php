@@ -3,6 +3,7 @@
 namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
+use PHPUnit\Framework\Constraint\Constraint;
 
 class Peminjaman extends Migration
 {
@@ -46,6 +47,11 @@ class Peminjaman extends Migration
             ],
             'tgl_kembali' => [
                 'type' => 'datetime',
+                'null' => TRUE,
+            ],
+            'status' => [
+                'type' => 'int',
+                'constraint' => '1',
                 'null' => TRUE,
             ],
             'created_by' => [

@@ -255,6 +255,7 @@
     $('#btn-restore').on('click', function(e) {
       e.preventDefault();
       $('.table-minta').hide();
+      $('.viewform').hide();
       $('.table-restore').show();
       $('.datalist-minta h4').html('Restore Data <?= $title; ?>');
       $('.btn-dataminta').hide();
@@ -361,6 +362,8 @@
                     'Berhasil', response.sukses, 'success'
                   ).then((result) => {
                     dataminta.ajax.reload();
+                    $('.viewform').hide();
+                    $('#checkall').prop('checked', false);
                   })
                 }
               },
@@ -439,6 +442,7 @@
                 'Berhasil', response.sukses, 'success'
               ).then((result) => {
                 dataminta.ajax.reload();
+                $('.viewform').hide();
               })
             } else if (response.error) {
               Swal.fire(
@@ -458,7 +462,7 @@
 
   function restore(id, idbrg, namabrg, namaanggota) {
     Swal.fire({
-      title: `Memulihkan data ${namabrg} di ${namaanggota}?`,
+      title: `Memulihkan data <?= strtolower($title); ?> ${namabrg} oleh ${namaanggota}?`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',

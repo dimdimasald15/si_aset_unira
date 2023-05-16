@@ -36,8 +36,8 @@ $routes->get('logout', 'Auth::logout');
 // $routes->get('public/detail-barang/(:segment)', 'BarangController::detailbarang/$1');
 $routes->get('public/detail-barang/(:segment)', 'BarangController::detailbarang/$1');
 
-$routes->group('admin', ['filter' => 'ceklogin'], function ($routes) {
-    $routes->get('dashboard', 'DashboardController::index');
+$routes->group('admin/dashboard', ['filter' => 'ceklogin'], function ($routes) {
+    $routes->get('/', 'DashboardController::index');
 });
 
 $routes->group('admin/ruang', ['filter' => 'ceklogin'], function ($routes) {
@@ -144,6 +144,21 @@ $routes->group('admin/permintaan-barang-persediaan', ['filter' => 'ceklogin'], f
     $routes->match(['get', 'post'], 'hapuspermanen', 'PermintaanController::hapuspermanen');
 });
 
+$routes->group('admin/peminjaman-barang-tetap', ['filter' => 'ceklogin'], function ($routes) {
+    $routes->get('/', 'PeminjamanController::index');
+    $routes->get('listdatapeminjaman', 'PeminjamanController::listdatapeminjaman');
+    $routes->post('simpan', 'PeminjamanController::simpandata');
+    $routes->post('pengembalian', 'PeminjamanController::simpandatapengembalian');
+    $routes->post('update/(:any)', 'PeminjamanController::updatedata/$1');
+    $routes->post('hapus/(:any)', 'PeminjamanController::hapusdata/$1');
+    $routes->post('multipledelete', 'PeminjamanController::multipledeletetemporary');
+    $routes->post('restore/(:any)', 'PeminjamanController::restoredata/$1');
+    $routes->match(['get', 'post'], 'restore', 'PeminjamanController::restoredata');
+    $routes->post('hapuspermanen/(:any)', 'PeminjamanController::hapuspermanen/$1');
+    $routes->match(['get', 'post'], 'hapuspermanen', 'PeminjamanController::hapuspermanen');
+    // $routes->get('detail-barang/(:any)', 'BarangController::detailbarang/$1');
+});
+
 $routes->group('admin/alokasi-barang-tetap', ['filter' => 'ceklogin'], function ($routes) {
     $routes->get('/', 'PengalokasianController::index');
     $routes->get('listdataalokasi', 'PengalokasianController::listdataalokasi');
@@ -158,22 +173,6 @@ $routes->group('admin/alokasi-barang-tetap', ['filter' => 'ceklogin'], function 
     $routes->match(['get', 'post'], 'hapuspermanen', 'PengalokasianController::hapuspermanen');
     $routes->post('multipledelete', 'PengalokasianController::multipledeletetemporary');
     $routes->get('detail-barang/(:any)', 'BarangController::detailbarang/$1');
-});
-
-$routes->group('admin/peminjaman-barang-tetap', ['filter' => 'ceklogin'], function ($routes) {
-    $routes->get('/', 'PeminjamanController::index');
-    $routes->get('listdatapeminjaman', 'PeminjamanController::listdatapeminjaman');
-    // $routes->match(['get', 'post'], 'pilihkategori', 'PeminjamanController::pilihkategori');
-    // $routes->match(['get', 'post'], 'pilihbarang', 'PeminjamanController::pilihbarang');
-    // $routes->match(['get', 'post'], 'pilihlokasi', 'PeminjamanController::pilihlokasi');
-    // $routes->post('hapus/(:any)', 'PeminjamanController::hapusdata/$1');
-    // $routes->get('tampildatarestore', 'BarangController::listdatabarang');
-    // $routes->post('restore/(:any)', 'PeminjamanController::restoredata/$1');
-    // $routes->match(['get', 'post'], 'restore', 'PeminjamanController::restoredata');
-    // $routes->post('hapuspermanen/(:any)', 'PeminjamanController::hapuspermanen/$1');
-    // $routes->match(['get', 'post'], 'hapuspermanen', 'PeminjamanController::hapuspermanen');
-    // $routes->post('multipledelete', 'PeminjamanController::multipledeletetemporary');
-    // $routes->get('detail-barang/(:any)', 'BarangController::detailbarang/$1');
 });
 
 $routes->group('admin/pengguna', ['filter' => 'ceklogin'], function ($routes) {

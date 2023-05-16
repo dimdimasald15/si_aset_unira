@@ -72,6 +72,7 @@ a:hover {
 .sidebar-wrapper .menu .sidebar-item.active .sidebar-link {
   background-color: var(--bs-green) !important;
 }
+
 .burger-btn {
   color: var(--bs-green) !important;
 }
@@ -91,6 +92,10 @@ a:hover {
 .sidebar-wrapper .menu .sidebar-link i,
 .sidebar-wrapper .menu .sidebar-link svg {
   color: #7eb57c;
+}
+.sidebar-wrapper .menu .submenu .submenu-item.active > a {
+  color: #198754;
+  font-weight: 725;
 }
 
 .form-check-input:checked {
