@@ -5,13 +5,13 @@
     </div>
   </div>
   <div class="card-body">
-    <form action="<?= $nav ?>/simpandata" class="formpermintaan py-4">
+    <form class="formpeminjaman py-4">
       <?= csrf_field() ?>
       <div class="col-md-12">
         <input type="hidden" name="id" id="id">
         <div class="row g-2 mb-1">
-          <div class="col-md-4">
-            <label for="namaanggota" class="form-label">Nama Peminta</label>
+          <div class="<?= $saveMethod == "update" ? 'col-md-6' : 'col-md-4' ?>">
+            <label for="namaanggota" class="form-label">Nama Peminjam</label>
             <div class="input-group mb-3">
               <span class="input-group-text"><i class="bi bi-person"></i></span>
               <select class="form-select" name="anggota_id" id="idanggota"></select>
@@ -19,14 +19,14 @@
             </div>
           </div>
           <div class="col-md-4 anggotabaru">
-            <label for="namaanggota" class="form-label">Nama Peminta Baru</label>
+            <label for="namaanggota" class="form-label">Nama Peminjam Baru</label>
             <div class="input-group mb-3">
               <input type="text" class="form-control anggotabaru" placeholder="Masukkan Nama Anggota" style="display:none;" id="namaanggota" name="nama_anggota" disabled>
               <div class="invalid-feedback errnamaanggota"></div>
             </div>
           </div>
           <div class="col-md-4 anggotabaru">
-            <label for="level" class="form-label">Level Peminta Baru</label>
+            <label for="level" class="form-label">Level Peminjam Baru</label>
             <div class="input-group mb-3">
               <span class="input-group-text"><i class="bi bi-person-badge-fill"></i></span>
               <select name="level" class="form-select p-2" id="level" disabled>
@@ -44,7 +44,7 @@
           <div class="col-md-6 noanggota" style="display:none;"></div>
           <div class="col-md-6">
             <div class="row mb-2">
-              <label for="unit mb-2">Unit Asal Peminta Baru</label>
+              <label for="unit mb-2">Unit Asal Peminjam Baru</label>
             </div>
             <div class="row mb-1">
               <div class="input-group mb-3">
@@ -56,12 +56,33 @@
           </div>
         </div>
       </div>
+      <div class="col-md-12">
+        <div class="row g-2 mb-1">
+          <div class="col-md-6">
+            <label for="tglpinjam" class="form-label">Tanggal Peminjaman</label>
+            <div class="input-group mb-3">
+              <span class="input-group-text"><i class="bi bi-calendar-plus"></i></span>
+              <input type="datetime-local" class="form-control" id="tglpinjam" name="tgl_pinjam">
+              <div class="invalid-feedback errtglpinjam"></div>
+            </div>
+          </div>
+          <div class="col-md-6 anggotabaru">
+            <label for="nohp" class="form-label">No Handpone</label>
+            <div class="input-group mb-3">
+              <span class="input-group-text"><i class="bi bi-telephone-plus"></i></span>
+              <input type="text" class="form-control" placeholder="Masukkan No Handpone" id="nohp" name="no_hp" disabled>
+              <div class="invalid-feedback errnohp"></div>
+            </div>
+          </div>
+        </div>
+      </div>
       <?php $no = 1; ?>
       <table class="table table-responsive-sm table-borderless">
         <thead>
           <th>No</th>
           <th>Nama Barang</th>
-          <th>Jumlah Permintaan</th>
+          <th>Sisa Stok</th>
+          <th>Jumlah peminjaman</th>
           <th>Satuan</th>
           <th <?= $saveMethod == 'update' ? 'hidden' : '' ?>>#</th>
         </thead>
@@ -72,7 +93,10 @@
               <select name="barang_id<?= $no ?>" class="form-select p-2" id="idbrg<?= $no ?>" style="width: 400px;"></select>
               <div class="invalid-feedback erridbrg<?= $no ?>"></div>
             </td>
-            <td> <input type="number" min="1" class="form-control" id="jumlah<?= $no ?>" placeholder="Masukkan Jumlah Permintaan Barang" name="jml_barang<?= $no ?>">
+            <td> <input type="number" class="form-control" id="sisastok<?= $no ?>" placeholder="Sisa Stok" disabled>
+              <div class="invalid-feedback errsisastok<?= $no ?>"></div>
+            </td>
+            <td> <input type="number" min="1" class="form-control" id="jumlah<?= $no ?>" placeholder="Masukkan Jumlah Barang" name="jml_barang<?= $no ?>">
               <div class="invalid-feedback errjumlah<?= $no ?>"></div>
             </td>
             <td>
@@ -106,6 +130,7 @@
   function disabledinput() {
     // Menambahkan atribut disabled
     $('input[name="nama_anggota"]').prop('disabled', true);
+    $('input[name="no_hp"]').prop('disabled', true);
     $('select[name="unit_id"]').prop('disabled', true);
     $('select[name="level"]').prop('disabled', true);
   }
@@ -113,6 +138,7 @@
   function removedisabledinput() {
     // Menghilangkan atribut disabled
     $('input[name="nama_anggota"]').prop('disabled', false);
+    $('input[name="no_hp"]').prop('disabled', false);
     $('select[name="unit_id"]').prop('disabled', false);
     $('select[name="level"]').prop('disabled', false);
   }
@@ -149,7 +175,7 @@
     $('#idanggota').on('change', function(e) {
       e.preventDefault();
       $('#idanggota').removeClass('is-invalid');
-      $('.erridanggota').html('');
+      $('.erroridanggota').html('');
 
       if ($(this).val() == "") {
         $('.anggotabaru').hide();
@@ -223,7 +249,10 @@
           <select name="barang_id${index}" class="form-select p-2" id="idbrg${index}" style="width: 400px;"></select>
           <div class="invalid-feedback erridbrg${index}"></div>
         </td>
-        <td> <input type="number" min="1" class="form-control" id="jumlah${index}" placeholder="Masukkan Jumlah Permintaan Barang" name="jml_barang${index}">
+        <td> <input type="number" class="form-control" id="sisastok${index}" placeholder="Sisa Stok" disabled>
+          <div class="invalid-feedback errsisastok${index}"></div>
+        </td>
+        <td> <input type="number" min="1" class="form-control" id="jumlah${index}" placeholder="Masukkan Jumlah Barang" name="jml_barang${index}">
           <div class="invalid-feedback errjumlah${index}"></div>
         </td>
         <td>
@@ -271,7 +300,7 @@
             <p class="fs-1"><i class="bi bi-info-circle"></i></p>
           </div>
           <div class="col-sm-10 p-0">
-          <p>Jika anda mencoba mengubah nama barang sesuai dengan nama barang yang sudah ada di dalam table permintaan, maka perintah update akan terus dilanjutkan dengan menghapus data permintaan ini, lalu menambahkan jumlah permintaan data barang yang sudah ada.</p>
+          <p>Jika anda mencoba mengubah nama barang sesuai dengan nama barang yang sudah ada di dalam table peminjaman, maka perintah update akan terus dilanjutkan dengan menghapus data peminjaman ini, lalu menambahkan jumlah peminjaman data barang yang sudah ada.</p>
           </div>
           <div class="col-sm-1">
           <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -283,7 +312,7 @@
 
       $.ajax({
         type: "get",
-        url: "<?= base_url() ?>/permintaancontroller/getpermintaanbyid?id=" + globalId,
+        url: "<?= base_url() ?>/peminjamancontroller/getpeminjamanbyid?id=" + globalId,
         dataType: "json",
         success: function(response) {
           isiForm(response.data, response.jmldata);
@@ -291,7 +320,7 @@
       });
     }
 
-    $('.formpermintaan').submit(function(e) {
+    $('.formpeminjaman').submit(function(e) {
       e.preventDefault();
 
       if (saveMethod == "add") {
@@ -302,7 +331,7 @@
 
       var formdata = new FormData(this);
       formdata.append('jmlbrg', rowCount);
-      formdata.append('jenistrx', "Permintaan Barang");
+      formdata.append('jenistrx', "Peminjaman Barang");
 
       $.ajax({
         type: "post",
@@ -326,6 +355,15 @@
             errlevel = response.error.level;
             errnoanggota = response.error.no_anggota;
             errunit = response.error.unit_id;
+            errtglpinjam = response.error.tgl_pinjam;
+
+            if (errtglpinjam) {
+              $('#tglpinjam').addClass('is-invalid');
+              $('.errtglpinjam').html(errtglpinjam);
+            } else {
+              $('#tglpinjam').removeClass('is-invalid');
+              $('.errtglpinjam').html('');
+            }
 
             if (erranggotaid) {
               $('#idanggota').addClass('is-invalid');
@@ -398,7 +436,7 @@
               response.sukses,
               'success'
             ).then((result) => {
-              dataminta.ajax.reload();
+              datapinjam.ajax.reload();
             })
           }
         }
@@ -432,6 +470,8 @@
       templateResult: formatResult,
     });
   }
+
+  var sisa_stok_lama = [];
 
   function looping(row) {
     for (var i = 1; i <= row; i++) {
@@ -486,18 +526,20 @@
               dataType: "json",
               success: function(response) {
                 if (response) {
+                  sisa_stok_lama.push(response.sisa_stok);
+                  $(`#sisastok${j}`).val(response.sisa_stok);
                   $(`#satuan${j}`).prop('disabled', true);
                   $(`#satuan${j}`).html('<option value = "' + response.satuan_id + '" selected >' + response.kd_satuan + '</option>');
                 }
               }
             });
           } else {
+            $(`#sisastok${j}`).html('');
             $(`#jumlah${j}`).html('');
             $(`#satuan${j}`).prop('disabled', false);
             $(`#satuan${j}`).html('');
           }
         });
-
 
         $(`#satuan${j}`).select2({
           placeholder: 'Piih Satuan',
@@ -532,6 +574,25 @@
           e.preventDefault();
           $(`#jumlah${j}`).removeClass('is-invalid');
           $(`.errorjumlah${j}`).html('');
+
+          var jumlah_pinjam = $(`#jumlah${j}`).val();
+          var sisa_stok_baru = sisa_stok_lama[j - 1] - jumlah_pinjam;
+
+
+          $(`#sisastok${j}`).val(sisa_stok_baru);
+          if ($(`#sisastok${j}`).val() < 0) {
+            $(`#sisastok${j}`).val(0);
+            $(`#sisastok${j}`).addClass('is-invalid');
+            $(`.errsisastok${j}`).html('sisa stok tidak boleh kurang dari 0');
+            $(`#jumlah${j}`).addClass('is-invalid');
+            $(`.errjumlah${j}`).html('input jumlah peminjaman sudah melebihi kapasitas sisa stok');
+          } else {
+            $(`#sisastok${j}`).val(sisa_stok_baru);
+            $(`#sisastok${j}`).removeClass('is-invalid');
+            $(`.errsisastok${j}`).html('');
+            $(`#jumlah${j}`).removeClass('is-invalid');
+            $(`.errjumlah${j}`).html('');
+          }
         })
       })(i)
 
@@ -550,6 +611,7 @@
         text: 'Nama barang sudah dimasukkan sebelumnya! Sistem akan mengosongkan input barang.',
       }).then((result) => {
         $(`#idbrg${row}`).html('');
+        $(`#sisastok${row}`).html('');
         $(`#satuan${row}`).html('');
         $(`#jumlah${row}`).val("");
       });
@@ -572,50 +634,25 @@
 
   function isiForm({
     id,
+    anggota_id,
     nama_anggota,
-    no_anggota,
-    unit_id,
-    level,
-    singkatan,
+    tgl_pinjam,
     barang_id,
     jml_barang,
-    anggota_id,
     nama_brg,
+    sisa_stok,
     satuan_id,
     kd_satuan
   }, jmldata) {
     $('#id').val(id);
-    $('#namaanggota').val(nama_anggota);
-    $('#level').val(level);
-    $('.noanggota').hide().html('');
-    if (level == 'Mahasiswa') {
-      $('.noanggota').show().append(
-        `<label for="noanggota" class="form-label">NIM</label>
-        <div class="input-group mb-3">
-        <span class="input-group-text"><i class="bi bi-person"></i></span>
-        <input type="text" class="form-control" placeholder="Masukkan NIM" id="noanggota" name="no_anggota" value="${no_anggota}" readonly>
-        <div class="invalid-feedback errnoanggota"></div>
-        </div>`
-      );
-    } else if (level == 'Karyawan') {
-      $('.noanggota').show().append(
-        `<label for="noanggota" class="form-label">Nomor Pegawai</label>
-          <div class="input-group mb-3">
-          <span class="input-group-text"><i class="bi bi-person"></i></span>
-          <input type="text" class="form-control" placeholder="Masukkan Nomor Pegawai" id="noanggota" name="no_anggota" value="${no_anggota}" readonly>
-          <div class="invalid-feedback errnoanggota"></div>
-          </div>`
-      );
-    } else {
-      $('.noanggota').hide().html('');
-    }
-    $('#unit').html(`
-      <option value="${unit_id}">${singkatan}</option>
-    `);
+    $('#idanggota').empty().append('<option value="' + anggota_id + '">' + nama_anggota + '</option>');
+    $('#tglpinjam').val(tgl_pinjam);
     for (let i = 1; i <= jmldata; i++) {
       $(`#idbrg${i}`).html(`
         <option value="${barang_id}">${nama_brg}</option>
       `);
+      sisa_stok_lama.push((parseInt(sisa_stok) + parseInt(jml_barang)));
+      $(`#sisastok${i}`).val(sisa_stok);
       $(`#jumlah${i}`).val(jml_barang);
       $(`#satuan${i}`).prop('disabled', true);
       $(`#satuan${i}`).html(`

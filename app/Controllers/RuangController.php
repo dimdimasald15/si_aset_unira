@@ -85,41 +85,6 @@ class RuangController extends BaseController
         }
     }
 
-    // public function listdatarestore()
-    // {
-    //     if ($this->request->isAJAX()) {
-
-    //         $builder = $this->db->table('ruang')
-    //             ->select('ruang.id,nama_ruang, nama_lantai, ruang.created_at, ruang.created_by, ruang.deleted_by, ruang.deleted_at, gedung.prefix, gedung.nama_gedung')
-    //             ->join('gedung', 'ruang.gedung_id = gedung.id');
-
-    //         return DataTable::of($builder)
-    //             ->filter(function ($builder) {
-    //                 $builder->where('ruang.deleted_at IS NOT NULL');
-    //             })
-    //             ->postQuery(function ($builder) {
-    //                 $builder->orderBy('ruang.id', 'desc');
-    //             })
-    //             ->addNumbering('no')
-    //             ->add('action', function ($row) {
-    //                 return '
-    //                 <div class="btn-group mb-1">
-    //                 <button type="button" class="btn btn-success dropdown-toggle me-1" data-bs-toggle="dropdown" aria-expanded="false">
-    //                     Action
-    //                 </button>
-    //                 <ul class="dropdown-menu shadow-lg">
-    //                     <li><a class="dropdown-item" onclick="restore(' . $row->id . ', \'' . htmlspecialchars($row->nama_ruang) . '\')"><i class="fa fa-undo"></i> Pulihkan</a></li>
-    //                     <li><a class="dropdown-item" onclick="hapuspermanen(' . $row->id . ', \'' . htmlspecialchars($row->nama_ruang) . '\')"><i class="fa fa-trash-o"></i> Hapus Permanen</a></li>
-    //                 </ul>
-    //                 </div>
-    //                 ';
-    //             })
-    //             ->toJson(true);
-    //     } else {
-    //         exit('Maaf tidak dapat diproses');
-    //     }
-    // }
-
     public function restoredata($id = null)
     {
         if ($this->request->isAJAX()) {

@@ -14,7 +14,7 @@
       <ul class="menu">
         <li class="sidebar-title">Menu</li>
 
-        <li class="sidebar-item <?= ($nav == 'Dashboard') ? 'active' : '' ?>">
+        <li class="sidebar-item <?= ($nav == 'dashboard') ? 'active' : '' ?>">
           <a href="dashboard" class='sidebar-link'>
             <i class="bi bi-grid-fill"></i>
             <span>Dashboard</span>
@@ -38,7 +38,7 @@
             <li class="submenu-item  <?= ($nav == 'permintaan-barang-persediaan') ? 'active' : '' ?>">
               <a href="permintaan-barang-persediaan">Permintaan Barang Persediaan</a>
             </li>
-            <li class="submenu-item ">
+            <li class="submenu-item <?= ($nav == 'peminjaman-barang-tetap') ? 'active' : '' ?>">
               <a href="peminjaman-barang-tetap">Peminjaman Barang Tetap</a>
             </li>
           </ul>

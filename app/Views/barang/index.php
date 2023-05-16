@@ -399,7 +399,8 @@
           render: function(data, type, row) {
             return '<div id="qrcode-' + row.id + '"></div>';
           },
-          visible: <?= $jenis_kat == "Barang Persediaan" ? 'false' : 'true' ?> // menambahkan kolom baru dan menyembunyikannya
+          visible: <?= $jenis_kat == "Barang Persediaan" ? 'false' : 'true' ?>, // menambahkan kolom baru dan menyembunyikannya
+          searchable: false,
         },
         {
           data: 'kode_brg'
