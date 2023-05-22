@@ -175,6 +175,22 @@ $routes->group('admin/alokasi-barang-tetap', ['filter' => 'ceklogin'], function 
     $routes->get('detail-barang/(:any)', 'BarangController::detailbarang/$1');
 });
 
+$routes->group('admin/laporan', ['filter' => 'ceklogin'], function ($routes) {
+    $routes->get('/', 'LaporanController::index');
+    // $routes->post('simpan', 'LaporanController::simpandata');
+    // $routes->post('update/(:any)', 'LaporanController::updatedata/$1');
+    // $routes->post('hapus/(:any)', 'laporanController::hapusdata/$1');
+});
+
+$routes->group('admin/anggota', ['filter' => 'ceklogin'], function ($routes) {
+    $routes->get('/', 'AnggotaController::index');
+    // $routes->post('simpan', 'AnggotaController::simpandata');
+    // $routes->post('update/(:any)', 'AnggotaController::updatedata/$1');
+    // $routes->post('hapus/(:any)', 'AnggotaController::hapusdata/$1');
+});
+
+
+
 $routes->group('admin/pengguna', ['filter' => 'ceklogin'], function ($routes) {
     $routes->get('/', 'PenggunaController::index');
     $routes->get('listdatapengguna', 'PenggunaController::listdatapengguna');
