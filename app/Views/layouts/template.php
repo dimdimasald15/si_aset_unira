@@ -37,7 +37,7 @@
 
   <!-- fontawesome -->
   <link href="<?= base_url() ?>/assets/vendors/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-  <!-- <link href="<?= base_url() ?>/assets/vendors/fontawesome/all.min.css" rel="stylesheet" type="text/css"> -->
+
   <script src="<?= base_url() ?>/assets/vendors/jquery/jquery.min.js"></script>
   <!-- Select2 -->
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
@@ -52,14 +52,14 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
   <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
-  <!-- jspdf
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.3.1/jspdf.umd.min.js"></script> -->
-
   <!-- pdfmake -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js" integrity="sha512-a9NgEEK7tsCvABL7KqtUTQjl69z7091EVPpw5KxPlZ93T141ffe1woLtbXTX+r2/8TtTvRX/v4zTL2UlMUPgwg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
   <!-- QrCode.JS -->
   <script src="<?= base_url() ?>/assets/vendors/davidshimjs-qrcodejs/qrcode.min.js"></script>
+
+  <!-- chartjs -->
+  <link rel="stylesheet" href="<?= base_url() ?>/assets/vendors/chartjs/Chart.min.css">
 </head>
 
 <body>
@@ -151,6 +151,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment-with-locales.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/locale/id.min.js" integrity="sha512-he8U4ic6kf3kustvJfiERUpojM8barHoz0WYpAUDWQVn61efpm3aVAD8RWL8OloaDDzMZ1gZiubF9OSdYBqHfQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="<?= base_url() ?>/assets/vendors/chartjs/Chart.min.js"></script>
   <script>
     $(document).ready(function() {
       var username = "<?= $_SESSION['username'] ?>"

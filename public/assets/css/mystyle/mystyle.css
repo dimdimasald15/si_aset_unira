@@ -112,3 +112,11 @@ a:hover {
 .dropdown-menu {
   cursor: pointer;
 }
+
+.surtitle {
+  margin-bottom: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #8898aa;
+  font-size: 12px;
+}

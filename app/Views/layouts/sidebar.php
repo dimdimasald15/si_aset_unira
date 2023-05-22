@@ -13,7 +13,6 @@
     <div class="sidebar-menu">
       <ul class="menu">
         <li class="sidebar-title">Menu</li>
-
         <li class="sidebar-item <?= ($nav == 'dashboard') ? 'active' : '' ?>">
           <a href="dashboard" class='sidebar-link'>
             <i class="bi bi-grid-fill"></i>
@@ -72,7 +71,18 @@
             </li>
           </ul>
         </li>
-
+        <li class="sidebar-item <?= ($nav == 'laporan') ? 'active' : '' ?>">
+          <a href="laporan" class='sidebar-link'>
+            <i class="bi bi-file-earmark-bar-graph"></i>
+            <span>Laporan Inventaris</span>
+          </a>
+        </li>
+        <li class="sidebar-item <?= ($nav == 'anggota') ? 'active' : '' ?>">
+          <a href="anggota" class='sidebar-link'>
+            <i class="bi bi-people"></i>
+            <span>Anggota</span>
+          </a>
+        </li>
         <li class="sidebar-title">Pengaturan</li>
         <li class="sidebar-item <?= $nav == 'pengguna' ? 'active' : '' ?>">
           <a href="pengguna" class='sidebar-link'>
