@@ -75,6 +75,9 @@ class PermintaanController extends BaseController
                         $builder->where('k.jenis', $jenis);
                     } else {
                         $builder->where('p.deleted_at', null);
+                        $builder->where('b.deleted_at', null);
+                        $builder->where('a.deleted_at', null);
+                        $builder->where('u.deleted_at', null);
                         $builder->where('k.jenis', $jenis);
                     }
                 })

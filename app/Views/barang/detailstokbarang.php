@@ -92,7 +92,7 @@
                     <hr>
                   </div>
                 </div>
-                <div class="card-body" style="padding: 0.5rem 5rem 1rem 5rem;">
+                <div class="card-body" style="padding: 0.5rem 1rem 1rem 1rem;">
                   <div class="row">
                     <?php if ($barang->foto_barang) { ?>
                       <img src="<?= base_url() ?>/assets/images/foto_barang/<?= $barang->foto_barang ?>" alt="Gambar Barang" class="rounded mx-auto d-block shadow-sm" style="width:300px; height:auto;">

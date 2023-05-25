@@ -89,7 +89,7 @@ class Auth extends BaseController
 
                         $msg = [
                             'sukses' => [
-                                'link' => '/admin/dashboard',
+                                'link' => base_url() . 'admin/dashboard',
                             ]
                         ];
                     } else {

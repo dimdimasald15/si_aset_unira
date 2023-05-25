@@ -498,7 +498,6 @@
           }
         });
 
-
         $(`#satuan${j}`).select2({
           placeholder: 'Piih Satuan',
           minimumInputLength: 1,
@@ -564,7 +563,7 @@
     }
 
     var $result = $(
-      `<span><i class="bi bi-layers"> </i>${data.text}</span>`
+      `<span><i class="bi bi-circle-square"> </i>${data.text}</span>`
     );
 
     return $result;

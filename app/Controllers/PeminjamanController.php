@@ -12,7 +12,6 @@ use App\Models\Anggota;
 use App\Models\Peminjaman;
 use \Hermawan\DataTables\DataTable;
 use App\Controllers\BaseController;
-use PHPUnit\Framework\Constraint\Count;
 
 class PeminjamanController extends BaseController
 {
@@ -73,6 +72,9 @@ class PeminjamanController extends BaseController
                         $builder->where('k.jenis', $jenis);
                     } else if ($isRestore == 0 && $status == 0) {
                         $builder->where('p.deleted_at', null);
+                        $builder->where('b.deleted_at', null);
+                        $builder->where('a.deleted_at', null);
+                        $builder->where('u.deleted_at', null);
                         $builder->where('k.jenis', $jenis);
                     }
                 })

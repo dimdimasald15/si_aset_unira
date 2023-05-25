@@ -39,6 +39,24 @@ class Riwayatbarang extends Migration
                 'type' => 'datetime',
                 'null' => true,
             ],
+            'updated_by' => [
+                'type' => 'varchar',
+                'constraint' => '50',
+                'null' => TRUE,
+            ],
+            'updated_at' => [
+                'type' => 'datetime',
+                'null' => TRUE,
+            ],
+            'deleted_by' => [
+                'type' => 'varchar',
+                'constraint' => '50',
+                'null' => TRUE,
+            ],
+            'deleted_at' => [
+                'type' => 'datetime',
+                'null' => TRUE,
+            ],
         ]);
         $this->forge->addPrimaryKey('id');
         // $this->forge->addForeignKey('barang_id', 'barang', 'id', 'CASCADE', 'CASCADE');

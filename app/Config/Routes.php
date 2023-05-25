@@ -32,6 +32,7 @@ $routes->setAutoRoute(true);
 // $routes->group('', ['filter' => 'login'], function ($routes) {
 // });
 $routes->get('auth', 'Auth::index');
+$routes->get('auth/login', 'Auth::login');
 $routes->get('logout', 'Auth::logout');
 // $routes->get('public/detail-barang/(:segment)', 'BarangController::detailbarang/$1');
 $routes->get('public/detail-barang/(:segment)', 'BarangController::detailbarang/$1');
@@ -184,12 +185,14 @@ $routes->group('admin/laporan', ['filter' => 'ceklogin'], function ($routes) {
 
 $routes->group('admin/anggota', ['filter' => 'ceklogin'], function ($routes) {
     $routes->get('/', 'AnggotaController::index');
-    // $routes->post('simpan', 'AnggotaController::simpandata');
-    // $routes->post('update/(:any)', 'AnggotaController::updatedata/$1');
-    // $routes->post('hapus/(:any)', 'AnggotaController::hapusdata/$1');
+    $routes->post('simpanunit', 'AnggotaController::simpandataunit');
+    $routes->post('updateunit/(:any)', 'AnggotaController::updatedataunit/$1');
+    $routes->post('hapusunit/(:any)', 'AnggotaController::hapusdataunit/$1');
+    $routes->match(['get', 'post'], 'restoreunit', 'AnggotaController::restoredataunit');
+    $routes->post('simpananggota', 'AnggotaController::simpandataanggota');
+    $routes->post('updateanggota/(:any)', 'AnggotaController::updatedataanggota/$1');
+    $routes->post('hapusanggota/(:any)', 'AnggotaController::hapusdataanggota/$1');
 });
-
-
 
 $routes->group('admin/pengguna', ['filter' => 'ceklogin'], function ($routes) {
     $routes->get('/', 'PenggunaController::index');
