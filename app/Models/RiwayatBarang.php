@@ -8,7 +8,7 @@ class RiwayatBarang extends Model
 {
     protected $table = "riwayat_barang";
     protected $primaryKey = 'id';
-    protected $allowedFields = ['id', 'barang_id', 'field', 'old_value', 'new_value', 'created_by', 'created_at'];
+    protected $allowedFields = ['id', 'barang_id', 'field', 'old_value', 'new_value', 'created_by', 'created_at', 'updated_by', 'deleted_by', 'deleted_at'];
     protected $useTimestamps = false;
     protected $createdField  = 'created_at';
 
@@ -26,6 +26,26 @@ class RiwayatBarang extends Model
             $data['created_by'] = $username;
         }
         return $data;
+    }
+
+    public function setUpdateData(array $data)
+    {
+        $username = session()->get('username');
+        if (!empty($username) && !array_key_exists('updated_by', $data)) {
+            $data['data']['updated_at'] = date('Y-m-d H:i:s');
+            $data['data']['updated_by'] = $username;
+        }
+        return $data;
+    }
+
+    public function setSoftDelete($id)
+    {
+        $session = \Config\Services::session();
+        $data = [
+            'deleted_by' => $session->get('username'),
+            'deleted_at' => date("Y-m-d H:i:s", time())
+        ];
+        $this->update($id, $data);
     }
 
     public function inserthistori($id, $data_lama, $data_baru, $lastQuery, $field_update)

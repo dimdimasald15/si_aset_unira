@@ -61,7 +61,7 @@ class RuangController extends BaseController
                     if ($isRestore) {
                         return '
                     <div class="btn-group mb-1">
-                    <button type="button" class="btn btn-success dropdown-toggle me-1" data-bs-toggle="dropdown" aria-expanded="false">
+                    <button type="button" class="btn btn-success  btn-sm dropdown-toggle me-1" data-bs-toggle="dropdown" aria-expanded="false">
                         Action
                     </button>
                     <ul class="dropdown-menu shadow-lg">

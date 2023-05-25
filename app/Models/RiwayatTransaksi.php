@@ -8,7 +8,7 @@ class RiwayatTransaksi extends Model
 {
     protected $table = "riwayat_transaksi";
     protected $primaryKey = 'id';
-    protected $allowedFields = ['id', 'stokbrg_id',    'jenis_transaksi', 'field', 'old_value', 'new_value', 'created_by', 'created_at'];
+    protected $allowedFields = ['id', 'stokbrg_id',    'jenis_transaksi', 'field', 'old_value', 'new_value', 'created_by', 'created_at', 'updated_by', 'deleted_by', 'deleted_at'];
     protected $useTimestamps = false;
     protected $createdField  = 'created_at';
 
@@ -26,6 +26,26 @@ class RiwayatTransaksi extends Model
             $data['data']['created_by'] = $username;
         }
         return $data;
+    }
+
+    public function setUpdateData(array $data)
+    {
+        $username = session()->get('username');
+        if (!empty($username) && !array_key_exists('updated_by', $data)) {
+            $data['data']['updated_at'] = date('Y-m-d H:i:s');
+            $data['data']['updated_by'] = $username;
+        }
+        return $data;
+    }
+
+    public function setSoftDelete($id)
+    {
+        $session = \Config\Services::session();
+        $data = [
+            'deleted_by' => $session->get('username'),
+            'deleted_at' => date("Y-m-d H:i:s", time())
+        ];
+        $this->update($id, $data);
     }
 
     public function inserthistori($stokbrg_id, $data_lama, $data_baru, $jenistrx, $lastQuery, $field_update)

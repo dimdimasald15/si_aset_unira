@@ -40,18 +40,19 @@
 <div class="page-heading">
   <div class="page-title">
     <div class="row">
-      <div class="col-12 col-md-8 order-md-1 order-last">
+      <div class="col-12 col-md-7 order-md-1 order-last">
         <h3>Daftar <?= $title; ?></h3>
         <p class="text-subtitle text-muted">Kelola menu <?= strtolower($title) ?> di Universitas Islam Raden Rahmat Malang</p>
       </div>
-      <div class="col-12 col-md-4 order-md-2 order-first">
+      <div class="col-12 col-md-5 order-md-2 order-first">
         <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
-          <ol class="breadcrumb">
+          <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+            <li class="breadcrumb-item"><a href="dashboard"><i class="fa fa-home"></i></a></li>
             <?php foreach ($breadcrumb as $crumb) : ?>
               <?php if (end($breadcrumb) == $crumb) : ?>
-                <div class="breadcrumb-item"><?= $crumb['name'] ?></div>
+                <li class="breadcrumb-item"><?= $crumb['name'] ?></li>
               <?php else : ?>
-                <div class="breadcrumb-item active"><a href="#"><?= $crumb['name'] ?></a></div>
+                <li class="breadcrumb-item active" aria-current="page"><a href="#"><?= $crumb['name'] ?></a></li>
               <?php endif ?>
             <?php endforeach ?>
           </ol>

@@ -43,6 +43,24 @@ class Riwayattransaksi extends Migration
                 'type' => 'datetime',
                 'null' => true,
             ],
+            'updated_by' => [
+                'type' => 'varchar',
+                'constraint' => '50',
+                'null' => TRUE,
+            ],
+            'updated_at' => [
+                'type' => 'datetime',
+                'null' => TRUE,
+            ],
+            'deleted_by' => [
+                'type' => 'varchar',
+                'constraint' => '50',
+                'null' => TRUE,
+            ],
+            'deleted_at' => [
+                'type' => 'datetime',
+                'null' => TRUE,
+            ],
         ]);
         // $this->forge->createTable('riwayat_transaksi');
         $this->forge->addPrimaryKey('id');

@@ -167,7 +167,7 @@
         <div class="card-header shadow-sm">
           <div class="col-md-12">
             <h6 class="surtitle">Analisa Permintaan Barang</h6>
-            <h4 class="card-title">Chart Permintaan Barang</h4>
+            <h4 class="card-title">Chart Permintaan Barang Berdasarkan Unit</h4>
           </div>
         </div>
         <div class="card-body">
@@ -379,7 +379,6 @@
       url: `<?= base_url() ?>/laporancontroller/get_data_permintaan?m=${m}&y=${y}`,
       dataType: "json",
       success: function(response) {
-        // console.log(response.data.length);
         var labels = [];
         var datasets = [];
         var line = document.getElementById("chart-permintaan").getContext("2d");
@@ -452,7 +451,6 @@
               labels: {
                 generateLabels: (chart) => {
                   const datasets = chart.data.datasets;
-                  console.log(datasets);
                   return datasets.map((data, i) => ({
                     text: `${data.label} (${data.data[0]})`,
                     fillStyle: data.backgroundColor,
