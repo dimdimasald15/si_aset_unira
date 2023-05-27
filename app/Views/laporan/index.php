@@ -50,23 +50,27 @@
       <h4 class="card-title">Custom Filters</h4>
     </div>
     <div class=" card-body">
-      <div class="row mt-3">
-        <div class="col-sm-4 d-flex justify-content-start">
-          <label class="col-sm-3 col-form-label" for="inputGroupSelect01">Bulan</label>
-          <div class="col-sm-9">
-            <select id="selectbulan" class="form-select"></select>
+      <form action="<?= $nav ?>/cetak" method="post" id="cetak-laporan">
+        <?= csrf_field() ?>
+        <div class="row mt-3">
+          <input type="text" name="keterangan" id="keterangan" value="Semua Laporan" hidden>
+          <div class="col-sm-4 d-flex justify-content-start">
+            <label class="col-sm-3 col-form-label" for="inputGroupSelect01">Bulan</label>
+            <div class="col-sm-9">
+              <select id="selectbulan" name="bulan" class="form-select"></select>
+            </div>
+          </div>
+          <div class="col-sm-4 d-flex justify-content-start">
+            <label class="col-sm-3 col-form-label" for="inputGroupSelect01">Tahun</label>
+            <div class="col-sm-9">
+              <select id="selecttahun" name="tahun" class="form-select"></select>
+            </div>
+          </div>
+          <div class="col-sm-4 d-flex justify-content-end">
+            <button type="submit" class="btn btn-primary btncetak"><i class="fa fa-file-pdf-o"></i> Cetak Laporan</button>
           </div>
         </div>
-        <div class="col-sm-4 d-flex justify-content-start">
-          <label class="col-sm-3 col-form-label" for="inputGroupSelect01">Tahun</label>
-          <div class="col-sm-9">
-            <select id="selecttahun" class="form-select"></select>
-          </div>
-        </div>
-        <div class="col-sm-4 d-flex justify-content-end">
-          <button class="btn btn-primary"><i class="fa fa-file-pdf-o"></i> Cetak Laporan</button>
-        </div>
-      </div>
+      </form>
     </div>
   </div>
 
@@ -365,8 +369,34 @@
       }
     })
 
+    // $('#cetak-laporan').submit(function(e) {
+    //   e.preventDefault();
+    //   var formData = new FormData(this);
 
-
+    //   $.ajax({
+    //     type: 'post',
+    //     url: '<?= $nav ?>/cetak',
+    //     data: formData,
+    //     processData: false,
+    //     contentType: false,
+    //     beforeSend: function() {
+    //       $('.btncetak').attr('disable', 'disabled');
+    //       $('.btncetak').html('<i class="fa fa-spin fa-spinner"></i>');
+    //     },
+    //     complete: function() {
+    //       $('.btncetak').removeAttr('disable');
+    //       $('.btncetak').html('<i class="fa fa-file-pdf-o"></i> Cetak Laporan');
+    //     },
+    //     success: function(result) {
+    //       var response = JSON.parse(result);
+    //       console.log(response);
+    //     },
+    //     error: function(xhr, ajaxOptions, thrownError) {
+    //       alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
+    //     }
+    //   });
+    //   return false;
+    // })
   });
 
   function refresh_all_chart(m, y) {
@@ -625,7 +655,6 @@
 
   function set_tahun() {
     var skrg = new Date(Date.now());
-    console.log(skrg);
     var end = skrg.getFullYear()
     var html = `<option value="">Semua Tahun</option>`
     for (let i = end; i >= 1990; i--) {
@@ -646,7 +675,7 @@
   }
 
   function filterSerialize() {
-    console.log(`m=${$('#selectbulan').val()}&y=${$('#selecttahun').val()}`);
+    // console.log(`m=${$('#selectbulan').val()}&y=${$('#selecttahun').val()}`);
     return `m=${$('#selectbulan').val()}&y=${$('#selecttahun').val()}`;
   }
 </script>

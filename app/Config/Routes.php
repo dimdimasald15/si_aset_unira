@@ -178,6 +178,7 @@ $routes->group('admin/alokasi-barang-tetap', ['filter' => 'ceklogin'], function 
 
 $routes->group('admin/laporan', ['filter' => 'ceklogin'], function ($routes) {
     $routes->get('/', 'LaporanController::index');
+    $routes->post('cetak', 'LaporanController::cetaklaporanpdf');
     // $routes->post('simpan', 'LaporanController::simpandata');
     // $routes->post('update/(:any)', 'LaporanController::updatedata/$1');
     // $routes->post('hapus/(:any)', 'laporanController::hapusdata/$1');
@@ -192,6 +193,7 @@ $routes->group('admin/anggota', ['filter' => 'ceklogin'], function ($routes) {
     $routes->post('simpananggota', 'AnggotaController::simpandataanggota');
     $routes->post('updateanggota/(:any)', 'AnggotaController::updatedataanggota/$1');
     $routes->post('hapusanggota/(:any)', 'AnggotaController::hapusdataanggota/$1');
+    $routes->match(['get', 'post'], 'restoreanggota', 'AnggotaController::restoredataanggota');
 });
 
 $routes->group('admin/pengguna', ['filter' => 'ceklogin'], function ($routes) {

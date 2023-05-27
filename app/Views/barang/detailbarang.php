@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Sistem Manajemen Aset UNIRA MALANG">
-  <meta name="author" content="DimasAldiSallam">
+  <meta name="author" content="Dimas Aldi Sallam">
   <title><?= $title; ?> | SI-ASET UNIRA MALANG</title>
 
   <!--  Social tags      -->
