@@ -12,8 +12,12 @@ use App\Models\Anggota;
 use App\Models\Permintaan;
 use App\Models\Peminjaman;
 use \Hermawan\DataTables\DataTable;
+use App\Libraries\MyPDF;
+use Dompdf\Dompdf;
+use Dompdf\FontMetrics;
 use App\Controllers\BaseController;
 use PHPUnit\Framework\Constraint\Count;
+
 
 class LaporanController extends BaseController
 {
@@ -56,7 +60,6 @@ class LaporanController extends BaseController
         $data = [
             'title' => 'Laporan',
             'nav' => 'laporan',
-            // 'lokasi' => $lokasi,
             'breadcrumb' => $breadcrumb
         ];
 
@@ -92,6 +95,94 @@ class LaporanController extends BaseController
             ];
             return view('errors/mazer/error-404', $data);
         }
+    }
+
+    public function konversiuang($data)
+    {
+        $harga_formatted = 'Rp ' . number_format($data, 0, ',', '.') . ',-';
+        return $harga_formatted;
+    }
+
+    public function hitungstokbarang($m, $y)
+    {
+        $builder = $this->db->table('stok_barang sb')
+            ->select('sb.barang_id AS b_id, b.kode_brg, b.nama_brg, b.harga_jual, SUM(sb.sisa_stok) AS stok_terbaru, b.harga_jual * SUM(sb.sisa_stok) AS total_val, s.kd_satuan')
+            ->join('barang b', 'b.id = sb.barang_id')
+            ->join('kategori k', 'k.id = b.kat_id')
+            ->join('satuan s', 'sb.satuan_id = s.id')
+            ->where('k.jenis', 'Barang Tetap');
+        if (empty($y)) {
+            $builder->where('YEAR(sb.created_at)', date('Y'));
+        } else if (!empty($m) && !empty($y)) {
+            $builder->where("MONTH(sb.created_at)", $m);
+            $builder->where("YEAR(sb.created_at)", $y);
+        } else if (!empty($y)) {
+            $builder->where("YEAR(sb.created_at)", $y);
+        }
+        $builder->groupBy('b_id');
+
+        $results = $builder->get()->getResultArray();
+        $hargajual = [];
+        $totalval = [];
+        foreach ($results as $key => $val) {
+            array_push($hargajual, $this->konversiuang($val['harga_jual']));
+            array_push($totalval, $this->konversiuang($val['total_val']));
+        }
+
+        foreach ($results as $key => &$result) {
+            // Tambahkan elemen "hargajual" ke setiap elemen $results
+            $result['hargajual'] = $hargajual[$key];
+            $result['totalval'] = $totalval[$key];
+        }
+
+        // echo "<pre>";
+        // var_dump($results);
+        // echo "</pre>";
+        // die;
+        return $results;
+    }
+
+    public function cetaklaporanpdf()
+    {
+        $bulan = $this->request->getVar('bulan');
+        $tahun = $this->request->getVar('tahun');
+        $keterangan = $this->request->getVar('keterangan');
+        // Panggil fungsi hitungstokbarang() dan simpan hasilnya dalam variabel $brgtetap
+        $brgtetap = '';
+        if ($keterangan == "Semua Laporan") {
+            $brgtetap = $this->hitungstokbarang($bulan, $tahun);
+        }
+
+        $filename = '';
+        if (empty($tahun)) {
+            $filename = date('y-m-d-H-i-s') . '-laporan-aset-' . $bulan . '-' . date('Y');
+        } else if (!empty($bulan) && !empty($tahun)) {
+            $filename = date('y-m-d-H-i-s') . '-laporan-aset-' . $bulan . '-' . $tahun;
+        } else if (!empty($tahun)) {
+            $filename = date('y-m-d-H-i-s') . '-laporan-aset-' . $tahun;
+        }
+        // instantiate and use the dompdf class
+        $dompdf = new Dompdf();
+        $options = $dompdf->getOptions();
+        $options->set(['isRemoteEnabled' => true]);
+        $dompdf->setOptions($options);
+
+        $data = [
+            'title' => 'Laporan Aset',
+            'brgtetap' => $brgtetap,
+            'keterangan' => $keterangan,
+        ];
+        // load HTML content
+        $dompdf->loadHtml(view('laporan/laporanaset', $data));
+
+        // (optional) setup the paper size and orientation
+        $dompdf->setPaper('A4', 'portrait');
+
+        // render html as PDF
+        $dompdf->render();
+
+        // output the generated pdf
+        $dompdf->stream($filename, ['Attachment' => 0]);
     }
 
     public function getdatapermintaan()

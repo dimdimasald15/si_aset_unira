@@ -537,7 +537,7 @@
               $(`.errsatuan`).html('');
             }
           } else {
-            $('#tampilformteditbarang').hide(500);
+            $('#tampilformeditbarang').hide(500);
             Swal.fire(
               'Berhasil!',
               response.sukses,

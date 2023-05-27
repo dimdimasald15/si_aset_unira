@@ -1,0 +1,157 @@
+body {
+  font-family: serif;
+  color: #000000;
+  margin: 2em;
+  /* color: #fff; */
+  /* background-color: #000; */
+}
+
+/* override styles when printing */
+@media print {
+  body {
+    margin: 0;
+    color: #000;
+    background-color: #fff;
+  }
+}
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin-top: 0;
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #000000;
+}
+
+@page {
+  margin: 180px 50px;
+}
+
+@page {
+  header: page-header;
+}
+
+@page: first {
+  header: first-page-header;
+}
+
+#header {
+  background-color: greenyellow;
+  position: running(page-header);
+  position: fixed;
+  left: 30px;
+  top: -180px;
+  right: 30px;
+  height: 170px;
+  /* background-color: orange; */
+  text-align: center;
+}
+
+#content {
+  left: 30px;
+  right: 30px;
+  padding: 0px 10px 10px 10px;
+  color: #000000;
+  /* background-color: orange; */
+}
+
+div.absolute {
+  position: absolute;
+  padding: 0.5em;
+  vertical-align: middle;
+}
+.logo {
+  top: 40px;
+  left: 0px;
+}
+.logo img {
+  max-width: 80px;
+  border: 2px solid white;
+}
+.txt1 {
+  top: 40px;
+  left: 48px;
+  right: 65px;
+}
+.txt1 h4 {
+  font-family: helvetica;
+  letter-spacing: -1px;
+  font-weight: 400;
+}
+.txt2 {
+  top: 62px;
+  left: 90px;
+  right: 10px;
+}
+.txt2 h2 {
+  font-family: times;
+  letter-spacing: 1px;
+  font-weight: 500;
+}
+.txt3 {
+  top: 90px;
+  left: 41px;
+  right: 68px;
+}
+.txt3 h3 {
+  font-family: times;
+  font-weight: 400;
+}
+div .line {
+  width: 280px;
+  height: 0;
+  border: 1px solid #000000;
+  margin-top: 18px;
+  margin-left: 68px;
+}
+.txt4 {
+  top: 97px !important;
+  right: 25px !important;
+}
+.txt4 p {
+  font-family: 'Caveat', cursive;
+  font-weight: '400';
+  font-size: 1.4rem;
+  font-style: 'normal';
+  color: rgb(45, 186, 233);
+}
+
+table,
+th,
+td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+
+th {
+  font-style: 'bold';
+}
+
+th,
+td {
+  padding: 5px;
+}
+
+#footer {
+  position: fixed;
+  text-align: center;
+  left: 0px;
+  bottom: -180px;
+  right: 0px;
+  height: 100px;
+  background-color: orangered;
+}
+
+#footer .page:after {
+  content: counter(page, times);
+}
