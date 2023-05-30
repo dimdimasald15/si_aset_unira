@@ -118,6 +118,7 @@
                 </li> -->
               </ul>
             </div>
+            <button class="btn btn-dark" id="tampilmodalcetak"><i class="fa fa-print"></i> Ekspor Pdf</button>
           </div>
           <div class="col-md-6 pb-0 pt-3 px-0 d-flex justify-content-end">
             <button type="submit" class="btn btn-danger btn-multipledelete">
@@ -382,12 +383,29 @@
 
       return false;
     })
+
+    $('#tampilmodalcetak').on('click', function(e) {
+      e.preventDefault();
+      $.ajax({
+        type: "post",
+        url: "<?= base_url('permintaancontroller/tampilmodalcetak') ?>",
+        data: {
+          jenis_kat: jenis_kat,
+        },
+        dataType: "json",
+        success: function(response) {
+          console.log(response);
+          $('.viewmodal').html(response.sukses).show(500);
+          $('#modalcetakpermintaan').modal('show');
+        }
+      });
+    })
   });
 
   function singleform() {
     $.ajax({
       type: "get",
-      url: "<?= base_url() ?>/permintaancontroller/tampilsingleform",
+      url: "<?= base_url('permintaancontroller/tampilsingleform') ?>",
       data: {
         saveMethod: "add",
         nav: "<?= $nav ?>",
@@ -403,7 +421,7 @@
   function edit(id) {
     $.ajax({
       type: "get",
-      url: "<?= base_url() ?>/permintaancontroller/tampilsingleform",
+      url: "<?= base_url('permintaancontroller/tampilsingleform') ?>",
       data: {
         globalId: id,
         saveMethod: "update",

@@ -401,7 +401,7 @@
           data: {
             title: jenistrx,
             jenis_kat: jenis_kat,
-            jenistrx: `Tambah Stok ${jenis_kat} di Sarpras`,
+            jenistrx: `tambah stok ${jenis_kat} masuk di Sarpras`,
             nav: "<?= $nav ?>",
             saveMethod: "update",
           },

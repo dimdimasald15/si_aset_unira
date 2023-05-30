@@ -296,7 +296,7 @@ class BarangController extends BaseController
                     ->join('kategori k', 'b.kat_id = k.id')
                     ->join('ruang r', 'sb.ruang_id = r.id')
                     ->join('satuan s', 'sb.satuan_id = s.id')
-                    ->where('sb.id', $id)
+                    ->where('b.id', $id)
                     ->get();
             } else if (!empty($kode_brg)) {
                 $getbarang = $this->db->table('barang b')
@@ -310,7 +310,6 @@ class BarangController extends BaseController
             } else {
                 $data = 'data kosong';
             }
-
             echo json_encode($data);
         } else {
             $data = [

@@ -48,7 +48,6 @@ class Autoload extends AutoloadConfig
         'Config'      => APPPATH . 'Config',
         'PHPSQLParser'          => APPPATH . 'ThirdParty/php-sql-parser/src/PHPSQLParser', // <-- namespace for php-sql-parser
         'Hermawan\DataTables'   => APPPATH . 'ThirdParty/codeigniter4-datatables/src', // <-- namespace for this library
-        'TCPDF' => APPPATH . 'ThirdParty/tecnickcom/tcpdf',
         'DOMPDF' => APPPATH . 'ThirdParty/dompdf/dompdf',
     ];
     /**
@@ -68,9 +67,7 @@ class Autoload extends AutoloadConfig
      *
      * @var array<string, string>
      */
-    public $classmap = [
-        "TCPDF" => APPPATH . "ThirdParty/tecnickcom/tcpdf/tcpdf.php"
-    ];
+    public $classmap = [];
 
     /**
      * -------------------------------------------------------------------
@@ -102,5 +99,5 @@ class Autoload extends AutoloadConfig
      * @var string[]
      * @phpstan-var list<string>
      */
-    public $helpers = [];
+    public $helpers = ['converter_helper'];
 }
