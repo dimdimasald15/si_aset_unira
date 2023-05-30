@@ -167,6 +167,31 @@ class PermintaanController extends BaseController
         }
     }
 
+    public function tampilmodalcetak()
+    {
+        if (!$this->request->isAJAX()) {
+            $data = [
+                'title' => 'Error 404',
+                'msg' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/mazer/error-404', $data);
+        }
+
+        $jenis_kat = $this->request->getVar('jenis_kat');
+
+        $data = [
+
+            'title' => 'Cetak Permintaan Barang',
+            'jenis_kat' => $jenis_kat
+        ];
+
+        $msg = [
+            'sukses' => view('permintaan/modalcetak', $data)
+        ];
+
+        echo json_encode($msg);
+    }
+
     public function pilihunit()
     {
         if ($this->request->isAJAX()) {

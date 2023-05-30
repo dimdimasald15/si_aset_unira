@@ -12,11 +12,11 @@ use App\Models\Anggota;
 use App\Models\Permintaan;
 use App\Models\Peminjaman;
 use \Hermawan\DataTables\DataTable;
-use App\Libraries\MyPDF;
+use DateTime;
+use CodeIgniter\I18n\Time;
+use CodeIgniter\I18n\IntlFormat;
 use Dompdf\Dompdf;
-use Dompdf\FontMetrics;
 use App\Controllers\BaseController;
-use PHPUnit\Framework\Constraint\Count;
 
 
 class LaporanController extends BaseController
@@ -97,16 +97,12 @@ class LaporanController extends BaseController
         }
     }
 
-    public function konversiuang($data)
-    {
-        $harga_formatted = 'Rp ' . number_format($data, 0, ',', '.') . ',-';
-        return $harga_formatted;
-    }
+
 
     public function hitungstokbarang($m, $y)
     {
         $builder = $this->db->table('stok_barang sb')
-            ->select('sb.barang_id AS b_id, b.kode_brg, b.nama_brg, b.harga_jual, SUM(sb.sisa_stok) AS stok_terbaru, b.harga_jual * SUM(sb.sisa_stok) AS total_val, s.kd_satuan')
+            ->select('sb.barang_id AS b_id, b.kode_brg, b.nama_brg, b.warna,  b.harga_jual, SUM(sb.sisa_stok) AS stok_terbaru, b.harga_jual * SUM(sb.sisa_stok) AS total_val, s.kd_satuan')
             ->join('barang b', 'b.id = sb.barang_id')
             ->join('kategori k', 'k.id = b.kat_id')
             ->join('satuan s', 'sb.satuan_id = s.id')
@@ -119,14 +115,18 @@ class LaporanController extends BaseController
         } else if (!empty($y)) {
             $builder->where("YEAR(sb.created_at)", $y);
         }
-        $builder->groupBy('b_id');
+        $builder->where('k.deleted_at', null)
+            ->where('b.deleted_at', null)
+            ->where('sb.deleted_at', null)
+            ->groupBy('b_id');
 
         $results = $builder->get()->getResultArray();
         $hargajual = [];
         $totalval = [];
+        helper('converter_helper');
         foreach ($results as $key => $val) {
-            array_push($hargajual, $this->konversiuang($val['harga_jual']));
-            array_push($totalval, $this->konversiuang($val['total_val']));
+            array_push($hargajual, format_uang($val['harga_jual']));
+            array_push($totalval, format_uang($val['total_val']));
         }
 
         foreach ($results as $key => &$result) {
@@ -135,46 +135,390 @@ class LaporanController extends BaseController
             $result['totalval'] = $totalval[$key];
         }
 
-        // echo "<pre>";
-        // var_dump($results);
-        // echo "</pre>";
-        // die;
         return $results;
+    }
+
+    private function getkategoriaset($jenis)
+    {
+        $builder = $this->db->table('kategori')
+            ->select('id,kd_kategori, nama_kategori, deskripsi, created_by, created_at, deleted_by, deleted_at')
+            ->where('jenis', $jenis)
+            ->where('deleted_at', null);
+
+        $results = $builder->get()->getResult();
+
+        var_dump($results);
+        return $results;
+    }
+    private function hitungmintabarang($m, $y, $jenis)
+    {
+        $builder = $this->db->table('riwayat_barang rb')
+            ->select('rb.id, rb.barang_id AS b_id, b.nama_brg,b.kode_brg, b.warna, p.anggota_id, p.barang_id, a.unit_id, u.singkatan, a.nama_anggota, SUM(p.jml_barang) AS jml_barang, p.created_at, p.created_by, CAST(
+            REPLACE(
+                COALESCE(
+                    IF(JSON_EXTRACT(rb.old_value, \'$.harga_beli\') IS NULL,
+                        (
+                            SELECT JSON_EXTRACT(rb2.old_value, \'$.harga_beli\')
+                            FROM riwayat_barang rb2
+                            WHERE rb2.barang_id = rb.barang_id
+                            AND YEAR(rb2.created_at) < YEAR(rb.created_at)
+                            ORDER BY YEAR(rb2.created_at) DESC
+                            LIMIT 1
+                        ),
+                        JSON_EXTRACT(rb.new_value, \'$.harga_beli\')
+                    ),
+                    b.harga_beli
+                ),
+                \'"\',
+                \'\'
+            ) AS UNSIGNED
+            ) AS harga_beli, SUM(p.jml_barang) * harga_beli AS total_val, s.kd_satuan')
+            ->join('barang b', 'b.id = rb.barang_id')
+            ->join('kategori k', 'k.id = b.kat_id')
+            ->join('stok_barang sb', 'b.id=sb.barang_id')
+            ->join('satuan s', 's.id=sb.satuan_id')
+            ->join('permintaan p', 'p.barang_id = b.id')
+            ->join('anggota a', 'a.id = p.anggota_id')
+            ->join('unit u', 'u.id = a.unit_id')
+            ->where('k.jenis', $jenis);
+        if (empty($y)) {
+            $builder->where('YEAR(p.created_at)', date('Y'));
+        } else if (!empty($m) && !empty($y)) {
+            $builder->where("MONTH(p.created_at)", $m);
+            $builder->where("YEAR(p.created_at)", $y);
+        } else if (!empty($y)) {
+            $builder->where("YEAR(p.created_at)", $y);
+        }
+        $builder->where('k.deleted_at', null)
+            ->where('b.deleted_at', null)
+            ->where('sb.deleted_at', null)
+            ->where('p.deleted_at', null)
+            ->groupBy('b.kode_brg');
+
+        $results = $builder->get()->getResultArray();
+
+        $hargabeli = [];
+        $totalval = [];
+        $tgldibuat = [];
+        helper('converter_helper');
+        foreach ($results as $key => $val) {
+            array_push($hargabeli, format_uang($val['harga_beli']));
+            array_push($totalval, format_uang($val['total_val']));
+            array_push($tgldibuat, format_tanggal($val['created_at']));
+        }
+
+        foreach ($results as $key => &$result) {
+            // Tambahkan elemen "hargabeli" ke setiap elemen $results
+            $result['hargabeli'] = $hargabeli[$key];
+            $result['totalval'] = $totalval[$key];
+            $result['tgldibuat'] = $tgldibuat[$key];
+        }
+
+        // Array untuk menyimpan data yang telah dikelompokkan
+        $groupedData = [];
+
+        // Perulangan untuk mengelompokkan data berdasarkan bulan
+        foreach ($results as $key => &$item) {
+            // Ambil bulan saja dari tanggal
+            $dateString = $item["tgldibuat"];
+            if (empty($tgl_permintaan)) {
+                $haritanggal = explode(" ", $dateString)[2] . " " . explode(" ", $dateString)[3];
+            } else if (!empty($tgl_permintaan)) {
+                $haritanggal = $dateString;
+            }
+            // Tambahkan data ke dalam array sesuai dengan bulan
+            if (!isset($groupedData[$haritanggal])) {
+                $groupedData[$haritanggal] = [];
+            }
+            $groupedData[$haritanggal][] = $item;
+        }
+        return $groupedData;
+    }
+
+    private function pembelian_brg_tetap($m, $y)
+    {
+        helper('converter_helper');
+        $builder = $this->db->table('riwayat_transaksi rt')->select('rt.id, b.kode_brg, b.nama_brg, b.warna, rb.field AS field_rb,
+        CASE 
+            WHEN rb.field="Semua Field" THEN CAST(REPLACE(JSON_EXTRACT(rb.new_value, \'$.harga_beli\'),\'"\',\'\') AS UNSIGNED)
+            ELSE CAST(REPLACE(JSON_EXTRACT(rb.new_value, \'$.harga_beli\'),\'"\',\'\') AS UNSIGNED)
+        END AS hrg_beli_brg, rt.jenis_transaksi, rt.field AS field_rt, CASE 
+            WHEN rt.jenis_transaksi = "Tambah Stok Barang Tetap Masuk di Sarpras" THEN CAST(REPLACE(JSON_EXTRACT(rt.new_value, \'$.jumlah_masuk\'),\'"\',\'\') AS SIGNED)-CAST(REPLACE(JSON_EXTRACT(rt.old_value, \'$.jumlah_masuk\'),\'"\',\'\') AS SIGNED)
+            ELSE CAST(REPLACE(JSON_EXTRACT(rt.new_value, \'$.jumlah_masuk\'),\'"\',\'\') AS UNSIGNED)
+            END AS jml_msk, s.kd_satuan, rt.created_at')
+            ->join('stok_barang sb', 'sb.id=rt.stokbrg_id')
+            ->join('satuan s', 's.id=sb.satuan_id')
+            ->join('barang b', 'b.id=sb.barang_id')
+            ->join('riwayat_barang rb', 'b.id=rb.barang_id')
+            ->join('kategori k', 'k.id=b.kat_id')
+            ->where('(rt.field LIKE "%jumlah_masuk%" OR rt.field = "Semua Field")')
+            ->where('(rt.jenis_transaksi LIKE "%Barang tetap masuk%")')
+            ->where('( CASE
+            WHEN b.nama_brg IN (
+                SELECT b.nama_brg FROM riwayat_transaksi rt
+                JOIN stok_barang sb ON sb.id = rt.stokbrg_id
+                JOIN barang b ON b.id = sb.barang_id
+                WHERE rt.jenis_transaksi IN ("barang tetap masuk", "Tambah Stok Barang Tetap Masuk di Sarpras", "Update barang tetap masuk")
+                GROUP BY nama_brg
+                HAVING COUNT(DISTINCT rt.jenis_transaksi) = 3
+            ) THEN (rt.jenis_transaksi <> "barang tetap masuk" OR rt.field <> "Semua field")
+            WHEN b.nama_brg IN (
+                SELECT b.nama_brg
+                FROM riwayat_transaksi rt
+                JOIN stok_barang sb ON sb.id = rt.stokbrg_id
+                JOIN barang b ON b.id = sb.barang_id
+                WHERE rt.jenis_transaksi IN ("barang tetap masuk", "Update barang tetap masuk")
+                GROUP BY nama_brg
+                HAVING COUNT(DISTINCT rt.jenis_transaksi) = 2
+            ) THEN (rt.jenis_transaksi <> "barang tetap masuk" OR rt.field <> "Semua field")
+            WHEN b.nama_brg IN (
+                SELECT b.nama_brg FROM riwayat_transaksi rt
+                JOIN stok_barang sb ON sb.id = rt.stokbrg_id
+                JOIN barang b ON b.id = sb.barang_id
+                WHERE rt.jenis_transaksi IN ("barang tetap masuk", "Tambah Stok Barang Tetap Masuk di Sarpras")
+                GROUP BY nama_brg
+                HAVING COUNT(DISTINCT rt.jenis_transaksi) = 2
+            ) THEN 1
+            WHEN b.nama_brg IN (
+                SELECT b.nama_brg FROM riwayat_transaksi rt
+                JOIN stok_barang sb ON sb.id = rt.stokbrg_id
+                JOIN barang b ON b.id = sb.barang_id
+                WHERE rt.jenis_transaksi = "barang tetap masuk"
+                GROUP BY nama_brg
+                HAVING COUNT(DISTINCT rt.jenis_transaksi) = 1
+            ) THEN (rt.jenis_transaksi = "barang tetap masuk" OR rt.field = "Semua field")
+        END)');
+        // $builder->where('YEAR(rt.created_at)', date('Y'));
+        if (empty($y)) {
+            $builder->where('YEAR(rt.created_at)', date('Y'));
+        } else if (!empty($m) && !empty($y)) {
+            $builder->where("MONTH(rt.created_at)", $m);
+            $builder->where("YEAR(rt.created_at)", $y);
+        } else if (!empty($y)) {
+            $builder->where("YEAR(rt.created_at)", $y);
+        }
+        $builder->groupBy('rt.id')
+            ->orderBy('b.nama_brg', 'DESC');
+
+        $results = $builder->get()->getResultArray();
+        $total_harga = [];
+        $tgldibuat = [];
+        foreach ($results as $key => $row) {
+            array_push($total_harga, $row['jml_msk'] * $row['hrg_beli_brg']);
+            array_push($tgldibuat, format_tanggal($row['created_at']));
+        }
+        // Menambahkan elemen 'total_harga' ke dalam array $results
+        foreach ($results as $key => $row) {
+            $results[$key]['total_harga'] = $total_harga[$key];
+            $results[$key]['tgldibuat'] = $tgldibuat[$key];
+        }
+        // Membuat array baru untuk menyimpan hasil pengelompokan dan penjumlahan
+        $filterArray = [];
+
+        // Melakukan pengelompokan dan penjumlahan
+        foreach ($results as $row) {
+            $nama_brg = $row['nama_brg'];
+            $kode_brg = $row['kode_brg'];
+            $warna = $row['warna'];
+            $kd_satuan = $row['kd_satuan'];
+            $hrg_beli_brg = $row['hrg_beli_brg'];
+            $created_at = $row['created_at'];
+            $tgldibuat = $row['tgldibuat'];
+
+            // Jika sudah ada dalam $filterArray, tambahkan jml_msk dan total_harga
+            if (isset($filterArray[$nama_brg])) {
+                $filterArray[$nama_brg]['jml_msk'] += $row['jml_msk'];
+                $filterArray[$nama_brg]['total_harga'] += $row['total_harga'];
+            } else {
+                // Jika belum ada dalam $filterArray, inisialisasi dengan nilai awal
+                $filterArray[$nama_brg] = [
+                    'nama_brg' => $nama_brg,
+                    'kode_brg' => $kode_brg,
+                    '$warna' => $$warna,
+                    'hrg_beli_brg' => $hrg_beli_brg,
+                    'jml_msk' => $row['jml_msk'],
+                    'total_harga' => $row['total_harga'],
+                    'kd_satuan' => $kd_satuan,
+                    'created_at' => $created_at,
+                    'tgldibuat' => $tgldibuat,
+                ];
+            }
+        }
+        // Mengubah $filterArray menjadi array indeks numerik
+        $filterArray = array_values($filterArray);
+        // Array untuk menyimpan data yang telah dikelompokkan
+        $groupedData = [];
+        // Perulangan untuk mengelompokkan data berdasarkan bulan
+        foreach ($filterArray as $key => &$item) {
+            // Ambil bulan saja dari tanggal
+            $dateString = $item["tgldibuat"];
+            if (empty($tgl_permintaan)) {
+                $haritanggal = explode(" ", $dateString)[2] . " " . explode(" ", $dateString)[3];
+            } else if (!empty($tgl_permintaan)) {
+                $haritanggal = $dateString;
+            }
+            // Tambahkan data ke dalam array sesuai dengan bulan
+            if (!isset($groupedData[$haritanggal])) {
+                $groupedData[$haritanggal] = [];
+            }
+            $groupedData[$haritanggal][] = $item;
+        }
+        return $groupedData;
+    }
+
+    private function permintaanbarang($tgl_minta, $jenis)
+    {
+        $dateTime = $tgl_minta !== '' ? DateTime::createFromFormat("Y-m-d\TH:i", $tgl_minta) : "";
+        $tgl_permintaan = !empty($dateTime) ? $dateTime->format('Y-m-d') : '';
+
+        $builder = $this->db->table('riwayat_barang rb')
+            ->select("rb.id, rb.barang_id AS b_id, b.nama_brg,  p.anggota_id, p.barang_id, a.unit_id, u.singkatan, a.nama_anggota, p.jml_barang, p.created_at, p.created_by")
+            ->select("CAST(
+                REPLACE(
+                    COALESCE(
+                        IF(JSON_EXTRACT(rb.old_value, '$.harga_beli') IS NULL,
+                            (
+                                SELECT JSON_EXTRACT(rb2.old_value, '$.harga_beli')
+                                FROM riwayat_barang rb2
+                                WHERE rb2.barang_id = rb.barang_id
+                                AND YEAR(rb2.created_at) < YEAR(rb.created_at)
+                                ORDER BY YEAR(rb2.created_at) DESC
+                                LIMIT 1
+                            ),
+                            JSON_EXTRACT(rb.new_value, '$.harga_beli')
+                        ),
+                        b.harga_beli
+                    ),
+                    '\"',
+                    ''
+                ) AS UNSIGNED
+            ) AS harga_beli", false)
+            ->select("p.jml_barang * harga_beli AS total_val, s.kd_satuan", false)
+            ->join('barang b', 'b.id = rb.barang_id')
+            ->join('kategori k', 'k.id = b.kat_id')
+            ->join('stok_barang sb', 'b.id=sb.barang_id')
+            ->join('satuan s', 's.id=sb.satuan_id')
+            ->join('permintaan p', 'p.barang_id = b.id')
+            ->join('anggota a', 'a.id = p.anggota_id')
+            ->join('unit u', 'u.id = a.unit_id')
+            ->where('jenis', $jenis)
+            ->whereIn('rb.id', function ($subquery) {
+                $subquery->select('MAX(id)')
+                    ->from('riwayat_barang')
+                    ->groupBy('barang_id');
+            });
+        // ->orderBy('rb.id', 'DESC');
+        if (empty($tgl_permintaan)) {
+            $builder->where('YEAR(p.created_at)', date('Y'));
+        } else if (!empty($tgl_permintaan)) {
+            $builder->like("p.created_at", $tgl_permintaan . "%");
+        }
+        $builder->where('k.deleted_at', null)
+            ->where('b.deleted_at', null)
+            ->where('sb.deleted_at', null)
+            ->where('p.deleted_at', null);
+
+        $results = $builder->get()->getResultArray();
+
+        $hargabeli = [];
+        $totalval = [];
+        $tgldibuat = [];
+        helper('converter_helper');
+        foreach ($results as $key => $val) {
+            array_push($hargabeli, format_uang($val['harga_beli']));
+            array_push($totalval, format_uang($val['total_val']));
+            array_push($tgldibuat, format_tanggal($val['created_at']));
+        }
+
+        foreach ($results as $key => &$result) {
+            // Tambahkan elemen "hargabeli" ke setiap elemen $results
+            $result['hargabeli'] = $hargabeli[$key];
+            $result['totalval'] = $totalval[$key];
+            $result['tgldibuat'] = $tgldibuat[$key];
+        }
+
+        // Array untuk menyimpan data yang telah dikelompokkan
+        $groupedData = [];
+
+        // Perulangan untuk mengelompokkan data berdasarkan bulan
+        foreach ($results as $key => &$item) {
+            // Ambil bulan saja dari tanggal
+            $dateString = $item["tgldibuat"];
+            if (empty($tgl_permintaan)) {
+                $haritanggal = explode(" ", $dateString)[2] . " " . explode(" ", $dateString)[3];
+            } else if (!empty($tgl_permintaan)) {
+                $haritanggal = $dateString;
+            }
+            // Tambahkan data ke dalam array sesuai dengan bulan
+            if (!isset($groupedData[$haritanggal])) {
+                $groupedData[$haritanggal] = [];
+            }
+            $groupedData[$haritanggal][] = $item;
+        }
+        return $groupedData;
     }
 
     public function cetaklaporanpdf()
     {
+        helper('converter_helper');
         $bulan = $this->request->getVar('bulan');
         $tahun = $this->request->getVar('tahun');
         $keterangan = $this->request->getVar('keterangan');
-        // Panggil fungsi hitungstokbarang() dan simpan hasilnya dalam variabel $brgtetap
-        $brgtetap = '';
-        if ($keterangan == "Semua Laporan") {
-            $brgtetap = $this->hitungstokbarang($bulan, $tahun);
-        }
-
+        $jenis_kat = $this->request->getVar('jenis_kat');
+        // echo $keterangan;
         $filename = '';
-        if (empty($tahun)) {
-            $filename = date('y-m-d-H-i-s') . '-laporan-aset-' . $bulan . '-' . date('Y');
-        } else if (!empty($bulan) && !empty($tahun)) {
-            $filename = date('y-m-d-H-i-s') . '-laporan-aset-' . $bulan . '-' . $tahun;
-        } else if (!empty($tahun)) {
-            $filename = date('y-m-d-H-i-s') . '-laporan-aset-' . $tahun;
-        }
+
         // instantiate and use the dompdf class
         $dompdf = new Dompdf();
         $options = $dompdf->getOptions();
         $options->set(['isRemoteEnabled' => true]);
         $dompdf->setOptions($options);
+        // Panggil fungsi hitungstokbarang() dan simpan hasilnya dalam variabel $brgtetap
+        $brgtetap = '';
+        if ($keterangan == "Semua Laporan") {
+            $bulantahun = '';
+            if (empty($bulan) & empty($tahun)) {
+                $bulantahun = "tahun " . date('Y');
+                $filename = 'laporan-aset-' . date('Y');
+            } else if (!empty($bulan) && !empty($tahun)) {
+                $bulantahun = "bulan " . format_bulan($bulan) . " tahun " . date('Y');
+                $filename = 'laporan-aset-' . $bulan . '-' . $tahun;
+            } else if (!empty($tahun)) {
+                $bulantahun = "tahun " . date('Y');
+                $filename = 'laporan-aset-' . $tahun;
+            }
+            $brgtetap = $this->hitungstokbarang($bulan, $tahun);
+            $kat_tetap = $this->getkategoriaset("Barang Tetap");
+            $kat_sedia = $this->getkategoriaset("Barang Persediaan");
+            $permintaan = $this->hitungmintabarang($bulan, $tahun, "Barang Persediaan");
+            $belibrgtetap = $this->pembelian_brg_tetap($bulan, $tahun);
+            $data = [
+                'kat_tetap' => $kat_tetap,
+                'kat_sedia' => $kat_sedia,
+                'brgtetap' => $brgtetap,
+                'permintaan' => $permintaan,
+                'belibrgtetap' => $belibrgtetap,
+                'bulantahun' => $bulantahun,
+                'title' => 'Laporan Aset',
+            ];
+            // load HTML content
+            $dompdf->loadHtml(view('laporan/laporanaset', $data));
+        } else if ($keterangan == "Permintaan") {
 
-        $data = [
-            'title' => 'Laporan Aset',
-            'brgtetap' => $brgtetap,
-            'keterangan' => $keterangan,
-        ];
-        // load HTML content
-        $dompdf->loadHtml(view('laporan/laporanaset', $data));
-
+            $tgl_minta = $this->request->getVar('tgl_minta');
+            $haritanggal = format_tanggal($tgl_minta);
+            $tanggal = !empty($tgl_minta) ? date('d-m-Y', strtotime($tgl_minta)) : date('Y');
+            // if ($haritanggal) {
+            $filename = 'laporan-permintaan-' . $tanggal;
+            // }
+            $permintaan = $this->permintaanbarang($tgl_minta, $jenis_kat);
+            // load HTML content
+            $dompdf->loadHtml(view('permintaan/cetakpdf', [
+                'title' => 'Laporan Permintaan Barang Persediaan',
+                'permintaan' => $permintaan,
+                'haritanggal' => $haritanggal,
+            ]));
+        }
         // (optional) setup the paper size and orientation
         $dompdf->setPaper('A4', 'portrait');
 
@@ -185,7 +529,7 @@ class LaporanController extends BaseController
         $dompdf->stream($filename, ['Attachment' => 0]);
     }
 
-    public function getdatapermintaan()
+    public function get_data_chart_permintaan()
     {
         if ($this->request->isAJAX()) {
             $builder = $this->db->table('permintaan p')
@@ -216,7 +560,7 @@ class LaporanController extends BaseController
         }
     }
 
-    public function get_data_permintaan()
+    public function get_data_table_permintaan()
     {
         if ($this->request->isAJAX()) {
             $m = $this->request->getGet('m');

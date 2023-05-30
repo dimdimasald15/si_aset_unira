@@ -143,6 +143,7 @@ $routes->group('admin/permintaan-barang-persediaan', ['filter' => 'ceklogin'], f
     $routes->match(['get', 'post'], 'restore', 'PermintaanController::restoredata');
     $routes->post('hapuspermanen/(:any)', 'PermintaanController::hapuspermanen/$1');
     $routes->match(['get', 'post'], 'hapuspermanen', 'PermintaanController::hapuspermanen');
+    $routes->post('cetak', 'LaporanController::cetaklaporanpdf');
 });
 
 $routes->group('admin/peminjaman-barang-tetap', ['filter' => 'ceklogin'], function ($routes) {

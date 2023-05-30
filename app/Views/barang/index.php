@@ -862,6 +862,7 @@
   }
 
   function edit(id) {
+    console.log(id);
     saveMethod = "update";
     globalId = id;
     $('#cardmultipleinsert').hide(500);
@@ -911,7 +912,7 @@
           data: {
             title: jenistrx,
             jenis_kat: jenis_kat,
-            jenistrx: `tambah stok <?= strtolower($jenis_kat) ?> di sarpras`,
+            jenistrx: `<?= strtolower($jenis_kat) ?>`,
             nav: "<?= $nav ?>",
             saveMethod: "add",
           },

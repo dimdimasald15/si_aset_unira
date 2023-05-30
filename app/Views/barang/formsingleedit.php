@@ -249,7 +249,7 @@
       type: "get",
       url: "<?= site_url('barangcontroller/getbarangbyany') ?>",
       data: {
-        id: "<?= $id ?>",
+        id: <?= $id ?>,
       },
       dataType: "json",
       success: function(response) {

@@ -406,7 +406,7 @@
   function permintaan_chart(m, y) {
     $.ajax({
       type: "get",
-      url: `<?= base_url() ?>/laporancontroller/get_data_permintaan?m=${m}&y=${y}`,
+      url: `<?= base_url() ?>/laporancontroller/get_data_table_permintaan?m=${m}&y=${y}`,
       dataType: "json",
       success: function(response) {
         var labels = [];
