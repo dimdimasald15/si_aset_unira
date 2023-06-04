@@ -180,7 +180,6 @@ class PermintaanController extends BaseController
         $jenis_kat = $this->request->getVar('jenis_kat');
 
         $data = [
-
             'title' => 'Cetak Permintaan Barang',
             'jenis_kat' => $jenis_kat
         ];
@@ -327,7 +326,7 @@ class PermintaanController extends BaseController
 
                 $validation =  \Config\Services::validation();
                 $errors2 = array();
-                for ($a = 0; $a < $jmldata; $a++) {
+                for ($a = 1; $a <= $jmldata; $a++) {
                     $rules2 = [
                         'barang_id' . $a => [
                             'label' => 'Nama barang',

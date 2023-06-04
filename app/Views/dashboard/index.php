@@ -29,7 +29,7 @@
   <div class="col-lg-12">
     <div class="row">
       <div class="col-6 col-lg-4 col-md-6">
-        <div class="card shadow">
+        <div class="card shadow text-white bg-dark">
           <div class="card-body px-3 py-3">
             <div class="row" id="brgttp">
               <div class="col-md-4">
@@ -45,7 +45,7 @@
         </div>
       </div>
       <div class="col-6 col-lg-4 col-md-6">
-        <div class="card shadow">
+        <div class="card shadow text-white bg-dark">
           <div class="card-body px-3 py-3">
             <div class="row" id="brgsedia">
               <div class="col-md-4">
@@ -61,7 +61,7 @@
         </div>
       </div>
       <div class="col-6 col-lg-4 col-md-6">
-        <div class="card shadow">
+        <div class="card shadow text-white bg-dark">
           <div class="card-body px-3 py-3">
             <div class="row" id="gedung">
               <div class="col-md-4">
@@ -77,7 +77,7 @@
         </div>
       </div>
       <div class="col-6 col-lg-4 col-md-6">
-        <div class="card shadow">
+        <div class="card shadow text-white bg-dark">
           <div class="card-body px-3 py-3">
             <div class="row" id="peminjaman">
               <div class="col-md-4">
@@ -93,7 +93,7 @@
         </div>
       </div>
       <div class="col-6 col-lg-4 col-md-6">
-        <div class="card shadow">
+        <div class="card shadow text-white bg-dark">
           <div class="card-body px-3 py-3">
             <div class="row" id="permintaan">
               <div class="col-md-4">
@@ -109,7 +109,7 @@
         </div>
       </div>
       <div class="col-6 col-lg-4 col-md-6">
-        <div class="card shadow">
+        <div class="card shadow text-white bg-dark">
           <div class="card-body px-3 py-3">
             <div class="row" id="ruang">
               <div class="col-md-4">

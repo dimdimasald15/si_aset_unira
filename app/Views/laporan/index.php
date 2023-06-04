@@ -45,23 +45,23 @@
   </div>
 </div>
 <section class="section">
-  <div class="card mb-3 shadow">
-    <div class="card-header shadow-sm">
+  <div class="card mb-3 bg-dark text-white shadow">
+    <div class="card-header bg-dark text-white shadow-sm">
       <h4 class="card-title">Custom Filters</h4>
     </div>
-    <div class=" card-body">
+    <div class="card-body bg-dark text-white">
       <form action="<?= $nav ?>/cetak" method="post" id="cetak-laporan">
         <?= csrf_field() ?>
         <div class="row mt-3">
           <input type="text" name="keterangan" id="keterangan" value="Semua Laporan" hidden>
           <div class="col-sm-4 d-flex justify-content-start">
-            <label class="col-sm-3 col-form-label" for="inputGroupSelect01">Bulan</label>
+            <label class="col-sm-3 col-form-label" for="selectbulan">Bulan</label>
             <div class="col-sm-9">
               <select id="selectbulan" name="bulan" class="form-select"></select>
             </div>
           </div>
           <div class="col-sm-4 d-flex justify-content-start">
-            <label class="col-sm-3 col-form-label" for="inputGroupSelect01">Tahun</label>
+            <label class="col-sm-3 col-form-label" for="selecttahun">Tahun</label>
             <div class="col-sm-9">
               <select id="selecttahun" name="tahun" class="form-select"></select>
             </div>
@@ -78,7 +78,7 @@
     <div class="row mb-0">
       <div class="col-6 col-lg-3 col-md-6">
         <div class="card shadow">
-          <div class="card-body px-3 py-3">
+          <div class="card-body bg-dark text-white px-3 py-3">
             <div class="row" id="brgttp">
               <div class="col-md-4">
                 <div class="stats-icon purple">
@@ -94,7 +94,7 @@
       </div>
       <div class="col-6 col-lg-3 col-md-6">
         <div class="card shadow">
-          <div class="card-body px-3 py-3">
+          <div class="card-body bg-dark text-white px-3 py-3">
             <div class="row" id="brgsedia">
               <div class="col-md-4">
                 <div class="stats-icon blue">
@@ -110,7 +110,7 @@
       </div>
       <div class="col-6 col-lg-3 col-md-6">
         <div class="card shadow">
-          <div class="card-body px-3 py-3">
+          <div class="card-body bg-dark text-white px-3 py-3">
             <div class="row" id="peminjaman">
               <div class="col-md-4">
                 <div class="stats-icon pink">
@@ -126,7 +126,7 @@
       </div>
       <div class="col-6 col-lg-3 col-md-6">
         <div class="card shadow">
-          <div class="card-body px-3 py-3">
+          <div class="card-body bg-dark text-white px-3 py-3">
             <div class="row" id="permintaan">
               <div class="col-md-4">
                 <div class="stats-icon orange">
@@ -142,16 +142,15 @@
       </div>
     </div>
   </div>
-
-  <div class="card mb-3 shadow datalist-barang">
-    <div class="card-header shadow-sm">
+  <div class="card mb-3 bg-dark text-white shadow datalist-barang">
+    <div class="card-header bg-dark text-white shadow-sm">
       <div class="row justify-content-between align-items-center">
         <div class="col-md-7">
           <h4 class="card-title">Analisa Alokasi Barang Tetap</h4>
         </div>
       </div>
     </div>
-    <div class="card-body table-lokasibrg">
+    <div class="card-body bg-dark text-white table-lokasibrg">
       <div class="table-responsive py-4">
         <table class="table table-light cell-border mb-3" id="table-lokasibrg" width="100%">
           <thead class="thead-dark">
@@ -167,27 +166,27 @@
   </div>
   <div class="row">
     <div class="col-lg-6">
-      <div class="card mb-3 shadow">
-        <div class="card-header shadow-sm">
+      <div class="card mb-3 bg-dark text-white shadow">
+        <div class="card-header bg-dark text-white shadow-sm">
           <div class="col-md-12">
             <h6 class="surtitle">Analisa Permintaan Barang</h6>
             <h4 class="card-title">Chart Permintaan Barang Berdasarkan Unit</h4>
           </div>
         </div>
-        <div class="card-body">
+        <div class="card-body bg-dark text-white mt-5">
           <canvas id="chart-permintaan"></canvas>
         </div>
       </div>
     </div>
     <div class="col-lg-6">
-      <div class="card mb-3 shadow">
-        <div class="card-header shadow-sm">
+      <div class="card mb-3 bg-dark text-white shadow">
+        <div class="card-header bg-dark text-white shadow-sm">
           <div class="col-md-12">
             <h6 class="surtitle">Analisa Permintaan Barang</h6>
             <h4 class="card-title">Table Permintaan Barang</h4>
           </div>
         </div>
-        <div class="card-body">
+        <div class="card-body bg-dark text-white">
           <div class="table-responsive py-4">
             <table class="table table-light cell-border mb-3" id="table-permintaan" width="100%">
               <thead class="thead-dark">
@@ -261,7 +260,7 @@
     });
 
     tpermintaan = $('#table-permintaan').DataTable({
-      ajax: `<?= base_url() ?>/laporancontroller/getdatapermintaan`,
+      ajax: `<?= base_url() ?>/laporancontroller/get_data_table_permintaan`,
       columns: [{
           className: 'dt-control',
           orderable: false,
@@ -297,7 +296,7 @@
         },
       ],
       order: [
-        [1, 'asc']
+        [3, 'asc']
       ],
       columnDefs: [{
         targets: [2, 3],
@@ -368,35 +367,6 @@
         tlokasi.ajax.reload();
       }
     })
-
-    // $('#cetak-laporan').submit(function(e) {
-    //   e.preventDefault();
-    //   var formData = new FormData(this);
-
-    //   $.ajax({
-    //     type: 'post',
-    //     url: '<?= $nav ?>/cetak',
-    //     data: formData,
-    //     processData: false,
-    //     contentType: false,
-    //     beforeSend: function() {
-    //       $('.btncetak').attr('disable', 'disabled');
-    //       $('.btncetak').html('<i class="fa fa-spin fa-spinner"></i>');
-    //     },
-    //     complete: function() {
-    //       $('.btncetak').removeAttr('disable');
-    //       $('.btncetak').html('<i class="fa fa-file-pdf-o"></i> Cetak Laporan');
-    //     },
-    //     success: function(result) {
-    //       var response = JSON.parse(result);
-    //       console.log(response);
-    //     },
-    //     error: function(xhr, ajaxOptions, thrownError) {
-    //       alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
-    //     }
-    //   });
-    //   return false;
-    // })
   });
 
   function refresh_all_chart(m, y) {
@@ -406,120 +376,132 @@
   function permintaan_chart(m, y) {
     $.ajax({
       type: "get",
-      url: `<?= base_url() ?>/laporancontroller/get_data_table_permintaan?m=${m}&y=${y}`,
+      url: `<?= base_url() ?>/laporancontroller/get_data_chart_permintaan?m=${m}&y=${y}`,
       dataType: "json",
       success: function(response) {
-        var labels = [];
-        var datasets = [];
-        var line = document.getElementById("chart-permintaan").getContext("2d");
-        if (response.data.length > 0) {
-          // Mengambil label bulan dari data query
-          var queryData = response.data;
-          var bulanTahun = queryData.map(item => item.bulan_tahun);
-          var bulan = bulanTahun.map(item => {
-            var [bulanIndex, tahun] = item.split('/');
-            var month = namaBulan[parseInt(bulanIndex) - 1];
-            if (!labels.includes(month)) {
-              labels.push(month);
-            }
-          });
-          var baseColor = generateColors(queryData);
-          var colors = [];
-          for (var i = 0; i < queryData.length; i++) {
-            var bgColor = baseColor[i].replace(')', ', 0.6)').replace('rgb', 'rgba');
-            var bdColor = baseColor[i].replace(')', ', 1)').replace('rgb', 'rgba');
+        // Mendapatkan referensi elemen canvas
+        let line = document.getElementById('chart-permintaan').getContext('2d');
 
-            colors.push({
-              bgColor: bgColor,
-              bdColor: bdColor,
-            });
-          }
-          // Mengambil data nama_unit dan total_valuasi dari data query
-          datasets = queryData.map((item, index) => {
-            return {
-              label: item.nama_unit,
-              data: [parseInt(item.total_valuasi)],
-              backgroundColor: colors[index].bgColor,
-              borderWidth: 3,
-              borderColor: colors[index].bdColor,
-              pointBorderWidth: 0,
-              pointBorderColor: colors[index].bdColor,
-              pointRadius: 3,
-              pointBackgroundColor: colors[index].bdColor,
-              pointHoverBackgroundColor: colors[index].bdColor
-            };
+        // Data labels dari key array
+        let labels = Object.keys(response);
+        let datasets = [];
+        // Mendapatkan datasets
+        let totalval1 = [];
+        let singkatan1 = [];
+        labels.forEach((label) => {
+          let totalval = response[label].map((obj) => parseInt(obj.total_valuasi));
+          let singkatan = response[label].map((obj) => obj.singkatan);
+
+          totalval1.push(totalval);
+          singkatan1.push(singkatan);
+        })
+
+
+        var baseColor = generateColors(singkatan1[0]);
+        var colors = [];
+        // console.log(singkatan1.length + 1);
+        for (var i = 0; i < singkatan1[0].length; i++) {
+          var bgColor = baseColor[i].replace(')', ', 0.6)').replace('rgb', 'rgba');
+          var bdColor = baseColor[i].replace(')', ', 1)').replace('rgb', 'rgba');
+
+          colors.push({
+            bgColor: bgColor,
+            bdColor: bdColor,
           });
-        } else if (response.data.length === 0) {
-          labels = namaBulan;
-          datasets = [];
         }
 
-        myline = new Chart(line, {
-          type: 'line',
-          data: {
-            labels: labels,
-            datasets: datasets
-          },
-          options: {
-            responsive: true,
-            layout: {
-              padding: {
-                top: 10,
-              },
-            },
-            tooltips: {
-              intersect: false,
-              titleFontFamily: 'Helvetica',
-              titleMarginBottom: 10,
-              xPadding: 10,
-              yPadding: 10,
-              cornerRadius: 3,
-            },
-            legend: {
-              display: true,
-              position: 'bottom',
-              labels: {
-                generateLabels: (chart) => {
-                  const datasets = chart.data.datasets;
-                  return datasets.map((data, i) => ({
-                    text: `${data.label} (${data.data[0]})`,
-                    fillStyle: data.backgroundColor,
-                  }))
-                },
-              }
-            },
-            scales: {
-              y: {
-                beginAtZero: true
-              },
-              yAxes: [{
-                gridLines: {
-                  display: true,
-                  drawBorder: true,
-                },
-                ticks: {
-                  display: true,
-                },
-              }, ],
-              xAxes: [{
-                gridLines: {
-                  drawBorder: true,
-                  display: true,
-                },
-                ticks: {
-                  display: true,
-                },
-              }, ],
-            },
+        const chartData = {
+          labels: labels,
+          datasets: []
+        };
+
+        for (var i = 0; i < singkatan1[0].length; i++) {
+          const dataset = {
+            label: singkatan1[0][i],
+            data: [],
+            backgroundColor: colors[i].bgColor,
+            borderWidth: 2,
+            borderColor: colors[i].bdColor,
+            pointBorderWidth: 0,
+            pointBorderColor: colors[i].bdColor,
+            pointRadius: 2,
+            pointBackgroundColor: colors[i].bdColor,
+            pointHoverBackgroundColor: colors[i].bdColor
+          };
+
+          for (var j = 0; j < totalval1.length; j++) {
+            dataset.data.push(totalval1[j][i]);
           }
+
+          chartData.datasets.push(dataset);
+        }
+
+        const chartOptions = {
+          responsive: true,
+          layout: {
+            padding: {
+              top: 10,
+            },
+          },
+          tooltips: {
+            intersect: false,
+            titleFontFamily: 'Helvetica',
+            titleMarginBottom: 10,
+            xPadding: 10,
+            yPadding: 10,
+            cornerRadius: 3,
+          },
+          legend: {
+            display: true,
+            position: 'bottom',
+            // labels: {
+            //   generateLabels: (chart) => {
+            //     const datasets = chart.data.datasets;
+            //     return datasets.map((data, i) => ({
+            //       text: `${data.label}`,
+            //       fillStyle: data.backgroundColor,
+            //     }))
+            //   },
+            // }
+          },
+          scales: {
+            y: {
+              beginAtZero: true
+            },
+            yAxes: [{
+              gridLines: {
+                display: true,
+                drawBorder: true,
+              },
+              ticks: {
+                display: true,
+              },
+            }, ],
+            xAxes: [{
+              gridLines: {
+                drawBorder: true,
+                display: true,
+              },
+              ticks: {
+                display: true,
+              },
+            }, ],
+          },
+        }
+        // Membuat chart garis
+        let myLineChart = new Chart(line, {
+          type: 'line',
+          data: chartData,
+          options: chartOptions,
         });
+
+        myLineChart.update();
       }
     });
   }
 
   function generateColors(query) {
     var baseColor = [];
-
     for (var i = 0; i < query.length; i++) {
       var r = Math.floor(Math.random() * 256);
       var g = Math.floor(Math.random() * 256);
@@ -528,6 +510,7 @@
       var color = `rgb(${r}, ${g}, ${b})`;
       baseColor.push(color);
     }
+
     return baseColor;
   }
   /* Formatting function for row details - modify as you need */

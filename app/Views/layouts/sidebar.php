@@ -1,9 +1,9 @@
 <div id="sidebar" class="active">
-  <div class="sidebar-wrapper shadow active">
+  <div class="sidebar-wrapper shadow active text-white bg-dark">
     <div class="sidebar-header">
-      <div class="d-flex justify-content-between">
-        <div class="logo">
-          <a href="dashboard"><img src="<?= base_url() ?>/assets/images/logo/logouniralandscape.jpg" alt="Logo" srcset=""></a>
+      <div class="d-flex justify-content-between align-items-center">
+        <div class="logo col-lg-8">
+          <a href="dashboard"><img src="<?= base_url() ?>/assets/images/logo/logouniralandscape.jpg" alt="Logo" style="max-width: 140px;max-height:40px;"></a>
         </div>
         <div class="toggler">
           <a href="#" class="sidebar-hide d-xl-none d-block"><i class="bi bi-x bi-middle"></i></a>

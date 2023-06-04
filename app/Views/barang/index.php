@@ -61,9 +61,47 @@
   </div>
 </div>
 <section class="section">
+  <div class="col-12 col-md-12 viewtambahsingle">
+    <div class="card mb-3 text-white bg-dark shadow" id="cardsingleinsert" style="display:none;">
+      <div class="card-header text-white bg-dark shadow-sm">
+        <h5 class="card-title">Form Single Insert <?= $title; ?></h5>
+      </div>
+      <div class="card-content">
+        <div class="card-body">
+          <div class="row px-4 py-4 option">
+            <div class="col-md-12">
+              <h6>Pilihan tambah barang secara single</h6>
+            </div>
+            <div class="col-md-12">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="flexRadioDefault" id="opsi1">
+                <label class="form-check-label" for="opsi1">
+                  Barang baru belum terdaftar di database
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="flexRadioDefault" id="opsi2">
+                <label class="form-check-label" for="opsi2">
+                  Barang sudah terdaftar di database (Tambah stok dan update tanggal pembelian)
+                </label>
+                <div class="invalid-feedback erroption"></div>
+              </div>
+            </div>
+          </div>
+          <div class="row option">
+            <div class="col-12 d-flex justify-content-end">
+              <button type="button" class="btn btn-white my-4 closeformsingle">Batal</button>
+              <button type="button" class="btn btn-primary my-4 btnnextsingle">Lanjutkan</button>
+            </div>
+          </div>
+          <div class="viewformsingle" style="display:none;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
   <div class="col-12 col-md-12 viewtambahmultiple">
-    <div class="card mb-3 shadow" id="cardmultipleinsert" style="display:none;">
-      <div class="card-header shadow-sm">
+    <div class="card mb-3 text-white bg-dark shadow" id="cardmultipleinsert" style="display:none;">
+      <div class="card-header text-white bg-dark shadow-sm">
         <h5 class="card-title">Form Multiple Insert <?= $title; ?></h5>
       </div>
       <div class="card-content">
@@ -100,20 +138,20 @@
     </div>
   </div>
   <div class="col-12 col-md-12 viewdata" style="display:none;"></div>
-  <div class="card mb-3 shadow">
-    <div class="card-header shadow-sm">
+  <div class="card mb-3 text-white bg-dark shadow">
+    <div class="card-header text-white bg-dark shadow-sm">
       <h4 class="card-title">Custom Filter</h4>
     </div>
     <div class=" card-body">
       <div class="row mt-3">
         <div class="col-sm-6 d-flex justify-content-start">
-          <label class="col-sm-4 col-form-label" for="inputGroupSelect01">Barang :</label>
+          <label class="col-sm-4 col-form-label" for="selectbarang">Barang :</label>
           <div class="col-sm-8">
             <select id="selectbarang" class="form-select"></select>
           </div>
         </div>
         <div class="col-sm-6 d-flex justify-content-start">
-          <label class="col-sm-4 col-form-label" for="inputGroupSelect01">Kategori :</label>
+          <label class="col-sm-4 col-form-label" for="selectkategori">Kategori :</label>
           <div class="col-sm-8">
             <select id="selectkategori" class="form-select"></select>
           </div>
@@ -121,8 +159,8 @@
       </div>
     </div>
   </div>
-  <div class="card mb-3 shadow datalist-barang">
-    <div class="card-header shadow-sm">
+  <div class="card mb-3 text-white bg-dark shadow datalist-barang">
+    <div class="card-header text-white bg-dark shadow-sm">
       <div class="row justify-content-between align-items-center">
         <div class="col-md-7">
           <h4 class="card-title">Data <?= $title; ?></h4>
@@ -842,22 +880,71 @@
   function singleform() {
     saveMethod = 'add';
     $('#cardmultipleinsert').hide(500);
-    $.ajax({
-      url: "<?= base_url() ?>/barangcontroller/tampilsingleform",
-      data: {
-        jenis_kat: jenis_kat,
-        jenistrx: jenistrx,
-        nav: "<?= $nav ?>",
-        saveMethod: saveMethod,
-      },
-      dataType: "json",
-      success: function(response) {
-        $('.viewdata').html(response.data).show(500);
-        loadLokasi();
-      },
-      error: function(xhr, ajaxOptions, thrownError) {
-        alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
+    $('#cardsingleinsert').show(500);
+    $('.viewdata').hide(500);
+    $('.btnnextsingle').on('click', function() {
+      var optionSelected = false;
+      $('.option .form-check-input').each(function() {
+        if ($(this).is(':checked')) {
+          optionSelected = true;
+          $(".option .form-check-input").removeClass("is-invalid");
+          $(".erroption").html('');
+          return false; // break out of the loop
+        }
+      });
+      if (!optionSelected) {
+        $(".option .form-check-input").addClass("is-invalid");
+        $(".erroption").html('Pilih salah satu opsi');
+        return; // stop here, don't proceed to the next form
       }
+
+      if ($('#opsi1').is(':checked')) {
+        $('.option').hide(500);
+        $.ajax({
+          url: "<?= base_url() ?>/barangcontroller/tampilsingleform",
+          data: {
+            jenis_kat: jenis_kat,
+            jenistrx: jenistrx,
+            nav: "<?= $nav ?>",
+            saveMethod: saveMethod,
+          },
+          dataType: "json",
+          success: function(response) {
+            $('.viewformsingle').html(response.data).show(500);
+            loadLokasi();
+          },
+          error: function(xhr, ajaxOptions, thrownError) {
+            alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
+          }
+        });
+      } else if ($('#opsi2').is(':checked')) {
+        $('.option').hide(500);
+        $.ajax({
+          type: "post",
+          url: "<?= base_url() ?>/barangcontroller/tampiltambahstok",
+          data: {
+            title: jenistrx,
+            jenis_kat: jenis_kat,
+            jenistrx: `tambah stok <?= strtolower($jenis_kat) ?> di sarpras`,
+            nav: "<?= $nav ?>",
+            saveMethod: "update",
+          },
+          dataType: "json",
+          success: function(response) {
+            $('.viewformsingle').html(response.data).show(500);
+          },
+          error: function(xhr, ajaxOptions, thrownError) {
+            alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
+          }
+        });
+      }
+    });
+
+    $('.closeformsingle').click(function(e) {
+      e.preventDefault();
+      $('#cardsingleinsert').hide(500);
+      $(".option .form-check-input").removeClass("is-invalid");
+      $('.erroption').html('');
     });
   }
 
@@ -866,6 +953,7 @@
     saveMethod = "update";
     globalId = id;
     $('#cardmultipleinsert').hide(500);
+    $('#cardsingleleinsert').hide(500);
 
     $.ajax({
       type: "post",
@@ -887,6 +975,7 @@
 
   function multipleinsert() {
     $('#cardmultipleinsert').show(500);
+    $('#cardsingleinsert').hide(500);
     $('.viewdata').hide(500);
     $('.btnnextmultiple').on('click', function() {
       var optionSelected = false;
@@ -970,8 +1059,6 @@
       }
     });
   }
-
-
 
   function trfbarang() {
     let selectedRows = $('#table-barang input[type="checkbox"]:checked');

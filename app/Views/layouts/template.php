@@ -32,6 +32,7 @@ helper('converter_helper');
   <link rel="stylesheet" href="<?= base_url() ?>/assets/vendors/bootstrap-icons/bootstrap-icons.css">
   <link rel="stylesheet" href="<?= base_url() ?>/assets/css/app.css">
   <link rel="stylesheet" href="<?= base_url() ?>/assets/css/mystyle/mystyle.css">
+  <link rel="stylesheet" href="<?= base_url() ?>/assets/css/mystyle/custom.css">
   <?= $this->renderSection('styles') ?>
   <link rel="stylesheet" href="<?= base_url() ?>/assets/vendors/iconly/bold.css">
   <link rel="stylesheet" href="<?= base_url() ?>/assets/vendors/DataTables/datatables.min.css">
@@ -75,12 +76,21 @@ helper('converter_helper');
             <a href="#" class="burger-btn d-block">
               <i class="bi bi-justify fs-3"></i>
             </a>
-
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
               <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
               <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                <li>
+                  <div class="col-lg-4 theme-toggle d-flex gap-2 align-items-center me-3" style="margin-top:15px;">
+                    <i class="fa fa-sun-o text-secondary fs-5"></i>
+                    <div class="form-check form-switch fs-6">
+                      <input class="form-check-input me-0" type="checkbox" id="lightSwitch">
+                      <label class="form-check-label"></label>
+                    </div>
+                    <i class="fa fa-moon-o text-secondary fs-5"></i>
+                  </div>
+                </li>
                 <li class="nav-item dropdown me-1">
                   <a class="nav-link active dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
                     <i class='bi bi-envelope bi-sub fs-4 text-gray-600'></i>
@@ -145,6 +155,7 @@ helper('converter_helper');
   <script src="<?= base_url() ?>/assets/vendors/perfect-scrollbar/perfect-scrollbar.min.js"></script>
   <script src="<?= base_url() ?>assets/js/bootstrap.bundle.min.js"></script>
   <script src="<?= base_url() ?>/assets/js/main.js"></script>
+  <script src="<?= base_url() ?>/assets/js/pages/switch.js"></script>
 
   <!-- Optional Js -->
   <script src="<?= base_url() ?>/assets/vendors/DataTables/datatables.min.js"></script>

@@ -199,14 +199,12 @@
             }
             ?>
             <tr>
-              <td class="text-right" colspan="5" style="font-style:'bold';text-align: right;">Total Pengeluaran bulan <?= $key1 ?></td>
+              <td class="text-right" colspan="5" style="font-style:'bold';text-align: right;">Total pengeluaran bulan <?= $key1 ?></td>
               <td class="td_uang">
                 <?php
                 $t_bulanan = 0;
-                foreach ($belibrgtetap as $key1 => $row1) {
-                  foreach ($row1 as $key2 => $row2) {
-                    $t_bulanan += (int) $row2["total_harga"];
-                  }
+                foreach ($row1 as $key2 => $row2) {
+                  $t_bulanan += (int) $row2["total_harga"];
                 }
                 echo format_uang($t_bulanan);
                 ?>
@@ -215,7 +213,7 @@
           <?php
         } ?>
           <tr>
-            <td class="text-right" colspan="5" style="font-style:'bold';text-align: right;">Total Pengeluaran Keseluruhan</td>
+            <td class="text-right" colspan="5" style="font-style:'bold';text-align: right;">Total pengeluaran keseluruhan</td>
             <td class="td_uang">
               <?php
               $t_tahunan = 0;
@@ -277,10 +275,8 @@
               <td class="td_uang">
                 <?php
                 $t_bulanan = 0;
-                foreach ($permintaan as $key1 => $row1) {
-                  foreach ($row1 as $key2 => $row2) {
-                    $t_bulanan += (int) $row2["total_val"];
-                  }
+                foreach ($row1 as $key2 => $row2) {
+                  $t_bulanan += (int) $row2["total_val"];
                 }
                 echo format_uang($t_bulanan);
                 ?>

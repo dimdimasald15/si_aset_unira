@@ -702,12 +702,12 @@ class BarangController extends BaseController
     public function tampilsingleform()
     {
         if ($this->request->isAJAX()) {
-            $title = $this->request->getVar('jenis_kat');
+            $jenis_kat = $this->request->getVar('jenis_kat');
             $nav = $this->request->getVar('nav');
             $jenistrx = $this->request->getVar('jenistrx');
             $saveMethod = $this->request->getVar('saveMethod');
             $data = [
-                'title' => $title,
+                'jenis_kat' => $jenis_kat,
                 'nav' => $nav,
                 'jenistrx' => $jenistrx,
                 'saveMethod' => $saveMethod,
@@ -1142,22 +1142,30 @@ class BarangController extends BaseController
             $jenis = $this->request->getVar('jenis');
             $jenistrx = $this->request->getVar('jenistrx');
             $jmldata = $this->request->getVar('jmldata');
+            // echo $jmldata;
 
             $validation =  \Config\Services::validation();
             $errors = array();
             for ($a = 1; $a <= $jmldata; $a++) {
                 $rules = [
-                    'ruang_id_' . $a => [
+                    'ruang_id' . $a => [
                         'label' => 'Nama ruang',
                         'rules' => 'required',
                         'errors' => [
                             'required' => "{field} form $a tidak boleh kosong",
                         ]
                     ],
+                    'jumlah_keluar' . $a => [
+                        'label' => 'Jumlah keluar',
+                        'rules' => 'required',
+                        'errors' => [
+                            'required' => "{field} form $a tidak boleh kosong",
+                        ]
+                    ],
                 ];
-            }
-            if (!$this->validate($rules)) {
-                $errors = $validation->getErrors();
+                if (!$this->validate($rules)) {
+                    $errors = $validation->getErrors();
+                }
             }
             // check for errors
             if (!empty($errors)) {
@@ -1182,18 +1190,17 @@ class BarangController extends BaseController
                 for ($x = 1; $x <= $jmldata; $x++) {
                     array_push($id, $this->request->getVar("id_$x"));
                     $stoksarpras[] = $this->db->table('stok_barang')->select('*')->where('id', $this->request->getVar("id_$x"))->get()->getRowArray();
-                    // echo $stoksarpras[$x - 1]['barang_id'];
-                    array_push($jumlah_keluar_sarpras, (intval($this->request->getVar("jumlah_keluar_$x")) + $stoksarpras[$x - 1]['jumlah_keluar']));
+                    array_push($jumlah_keluar_sarpras, (intval($this->request->getVar("jumlah_keluar$x")) + $stoksarpras[$x - 1]['jumlah_keluar']));
                     array_push($sisa_stok_sarpras, $this->request->getVar("sisa_stok$x"));
                 }
 
                 // persiapan tambah stok barang dengan data baru
                 for ($y = 1; $y <= $jmldata; $y++) {
                     array_push($barang_id, $stoksarpras[$y - 1]['barang_id']);
-                    array_push($ruang_id, $this->request->getVar("ruang_id_$y"));
-                    array_push($jumlah_masuk, $this->request->getVar("jumlah_keluar_$y"));
+                    array_push($ruang_id, $this->request->getVar("ruang_id$y"));
+                    array_push($jumlah_masuk, $this->request->getVar("jumlah_keluar$y"));
                     array_push($jumlah_keluar, 0);
-                    array_push($sisa_stok, $this->request->getVar("jumlah_keluar_$y") - 0);
+                    array_push($sisa_stok, $this->request->getVar("jumlah_keluar$y") - 0);
                     array_push($satuan_id, $stoksarpras[$y - 1]['satuan_id']);
                     array_push($tgl_beli, $this->request->getVar("tgl_belilama$y"));
                 }
@@ -1203,6 +1210,7 @@ class BarangController extends BaseController
                 $this->db->transStart();
                 $datalamastokbrg = array();
                 for ($i = 0; $i < $jmldata; $i++) {
+                    //pengubahan data di stok barang sarana dan prasarana
                     $updatedata1 = [
                         'jumlah_keluar' => $jumlah_keluar_sarpras[$i],
                         'sisa_stok' => $sisa_stok_sarpras[$i],
@@ -1229,27 +1237,28 @@ class BarangController extends BaseController
 
                     $data_ditemukan = false;
                     $isDeleted = false;
-                    $isSarpras = false;
+                    $isSameLocation = false;
                     for ($j = 0; $j < count($stokbrgall); $j++) {
-                        // echo ($barang_id[$i] == $stokbrgall[$j]['barang_id'] && $ruang_id[$i] == 54) ? true : false;
-                        if ($barang_id[$i] == $stokbrgall[$j]['barang_id'] && $ruang_id[$i] == 54 && $stokbrgall[$j]['deleted_at'] == null) {
+                        if ($barang_id[$i] == $stokbrgall[$j]['barang_id'] && $ruang_id[$i] == $stoksarpras[$i]['ruang_id'] && $stokbrgall[$j]['deleted_at'] == null) {
                             $data_ditemukan = true;
-                            $isSarpras = true;
+                            $isSameLocation = true;
                             $isDeleted = false;
                         } else if ($barang_id[$i] == $stokbrgall[$j]['barang_id'] && $ruang_id[$i] == $stokbrgall[$j]['ruang_id'] && $stokbrgall[$j]['deleted_at'] == null) {
                             $data_ditemukan = true;
-                            $isSarpras = false;
+                            $isSameLocation = false;
                             $isDeleted = false;
                             array_push($datalamastokbrg, $stokbrgall[$j]);
                         } else if ($barang_id[$i] == $stokbrgall[$j]['barang_id'] && $ruang_id[$i] == $stokbrgall[$j]['ruang_id'] && $stokbrgall[$j]['deleted_at'] !== null) {
                             $data_ditemukan = true;
                             $isDeleted = true;
-                            $isSarpras = false;
+                            $isSameLocation = false;
                             array_push($datalamastokbrg, $stokbrgall[$j]);
                         }
                     }
 
                     if (!$data_ditemukan) {
+                        // echo "data tidak ditemukan";
+                        //Inset stok barang di ruang yang baru
                         $simpandata = [
                             'barang_id' => $barang_id[$i],
                             'ruang_id' => $ruang_id[$i],
@@ -1263,16 +1272,19 @@ class BarangController extends BaseController
                         $insertdata = $this->stokbarang->setInsertData($simpandata);
                         // Simpan data ke database
                         $this->stokbarang->save($insertdata);
+
+                        $stokbrg_id = $this->stokbarang->insertID();
+
                         //Simpan ke dalam table riwayat_transaksi
                         $data_riwayat = $insertdata;
-                        $data_riwayat['stokbrg_id'] = $this->barang->insertID();
+                        $data_riwayat['stokbrg_id'] = $stokbrg_id;
                         $data_riwayat['jenis_transaksi'] = $jenistrx;
                         $data_riwayat['field'] = 'Semua field';
                         $data_riwayat['old_value'] = '';
                         $data_riwayat['new_value'] = json_encode($insertdata);
                         $setdatariwayat = $this->riwayattrx->setInsertData($data_riwayat);
                         $this->riwayattrx->save($setdatariwayat);
-                    } else if ($data_ditemukan && !$isSarpras && !$isDeleted) {
+                    } else if ($data_ditemukan && !$isSameLocation && !$isDeleted) {
                         $updatedata2 = [
                             'jumlah_masuk' => ($datalamastokbrg[$i]['jumlah_masuk'] + intval($jumlah_masuk[$i])),
                             'jumlah_keluar' => 0,
@@ -1296,7 +1308,8 @@ class BarangController extends BaseController
                         $lastQuery2 = $this->db->getLastQuery();
 
                         $this->riwayattrx->inserthistori($datalamastokbrg[$i]['id'], $datalamastokbrg[$i], $updatedata2, "update $jenistrx", $lastQuery2, $field_update2);
-                    } else if ($data_ditemukan && !$isSarpras && $isDeleted) {
+                    } else if ($data_ditemukan && !$isSameLocation && $isDeleted) {
+                        // echo "data ditemukan, lokasi tidak sama dan namun data terhapus";
                         $updatedata2 = [
                             'jumlah_masuk' => ($datalamastokbrg[$i]['jumlah_masuk'] + intval($jumlah_masuk[$i])),
                             'jumlah_keluar' => 0,
@@ -1325,7 +1338,9 @@ class BarangController extends BaseController
                     }
                 }
 
-                if ($data_ditemukan && $isSarpras && !$isDeleted) {
+                if ($data_ditemukan && $isSameLocation && !$isDeleted) {
+                    // echo "data ditemukan, lokasi sama dan namun data tidak terhapus";
+
                     $msg = [
                         'error' =>
                         [
@@ -1336,10 +1351,15 @@ class BarangController extends BaseController
                     $this->db->transComplete();
                     if ($this->db->transStatus() === false) {
                         // Jika terjadi kesalahan pada transaction
-                        $msg = ['error' => 'Gagal menyimpan data stok barang'];
+                        $msg = [
+                            'error' =>
+                            [
+                                'transStatus' => 'Gagal menyimpan data stok barang',
+                            ]
+                        ];
                     } else {
                         // Jika berhasil disimpan
-                        $msg = ['sukses' => "Sukses $jmldata data stok barang berhasil di pindahkan dari Sarana dan Prasarana"];
+                        $msg = ['sukses' => "Sukses $jmldata data stok barang berhasil di pindahkan dari ruangan sebelumnya"];
                     }
                 }
             }

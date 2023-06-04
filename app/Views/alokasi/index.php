@@ -71,19 +71,19 @@
     <div class=" card-body">
       <div class="row mt-3">
         <div class="col-sm-4 d-flex justify-content-start">
-          <label class="col-sm-4 col-form-label" for="inputGroupSelect01">Barang :</label>
+          <label class="col-sm-4 col-form-label" for="selectbarang">Barang :</label>
           <div class="col-sm-8">
             <select id="selectbarang" class="form-select"></select>
           </div>
         </div>
         <div class="col-sm-4 d-flex justify-content-start">
-          <label class="col-sm-4 col-form-label" for="inputGroupSelect01">Kategori :</label>
+          <label class="col-sm-4 col-form-label" for="selectkategori">Kategori :</label>
           <div class="col-sm-8">
             <select id="selectkategori" class="form-select"></select>
           </div>
         </div>
         <div class="col-sm-4 d-flex justify-content-start">
-          <label class="col-sm-4 col-form-label" for="inputGroupSelect01">Lokasi :</label>
+          <label class="col-sm-4 col-form-label" for="selectlokasi">Lokasi :</label>
           <div class="col-sm-8">
             <select id="selectlokasi" class="form-select"></select>
           </div>
@@ -211,17 +211,20 @@
       order: [],
       columns: [{
           data: 'checkrow',
-          orderable: false
+          orderable: false,
+          searchable: false,
         },
         {
           data: 'no',
-          orderable: false
+          orderable: false,
+          searchable: false,
         },
         {
           data: null,
           render: function(data, type, row) {
             return '<div id="qrcode-' + row.id + '"></div>';
           },
+          searchable: false,
           visible: <?= $jenis_kat == "Barang Persediaan" ? 'false' : 'true' ?> // menambahkan kolom baru dan menyembunyikannya
         },
         {
@@ -231,7 +234,7 @@
           data: 'nama_ruang'
         },
         {
-          data: 'jumlah_masuk',
+          data: 'sisa_stok',
         },
         {
           data: 'kd_satuan'
@@ -392,7 +395,7 @@
             data: 'nama_ruang'
           },
           {
-            data: 'jumlah_masuk',
+            data: 'sisa_stok',
           },
           {
             data: 'kd_satuan'
@@ -576,7 +579,7 @@
     console.log(idsarpras);
     Swal.fire({
       title: `Apakah kamu yakin ingin menghapus data ${namabrg} di ${namaruang}?`,
-      text: `Jika data dihapus ${namabrg} di ${namaruang} berikut ini akan di kembalikan ke Sarana dan Prasarana.`,
+      text: `Jika data ${namabrg} di ${namaruang} dihapus secara temporary, maka jumlah barang di kembalikan ke Sarana dan Prasarana.`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -876,6 +879,41 @@
         $('#modallabel').modal('show');
       }
     });
+  }
+
+  function trfbarang() {
+    let selectedRows = $('#table-alokasi input[type="checkbox"]:checked');
+    if (selectedRows.length > 0) {
+      // var ids = [];
+      var selectedIds = $('td:nth-child(1) input.checkrow:checked').map(function() {
+        return $(this).val();
+      }).get();
+      var jmldata = selectedIds.length;
+
+      $.ajax({
+        type: 'post',
+        url: '<?= base_url() ?>/alokasicontroller/tampiltransferform',
+        data: {
+          ids: selectedIds.join(","),
+          title: "<?= $title ?>",
+          jenis_kat: jenis_kat,
+          jmldata: jmldata,
+          saveMethod: 'update',
+          nav: '<?= $nav; ?>',
+        },
+        dataType: "json",
+        success: function(response) {
+          $('.viewform').html(response.data).show(500);
+        }
+      });
+
+    } else {
+      Swal.fire(
+        'Perhatian!',
+        'Tidak ada data yang dipilih',
+        'warning'
+      )
+    }
   }
 </script>
 <?= $this->endSection() ?>

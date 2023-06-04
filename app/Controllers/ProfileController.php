@@ -2,18 +2,20 @@
 
 namespace App\Controllers;
 
-use App\Controllers\BaseController;
+use App\Models\Gedung;
 use App\Models\Pengguna;
-
+use CodeIgniter\Database\Config;
+use App\Controllers\BaseController;
 
 class ProfileController extends BaseController
 {
-    protected $uri, $auth, $pengguna;
+    protected $uri, $auth, $pengguna, $gedung;
     public function __construct()
     {
 
         $this->uri = service('uri');
         $this->pengguna = new Pengguna();
+        $this->gedung = new Gedung();
         $this->auth = service('auth');
     }
 
@@ -181,7 +183,172 @@ class ProfileController extends BaseController
 
             return $this->response->setJSON($msg);
         } else {
-            exit('Maaf tidak dapat diproses');
+            $data = [
+                'title' => 'Error 404',
+                'msg' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/mazer/error-404', $data);
         }
+    }
+
+    public function tampilformeditprofil()
+    {
+        if (!$this->request->isAJAX()) {
+            $data = [
+                'title' => 'Error 404',
+                'msg' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/mazer/error-404', $data);
+        }
+
+        $nip = $this->request->getVar('nip');
+
+        $data = [
+            'nip' => $nip,
+            'nav' => 'profile',
+            'title' => 'MyProfile',
+            'saveMethod' => 'update',
+        ];
+
+        $msg = [
+            'data' => view('profile/formeditpetugas', $data)
+        ];
+
+        echo json_encode($msg);
+    }
+
+    public function getprofilebynip()
+    {
+        if (!$this->request->isAJAX()) {
+            $data = [
+                'title' => 'Error 404',
+                'msg' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/mazer/error-404', $data);
+        }
+
+        $nip = $this->request->getGet('nip');
+
+        $query = $this->db->table('petugas')->select('*')->where('nip', $nip);
+        $petugas = $query->get()->getRow();
+
+        echo json_encode($petugas);
+    }
+
+    public function updatedata($id)
+    {
+        if (!$this->request->isAJAX()) {
+            $data = [
+                'title' => 'Error 404',
+                'msg' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/mazer/error-404', $data);
+        }
+        $validation = \Config\Services::validation();
+        $rules = [
+            'nip' => [
+                'label' => 'NIP',
+                'rules' => 'required',
+                'errors' => [
+                    'required' => '{field} tidak boleh kosong',
+                ],
+            ],
+            'email' => [
+                'label' => 'Email',
+                'rules' => 'required|valid_email',
+                'errors' => [
+                    'required' => '{field} tidak boleh kosong',
+                    'valid_email' => '{field} tidak valid'
+                ]
+            ],
+            'username' => [
+                'label' => 'Username',
+                'rules' => 'required',
+                'errors' => [
+                    'required' => '{field} tidak boleh kosong',
+                ]
+            ],
+            'role' => [
+                'label' => 'Role',
+                'rules' => 'required',
+                'errors' => [
+                    'required' => 'Pilih {field} pengguna',
+                ]
+            ],
+        ];
+        $errors = [];
+        if (!$this->validate($rules)) {
+            $errors = $validation->getErrors();
+            $msg = [
+                'error' => $errors
+            ];
+        } else {
+            $this->db->transStart();
+            $newusername = $this->request->getVar('username');
+            $datalama = $this->pengguna->find($id);
+            if ($datalama['username'] !== $newusername) {
+                // Cek apakah terdapat perubahan pada username
+                if ($datalama['username'] !== $newusername) {
+                    // Jika username berubah, set ulang session
+                    $login = [
+                        'isLoggedIn' => 1,
+                        'username' => $newusername,
+                        'role' => $datalama['role'],
+                        'foto' => $datalama['foto']
+                    ];
+                    $this->session->set($login);
+
+                    // Update konten tabel yang memiliki kolom created_by, updated_by, dan deleted_by
+                    $tablesToUpdate = ['gedung', 'petugas', 'anggota', 'barang', 'kategori', 'peminjaman', 'permintaan', 'riwayat_barang', 'riwayat_transaksi', 'ruang', 'satuan', 'stok_barang', 'unit']; // Ganti 'tabel_lain' dengan nama tabel lain yang perlu diupdate
+                    foreach ($tablesToUpdate as $table) {
+                        $where = "created_by='" . $datalama['username'] . "' OR updated_by='" . $datalama['username'] . "' OR deleted_by='" . $datalama['username'] . "'";
+                        $namatable = $this->db->table($table)
+                            ->select('*')
+                            ->where($where)
+                            ->get()->getResultArray();
+                        foreach ($namatable as $row) {
+                            $data = [];
+                            if ($row['created_by'] == $datalama['username']) {
+                                $data['created_by'] = $newusername;
+                            }
+                            if ($row['updated_by'] == $datalama['username']) {
+                                $data['updated_by'] = $newusername;
+                            }
+                            if ($row['deleted_by'] == $datalama['username']) {
+                                $data['deleted_by'] = $newusername;
+                            }
+
+                            $this->db->table($table)->where('id', $row['id'])->update($data);
+                        }
+                    }
+                }
+            }
+
+            $updatedata = [
+                'nip' => $this->request->getVar('nip'),
+                'email' => $this->request->getVar('email'),
+                'username' => $newusername,
+                'role' => $this->request->getVar('role'),
+            ];
+
+            // Panggil fungsi setInsertData dari model sebelum data diupdate
+            $ubahdata = $this->pengguna->setUpdateData($updatedata);
+            // update data ke database
+            $this->pengguna->update($id, $ubahdata);
+
+            $this->db->transComplete();
+            if ($this->db->transStatus() === false) {
+                // Jika terjadi kesalahan pada transaction
+                $msg = [
+                    'error' => [
+                        'transaction' => 'Gagal menyimpan perubahan profile data',
+                    ]
+                ];
+            } else {
+                $msg = ['sukses' => 'Data pengguna: ' . $updatedata['role'] . ' berhasil terupdate'];
+            }
+        }
+
+        echo json_encode($msg);
     }
 }
