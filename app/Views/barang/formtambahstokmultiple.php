@@ -18,11 +18,11 @@
                 <div class="col-12">
                   <input type="hidden" name="id_<?= $row; ?>" id="id_<?= $row; ?>">
                   <div class="row mb-1">
-                    <label for="idbrg mb-2">Nama Barang</label>
+                    <label for="idbrg<?= $row ?>">Nama Barang</label>
                   </div>
                   <div class="row mb-1">
                     <div class="input-group mb-3">
-                      <label class="input-group-text" for="inputGroupSelect01"><i class="bi bi-layers"></i></label>
+                      <span class="input-group-text" id="basic-addon1"><i class="bi bi-layers"></i></span>
                       <select name="barang_id<?= $row; ?>" class="form-select p-2" id="idbrg<?= $row; ?>" style="width: 400px;"></select>
                       <div class="invalid-feedback erridbrg<?= $row; ?>"></div>
                     </div>
@@ -30,12 +30,12 @@
                 </div>
                 <div class="col-12">
                   <div class="row mb-1">
-                    <label for="lokasi">Lokasi Penempatan <?= ucwords($title) ?></label>
+                    <label for="lokasi<?= $row ?>">Lokasi Penempatan <?= ucwords($title) ?></label>
                   </div>
                   <div class="row mb-1">
                     <div class="input-group mb-3">
                       <span class="input-group-text" id="basic-addon1"><i class="bi bi-geo-alt"></i></span>
-                      <select class="form-select" id="lokasi_<?= $row; ?>" name="ruang_id_<?= $row; ?>"></select>
+                      <select class="form-select" id="lokasi<?= $row; ?>" name="ruang_id_<?= $row; ?>"></select>
                       <div class="invalid-feedback errlokasi<?= $row; ?>"></div>
                     </div>
                   </div>
@@ -43,23 +43,23 @@
                 <div class="col-12">
                   <div class="row g-2 mb-1">
                     <div class="col-md-5">
-                      <label for="sisastok" class="mb-1">Sisa Stok <?= $jenis_kat ?></label>
+                      <label class="mb-1">Sisa Stok <?= $jenis_kat ?></label>
                       <div class="input-group mb-3">
                         <span class="input-group-text" id="basic-addon1"><i class="bi bi-box-seam"></i></span>
                         <input type="number" min="1" class="form-control" placeholder="Stok Barang Saat ini" name="sisa_stok<?= $row; ?>" readonly>
                       </div>
                     </div>
                     <div class="col-md-5">
-                      <label for="jmlmasuk" class="mb-1">Jumlah Barang Masuk</label>
+                      <label for="jmlmasuk<?= $row ?>" class="mb-1">Jumlah Barang Masuk</label>
                       <div class="input-group mb-3">
-                        <input type="number" min="1" class="form-control" id="jmlmasuk_<?= $row; ?>" placeholder="Masukkan Jumlah Barang Masuk" name="jumlah_masuk_<?= $row; ?>">
+                        <input type="number" min="1" class="form-control" id="jmlmasuk<?= $row; ?>" placeholder="Masukkan Jumlah Barang Masuk" name="jumlah_masuk_<?= $row; ?>">
                         <div class="invalid-feedback errjmlmasuk<?= $row; ?>"></div>
                       </div>
                     </div>
                     <div class="col-md-2">
-                      <label for="" class="mb-1">Satuan</label>
+                      <label for="satuan<?= $row ?>" class="mb-1">Satuan</label>
                       <div class="input-group mb-3">
-                        <select name="satuan_id_<?= $row; ?>" class="form-select p-2" id="satuan_<?= $row; ?>"></select>
+                        <select name="satuan_id_<?= $row; ?>" class="form-select p-2" id="satuan<?= $row; ?>"></select>
                         <div class="invalid-feedback errsatuan"></div>
                       </div>
                     </div>
@@ -69,17 +69,17 @@
               <div class="col-12">
                 <div class="row g-2 mb-1">
                   <div class="col-md-5">
-                    <label for="tglbelilama" class="mb-1">Tanggal Pembelian Sebelumnya</label>
+                    <label class="mb-1">Tanggal Pembelian Sebelumnya</label>
                     <div class="input-group mb-3">
                       <span class="input-group-text" id="basic-addon1"><i class="bi bi-calendar3"></i></span>
                       <input type="date" class="form-control" placeholder="Masukkan Tanggal" name="tgl_belilama<?= $row; ?>" readonly>
                     </div>
                   </div>
                   <div class="col-md-5">
-                    <label for="tglbeli" class="mb-1">Tanggal Pembelian Baru</label>
+                    <label for="tglbeli<?= $row ?>" class="mb-1">Tanggal Pembelian Baru</label>
                     <div class="input-group mb-3">
                       <span class="input-group-text" id="basic-addon1"><i class="bi bi-calendar3"></i></span>
-                      <input type="date" class="form-control" placeholder="Masukkan Tanggal" id="tglbeli_<?= $row; ?>" name="tgl_pembelian_<?= $row; ?>">
+                      <input type="date" class="form-control" placeholder="Masukkan Tanggal" id="tglbeli<?= $row; ?>" name="tgl_pembelian_<?= $row; ?>">
                       <div class="invalid-feedback errtglbeli<?= $row; ?>"></div>
                     </div>
                   </div>
@@ -114,7 +114,7 @@
   function loadLokasistok(row) {
     if (lokasiSarprasCache) {
       // jika data lokasi sudah tersedia di cache, gunakan data tersebut
-      $(`#lokasi_${row}`).html(`<option value='${lokasiSarprasCache[0].id}' selected>${lokasiSarprasCache[0].text}</option>`);
+      $(`#lokasi${row}`).html(`<option value='${lokasiSarprasCache[0].id}' selected>${lokasiSarprasCache[0].text}</option>`);
     } else {
       // jika data lokasi belum tersedia di cache, muat data baru dari server
       $.ajax({
@@ -128,7 +128,7 @@
           // simpan data lokasi ke dalam cache
           lokasiSarprasCache = response;
           // tampilkan opsi lokasi di form
-          $(`#lokasi_${row}`).html(`<option value='${response[0].id}' selected>${response[0].text}</option>`);
+          $(`#lokasi${row}`).html(`<option value='${response[0].id}' selected>${response[0].text}</option>`);
         }
       });
     }
@@ -159,7 +159,7 @@
         text: 'Nama barang sudah dimasukkan sebelumnya! Sistem akan mengosongkan input barang.',
       }).then((result) => {
         $(`#idbrg${row}`).html('');
-        $(`#satuan_${row}`).html('');
+        $(`#satuan${row}`).html('');
         $('#formTambahStokMultiple').find(`input[name='sisa_stok${row}']`).val("")
         $('#formTambahStokMultiple').find(`input[name='tgl_belilama${row}']`).val("")
       });
@@ -201,11 +201,11 @@
                 <div class="col-12">
                   <input type="hidden" name="id_${index}" id="id_${index}">
                   <div class="row mb-1">
-                    <label for="idbrg mb-2">Nama Barang</label>
+                    <label for="idbrg${index}">Nama Barang</label>
                   </div>
                   <div class="row mb-1">
                     <div class="input-group mb-3">
-                      <label class="input-group-text" for="inputGroupSelect01"><i class="bi bi-layers"></i></label>
+                      <span class="input-group-text" id="basic-addon1"><i class="bi bi-layers"></i></span>
                       <select name="barang_id${index}" class="form-select p-2" id="idbrg${index}" style="width: 400px;"></select>
                       <div class="invalid-feedback erridbrg${index}"></div>
                     </div>
@@ -213,12 +213,12 @@
                 </div>
                 <div class="col-12">
                   <div class="row mb-1">
-                    <label for="lokasi">Lokasi Penempatan <?= ucwords($title) ?></label>
+                    <label for="lokasi${index}">Lokasi Penempatan <?= ucwords($title) ?></label>
                   </div>
                   <div class="row mb-1">
                     <div class="input-group mb-3">
                       <span class="input-group-text" id="basic-addon1"><i class="bi bi-geo-alt"></i></span>
-                      <select class="form-select" id="lokasi_${index}" name="ruang_id_${index}"></select>
+                      <select class="form-select" id="lokasi${index}" name="ruang_id_${index}"></select>
                       <div class="invalid-feedback errlokasi${index}"></div>
                     </div>
                   </div>
@@ -226,23 +226,23 @@
                 <div class="col-12">
                   <div class="row g-2 mb-1">
                     <div class="col-md-5">
-                      <label for="sisastok" class="mb-1">Sisa Stok <?= $jenis_kat ?></label>
+                      <label class="mb-1">Sisa Stok <?= $jenis_kat ?></label>
                       <div class="input-group mb-3">
                         <span class="input-group-text" id="basic-addon1"><i class="bi bi-box-seam"></i></span>
                         <input type="number" min="1" class="form-control" placeholder="Stok Barang Saat ini" name="sisa_stok${index}" readonly>
                       </div>
                     </div>
                     <div class="col-md-5">
-                      <label for="jmlmasuk" class="mb-1">Jumlah Barang Masuk</label>
+                      <label for="jmlmasuk${index}" class="mb-1">Jumlah Barang Masuk</label>
                       <div class="input-group mb-3">
-                        <input type="number" min="1" class="form-control" id="jmlmasuk_${index}" placeholder="Masukkan Jumlah Barang Masuk" name="jumlah_masuk_${index}">
+                        <input type="number" min="1" class="form-control" id="jmlmasuk${index}" placeholder="Masukkan Jumlah Barang Masuk" name="jumlah_masuk_${index}">
                         <div class="invalid-feedback errjmlmasuk${index}"></div>
                       </div>
                     </div>
                     <div class="col-md-2">
-                      <label for="" class="mb-1">Satuan</label>
+                      <label for="satuan${index}" class="mb-1">Satuan</label>
                       <div class="input-group mb-3">
-                        <select name="satuan_id_${index}" class="form-select p-2" id="satuan_${index}"></select>
+                        <select name="satuan_id_${index}" class="form-select p-2" id="satuan${index}"></select>
                         <div class="invalid-feedback errsatuan"></div>
                       </div>
                     </div>
@@ -252,17 +252,17 @@
               <div class="col-12">
                 <div class="row g-2 mb-1">
                   <div class="col-md-5">
-                    <label for="tglbelilama" class="mb-1">Tanggal Pembelian Sebelumnya</label>
+                    <label  class="mb-1">Tanggal Pembelian Sebelumnya</label>
                     <div class="input-group mb-3">
                       <span class="input-group-text" id="basic-addon1"><i class="bi bi-calendar3"></i></span>
                       <input type="date" class="form-control" placeholder="Masukkan Tanggal" name="tgl_belilama${index}" readonly>
                     </div>
                   </div>
                   <div class="col-md-5">
-                    <label for="tglbeli" class="mb-1">Tanggal Pembelian Baru</label>
+                    <label for="tglbeli${index}" class="mb-1">Tanggal Pembelian Baru</label>
                     <div class="input-group mb-3">
                       <span class="input-group-text" id="basic-addon1"><i class="bi bi-calendar3"></i></span>
-                      <input type="date" class="form-control" placeholder="Masukkan Tanggal" id="tglbeli_${index}" name="tgl_pembelian_${index}">
+                      <input type="date" class="form-control" placeholder="Masukkan Tanggal" id="tglbeli${index}" name="tgl_pembelian_${index}">
                       <div class="invalid-feedback errtglbeli${index}"></div>
                     </div>
                   </div>
@@ -346,18 +346,18 @@
               }
               var errjmlmasuk = response.error[`jumlah_masuk_${i}`];
               if (errjmlmasuk) {
-                $(`#jmlmasuk_${i}`).addClass('is-invalid');
+                $(`#jmlmasuk${i}`).addClass('is-invalid');
                 $(`.errjmlmasuk${i}`).html(errjmlmasuk);
               } else {
-                $(`#jmlmasuk_${i}`).removeClass('is-invalid');
+                $(`#jmlmasuk${i}`).removeClass('is-invalid');
                 $(`.errjmlmasuk${i}`).html();
               }
               var errtglbeli = response.error[`tgl_pembelian_${i}`];
               if (errtglbeli) {
-                $(`#tglbeli_${i}`).addClass('is-invalid');
+                $(`#tglbeli${i}`).addClass('is-invalid');
                 $(`.errtglbeli${i}`).html(errtglbeli);
               } else {
-                $(`#tglbeli_${i}`).removeClass('is-invalid');
+                $(`#tglbeli${i}`).removeClass('is-invalid');
                 $(`.errtglbeli${i}`).html();
               }
             }
@@ -427,7 +427,7 @@
           templateResult: formatResult,
         });
 
-        $(`#satuan_${j}`).select2({
+        $(`#satuan${j}`).select2({
           placeholder: 'Piih Satuan',
           minimumInputLength: 1,
           allowClear: true,
@@ -451,19 +451,19 @@
           templateResult: formatResult,
         });
 
-        $(`#lokasi_${j}`).on('change', function(e) {
+        $(`#lokasi${j}`).on('change', function(e) {
           e.preventDefault();
-          $(`#lokasi_${j}`).removeClass('is-invalid');
+          $(`#lokasi${j}`).removeClass('is-invalid');
           $(`.errorlokasi${j}`).html('');
         })
-        $(`#satuan_${j}`).on('change', function(e) {
+        $(`#satuan${j}`).on('change', function(e) {
           e.preventDefault();
-          $(`#satuan_${j}`).removeClass('is-invalid');
+          $(`#satuan${j}`).removeClass('is-invalid');
           $(`.errorsatuan${j}`).html('');
         })
-        $(`#jmlmasuk_${j}`).on('input', function(e) {
+        $(`#jmlmasuk${j}`).on('input', function(e) {
           e.preventDefault();
-          $(`#jmlmasuk_${j}`).removeClass('is-invalid');
+          $(`#jmlmasuk${j}`).removeClass('is-invalid');
           $(`.errorjmlmasuk${j}`).html('');
         })
 
@@ -491,14 +491,14 @@
                   $('#formTambahStokMultiple').find(`input[name='id_${j}']`).val(response.id);
                   $('#formTambahStokMultiple').find(`input[name='sisa_stok${j}']`).val(response.sisa_stok);
                   $('#formTambahStokMultiple').find(`input[name='tgl_belilama${j}']`).val(response.tgl_beli);
-                  $(`#satuan_${j}`).prop('disabled', true);
+                  $(`#satuan${j}`).prop('disabled', true);
                   $('#formTambahStokMultiple').find(`select[name*='satuan_id_${j}']`).html('<option value = "' + response.satuan_id + '" selected >' + response.kd_satuan + '</option>');
                 }
               }
             });
           } else {
             $(`#id_${j}`).val('');
-            $(`#satuan_${j}`).prop('disabled', false);
+            $(`#satuan${j}`).prop('disabled', false);
             $('#formTambahStokMultiple').find(`select[name*='satuan_id_${j}']`).html('');
           }
         });

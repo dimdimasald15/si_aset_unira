@@ -394,7 +394,6 @@
         },
         dataType: "json",
         success: function(response) {
-          console.log(response);
           $('.viewmodal').html(response.sukses).show(500);
           $('#modalcetakpermintaan').modal('show');
         }

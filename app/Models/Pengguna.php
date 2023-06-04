@@ -59,11 +59,4 @@ class Pengguna extends Model
         $builder->where('id', $id);
         $builder->update(['password' => password_hash($newPassword, PASSWORD_DEFAULT)]);
     }
-
-    // public function updateFoto($id, $fileName)
-    // {
-    //     $this->set('foto', $fileName);
-    //     $this->where('id', $id);
-    //     $this->update();
-    // }
 }

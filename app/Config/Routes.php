@@ -168,6 +168,7 @@ $routes->group('admin/alokasi-barang-tetap', ['filter' => 'ceklogin'], function 
     $routes->match(['get', 'post'], 'pilihbarang', 'PengalokasianController::pilihbarang');
     $routes->match(['get', 'post'], 'pilihlokasi', 'PengalokasianController::pilihlokasi');
     $routes->post('hapus/(:any)', 'PengalokasianController::hapusdata/$1');
+    $routes->post('transferbarang', 'BarangController::transfermultiplebarang');
     $routes->get('tampildatarestore', 'BarangController::listdatabarang');
     $routes->post('restore/(:any)', 'PengalokasianController::restoredata/$1');
     $routes->match(['get', 'post'], 'restore', 'PengalokasianController::restoredata');

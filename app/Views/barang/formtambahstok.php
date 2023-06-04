@@ -6,11 +6,11 @@
         <div class="col-12">
           <input type="hidden" name="id" id="id">
           <div class="row mb-1">
-            <label for="idbrg mb-2">Nama Barang</label>
+            <label for="idbrg">Nama Barang</label>
           </div>
           <div class="row mb-1">
             <div class="input-group mb-3">
-              <label class="input-group-text" for="inputGroupSelect01"><i class="bi bi-layers"></i></label>
+              <span class="input-group-text" id="basic-addon1"><i class="bi bi-layers"></i></span>
               <select name="barang_id" class="form-select p-2" id="idbrg" style="width: 400px;"></select>
               <div class="invalid-feedback erridbrg"></div>
             </div>
@@ -23,7 +23,9 @@
           <div class="row mb-1">
             <div class="input-group mb-3">
               <span class="input-group-text" id="basic-addon1"><i class="bi bi-geo-alt"></i></span>
-              <select class="form-select lokasi" name="ruang_id"></select>
+              <select class="form-select" id="lokasi" name="ruang_id">
+                <option value="54">Sarana dan Prasarana</option>
+              </select>
               <div class="invalid-feedback errlokasi"></div>
             </div>
           </div>
@@ -31,7 +33,7 @@
         <div class="col-12">
           <div class="row g-2 mb-1">
             <div class="col-md-5">
-              <label for="sisastok" class="mb-1">Sisa Stok <?= $jenis_kat ?></label>
+              <label class="mb-1">Sisa Stok <?= $jenis_kat ?></label>
               <div class="input-group mb-3">
                 <span class="input-group-text" id="basic-addon1"><i class="bi bi-box-seam"></i></span>
                 <input type="number" min="1" class="form-control" placeholder="Stok Barang Saat ini" name="sisa_stok" readonly>
@@ -46,9 +48,9 @@
               </div>
             </div>
             <div class="col-md-2">
-              <label for="" class="mb-1">Satuan</label>
+              <label for="satuan" class="mb-1">Satuan</label>
               <div class="input-group mb-3">
-                <select name="satuan_id" class="form-select p-2 satuan"></select>
+                <select name="satuan_id" class="form-select p-2" id="satuan"></select>
                 <div class="invalid-feedback errsatuan"></div>
               </div>
             </div>
@@ -58,7 +60,7 @@
       <div class="col-12">
         <div class="row g-2 mb-1">
           <div class="col-md-5">
-            <label for="tglbelilama" class="mb-1">Tanggal Pembelian Sebelumnya</label>
+            <label class="mb-1">Tanggal Pembelian Sebelumnya</label>
             <div class="input-group mb-3">
               <span class="input-group-text" id="basic-addon1"><i class="bi bi-calendar3"></i></span>
               <input type="date" class="form-control" placeholder="Masukkan Tanggal" name="tgl_belilama" readonly>
@@ -87,10 +89,12 @@
 <script>
   $(document).ready(function() {
     var saveMethod = "<?= $saveMethod ?>";
+    loadLokasiStok();
 
     $('.back-form').on('click', function() {
-      $('#formTambahBarang').hide(500);
-      $('.viewformstok').hide(500);
+      $('#formTambahStok').hide(500);
+      clear_is_invalid();
+      clearForm();
       $('.option').show(500);
       $('#opsi1').prop('checked', false);
       $('#opsi2').prop('checked', false);
@@ -121,7 +125,7 @@
       templateResult: formatResult,
     });
 
-    $('.satuan').select2({
+    $('#satuan').select2({
       placeholder: 'Piih Satuan',
       minimumInputLength: 1,
       allowClear: true,
@@ -179,20 +183,18 @@
           },
           dataType: "json",
           success: function(response) {
-            console.log(response);
             if (response) {
               $('#formTambahStok').find("input[name='id']").val(response.id);
               $('#formTambahStok').find("input[name='sisa_stok']").val(response.sisa_stok);
               $('#formTambahStok').find("input[name='tgl_belilama']").val(response.tgl_beli);
-              $('.satuan').prop('disabled', true);
+              $('#satuan').prop('disabled', true);
               $('#formTambahStok').find("select[name*='satuan_id']").html('<option value = "' + response.satuan_id + '" selected >' + response.kd_satuan + '</option>');
             }
-            $('#formTambahBarang').html();
           }
         });
       } else {
         $('#id').val('');
-        $('.satuan').prop('disabled', false);
+        $('#satuan').prop('disabled', false);
         $('#formTambahStok').find("select[name*='satuan_id']").html('');
       }
     });
@@ -200,7 +202,7 @@
     $('#formTambahStok').submit(function(e) {
       e.preventDefault();
       let url = "";
-
+      console.log("<?= $saveMethod ?>");
       globalId = $(this).find("input[name='id']").val();
 
       if (saveMethod == "update") {
@@ -208,6 +210,7 @@
       } else if (saveMethod == "add") {
         url = "<?= $nav ?>/simpanstok";
       }
+      console.log(url);
 
       let formdata = new FormData(this); // mengambil data dari form
       formdata.append('jenis_transaksi', "<?= $jenistrx ?>"); // menambahkan data tambahan
@@ -251,7 +254,11 @@
               $('.errtglbeli').html('');
             }
           } else {
-            $('#tampilformtambahbarang').hide(500);
+            $('#formTambahStok').hide(500);
+            $('.option').show(500);
+            $('#opsi1').prop('checked', false);
+            $('#opsi2').prop('checked', false);
+            $('#cardsingleinsert').hide(500);
             Swal.fire(
               'Berhasil!',
               response.sukses,
@@ -284,5 +291,41 @@
     );
 
     return $result;
+  }
+
+  // fungsi untuk memuat opsi lokasi dengan menggunakan teknik caching
+  function loadLokasiStok() {
+    if (lokasiSarprasCache) {
+      // jika data lokasi sudah tersedia di cache, gunakan data tersebut
+      $('#lokasi').html(`<option value='${lokasiSarprasCache[0].id}' selected>${lokasiSarprasCache[0].text}</option>`);
+    } else {
+      // jika data lokasi belum tersedia di cache, muat data baru dari server
+      $.ajax({
+        type: "get",
+        url: "<?= base_url() ?>/barangcontroller/pilihlokasi",
+        data: {
+          search: "Sarana",
+        },
+        dataType: "json",
+        success: function(response) {
+          // simpan data lokasi ke dalam cache
+          lokasiSarprasCache = response;
+          // tampilkan opsi lokasi di form
+          $('#lokasi').html(`<option value='${response[0].id}' selected>${response[0].text}</option>`);
+        }
+      });
+    }
+  }
+
+  function clear_is_invalid() {
+    if ($('#formTambahStokMultiple').find('input').hasClass('is-invalid') || $('#formTambahStokMultiple').find('select').hasClass('is-invalid')) {
+      $('#formTambahStokMultiple').find('input').removeClass('is-invalid');
+      $('#formTambahStokMultiple').find('select').removeClass('is-invalid');
+    }
+  }
+
+  function clearForm(row) {
+    $('#formTambahStokMultiple').find("input").val("")
+    $('#formTambahStokMultiple').find("select").html("")
   }
 </script>

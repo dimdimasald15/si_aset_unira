@@ -193,7 +193,7 @@
               response.sukses,
               'success'
             ).then((result) => {
-              databarang.ajax.reload();
+              dataalokasi.ajax.reload();
               $('#checkall').prop('checked', false)
             })
           }

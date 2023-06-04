@@ -1,3 +1,4 @@
+<?= helper('converter_helper') ?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -55,14 +56,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
   <style>
-    #circle {
-      width: 50px;
-      height: 25px;
-      border-radius: 10%;
-      border: 2px solid rgba(0, 0, 0, 0.5);
-      background-color: <?= $barang->warna; ?>;
-      box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.3);
-    }
   </style>
 
 </head>
@@ -157,7 +150,7 @@
                             <th class="table-light" style="max-width:150px;pointer-events: none;" scope="row">Warna</th>
                             <td class="table-light" style="width:10px"> <strong>:</strong> </td>
                             <td>
-                              <div id="circle"></div>
+                              <?= format_warna($barang->warna) ?>
                             </td>
                           </tr>
                           <tr>

@@ -99,10 +99,22 @@
             <?php
             }
             ?>
+            <tr>
+              <td class="text-right" colspan="6" style="font-style:'bold';text-align: right;">Total pengeluaran bulan <?= $key1 ?></td>
+              <td class="td_uang">
+                <?php
+                $total = 0;
+                foreach ($row1 as $key2 => $row2) {
+                  $total += (int) $row2["total_val"];
+                }
+                echo format_uang($total);
+                ?>
+              </td>
+            </tr>
           <?php
         } ?>
           <tr>
-            <td class="text-right" colspan="6" style="font-style:'bold';text-align: right;">Total Pengeluaran</td>
+            <td class="text-right" colspan="6" style="font-style:'bold';text-align: right;">Total pengeluaran keseluruhan</td>
             <td class="td_uang">
               <?php
               $total = 0;

@@ -686,4 +686,49 @@ class PengalokasianController extends BaseController
             return view('errors/mazer/error-404', $data);
         }
     }
+
+    public function tampiltransferform()
+    {
+        if ($this->request->isAJAX()) {
+            $ids = $this->request->getVar('ids');
+            $id = explode(",", $ids);
+            $title = $this->request->getVar('title');
+            $jenis_kat = $this->request->getVar('jenis_kat');
+            $jmldata = $this->request->getVar('jmldata');
+            $saveMethod = $this->request->getVar('saveMethod');
+            $nav = $this->request->getVar('nav');
+            $stoklama = [];
+            foreach ($id as $idstokbrg) {
+                $query = $this->db->table('stok_barang sb')->select('sb.*, b.nama_brg, r.nama_ruang, s.kd_satuan')
+                    ->join('barang b', 'b.id=sb.barang_id')
+                    ->join('ruang r', 'r.id=sb.ruang_id')
+                    ->join('satuan s', 's.id=sb.satuan_id')
+                    ->where('sb.id', $idstokbrg)
+                    ->get()
+                    ->getRowArray();
+                $stoklama[] = $query;
+            }
+
+            $data = [
+                'stoklama' => json_encode($stoklama),
+                'title' => $title,
+                'jenis_kat' => $jenis_kat,
+                'jmldata' => $jmldata,
+                'saveMethod' => $saveMethod,
+                'nav' => $nav,
+            ];
+
+            $msg = [
+                'data' => view('alokasi/formtransferbarang', $data),
+            ];
+
+            echo json_encode($msg);
+        } else {
+            $data = [
+                'title' => 'Error 404',
+                'msg' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/mazer/error-404', $data);
+        }
+    }
 }

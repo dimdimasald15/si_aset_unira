@@ -4,7 +4,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sistem Manajemen Aset UNIRA MALANG">
+    <meta name="author" content="Dimas Aldi Sallam">
     <title><?= $title; ?> | SI-ASET UNIRA MALANG</title>
+    <!--  Social tags      -->
+    <meta name="keywords" content="sistem informasi, manajemen aset, labelling assets, qr code, perguruan tinggi, UNIRA, malang, universitas">
+    <meta name="description" content="Sistem Informasi Manajemen Aset Universitas Islam Raden Rahmat Malang">
+    <!-- Schema.org markup for Google+ -->
+    <meta itemprop="name" content="Sistem Informasi Manajemen Aset">
+    <meta itemprop="description" content="Sistem Informasi Manajemen Aset Universitas Islam Raden Rahmat Malang">
+    <meta itemprop="image" content="<?= base_url('assets/images/unira.png') ?>">
+    <!-- Favicon -->
+    <link rel="icon" href="<?= base_url('assets/images/logo/logounira.jpg') ?>" type="image/png">
+
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="<?= base_url() ?>/assets/css/bootstrap.css">
@@ -18,6 +30,8 @@
     <!-- <link href="<?= base_url() ?>/assets/vendors/fontawesome/all.min.css" rel="stylesheet" type="text/css"> -->
     <script src="<?= base_url() ?>/assets/vendors/jquery/jquery.min.js"></script>
     <!-- Select2 -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
 
     <style>
         .profile-picture-label {
@@ -103,7 +117,7 @@
                 </div>
             </div>
         </div>
-
+        <div class="viewform" style="display:none"></div>
         <div class="card shadow mb-3" id="tampilgantifoto" style="display:none">
             <div class="card-header shadow-sm">
                 <div class="row">
@@ -123,7 +137,7 @@
                                 <div class="row mb-1">
                                     <div class="input-group mb-3">
                                         <span class="input-group-text" id="basic-addon1"><i class="bi bi-card-image"></i></span>
-                                        <input type="file" class="form-control image-preview-filepond" name="foto" id="foto" />
+                                        <input type="file" class="form-control image-preview-filepond" name="foto" id="foto">
                                         <div class="invalid-feedback errfotobrg"></div>
                                     </div>
                                     <div class="invalid-feedback errfoto"></div>
@@ -154,7 +168,7 @@
                         <div class="row">
                             <div class="col-12">
                                 <div class="row mb-1">
-                                    <label for="password">Password Lama</label>
+                                    <label for="password_lama">Password Lama</label>
                                 </div>
                                 <div class="row mb-1">
                                     <div class="input-group mb-3">
@@ -166,7 +180,7 @@
                             </div>
                             <div class="col-12">
                                 <div class="row mb-1">
-                                    <label for="password">Password Baru</label>
+                                    <label for="password_baru">Password Baru</label>
                                 </div>
                                 <div class="row mb-1">
                                     <div class="input-group mb-3">
@@ -215,7 +229,7 @@
             <div class="card-body mt-3">
                 <div class="row mt-3 d-flex justify-content-center">
                     <div class="col-md-4 text-center">
-                        <label for="profile-picture-upload" class="profile-picture-label">
+                        <label class="profile-picture-label">
                             <?php if ($petugas->foto) { ?>
                                 <img id="profile-image" src="<?= base_url(); ?>/uploads/<?= $petugas->foto; ?>" class="img-thumbnail rounded-circle mb-3 profile-picture-preview" alt="Profile Picture">
                             <?php } else { ?>
@@ -232,7 +246,8 @@
                                     <h4 class="card-title d-inline mb-3">Personal Information</h4>
                                 </div>
                                 <div class="d-inline p-2">
-                                    <button class="btn btn-warning btn-sm py-0 px-1" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Ubah profile" data-bs-trigger="hover focus"><i class="fa fa-edit"></i></button>
+                                    <button class="btn btn-warning btn-sm py-0 px-1" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Ubah profile" data-bs-trigger="hover focus" onclick="ubahprofil(<?= $petugas->nip ?>)"><i class="fa fa-edit"></i>
+                                    </button>
 
                                 </div>
                             </div>
@@ -327,6 +342,7 @@
     let formgantifoto = $('#tampilgantifoto');
 
     $(document).ready(function() {
+        $('.viewform').hide();
         $('#show-password').on('click', function() {
             if ($(this).is(':checked')) {
                 $('#password_lama').attr('type', 'text');
@@ -354,6 +370,7 @@
             clearForm();
             formgantifoto.show(500);
             formubahpassword.hide(500);
+            $('.viewform').hide();
         })
 
         $('.batal-form-foto').on('click', function(e) {
@@ -368,6 +385,7 @@
             clearForm();
             formubahpassword.show(500);
             formgantifoto.hide(500);
+            $('.viewform').hide();
         })
 
         $('.batal-form').on('click', function(e) {
@@ -491,6 +509,23 @@
             formubahpassword.find('select').removeClass('is-invalid');
             $('.form-control-icon').css("transform", "translate(0,-15px)");
         }
+    }
+
+    function ubahprofil(nip) {
+        $.ajax({
+            type: "post",
+            url: "<?= base_url('profilecontroller/tampilformeditprofil') ?>",
+            data: {
+                nip: nip
+            },
+            dataType: "json",
+            success: function(response) {
+                $('.viewform').show(500).html(response.data);
+            },
+            error: function(xhr, ajaxOptions, thrownError) {
+                alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
+            }
+        });
     }
 </script>
 

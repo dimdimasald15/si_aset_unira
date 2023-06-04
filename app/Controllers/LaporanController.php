@@ -146,8 +146,6 @@ class LaporanController extends BaseController
             ->where('deleted_at', null);
 
         $results = $builder->get()->getResult();
-
-        var_dump($results);
         return $results;
     }
     private function hitungmintabarang($m, $y, $jenis)
@@ -366,11 +364,8 @@ class LaporanController extends BaseController
         return $groupedData;
     }
 
-    private function permintaanbarang($tgl_minta, $jenis)
+    private function permintaanbarang($tgl_permintaan, $jenis)
     {
-        $dateTime = $tgl_minta !== '' ? DateTime::createFromFormat("Y-m-d\TH:i", $tgl_minta) : "";
-        $tgl_permintaan = !empty($dateTime) ? $dateTime->format('Y-m-d') : '';
-
         $builder = $this->db->table('riwayat_barang rb')
             ->select("rb.id, rb.barang_id AS b_id, b.nama_brg,  p.anggota_id, p.barang_id, a.unit_id, u.singkatan, a.nama_anggota, p.jml_barang, p.created_at, p.created_by")
             ->select("CAST(
@@ -465,7 +460,6 @@ class LaporanController extends BaseController
         $tahun = $this->request->getVar('tahun');
         $keterangan = $this->request->getVar('keterangan');
         $jenis_kat = $this->request->getVar('jenis_kat');
-        // echo $keterangan;
         $filename = '';
 
         // instantiate and use the dompdf class
@@ -487,6 +481,7 @@ class LaporanController extends BaseController
                 $bulantahun = "tahun " . date('Y');
                 $filename = 'laporan-aset-' . $tahun;
             }
+
             $brgtetap = $this->hitungstokbarang($bulan, $tahun);
             $kat_tetap = $this->getkategoriaset("Barang Tetap");
             $kat_sedia = $this->getkategoriaset("Barang Persediaan");
@@ -504,7 +499,6 @@ class LaporanController extends BaseController
             // load HTML content
             $dompdf->loadHtml(view('laporan/laporanaset', $data));
         } else if ($keterangan == "Permintaan") {
-
             $tgl_minta = $this->request->getVar('tgl_minta');
             $haritanggal = format_tanggal($tgl_minta);
             $tanggal = !empty($tgl_minta) ? date('d-m-Y', strtotime($tgl_minta)) : date('Y');
@@ -531,33 +525,104 @@ class LaporanController extends BaseController
 
     public function get_data_chart_permintaan()
     {
-        if ($this->request->isAJAX()) {
-            $builder = $this->db->table('permintaan p')
-                ->select('u.nama_unit, COUNT(p.barang_id) AS count_brg, 
-            GROUP_CONCAT(CONCAT(b.nama_brg, " (", p.jml_barang, " ", s.kd_satuan, ")") SEPARATOR ", ") AS nama_brg, GROUP_CONCAT(DISTINCT a.nama_anggota SEPARATOR ", ") AS nama_anggota, CONCAT(MONTH(p.created_at), "/", YEAR(p.created_at)) AS bulan_tahun, 
+        // if (!$this->request->isAJAX()) {
+        //     $data = [
+        //         'title' => 'Error 404',
+        //         'msg' => 'Maaf tidak dapat diproses',
+        //     ];
+        //     return view('errors/mazer/error-404', $data);
+        // }
+        helper('converter_helper');
+        $m = $this->request->getVar('m');
+        $y = $this->request->getVar('y');
+        $builder = $this->db->table('permintaan p')
+            ->select('u.singkatan,CONCAT(MONTH(p.created_at), "/", YEAR(p.created_at)) AS bulan_tahun, 
             (SELECT SUM(p2.jml_barang * b2.harga_beli) FROM permintaan p2 JOIN barang b2 ON b2.id = p2.barang_id JOIN anggota a2 ON a2.id=p2.anggota_id JOIN unit u2 ON u2.id=a2.unit_id WHERE a2.unit_id = a.unit_id AND p2.deleted_at IS NULL AND b2.deleted_at IS NULL) AS total_valuasi')
-                ->join('anggota a', 'a.id=p.anggota_id')
-                ->join('unit u', 'a.unit_id = u.id')
-                ->join('barang b', 'b.id=p.barang_id')
-                ->join('stok_barang sb', 'b.id=sb.barang_id')
-                ->join('satuan s', 'sb.satuan_id = s.id')
-                ->where('p.deleted_at', null)
-                ->where('b.deleted_at', null)
-                ->groupBy('a.unit_id');
-
-            $permintaan = $builder->get()->getResultArray();
-            $msg = [
-                'data' => $permintaan,
-            ];
-
-            echo json_encode($msg);
-        } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
-            return view('errors/mazer/error-404', $data);
+            ->join('anggota a', 'a.id=p.anggota_id')
+            ->join('unit u', 'a.unit_id = u.id')
+            ->join('barang b', 'b.id=p.barang_id')
+            ->join('stok_barang sb', 'b.id=sb.barang_id')
+            ->join('satuan s', 'sb.satuan_id = s.id');
+        if (empty($y)) {
+            $builder->where('YEAR(p.created_at)', date('Y'));
+        } else if (!empty($m) && !empty($y)) {
+            $builder->where("MONTH(p.created_at)", $m);
+            $builder->where("YEAR(p.created_at)", $y);
+        } else if (!empty($y)) {
+            $builder->where("YEAR(p.created_at)", $y);
         }
+        $builder->where('p.deleted_at', null)
+            ->where('b.deleted_at', null)
+            ->groupBy('a.unit_id')
+            ->orderBy('bulan_tahun', 'ASC');
+        $initialArray = $builder->get()->getResultArray();
+        //Dapatkan bulan pertama untuk tampilan grafik
+        $firstmonth = $initialArray[0]['bulan_tahun'];
+        list($bulan1, $tahun1) = explode('/', $firstmonth);
+
+        foreach ($initialArray as $data) {
+            $bulanTahun = $data['bulan_tahun'];
+            list($bulan, $tahun) = explode('/', $bulanTahun);
+            // $startMonth = intval(date('m', strtotime($bulanTahun)));
+            $startMonth = $bulan1;
+            $endMonth = "";
+            if (empty($y)) {
+                $endMonth = intval(date('m'));
+            } else if (!empty($m) && !empty($y)) {
+                $endMonth = $startMonth;
+            } else if (!empty($y)) {
+                $endMonth = intval(date('m'));
+            }
+            $datas = [];
+            $newData = [
+                "singkatan" => $data["singkatan"],
+                "total_valuasi" => 0
+            ];
+            for ($m = $startMonth; $m <= $endMonth; $m++) {
+                // $datas[] = format_bulan($m);
+                if (!isset($datas[format_bulan($m)])) {
+                    $datas[format_bulan($m)] = [];
+                }
+                $newData['totalval'] = format_uang($newData['total_valuasi']);
+                $newData['bulan_tahun'] = format_bulan($m) . ' ' . $tahun;
+                $resultArray1[format_bulan($m)][] = $newData;
+            }
+        }
+
+        // Perulangan untuk mengelompokkan data berdasarkan bulan
+        foreach ($initialArray as $item) {
+            $bulanTahun = $item['bulan_tahun'];
+            list($bulan, $tahun) = explode('/', $bulanTahun);
+            if (!isset($resultArray2[format_bulan($bulan)])) {
+                $resultArray2[format_bulan($bulan)] = [];
+            }
+            $item['totalval'] = format_uang($item['total_valuasi']);
+            $item['bulan_tahun'] = format_bulan($bulan) . ' ' . $tahun;
+            $resultArray2[format_bulan($bulan)][] = $item;
+        }
+
+        foreach ($resultArray1 as $key => &$value) {
+            // Mengambil 'singkatan' dari $resultArray1 sebagai referensi key
+            $singkatan1 = array_column($value, 'singkatan');
+            // Mengambil 'singkatan' dan data lainnya dari $resultArray2
+            $singkatan2 = array_column($resultArray2[$key], 'singkatan');
+            $singkatan1 = array_column($value, 'singkatan');
+            $data2 = $resultArray2[$key];
+            // Menggabungkan array menggunakan key 'singkatan' sebagai referensi
+            $merged = array_combine($singkatan1, $value);
+            foreach ($singkatan2 as $index => $singkatan) {
+                if (array_key_exists($singkatan, $merged)) { // Mengganti data pada key yang sama
+                    $merged[$singkatan] = $data2[$index];
+                } else {
+                    // Menambahkan data baru jika key tidak ada
+                    $merged[$singkatan] = $data2[$index];
+                }
+            }
+            // Mengganti nilai $value dengan array yang telah digabungkan
+            $value = array_values($merged);
+        }
+
+        echo json_encode($resultArray1);
     }
 
     public function get_data_table_permintaan()
@@ -584,7 +649,8 @@ class LaporanController extends BaseController
                 $builder->where("YEAR(p.created_at)", $y);
             }
             $builder->where('p.deleted_at', null)
-                ->groupBy('a.unit_id');
+                ->groupBy('a.unit_id')
+                ->orderBy('bulan_tahun', 'DESC');
 
             $array = $builder->get()->getResultArray();
 

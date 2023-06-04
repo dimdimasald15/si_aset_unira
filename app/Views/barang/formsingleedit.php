@@ -12,11 +12,13 @@
           <div class="col-lg-12">
             <input type="hidden" name="id" id="id">
             <div class="row mb-1">
-              <label for="katid mb-2">Nama Kategori</label>
+              <label for="katid">Nama Kategori</label>
             </div>
             <div class="row mb-1">
               <div class="input-group mb-3">
-                <label class="input-group-text" for="inputGroupSelect01"><i class="bi bi-layers"></i></label>
+                <span class="input-group-text" id="basic-addon1">
+                  <i class="bi bi-layers"></i>
+                </span>
                 <select name="kat_id" class="form-select p-2" id="katid" style="width: 400px;"></select>
                 <div class="invalid-feedback errkatid"></div>
               </div>
@@ -34,7 +36,7 @@
                 </div>
               </div>
               <div class="col-md-6">
-                <label for="subkodebarang"></label>
+                <label for="skbarang"></label>
                 <div class="input-group mb-3">
                   <select name="" class="form-select" id="skbarang"></select>
                   <input type="text" class="form-control" placeholder="Kode Barang" id="skbarang-other" readonly style="display:none;">
@@ -80,10 +82,10 @@
           <div class="col-lg-12">
             <div class="row g-2 mb-1">
               <div class="col-md-5 mb-3 asalbrg">
-                <label for="merk" class="form-label">Asal <?= $title; ?></label>
+                <label class="form-label">Asal <?= $title; ?></label>
                 <div class="form-check">
                   <input class="form-check-input" type="radio" name="asal" id="belibaru" value="Beli baru">
-                  <label class="form-check-label" for="asal">
+                  <label class="form-check-label" for="belibaru">
                     Beli Baru
                   </label>
                 </div>
@@ -103,7 +105,7 @@
                 </div>
               </div>
               <div class="col-md-7 radiobelibekas" style="display:none;">
-                <label for=" merk" class="form-label">Beli bekas dimana?</label>
+                <label class="form-label">Beli bekas dimana?</label>
                 <div class="form-check">
                   <input class="form-check-input" type="radio" id="radiotoko">
                   <label class="form-check-label" for="radiotoko">
@@ -195,7 +197,7 @@
               <div class="row mb-1">
                 <div class="input-group mb-3">
                   <span class="input-group-text" id="basic-addon1"><i class="bi bi-geo-alt"></i></span>
-                  <select class="form-select lokasi" name="ruang_id"></select>
+                  <select class="form-select" id="lokasi" name="ruang_id"></select>
                   <div class="invalid-feedback errlokasi"></div>
                 </div>
               </div>
@@ -206,15 +208,16 @@
                   <label for="jmlmasuk" class="mb-1">Jumlah Barang Masuk</label>
                   <div class="input-group mb-3">
                     <span class="input-group-text" id="basic-addon1"><i class="bi bi-box-seam"></i></span>
-                    <input type="number" min="1" class="form-control jmlmasuk" placeholder="Masukkan Jumlah Barang Masuk" name="jumlah_masuk">
+                    <input type="number" min="1" class="form-control" id="jmlmasuk" placeholder="Masukkan Jumlah Barang Masuk" name="jumlah_masuk">
                     <div class="invalid-feedback errjmlmasuk"></div>
                   </div>
                 </div>
                 <div class="col-md-6">
-                  <label for="" class="mb-1">Satuan <?= $title; ?></label>
+                  <label for="satuan" class="mb-1">Satuan <?= $title; ?></label>
                   <div class="input-group mb-3">
-                    <select name="satuan_id" class="form-select p-2 satuan"></select>
-                    <div class="invalid-feedback errsatuan"></div>
+                    <select name="satuan_id" class="form-select p-2" id="satuan"></select>
+                    <div class=" invalid-feedback errsatuan">
+                    </div>
                   </div>
                 </div>
               </div>
@@ -382,7 +385,7 @@
       $('.errorhargajual').html('');
     })
 
-    $('.satuan').select2({
+    $('#satuan').select2({
       placeholder: 'Piih Satuan',
       minimumInputLength: 1,
       allowClear: true,
@@ -406,19 +409,19 @@
       templateResult: formatResult,
     });
 
-    $('.lokasi').on('change', function(e) {
+    $('#lokasi').on('change', function(e) {
       e.preventDefault();
-      $('.lokasi').removeClass('is-invalid');
+      $('#lokasi').removeClass('is-invalid');
       $('.errorlokasi').html('');
     })
-    $('.satuan').on('change', function(e) {
+    $('#satuan').on('change', function(e) {
       e.preventDefault();
-      $('.satuan').removeClass('is-invalid');
+      $('#satuan').removeClass('is-invalid');
       $('.errorsatuan').html('');
     })
-    $('.jmlmasuk').on('input', function(e) {
+    $('#jmlmasuk').on('input', function(e) {
       e.preventDefault();
-      $('.jmlmasuk').removeClass('is-invalid');
+      $('#jmlmasuk').removeClass('is-invalid');
       $('.errorjmlmasuk').html('');
     })
 
@@ -502,10 +505,10 @@
               $(".errasalbrg").html('');
             }
             if (response.error.lokasi) {
-              $(`.lokasi`).addClass('is-invalid');
+              $(`#lokasi`).addClass('is-invalid');
               $(`.errlokasi`).html(response.error.lokasi);
             } else {
-              $(`.lokasi`).removeClass('is-invalid');
+              $(`#lokasi`).removeClass('is-invalid');
               $(`.errlokasi`).html('');
             }
             if (response.error.hargabeli) {
@@ -523,17 +526,17 @@
               $(`.errhargajual`).html('');
             }
             if (response.error.jmlmasuk) {
-              $(`.jmlmasuk`).addClass('is-invalid');
+              $(`#jmlmasuk`).addClass('is-invalid');
               $(`.errjmlmasuk`).html(response.error.jmlmasuk);
             } else {
-              $(`.jmlmasuk`).removeClass('is-invalid');
+              $(`#jmlmasuk`).removeClass('is-invalid');
               $(`.errjmlmasuk`).html('');
             }
             if (response.error.satuan) {
-              $(`.satuan`).addClass('is-invalid');
+              $(`#satuan`).addClass('is-invalid');
               $(`.errsatuan`).html(response.error.satuan);
             } else {
-              $(`.satuan`).removeClass('is-invalid');
+              $(`#satuan`).removeClass('is-invalid');
               $(`.errsatuan`).html('');
             }
           } else {

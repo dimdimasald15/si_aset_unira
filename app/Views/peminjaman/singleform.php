@@ -11,7 +11,7 @@
         <input type="hidden" name="id" id="id">
         <div class="row g-2 mb-1">
           <div class="<?= $saveMethod == "update" ? 'col-md-6' : 'col-md-4' ?>">
-            <label for="namaanggota" class="form-label">Nama Peminjam</label>
+            <label for="idanggota" class="form-label">Nama Peminjam</label>
             <div class="input-group mb-3">
               <span class="input-group-text"><i class="bi bi-person"></i></span>
               <select class="form-select" name="anggota_id" id="idanggota"></select>

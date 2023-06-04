@@ -16,11 +16,13 @@
               </div>
               <div class="col-12">
                 <div class="row mb-1">
-                  <label for="katid mb-2">Nama Kategori</label>
+                  <label for="katid<?= $no ?>">Nama Kategori</label>
                 </div>
                 <div class="row mb-1">
                   <div class="input-group mb-3">
-                    <label class="input-group-text" for="inputGroupSelect01"><i class="bi bi-layers"></i></label>
+                    <span class="input-group-text">
+                      <i class="bi bi-layers"></i>
+                    </span>
                     <select name="kat_id<?= $no; ?>" class="form-select p-2" id="katid<?= $no ?>" style="width: 400px;"></select>
                     <div class="invalid-feedback errkatid<?= $no; ?>"></div>
                   </div>
@@ -29,7 +31,7 @@
               <div class="col-12">
                 <div class="row g-2 mb-1">
                   <div class="col-md-6">
-                    <label for="kodebrg">Kode Barang</label>
+                    <label for="subkdkategori<?= $no ?>">Kode Barang</label>
                     <div class="input-group mb-3">
                       <span class="input-group-text">
                         <i class="bi bi-upc"></i>
@@ -38,7 +40,7 @@
                     </div>
                   </div>
                   <div class="col-md-6">
-                    <label for="subkodebarang"></label>
+                    <label for="skbarang<?= $no ?>"></label>
                     <div class="input-group mb-3">
                       <select name="skbrg[]" class="form-select" id="skbarang<?= $no ?>"></select>
                       <input type="text" class="form-control" placeholder="Kode Barang" id="skbarang-other<?= $no ?>" name="skbrg_lain[]" readonly style="display:none;">
@@ -50,7 +52,7 @@
               </div>
               <div class="col-12">
                 <div class="row mb-1">
-                  <label for="namabarang">Nama Barang</label>
+                  <label for="namabarang<?= $no ?>">Nama Barang</label>
                 </div>
                 <div class="row mb-1">
                   <div class="input-group mb-3">
@@ -63,7 +65,7 @@
               <div class="col-12">
                 <div class="row g-2 mb-1">
                   <div class="col-md-6">
-                    <label for="merk" class="form-label">Merk</label>
+                    <label for="merk<?= $no ?>" class="form-label">Merk</label>
                     <div class="input-group mb-3">
                       <span class="input-group-text"><i class="bi bi-tags"></i></span>
                       <input type="text" class="form-control" placeholder="Masukkan Merk" id="merk<?= $no ?>" name="merk<?= $no ?>">
@@ -71,7 +73,7 @@
                     </div>
                   </div>
                   <div class="col-md-3">
-                    <label for="warna" class="form-label">Warna</label>
+                    <label for="warna<?= $no ?>" class="form-label">Warna</label>
                     <div class="input-group mb-3">
                       <span class="input-group-text"><i class="bi bi-palette"></i></span>
                       <input type="color" class="form-control" placeholder="Masukkan Warna" id="warna<?= $no ?>" name="warna<?= $no ?>">
@@ -84,22 +86,22 @@
               <div class="col-12">
                 <div class="row g-2 mb-1">
                   <div class="col-md-5 mb-3 asalbrg<?= $no ?>">
-                    <label for="merk" class="form-label">Asal <?= $title; ?></label>
+                    <label class="form-label">Asal <?= $title; ?></label>
                     <div class="form-check">
                       <input class="form-check-input" type="radio" name="asal_<?= $no ?>" id="belibaru<?= $no ?>" value="Beli baru">
-                      <label class="form-check-label" for="asal">
+                      <label class="form-check-label" for="belibaru<?= $no ?>">
                         Beli Baru
                       </label>
                     </div>
                     <div class="form-check">
                       <input class="form-check-input" type="radio" name="asal_<?= $no ?>" id="belibekas<?= $no ?>" value="Beli bekas">
-                      <label class="form-check-label" for="belibekas">
+                      <label class="form-check-label" for="belibekas<?= $no ?>">
                         Beli Bekas
                       </label>
                     </div>
                     <div class="form-check">
                       <input class="form-check-input" type="radio" name="asal_<?= $no ?>" id="hibah<?= $no ?>" value="Hibah">
-                      <label class="form-check-label" for="hibah">
+                      <label class="form-check-label" for="hibah<?= $no ?>">
                         Hibah
                       </label>
                       <div class="invalid-feedback errasalbrg<?= $no ?>">
@@ -107,22 +109,22 @@
                     </div>
                   </div>
                   <div class="col-md-7 radiobelibekas<?= $no ?>" style="display:none;">
-                    <label for=" merk" class="form-label">Beli bekas dimana?</label>
+                    <label class="form-label">Beli bekas dimana?</label>
                     <div class="form-check">
                       <input class="form-check-input" type="radio" id="radiotoko<?= $no ?>">
-                      <label class="form-check-label" for="radiotoko">
+                      <label class="form-check-label" for="radiotoko<?= $no ?>">
                         Beli di toko
                       </label>
                     </div>
                     <div class="form-check">
                       <input class="form-check-input" type="radio" id="radioinstansi<?= $no ?>">
-                      <label class="form-check-label" for="radioinstansi">
+                      <label class="form-check-label" for="radioinstansi<?= $no ?>">
                         Beli di Instansi
                       </label>
                     </div>
                   </div>
                   <div class="col-md-7 mb-3 belibaru<?= $no ?>" style="display:none;">
-                    <label for="toko" class="form-label">Nama Toko</label>
+                    <label for="toko<?= $no ?>" class="form-label">Nama Toko</label>
                     <div class="input-group mb-3">
                       <span class="input-group-text"><i class="bi bi-shop"></i></span>
                       <input type="text" class="form-control" placeholder="Masukkan nama toko" id="toko<?= $no ?>" name="toko<?= $no ?>">
@@ -130,7 +132,7 @@
                     </div>
                   </div>
                   <div class="col-md-7 hibah<?= $no ?>" style="display:none;">
-                    <label for="instansi" class="form-label">Nama Instansi</label>
+                    <label for="instansi<?= $no ?>" class="form-label">Nama Instansi</label>
                     <div class="input-group mb-3">
                       <span class="input-group-text"><i class="bi bi-building"></i></span>
                       <input type="text" class="form-control" placeholder="Masukkan Nama Instansi" id="instansi<?= $no ?>" name="instansi<?= $no ?>">
@@ -142,7 +144,7 @@
               <div class="col-12">
                 <div class="row g-2 mb-1">
                   <div class="col-md-6">
-                    <label for="noseri" class="form-label">Nomor seri barang</label>
+                    <label for="noseri<?= $no ?>" class="form-label">Nomor seri barang</label>
                     <div class="input-group mb-3">
                       <span class="input-group-text"><i class="bi bi-hash"></i></span>
                       <input type="text" class="form-control" placeholder="Masukkan No Seri" id="noseri<?= $no ?>" name="no_seri<?= $no ?>">
@@ -150,7 +152,7 @@
                     </div>
                   </div>
                   <div class="col-md-6">
-                    <label for="nodokumen" class="form-label">Nomor Dokumen</label>
+                    <label for="nodokumen<?= $no ?>" class="form-label">Nomor Dokumen</label>
                     <div class="input-group mb-3">
                       <span class="input-group-text"><i class="bi bi-file-earmark-text"></i></span>
                       <input type="text" class="form-control" placeholder="Masukkan No Dokumen" id="nodokumen<?= $no ?>" name="no_dokumen<?= $no ?>">
@@ -162,7 +164,7 @@
               <div class="col-12">
                 <div class="row g-2 mb-1">
                   <div class="col-md-6">
-                    <label for="hargabeli" class="form-label">Harga Beli Barang</label>
+                    <label for="hargabeli<?= $no ?>" class="form-label">Harga Beli Barang</label>
                     <div class="input-group mb-3">
                       <span class="input-group-text">Rp</span>
                       <input type="number" <?= $jenis_kat == "Barang Persediaan" ? 'step="50" min="100"' : 'step="500" min="5000"' ?> class="form-control" placeholder="Masukkan Harga Beli" id="hargabeli<?= $no ?>" name="harga_beli<?= $no ?>">
@@ -170,7 +172,7 @@
                     </div>
                   </div>
                   <div class="col-md-6">
-                    <label for="hargajual" class="form-label">Harga Jual Barang</label>
+                    <label for="hargajual<?= $no ?>" class="form-label">Harga Jual Barang</label>
                     <div class="input-group mb-3">
                       <span class="input-group-text">Rp</span>
                       <input type="number" <?= $jenis_kat == "Barang Persediaan" ? 'step="50" min="100"' : 'step="500" min="5000"' ?> class="form-control" placeholder="Masukkan Harga Jual" id="hargajual<?= $no ?>" name="harga_jual<?= $no ?>">
@@ -182,7 +184,7 @@
               <div class="col-12">
                 <div class="row g-2 mb-1">
                   <div class="col-md-auto">
-                    <label for="tglbeli" class="mb-1">Tanggal Pembelian</label>
+                    <label for="tglbeli<?= $no ?>" class="mb-1">Tanggal Pembelian</label>
                     <div class="input-group mb-3">
                       <span class="input-group-text"><i class="bi bi-calendar3"></i></span>
                       <input type="date" class="form-control" placeholder="dd/mm/yyyy" id="tglbeli<?= $no ?>" name="tgl_pembelian<?= $no ?>">
@@ -194,7 +196,7 @@
               <div class="col-lg-12">
                 <div class="col-12">
                   <div class="row mb-1">
-                    <label for="lokasi">Lokasi Penempatan <?= $title ?></label>
+                    <label for="lokasi<?= $no ?>">Lokasi Penempatan <?= $title ?></label>
                   </div>
                   <div class="row mb-1">
                     <div class="input-group mb-3">
@@ -207,7 +209,7 @@
                 <div class="col-12">
                   <div class="row g-2 mb-1">
                     <div class="col-md-6">
-                      <label for="jmlmasuk" class="mb-1">Jumlah Barang Masuk</label>
+                      <label for="jmlmasuk<?= $no ?>" class="mb-1">Jumlah Barang Masuk</label>
                       <div class="input-group mb-3">
                         <span class="input-group-text" id="basic-addon1"><i class="bi bi-box-seam"></i></span>
                         <input type="number" min="1" class="form-control " id="jmlmasuk<?= $no ?>" placeholder="Masukkan Jumlah Barang Masuk" name="jumlah_masuk<?= $no ?>">
@@ -215,7 +217,7 @@
                       </div>
                     </div>
                     <div class="col-md-6">
-                      <label for="" class="mb-1">Satuan <?= $title; ?></label>
+                      <label for="satuan<?= $no ?>" class="mb-1">Satuan <?= $title; ?></label>
                       <div class="input-group mb-3">
                         <select name="satuan_id<?= $no ?>" class="form-select p-2 " id="satuan<?= $no ?>"></select>
                         <div class="invalid-feedback errsatuan<?= $no ?>"></div>
@@ -583,11 +585,13 @@
                     </div>
                     <div class="col-12">
                       <div class="row mb-1">
-                        <label for="katid mb-2">Nama Kategori</label>
+                        <label for="katid${index}">Nama Kategori</label>
                       </div>
                       <div class="row mb-1">
                         <div class="input-group mb-3">
-                          <label class="input-group-text" for="inputGroupSelect01"><i class="bi bi-layers"></i></label>
+                         <span class="input-group-text">
+                        <i class="bi bi-layers"></i>
+                      </span>
                           <select name="kat_id${index}" class="form-select p-2" id="katid${index}" style="width: 400px;"></select>
                           <div class="invalid-feedback errkatid${index}"></div>
                         </div>
@@ -596,7 +600,7 @@
                     <div class="col-12">
                       <div class="row g-2 mb-1">
                         <div class="col-md-6">
-                          <label for="kodebrg">Kode Barang</label>
+                          <label for="kodebrg${index}">Kode Barang</label>
                           <div class="input-group mb-3">
                             <span class="input-group-text">
                               <i class="bi bi-upc"></i>
@@ -605,7 +609,7 @@
                           </div>
                         </div>
                         <div class="col-md-6">
-                          <label for="subkodebarang"></label>
+                          <label for="skbarang${index}"></label>
                           <div class="input-group mb-3">
                             <select name="skbrg[]" class="form-select" id="skbarang${index}"></select>
                             <input type="text" class="form-control" placeholder="Kode Barang" id="skbarang-other${index}" name="skbrg_lain[]" readonly style="display:none;">
@@ -617,7 +621,7 @@
                     </div>
                     <div class="col-12">
                       <div class="row mb-1">
-                        <label for="namabarang">Nama Barang</label>
+                        <label for="namabarang${index}">Nama Barang</label>
                       </div>
                       <div class="row mb-1">
                         <div class="input-group mb-3">
@@ -630,7 +634,7 @@
                     <div class="col-12">
                       <div class="row g-2 mb-1">
                         <div class="col-md-6">
-                          <label for="merk" class="form-label">Merk</label>
+                          <label for="merk${index}" class="form-label">Merk</label>
                           <div class="input-group mb-3">
                             <span class="input-group-text"><i class="bi bi-tags"></i></span>
                             <input type="text" class="form-control" placeholder="Masukkan Merk" id="merk${index}" name="merk${index}">
@@ -638,7 +642,7 @@
                           </div>
                         </div>
                         <div class="col-md-3">
-                          <label for="warna" class="form-label">Warna</label>
+                          <label for="warna${index}" class="form-label">Warna</label>
                           <div class="input-group mb-3">
                             <span class="input-group-text"><i class="bi bi-palette"></i></span>
                             <input type="color" class="form-control" placeholder="Masukkan Warna" id="warna${index}" name="warna${index}">
@@ -651,22 +655,22 @@
                     <div class="col-12">
                       <div class="row g-2 mb-1">
                         <div class="col-md-5 mb-3 asalbrg${index}">
-                          <label for="merk" class="form-label">Asal <?= $title; ?></label>
+                          <label class="form-label">Asal <?= $title; ?></label>
                           <div class="form-check">
                             <input class="form-check-input" type="radio" name="asal_${index}" id="belibaru${index}" value="Beli baru">
-                            <label class="form-check-label" for="asal">
+                            <label class="form-check-label" for="belibaru${index}">
                               Beli Baru
                             </label>
                           </div>
                           <div class="form-check">
                             <input class="form-check-input" type="radio" name="asal_${index}" id="belibekas${index}" value="Beli bekas">
-                            <label class="form-check-label" for="belibekas">
+                            <label class="form-check-label" for="belibekas${index}">
                               Beli Bekas
                             </label>
                           </div>
                           <div class="form-check">
                             <input class="form-check-input" type="radio" name="asal_${index}" id="hibah${index}" value="Hibah">
-                            <label class="form-check-label" for="hibah">
+                            <label class="form-check-label" for="hibah${index}">
                               Hibah
                             </label>
                             <div class="invalid-feedback errasalbrg${index}">
@@ -674,22 +678,22 @@
                           </div>
                         </div>
                         <div class="col-md-7 radiobelibekas${index}" style="display:none;">
-                          <label for=" merk" class="form-label">Beli bekas dimana?</label>
+                          <label  class="form-label">Beli bekas dimana?</label>
                           <div class="form-check">
                             <input class="form-check-input" type="radio" id="radiotoko${index}">
-                            <label class="form-check-label" for="radiotoko">
+                            <label class="form-check-label" for="radiotoko${index}">
                               Beli di toko
                             </label>
                           </div>
                           <div class="form-check">
                             <input class="form-check-input" type="radio" id="radioinstansi${index}">
-                            <label class="form-check-label" for="radioinstansi">
+                            <label class="form-check-label" for="radioinstansi${index}">
                               Beli di Instansi
                             </label>
                           </div>
                         </div>
                         <div class="col-md-7 mb-3 belibaru${index}" style="display:none;">
-                          <label for="toko" class="form-label">Nama Toko</label>
+                          <label for="toko${index}" class="form-label">Nama Toko</label>
                           <div class="input-group mb-3">
                             <span class="input-group-text"><i class="bi bi-shop"></i></span>
                             <input type="text" class="form-control" placeholder="Masukkan nama toko" id="toko${index}" name="toko${index}">
@@ -697,7 +701,7 @@
                           </div>
                         </div>
                         <div class="col-md-7 hibah${index}" style="display:none;">
-                          <label for="instansi" class="form-label">Nama Instansi</label>
+                          <label for="instansi${index}" class="form-label">Nama Instansi</label>
                           <div class="input-group mb-3">
                             <span class="input-group-text"><i class="bi bi-building"></i></span>
                             <input type="text" class="form-control" placeholder="Masukkan Nama Instansi" id="instansi${index}" name="instansi${index}">
@@ -709,7 +713,7 @@
                     <div class="col-12">
                       <div class="row g-2 mb-1">
                         <div class="col-md-6">
-                          <label for="noseri" class="form-label">Nomor seri barang</label>
+                          <label for="noseri${index}" class="form-label">Nomor seri barang</label>
                           <div class="input-group mb-3">
                             <span class="input-group-text"><i class="bi bi-hash"></i></span>
                             <input type="text" class="form-control" placeholder="Masukkan No Seri" id="noseri${index}" name="no_seri${index}">
@@ -717,7 +721,7 @@
                           </div>
                         </div>
                         <div class="col-md-6">
-                          <label for="nodokumen" class="form-label">Nomor Dokumen</label>
+                          <label for="nodokumen${index}" class="form-label">Nomor Dokumen</label>
                           <div class="input-group mb-3">
                             <span class="input-group-text"><i class="bi bi-file-earmark-text"></i></span>
                             <input type="text" class="form-control" placeholder="Masukkan No Dokumen" id="nodokumen${index}" name="no_dokumen${index}">
@@ -729,7 +733,7 @@
                     <div class="col-12">
                       <div class="row g-2 mb-1">
                         <div class="col-md-6">
-                          <label for="hargabeli" class="form-label">Harga Beli Barang</label>
+                          <label for="hargabeli${index}" class="form-label">Harga Beli Barang</label>
                           <div class="input-group mb-3">
                             <span class="input-group-text">Rp</span>
                             <input type="number" <?= $jenis_kat == "Barang Persediaan" ? 'step="50" min="100"' : 'step="500" min="5000"' ?> class="form-control" placeholder="Masukkan Harga Beli" id="hargabeli${index}" name="harga_beli${index}">
@@ -737,7 +741,7 @@
                           </div>
                         </div>
                         <div class="col-md-6">
-                          <label for="hargajual" class="form-label">Harga Jual Barang</label>
+                          <label for="hargajual${index}" class="form-label">Harga Jual Barang</label>
                           <div class="input-group mb-3">
                             <span class="input-group-text">Rp</span>
                             <input type="number" <?= $jenis_kat == "Barang Persediaan" ? 'step="50" min="100"' : 'step="500" min="5000"' ?> class="form-control" placeholder="Masukkan Harga Jual" id="hargajual${index}" name="harga_jual${index}">
@@ -749,7 +753,7 @@
                     <div class="col-12">
                       <div class="row g-2 mb-1">
                         <div class="col-md-auto">
-                          <label for="tglbeli" class="mb-1">Tanggal Pembelian</label>
+                          <label for="tglbeli${index}" class="mb-1">Tanggal Pembelian</label>
                           <div class="input-group mb-3">
                             <span class="input-group-text"><i class="bi bi-calendar3"></i></span>
                             <input type="date" class="form-control" placeholder="dd/mm/yyyy" id="tglbeli${index}" name="tgl_pembelian${index}">
@@ -761,7 +765,7 @@
                     <div class="col-lg-12">
                       <div class="col-12">
                         <div class="row mb-1">
-                          <label for="lokasi">Lokasi Penempatan <?= $title ?></label>
+                          <label for="lokasi${index}">Lokasi Penempatan <?= $title ?></label>
                         </div>
                         <div class="row mb-1">
                           <div class="input-group mb-3">
@@ -774,7 +778,7 @@
                       <div class="col-12">
                         <div class="row g-2 mb-1">
                           <div class="col-md-6">
-                            <label for="jmlmasuk" class="mb-1">Jumlah Barang Masuk</label>
+                            <label for="jmlmasuk${index}" class="mb-1">Jumlah Barang Masuk</label>
                             <div class="input-group mb-3">
                               <span class="input-group-text" id="basic-addon1"><i class="bi bi-box-seam"></i></span>
                               <input type="number" min="1" class="form-control " id="jmlmasuk${index}" placeholder="Masukkan Jumlah Barang Masuk" name="jumlah_masuk${index}">
@@ -782,7 +786,7 @@
                             </div>
                           </div>
                           <div class="col-md-6">
-                            <label for="" class="mb-1">Satuan <?= $title; ?></label>
+                            <label for="sataun${index}" class="mb-1">Satuan <?= $title; ?></label>
                             <div class="input-group mb-3">
                               <select name="satuan_id${index}" class="form-select p-2 " id="satuan${index}"></select>
                               <div class="invalid-feedback errsatuan${index}"></div>
@@ -966,6 +970,7 @@
           alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
         }
       });
+      return false;
     })
   });
 </script>
