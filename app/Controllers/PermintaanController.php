@@ -245,7 +245,9 @@ class PermintaanController extends BaseController
     public function pilihanggota()
     {
         if ($this->request->isAJAX()) {
-            $query = $this->db->table('anggota')->select('id, nama_anggota')->where('deleted_at is null')->get();
+            $query = $this->db->table('anggota')->select('id, level, nama_anggota, no_anggota')->where('deleted_at is null')
+                ->orderBy('nama_anggota', 'ASC')
+                ->get();
             $msg = $query->getResultArray();
 
             echo json_encode($msg);

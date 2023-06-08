@@ -189,7 +189,7 @@
         kdbrg = kodebarang.split(".").join("-");
         const logo = "<?= base_url() ?>/assets/images/logo/logounira.jpg";
         namabrg = response.nama_brg;
-        const urlqrcode = `<?= base_url() ?>/public/detail-barang/${kdbrg}-${idlokasi}`;
+        const urlqrcode = `<?= base_url() ?>detail-barang/${kdbrg}-${idlokasi}`;
         const dateStr = response.tgl_pembelian;
         const date = new Date(dateStr);
         const options = {

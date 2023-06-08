@@ -499,7 +499,7 @@
             icon.onload = function() {
               // create qr code with logo
               var qrcode = new QRCode(document.getElementById('qrcode-' + id), {
-                text: `<?= base_url() ?>/public/detail-barang/${kdbrg}-${loc_id}`,
+                text: `<?= base_url() ?>detail-barang/${kdbrg}-${loc_id}`,
                 width: 200,
                 height: 200,
                 correctLevel: QRCode.CorrectLevel.H,
