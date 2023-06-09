@@ -4,11 +4,11 @@ namespace App\Models;
 
 use CodeIgniter\Model;
 
-class Anggota extends Model
+class Notifikasi extends Model
 {
-    protected $table = "anggota";
+    protected $table = "notifikasi";
     protected $primaryKey = 'id';
-    protected $allowedFields = ['id', 'no_anggota', 'nama_anggota', 'no_hp', 'level', 'unit_id', 'created_at', 'created_by', 'updated_by', 'updated_at', 'deleted_by', 'deleted_at'];
+    protected $allowedFields = ['id', 'laporan_id', 'petugas_id', 'viewed_by_admin', 'viewed_by_petugas', 'created_by', 'created_at', 'updated_by', 'updated_at', 'deleted_by', 'deleted_at'];
     protected $useSoftDeletes   = true;
     protected $useTimestamps = false;
     protected $createdField  = 'created_at';
@@ -19,32 +19,32 @@ class Anggota extends Model
     protected $beforeUpdate = ['setUpdateData'];
     protected $allowCallbacks = true;
 
-    public function setInsertData(array $data)
+    public function setInsertData(array $data, $nama_anggota)
     {
-        if (session()->get('username')) {
-            $username = session()->get('username');
+
+        $username = '';
+        if ($nama_anggota) {
+            $username = $nama_anggota;
         } else {
-            $username = $data['nama_anggota'];
+            $username = session()->get('username');
         }
 
-        if (
-            !empty($username) &&
-            !array_key_exists('created_by', $data)
-        ) {
-            $data['data']['created_at'] = date('Y-m-d H:i:s');
-            $data['data']['created_by'] = $username;
+        if (!empty($username) && !array_key_exists('created_by', $data)) {
+            $data['created_at'] = date('Y-m-d H:i:s');
+            $data['created_by'] = $username;
         }
         return $data;
     }
 
-    public function setUpdateData(array $data)
+    public function setUpdateData(array $data, $nama_anggota)
     {
-        if (session()->get('username')) {
-            $username = session()->get('username');
+        if ($nama_anggota) {
+            $username = $nama_anggota;
         } else {
-            $username = $data['nama_anggota'];
+            $username = session()->get('username');
         }
 
+        $username = session()->get('username');
         if (!empty($username) && !array_key_exists('updated_by', $data)) {
             $data['data']['updated_at'] = date('Y-m-d H:i:s');
             $data['data']['updated_by'] = $username;

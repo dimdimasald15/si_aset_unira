@@ -192,7 +192,7 @@ class BarangController extends BaseController
         $kode_brg = str_replace('-', '.', $kdbrg);
         $ruang_id = substr($url, strrpos($url, "-") + 1); // mendapatkan string "6"
 
-        $query   = $this->db->table('stok_barang sb')->select('sb.*, k.nama_kategori, b.nama_brg, b.kode_brg, b.foto_barang, b.harga_beli, b.harga_jual, b.asal, b.toko, b.instansi, b.no_seri, b.no_dokumen, b.merk, b.tgl_pembelian, b.warna, r.nama_ruang, satuan_id, s.kd_satuan, b.created_at, b.created_by, b.deleted_at')
+        $query   = $this->db->table('stok_barang sb')->select('sb.*, k.nama_kategori, b.nama_brg, b.kode_brg, b.foto_barang, b.harga_beli, b.harga_jual, b.asal, b.toko, b.instansi, b.no_seri, b.no_dokumen, b.merk, b.tgl_pembelian, b.warna, sb.ruang_id, r.nama_ruang, sb.satuan_id, s.kd_satuan, b.created_at, b.created_by, b.deleted_at')
             ->join('barang b', 'sb.barang_id = b.id')
             ->join('kategori k', 'b.kat_id = k.id')
             ->join('ruang r', 'sb.ruang_id = r.id')

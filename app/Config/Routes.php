@@ -35,7 +35,11 @@ $routes->get('auth', 'Auth::index');
 $routes->get('auth/login', 'Auth::login');
 $routes->get('logout', 'Auth::logout');
 // $routes->get('public/detail-barang/(:segment)', 'BarangController::detailbarang/$1');
-$routes->get('public/detail-barang/(:segment)', 'BarangController::detailbarang/$1');
+$routes->get('detail-barang/(:segment)', 'BarangController::detailbarang/$1');
+$routes->get('laporan-kerusakan-aset/(:segment)', 'PelaporanController::index/$1');
+$routes->post('laporan-kerusakan-aset/simpan-laporan', 'PelaporanController::simpanlaporan');
+$routes->get('laporan-kerusakan-aset/edit-laporan/(:segment)', 'PelaporanController::tampileditlaporan/$1');
+$routes->post('laporan-kerusakan-aset/update-laporan/(:segment)', 'PelaporanController::updatelaporan/$1');
 
 $routes->group('admin/dashboard', ['filter' => 'ceklogin'], function ($routes) {
     $routes->get('/', 'DashboardController::index');
@@ -52,7 +56,6 @@ $routes->group('admin/ruang', ['filter' => 'ceklogin'], function ($routes) {
     $routes->match(['get', 'post'], 'restore', 'RuangController::restoredata');
     $routes->post('hapuspermanen/(:any)', 'RuangController::hapuspermanen/$1');
     $routes->match(['get', 'post'], 'hapuspermanen', 'RuangController::hapuspermanen');
-    // $routes->post('ceknamaruang', 'RuangController::ceknamaruang');
 });
 $routes->group('admin/gedung', ['filter' => 'ceklogin'], function ($routes) {
     $routes->get('/', 'GedungController::index');

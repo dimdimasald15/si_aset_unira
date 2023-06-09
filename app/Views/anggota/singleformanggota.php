@@ -20,7 +20,7 @@
           </div>
           <div class="col-md-6">
             <div class="row mb-2">
-              <label for="level mb-2">Level <?= $title ?></label>
+              <label for="level">Level <?= $title ?></label>
             </div>
             <div class="row mb-1">
               <div class="input-group mb-3">
@@ -41,7 +41,7 @@
           <div class="col-md-6 noanggota" style="display:none;">
           </div>
           <div class="col-md-6">
-            <label for="unit_id" class="form-label">Unit <?= $title ?></label>
+            <label for="unit" class="form-label">Unit <?= $title ?></label>
             <div class="input-group mb-3">
               <span class="input-group-text" id="basic-addon1"><i class="bi bi-circle-square"></i></span>
               <select name="unit_id" class="form-select p-2" id="unit"></select>

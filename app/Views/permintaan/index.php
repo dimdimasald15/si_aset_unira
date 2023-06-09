@@ -118,7 +118,7 @@
                 </li> -->
               </ul>
             </div>
-            <button class="btn btn-dark" id="tampilmodalcetak"><i class="fa fa-print"></i> Ekspor Pdf</button>
+            <button class="btn" style="background-color: #6610f2!important;color:white !important;" id="tampilmodalcetak"><i class="fa fa-print"></i> Ekspor Pdf</button>
           </div>
           <div class="col-md-6 pb-0 pt-3 px-0 d-flex justify-content-end">
             <button type="submit" class="btn btn-danger btn-multipledelete">

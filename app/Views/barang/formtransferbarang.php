@@ -30,7 +30,7 @@
                           <div class="row mb-1">
                             <div class="input-group mb-3">
                               <span class="input-group-text" id="basic-addon1"><i class="bi bi-layers"></i></span>
-                              <select name="barang_id<?= $i; ?>" class="form-select p-2" id="idbrg<?= $i; ?>" style="width: 400px;"></select>
+                              <select name="barang_id<?= $i; ?>" class="form-select p-2" id="idbrg<?= $i; ?>"></select>
                               <div class="invalid-feedback erridbrg<?= $i; ?>"></div>
                             </div>
                           </div>

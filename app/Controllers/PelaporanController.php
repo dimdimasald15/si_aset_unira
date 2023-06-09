@@ -1,0 +1,359 @@
+<?php
+
+namespace App\Controllers;
+
+use App\Models\Barang;
+use App\Models\RiwayatBarang;
+use App\Models\Kategori;
+use App\Models\Ruang;
+use App\Models\StokBarang;
+use App\Models\RiwayatTransaksi;
+use App\Models\Pelaporankerusakan;
+use App\Models\Notifikasi;
+use App\Models\Anggota;
+use CodeIgniter\Files\File;
+use \Hermawan\DataTables\DataTable;
+use App\Controllers\BaseController;
+use PHPUnit\Framework\Constraint\Count;
+
+class PelaporanController extends BaseController
+{
+    protected $barang, $kategori, $uri, $stokbarang, $riwayatbarang, $ruang, $riwayattrx, $pelaporan, $notifikasi, $anggota;
+    public function __construct()
+    {
+        $this->barang = new Barang();
+        $this->riwayatbarang = new RiwayatBarang();
+        $this->kategori = new Kategori();
+        $this->ruang = new Ruang();
+        $this->stokbarang = new StokBarang();
+        $this->riwayattrx = new RiwayatTransaksi();
+        $this->pelaporan = new Pelaporankerusakan();
+        $this->notifikasi = new Notifikasi();
+        $this->anggota = new Anggota();
+        $this->uri = service('uri');
+    }
+    public function index($url)
+    {
+        $kdbrg = substr($url, 0, strrpos($url, "-")); // mendapatkan string "C-02-06-01-001"
+        $kode_brg = str_replace('-', '.', $kdbrg);
+        $ruang_id = substr($url, strrpos($url, "-") + 1); // mendapatkan string "6"
+
+        $query = $this->db->table('stok_barang sb')->select('sb.*, k.nama_kategori, b.nama_brg, b.kode_brg, b.foto_barang, b.harga_beli, b.harga_jual, b.asal, b.toko, b.instansi, b.no_seri, b.no_dokumen, b.merk, b.tgl_pembelian, b.warna, sb.ruang_id, r.nama_ruang, sb.satuan_id, s.kd_satuan, b.created_at, b.created_by, b.deleted_at')
+            ->join('barang b', 'sb.barang_id = b.id')
+            ->join('kategori k', 'b.kat_id = k.id')
+            ->join('ruang r', 'sb.ruang_id = r.id')
+            ->join('satuan s', 'sb.satuan_id = s.id')
+            ->where('b.kode_brg', $kode_brg)
+            ->where('sb.ruang_id', $ruang_id)
+            ->groupBy('b.id')
+            ->get();
+
+        $result = $query->getRow();
+        if ($result) {
+            $title = $result->nama_brg . ' di ' . $result->nama_ruang;
+        } else {
+            $title = 'Detail Barang';
+        }
+
+        //Generate nomor laporan
+        //Generate no laporan
+        $today = date("ymd"); // Mendapatkan tanggal hari ini dalam format Ymd (misal: 230523)
+        $randomNumber = rand(111111111, 999999999); // Menghasilkan angka acak antara 1000 dan 9999
+        $no_laporan = "LP-" . $today . "-" . $randomNumber; // Menggabungkan tanggal hari ini dengan angka acak
+        $data = [
+            'title' => $title,
+            'barang' => $result,
+            'no_laporan' => $no_laporan,
+            'url_detail_brg' => "detail-barang/" . $url,
+        ];
+
+        return view('pelaporan/index', $data);
+    }
+
+    public function cekanggota()
+    {
+        $validation = \Config\Services::validation();
+        $rules = [
+            'nama_anggota' => [
+                'label' => 'Nama anggota',
+                'rules' => 'required',
+                'errors' => [
+                    'required' => "{field} tidak boleh kosong",
+                ],
+            ],
+            'no_anggota' => [
+                'label' => 'Nomor anggota',
+                'rules' => 'required|is_unique[anggota.no_anggota]',
+                'errors' => [
+                    'required' => "{field} tidak boleh kosong",
+                    'is_unique' => "{field} sudah ada dan tidak boleh sama",
+                ],
+            ],
+            'level' => [
+                'label' => 'Level',
+                'rules' => 'required',
+                'errors' => [
+                    'required' => "{field} tidak boleh kosong",
+                ],
+            ],
+            'unit_id' => [
+                'label' => 'Unit',
+                'rules' => 'required',
+                'errors' => [
+                    'required' => "{field} tidak boleh kosong",
+                ],
+            ],
+        ];
+        if (!$this->validate($rules)) {
+            $errors = $validation->getErrors();
+        }
+        if (!empty($errors)) {
+            $msg = [
+                'error' => $errors,
+            ];
+        } else {
+            $msg = [
+                'sukses' => 200
+            ];
+        }
+
+        echo json_encode($msg);
+    }
+
+    public function simpanlaporan()
+    {
+        $validation = \Config\Services::validation();
+        $rules = [];
+        $errors = [];
+        $rules = [
+            'jml_barang' => [
+                'label' => 'Jumlah barang rusak',
+                'rules' => 'required',
+                'errors' => [
+                    'required' => "{field} tidak boleh kosong",
+                ],
+            ],
+            'foto_barang' => [
+                'label' => 'Upload Foto',
+                'rules' => 'uploaded[foto_barang]|mime_in[foto_barang,image/png,image/jpeg,image/jpg]|is_image[foto_barang]',
+                'errors' => [
+                    'uploaded' => '{field} wajib diisi',
+                    'mime_in' => 'Harus dalam bentuk gambar, jangan file lain',
+                    'is_image' => 'Harus dalam bentuk gambar, jangan file lain',
+                    'max_size' => 'Ukuran file terlalu besar. Maksimal 1024KB',
+                ],
+            ],
+        ];
+
+        if ($this->request->getVar('pilihan') == "anggota lama") {
+            $rules['anggota_id'] = [
+                'label' => 'Nama anggota',
+                'rules' => 'required',
+                'errors' => [
+                    'required' => "{field} tidak boleh kosong",
+                ],
+            ];
+        }
+        if (!$this->validate($rules)) {
+            $errors = $validation->getErrors();
+        }
+        if (!empty($errors)) {
+            $msg = [
+                'error' => $errors,
+            ];
+        } else {
+
+            $this->db->transStart();
+            // tangkap file foto
+            $filefoto = $this->request->getFile('foto_barang');
+            $filename = $filefoto->getRandomName();
+            $namaBaru = str_replace(' ', '_', strtolower($filename)) . '.png';
+            // hapus ekstensi .jpg pada nama file
+            $namaBaru = str_replace('.jpg', '', $namaBaru);
+
+            $filefoto->move(FCPATH . '/assets/images/foto_kerusakan/', $namaBaru);
+
+            $anggota_id = "";
+            if ($this->request->getVar('pilihan') == "anggota lama") {
+                $anggota_id = $this->request->getVar('anggota_id');
+
+                $simpanlaporan = [
+                    'stokbrg_id' => $this->request->getVar('stokbrg_id'),
+                    'anggota_id' => $anggota_id,
+                    'jml_barang' => $this->request->getVar('jml_barang'),
+                    'title' => $this->request->getVar('title'),
+                    'deskripsi' => $this->request->getVar('deskripsi'),
+                    'foto' => $namaBaru,
+                ];
+            } else {
+                $simpananggota = [
+                    'no_anggota' => $this->request->getVar('no_anggota'),
+                    'nama_anggota' => $this->request->getVar('nama_anggota'),
+                    'no_hp' => $this->request->getVar('no_hp'),
+                    'level' => $this->request->getVar('level'),
+                    'unit_id' => $this->request->getVar('unit_id'),
+                ];
+
+                $insertanggota = $this->anggota->setInsertData($simpananggota);
+                $this->anggota->save($insertanggota);
+
+                $anggota_id = $this->anggota->insertID();
+
+                $no_laporan = $this->request->getVar('no_laporan');
+                $simpanlaporan = [
+                    'stokbrg_id' => $this->request->getVar('stokbrg_id'),
+                    'anggota_id' => $anggota_id,
+                    'no_laporan' => $no_laporan,
+                    'jml_barang' => $this->request->getVar('jml_barang'),
+                    'title' => $this->request->getVar('title'),
+                    'deskripsi' => $this->request->getVar('deskripsi'),
+                    'foto' => $namaBaru,
+                ];
+            }
+
+            $data_anggota = $this->anggota->find($anggota_id);
+            $namaanggota = $data_anggota['nama_anggota'];
+            $insertlaporan = $this->pelaporan->setInsertData($simpanlaporan, $namaanggota);
+
+            $this->db->table('pelaporan_kerusakan')->insert($insertlaporan);
+
+            $laporan_id = $this->db->insertID();
+
+            $simpannotif = [
+                'laporan_id' => $laporan_id,
+            ];
+
+            $insertnotif = $this->notifikasi->setInsertData($simpannotif, $namaanggota);
+            $this->db->table('notifikasi')->insert($insertnotif);
+
+            $this->db->transComplete();
+            if ($this->db->transStatus() === false) {
+                // Jika terjadi kesalahan pada transaction
+                $msg = ['error' => 'Gagal menyimpan data permintaan'];
+            } else {
+                $msg = [
+                    'sukses' => "Laporan anda berhasil terkirim. Terima kasih telah melapor.",
+                    'laporan_id' => $no_laporan
+                ];
+            }
+        }
+
+        echo json_encode($msg);
+    }
+
+    public function tampileditlaporan($no_laporan)
+    {
+        $query = $this->db->table('pelaporan_kerusakan p')->select('p.*, a.nama_anggota, a.level, a.no_anggota, b.nama_brg, s.kd_satuan, r.nama_ruang, sb.barang_id, sb.ruang_id, sb.satuan_id, b.kode_brg')
+            ->join('anggota a', 'a.id=p.anggota_id')
+            ->join('stok_barang sb', 'sb.id=p.stokbrg_id')
+            ->join('barang b', 'b.id=sb.barang_id')
+            ->join('ruang r', 'r.id=sb.ruang_id')
+            ->join('satuan s', 's.id=sb.satuan_id')
+            ->where('p.no_laporan', $no_laporan);
+
+        $laporan = $query->get()->getRow();
+        $kode_brg = $laporan->kode_brg;
+        $ruang_id = $laporan->ruang_id;
+        $url_detail_brg = base_url() . 'laporan-kerusakan-aset/' . str_replace(".", "-", $kode_brg) . "-" . $ruang_id;
+
+        $data = [
+            'laporan' => $laporan,
+            'url_detail_brg' => $url_detail_brg,
+        ];
+
+        return view('pelaporan/editlaporan', $data);
+    }
+
+    public function updatelaporan($id)
+    {
+        $validation = \Config\Services::validation();
+        $rules = [];
+        $errors = [];
+        $rules = [
+            'jml_barang' => [
+                'label' => 'Jumlah barang rusak',
+                'rules' => 'required',
+                'errors' => [
+                    'required' => "{field} tidak boleh kosong",
+                ],
+            ],
+            'foto_barang' => [
+                'label' => 'Upload Foto',
+                'rules' => 'uploaded[foto_barang]|mime_in[foto_barang,image/png,image/jpeg,image/jpg]|is_image[foto_barang]',
+                'errors' => [
+                    'uploaded' => '{field} wajib diisi',
+                    'mime_in' => 'Harus dalam bentuk gambar, jangan file lain',
+                    'is_image' => 'Harus dalam bentuk gambar, jangan file lain',
+                    'max_size' => 'Ukuran file terlalu besar. Maksimal 1024KB',
+                ],
+            ],
+        ];
+        if (!$this->validate($rules)) {
+            $errors = $validation->getErrors();
+        }
+        if (!empty($errors)) {
+            $msg = [
+                'error' => $errors,
+            ];
+        } else {
+            $cekdata = $this->pelaporan->find($id);
+            $no_laporan = $cekdata['no_laporan'];
+
+            $fotolama = $cekdata['foto'];
+
+            if (!empty($fotolama)) {
+                $pathToPhoto = FCPATH . '/assets/images/foto_kerusakan/' . $fotolama;
+                if (file_exists($pathToPhoto)) {
+                    unlink($pathToPhoto);
+                }
+            }
+
+            $filefoto = $this->request->getFile('foto_barang');
+
+            if ($filefoto->isValid() && !$filefoto->hasMoved()) {
+                $filename = $filefoto->getRandomName();
+                $namaBaru = str_replace(' ', '_', strtolower($filename)) . '.png';
+                // hapus ekstensi .jpg pada nama file
+                $namaBaru = str_replace('.jpg', '', $namaBaru);
+
+                $filefoto->move(FCPATH . '/assets/images/foto_kerusakan/', $namaBaru);
+            }
+            // file_put_contents(FCPATH . '/assets/images/foto_kerusakan/' . $namaBaru, $filefoto);
+
+            $anggota_id = $this->request->getVar('anggota_id');
+
+            $ubahlaporan = [
+                'stokbrg_id' => $this->request->getVar('stokbrg_id'),
+                'anggota_id' => $anggota_id,
+                'jml_barang' => $this->request->getVar('jml_barang'),
+                'title' => $this->request->getVar('title'),
+                'deskripsi' => $this->request->getVar('deskripsi'),
+                'foto' => $namaBaru,
+            ];
+
+            $data_anggota = $this->anggota->find($anggota_id);
+            $namaanggota = $data_anggota['nama_anggota'];
+
+            $updatelaporan = $this->pelaporan->setUpdateData($ubahlaporan, $namaanggota);
+
+            $this->db->table('pelaporan_kerusakan')->where('id', $id)->update($updatelaporan);
+
+            $msg = [
+                'sukses' => "Laporan anda berhasil diupdate. Terima kasih telah melapor.",
+                'laporan_id' => $no_laporan
+            ];
+        }
+
+        echo json_encode($msg);
+    }
+
+    public function test()
+    {
+        $today = date("ymd"); // Mendapatkan tanggal hari ini dalam format Ymd (misal: 20230523)
+        $randomNumber = rand(111111111, 999999999); // Menghasilkan angka acak antara 1000 dan 9999
+        $nomorLaporan = "LK-" . $today . "-" . $randomNumber; // Menggabungkan tanggal hari ini dengan angka acak
+
+        var_dump($nomorLaporan);
+        var_dump($nomorLaporan);
+    }
+}

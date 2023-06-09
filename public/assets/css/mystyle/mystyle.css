@@ -77,12 +77,6 @@ a:hover {
   color: var(--bs-green) !important;
 }
 
-.form-control:focus {
-  color: #71867c !important;
-  background-color: #fff;
-  border-color: #7eb57c !important;
-}
-
 .sidebar-wrapper .menu .sidebar-title {
   color: #198754 !important;
 }
@@ -96,6 +90,33 @@ a:hover {
 .sidebar-wrapper .menu .submenu .submenu-item.active > a {
   color: #198754 !important;
   font-weight: 725;
+}
+
+.input-group-text {
+  font-size: 1.1rem !important;
+  font-weight: 400 !important;
+  line-height: 1.5 !important;
+  display: flex !important;
+  margin-bottom: 0 !important;
+  padding: 0.625rem 0.75rem !important;
+  text-align: center !important;
+  white-space: nowrap !important;
+  color: #adb5bd !important;
+  border: 1px solid #dee2e6 !important;
+  border-radius: 0.25rem !important;
+  background-color: #fff !important;
+  align-items: center !important;
+}
+
+.input-group-text input[type='checkbox'],
+.input-group-text input[type='radio'] {
+  margin-top: 0 !important;
+}
+
+.form-control:focus {
+  color: #71867c !important;
+  background-color: #fff;
+  border-color: #7eb57c !important;
 }
 
 .form-check-input:checked {
@@ -116,6 +137,15 @@ a:hover {
   outline: 0;
   box-shadow: 0 0 0 0.25rem rgba(67, 190, 129, 0.25);
 }
+.form-select:focus {
+  border-color: #a1afdf;
+  outline: 0;
+  box-shadow: 0 0 0 0.25rem rgba(67, 190, 129, 0.25) !important;
+}
+
+/* .form-switch {
+  padding-left: 5em !important;
+} */
 
 .dropdown-menu {
   cursor: pointer;

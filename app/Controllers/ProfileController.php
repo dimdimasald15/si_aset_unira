@@ -299,7 +299,7 @@ class ProfileController extends BaseController
                     $this->session->set($login);
 
                     // Update konten tabel yang memiliki kolom created_by, updated_by, dan deleted_by
-                    $tablesToUpdate = ['gedung', 'petugas', 'anggota', 'barang', 'kategori', 'peminjaman', 'permintaan', 'riwayat_barang', 'riwayat_transaksi', 'ruang', 'satuan', 'stok_barang', 'unit']; // Ganti 'tabel_lain' dengan nama tabel lain yang perlu diupdate
+                    $tablesToUpdate = ['gedung', 'petugas', 'anggota', 'barang', 'kategori', 'peminjaman', 'permintaan', 'riwayat_barang', 'riwayat_transaksi', 'ruang', 'satuan', 'stok_barang', 'unit', 'pelaporan_kerusakan', 'notifikasi']; // Ganti 'tabel_lain' dengan nama tabel lain yang perlu diupdate
                     foreach ($tablesToUpdate as $table) {
                         $where = "created_by='" . $datalama['username'] . "' OR updated_by='" . $datalama['username'] . "' OR deleted_by='" . $datalama['username'] . "'";
                         $namatable = $this->db->table($table)
