@@ -14,7 +14,7 @@ h6 {
   margin-bottom: 0.5rem;
   font-weight: 700;
   line-height: 1.2;
-  color: #198754 !important;
+  color: var(--bs-green) !important;
 }
 
 a {
@@ -78,17 +78,17 @@ a:hover {
 }
 
 .sidebar-wrapper .menu .sidebar-title {
-  color: #198754 !important;
+  color: var(--bs-green) !important;
 }
 .sidebar-wrapper .menu .sidebar-link {
-  color: #198754 !important;
+  color: var(--bs-green) !important;
 }
 .sidebar-wrapper .menu .sidebar-link i,
 .sidebar-wrapper .menu .sidebar-link svg {
   color: #7eb57c;
 }
 .sidebar-wrapper .menu .submenu .submenu-item.active > a {
-  color: #198754 !important;
+  color: var(--bs-green) !important;
   font-weight: 725;
 }
 
@@ -120,13 +120,13 @@ a:hover {
 }
 
 .form-check-input:checked {
-  background-color: #198754 !important;
-  border-color: #198754 !important;
+  background-color: var(--bs-green) !important;
+  border-color: var(--bs-green) !important;
 }
 
 .form-check-input[type='checkbox']:indeterminate {
-  background-color: #198754 !important;
-  border-color: #198754 !important;
+  background-color: var(--bs-green) !important;
+  border-color: var(--bs-green) !important;
   background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M6 10h8'/%3E%3C/svg%3E");
 }
 .form-check .form-check-input.form-check-primary.form-check-glow {
@@ -157,4 +157,35 @@ a:hover {
   text-transform: uppercase;
   color: #8898aa;
   font-size: 12px;
+}
+
+#notification_count {
+  padding: 4px 4px 4px 4px;
+  background: #cc0000;
+  color: #ffffff;
+  font-weight: bold;
+  border-radius: 9px;
+  -moz-border-radius: 9px;
+  -webkit-border-radius: 9px;
+  position: absolute;
+  margin-top: -1px;
+  margin-left: -12px;
+  font-size: 10px;
+}
+
+.page-link {
+  position: relative;
+  display: block;
+  color: #435ebe;
+  text-decoration: none;
+  background-color: #fff;
+  border: 1px solid #dee2e6;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.page-item.active .page-link {
+  z-index: 3;
+  color: #fff !important;
+  background-color: var(--bs-green) !important;
+  border-color: var(--bs-green) !important;
 }

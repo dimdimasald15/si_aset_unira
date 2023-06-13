@@ -80,7 +80,7 @@
         <li class="sidebar-item <?= ($nav == 'anggota') ? 'active' : '' ?>">
           <a href="anggota" class='sidebar-link'>
             <i class="bi bi-people"></i>
-            <span>Anggota</span>
+            <span>Anggota & Unit</span>
           </a>
         </li>
         <li class="sidebar-title">Pengaturan</li>

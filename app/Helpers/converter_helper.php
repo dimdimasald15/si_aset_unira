@@ -301,3 +301,42 @@ if (!function_exists('isBulanTahun')) {
     return false;
   }
 }
+
+if (!function_exists('ubahTanggal')) {
+  function ubahTanggal($date)
+  {
+    // echo date('Y-m-d', strtotime($date)) == date('Y-m-d') ? 'true' : 'false';
+    date_default_timezone_set('Asia/Jakarta');
+    // array hari dan bulan
+    $Hari = array("Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu");
+    $Bulan = array("Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember");
+
+    // pemisahan tahun, bulan, hari, dan waktu
+    if (!empty($date)) {
+      if (date('Y-m-d', strtotime($date)) == date('Y-m-d')) {
+        $timestamp = strtotime($date);
+        $currentTimestamp = time();
+        $timeDiff = $currentTimestamp - $timestamp;
+
+        if ($timeDiff < 60) {
+          $result = $timeDiff . " detik yang lalu";
+        } elseif ($timeDiff < 3600) {
+          $minutes = floor($timeDiff / 60);
+          $result = $minutes . " menit yang lalu";
+        } elseif ($timeDiff < 86400) {
+          $hours = floor($timeDiff / 3600);
+          $result = $hours . " jam yang lalu";
+        }
+      } else {
+        $tahun = substr($date, 0, 4);
+        $bulan = substr($date, 5, 2);
+        $tgl = substr($date, 8, 2);
+        // $waktu = substr($date, 11, 5);
+        $hari = date("w", strtotime($date));
+        $result = $Hari[$hari] . ", " . $tgl . " " . $Bulan[(int)$bulan - 1] . " " . $tahun;
+      }
+    }
+
+    return $result;
+  }
+}

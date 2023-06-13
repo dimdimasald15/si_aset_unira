@@ -10,7 +10,7 @@
       <div class="col-md-12">
         <div class="row g-2 mb-1">
           <div class="col-md-6">
-            <label for="namaanggota" class="form-label">Nama Peminjam</label>
+            <label for="idanggota" class="form-label">Nama Peminjam</label>
             <div class="input-group mb-3">
               <span class="input-group-text"><i class="bi bi-person"></i></span>
               <select class="form-select" name="anggota_id" id="idanggota"></select>
@@ -87,6 +87,8 @@
       e.preventDefault();
       var idanggota = $('#idanggota').val();
       var tglpinjam = $('#tglpinjam').val();
+      console.log(idanggota);
+      console.log(tglpinjam);
       if (idanggota !== "" && tglpinjam !== "") {
         $.ajax({
           type: "get",
@@ -97,6 +99,7 @@
           },
           dataType: "json",
           success: function(response) {
+            console.log(response);
             $('#tabledatabrg').show();
             $('#tambahrow').empty();
             if (response.jmldata != 0) {
@@ -243,7 +246,6 @@
               }
             }
           } else {
-            $('#tampilformkembali').hide(500);
             $('.viewform').hide(500)
             Swal.fire(
               'Berhasil!',

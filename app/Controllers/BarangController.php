@@ -75,7 +75,7 @@ class BarangController extends BaseController
 
             $isRestore = filter_var($this->request->getGet('isRestore'), FILTER_VALIDATE_BOOLEAN);
             $builder = $this->db->table('stok_barang sb')
-                ->select('sb.id, sb.barang_id, k.nama_kategori, b.nama_brg, b.harga_beli, b.kode_brg, sb.jumlah_masuk, sb.jumlah_keluar, sb.sisa_stok, b.kat_id, sb.ruang_id, sb.satuan_id, sb.created_at, sb.created_by, sb.deleted_at, sb.deleted_by, r.nama_ruang')
+                ->select('sb.id, sb.barang_id, k.nama_kategori, b.nama_brg, b.harga_beli, b.kode_brg, b.foto_barang, sb.jumlah_masuk, sb.jumlah_keluar, sb.sisa_stok, b.kat_id, sb.ruang_id, sb.satuan_id, sb.created_at, sb.created_by, sb.deleted_at, sb.deleted_by, r.nama_ruang')
                 ->join('barang b', 'b.id=sb.barang_id')
                 ->join('kategori k', 'k.id=b.kat_id ')
                 ->join('ruang r', 'sb.ruang_id = r.id')
@@ -141,7 +141,7 @@ class BarangController extends BaseController
                         }
                         $action .= '<li><a class="dropdown-item" onclick="edit(' . $row->barang_id . ')"><i class="fa fa-pencil-square-o"></i> Update Barang</a>
                         </li>
-                        <li><a class="dropdown-item" onclick="upload(' . $row->barang_id . ', \'' . htmlspecialchars($row->nama_brg) . '\')"><i class="bi bi-image"></i> Update Gambar Barang</a>
+                        <li><a class="dropdown-item" onclick="upload(' . $row->barang_id . ', \'' . htmlspecialchars($row->nama_brg) . '\', \'' . htmlspecialchars($row->foto_barang) . '\')"><i class="bi bi-image"></i> Update Gambar Barang</a>
                         </li>
                         <li><a class="dropdown-item" onclick="hapus(' . $row->id . ', \'' . htmlspecialchars($row->nama_brg) . '\')"><i class="fa fa-trash-o"></i> Hapus Barang</a>
                         </li>
@@ -166,9 +166,12 @@ class BarangController extends BaseController
         if ($this->request->isAJAX()) {
             $id = $this->request->getVar('id');
             $nama_brg = $this->request->getVar('nama_brg');
+            $fotobrg = $this->request->getVar('foto_barang');
+
             $data = [
                 'id' => $id,
                 'nama_brg' => $nama_brg,
+                'fotobrg' => $fotobrg,
                 'title' => 'Barang Tetap',
             ];
 

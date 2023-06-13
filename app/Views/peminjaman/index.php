@@ -105,7 +105,7 @@
     <div class="card-body table-pinjam">
       <form class="formmultipledelete">
         <div class="row m-1">
-          <div class="col-md-6 pb-0 pt-3 px-0 d-flex flex-row justify-content-start">
+          <div class="col-md-9 pb-0 pt-3 px-0 d-flex flex-row justify-content-start">
             <div class="btn-group">
               <button type="button" class="btn btn-success dropdown-toggle me-1" data-bs-toggle="dropdown" aria-expanded="false">
                 Input Peminjaman
@@ -118,9 +118,14 @@
                 </li> -->
               </ul>
             </div>
-            <button class="btn btn-warning" id="tampilformkembali"><i class="fa fa-edit"></i> Form Pengembalian</button>
+            <div class="mx-1">
+              <button class="btn btn-warning" id="tampilformkembali"><i class="fa fa-edit"></i> Form Pengembalian</button>
+            </div>
+            <div class="mx-1">
+              <button class="btn" style="background-color: #6610f2!important;color:white !important;" id="tampilmodalcetak"><i class="fa fa-print"></i> Ekspor Pdf</button>
+            </div>
           </div>
-          <div class="col-md-6 pb-0 pt-3 px-0 d-flex justify-content-end">
+          <div class="col-md-3 pb-0 pt-3 px-0 d-flex justify-content-end">
             <button type="submit" class="btn btn-danger btn-multipledelete">
               <i class="fa fa-trash-o"></i> Multiple Delete
             </button>
@@ -458,6 +463,22 @@
       }
 
       return false;
+    })
+
+    $('#tampilmodalcetak').on('click', function(e) {
+      e.preventDefault();
+      $.ajax({
+        type: "post",
+        url: "<?= base_url('peminjamancontroller/tampilmodalcetak') ?>",
+        data: {
+          jenis_kat: jenis_kat,
+        },
+        dataType: "json",
+        success: function(response) {
+          $('.viewmodal').html(response.sukses).show(500);
+          $('#modalcetakpeminjaman').modal('show');
+        }
+      });
     })
   });
 

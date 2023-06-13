@@ -36,18 +36,14 @@ class Notifikasi extends Model
         return $data;
     }
 
-    public function setUpdateData(array $data, $nama_anggota)
+    public function setUpdateData(array $data)
     {
-        if ($nama_anggota) {
-            $username = $nama_anggota;
-        } else {
-            $username = session()->get('username');
-        }
+        $username = session()->get('username');
 
         $username = session()->get('username');
         if (!empty($username) && !array_key_exists('updated_by', $data)) {
-            $data['data']['updated_at'] = date('Y-m-d H:i:s');
-            $data['data']['updated_by'] = $username;
+            $data['updated_at'] = date('Y-m-d H:i:s');
+            $data['updated_by'] = $username;
         }
         return $data;
     }
@@ -60,5 +56,19 @@ class Notifikasi extends Model
             'deleted_at' => date("Y-m-d H:i:s", time())
         ];
         $this->update($id, $data);
+    }
+
+    public function setRestoreData()
+    {
+        $username = session()->get('username');
+
+        $username = session()->get('username');
+        // if (!empty($username) && !array_key_exists('updated_by', $data)) {
+        $data['updated_at'] = date('Y-m-d H:i:s');
+        $data['updated_by'] = $username;
+        $data['deleted_by'] = null;
+        $data['deleted_at'] = null;
+        // }
+        return $data;
     }
 }

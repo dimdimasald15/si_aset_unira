@@ -102,16 +102,11 @@ helper('converter_helper');
                     <li><a class="dropdown-item" href="#">No new mail</a></li>
                   </ul>
                 </li>
-                <li class="nav-item dropdown me-3">
-                  <a class="nav-link active dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class='bi bi-bell bi-sub fs-4 text-gray-600'></i>
+                <li class=" nav-item dropdown me-3">
+                  <a class="nav-link active dropdown-toggle count" data-bs-toggle="dropdown" id="count_dropdown" aria-expanded="false">
                   </a>
-                  <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
-                    <li>
-                      <h6 class="dropdown-header">Notifications</h6>
-                    </li>
-                    <li><a class="dropdown-item">No notification available</a></li>
-                  </ul>
+                  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-notifikasi" aria-labelledby="count_dropdown"></ul>
+                  <!-- <div class="notifikasi"></div> -->
                 </li>
               </ul>
               <div class="dropdown">
@@ -152,26 +147,26 @@ helper('converter_helper');
     </div>
   </div>
   <!-- Core -->
-  <script src="<?= base_url() ?>/assets/vendors/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+  <script src="<?= base_url() ?>assets/vendors/perfect-scrollbar/perfect-scrollbar.min.js"></script>
   <script src="<?= base_url() ?>assets/js/bootstrap.bundle.min.js"></script>
-  <script src="<?= base_url() ?>/assets/js/main.js"></script>
-  <script src="<?= base_url() ?>/assets/js/pages/switch.js"></script>
+  <script src="<?= base_url() ?>assets/js/main.js"></script>
+  <script src="<?= base_url() ?>assets/js/pages/switch.js"></script>
 
   <!-- Optional Js -->
-  <script src="<?= base_url() ?>/assets/vendors/DataTables/datatables.min.js"></script>
+  <script src="<?= base_url() ?>assets/vendors/DataTables/datatables.min.js"></script>
   <!-- <script src="<?= base_url() ?>/assets/vendors/fontawesome/all.min.js"></script> -->
-  <script src="<?= base_url() ?>/assets/vendors/DataTables/DataTables-1.13.3/js/jquery.dataTables.min.js"></script>
-  <script src="<?= base_url() ?>/assets/vendors/sweetalert2/sweetalert2.all.min.js"></script>
+  <script src="<?= base_url() ?>assets/vendors/DataTables/DataTables-1.13.3/js/jquery.dataTables.min.js"></script>
+  <script src="<?= base_url() ?>assets/vendors/sweetalert2/sweetalert2.all.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment-with-locales.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/locale/id.min.js" integrity="sha512-he8U4ic6kf3kustvJfiERUpojM8barHoz0WYpAUDWQVn61efpm3aVAD8RWL8OloaDDzMZ1gZiubF9OSdYBqHfQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="<?= base_url() ?>/assets/vendors/chartjs/Chart.min.js"></script>
+  <script src="<?= base_url() ?>assets/vendors/chartjs/Chart.min.js"></script>
   <script>
     $(document).ready(function() {
       var username = "<?= $_SESSION['username'] ?>"
       $.ajax({
         type: "post",
-        url: "<?= base_url('') ?>/profilecontroller/getfotobyusername",
+        url: "<?= base_url('profilecontroller/getfotobyusername') ?>",
         data: {
           username: username,
         },
@@ -186,7 +181,70 @@ helper('converter_helper');
           alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
         }
       });
+
+      load_unseen_notification('');
+
+      // $('.lonceng_notif').on('click', function(e) {
+      //   e.preventDefault();
+      //   // e.stopPropagation();
+      //   console.log('tekann');
+      //   $('.count').html('');
+      //   load_unseen_notification('yes');
+      // });
+
+      // $('#dropdownContainer').on('click', function(e) {
+      //   if ($(this).hasClass('show')) {
+      //     console.log('show');
+      //     $(this).removeClass('show');
+      //     $(this).removeAttr('data-bs-toggle');
+      //     $(this).removeAttr('aria-expanded');
+      //   } else {
+      //     console.log('notshow');
+      //     $(this).addClass('show');
+      //     // $(this).attr('data-bs-toggle', 'dropdown');
+      //     $(this).attr('aria-expanded', 'true');
+      //   }
+      // });
+
+      // $('#dropdownContainer').on('click', '.dropdown-toggle', function(event) {
+      //   if ($(event.target).hasClass('count')) {
+      //     console.log('Dropdown toggle clicked');
+      //     // Your code here
+      //   }
+      // });
+      setInterval(function() {
+        load_unseen_notification('');
+      }, 5000);
+
     });
+
+    function load_unseen_notification(view) {
+      $.ajax({
+        url: "<?= base_url('pelaporancontroller/notifikasi_viewed') ?>",
+        method: "POST",
+        data: {
+          view: view
+        },
+        dataType: "json",
+        success: function(data) {
+          $('.dropdown-menu-notifikasi').html(data.notification);
+          $('.dropdown-menu-notifikasi').append(`
+          <hr class="dropdown-divider">
+          <li><a class="dropdown-item" href="<?= site_url('admin/notification') ?>">Lihat Semua Notifikasi</a></li>
+          `);
+          if (data.unseen_notification > 0) {
+            $('.count').html(`
+            <i class='bi bi-bell bi-sub fs-4 text-gray-600'></i>
+              <span class="badge rounded-pill badge-sm badge-notification bg-warning" style="color:black;cursor:pointer;" id="notification_count">${data.unseen_notification}</span>
+            `);
+          } else {
+            $('.count').html(`
+            <i class='bi bi-bell bi-sub fs-4 text-gray-600'></i>
+            `)
+          }
+        }
+      });
+    }
   </script>
   <?= $this->renderSection('javascript') ?>
 

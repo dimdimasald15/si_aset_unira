@@ -363,6 +363,31 @@ class LaporanController extends BaseController
         }
         return $groupedData;
     }
+    public function peminjamanbarang($tgl_peminjaman, $jenis)
+    {
+        $builder = $this->db->table('peminjaman p')->select('p.id, p.anggota_id, p.barang_id, p.jml_barang, p.kondisi_pinjam, p.kondisi_kembali, p.jml_hari, p.tgl_pinjam, p.tgl_kembali, p.status, p.created_at, p.created_by, p.deleted_at, p.deleted_by, a.unit_id, a.nama_anggota, k.nama_kategori, b.nama_brg, u.singkatan, s.kd_satuan')
+            ->join('anggota a', 'a.id = p.anggota_id')
+            ->join('barang b', 'b.id=p.barang_id')
+            ->join('kategori k', 'k.id=b.kat_id')
+            ->join('unit u', 'u.id = a.unit_id')
+            ->join('stok_barang sb', 'b.id=sb.barang_id')
+            ->join('satuan s', 's.id=sb.satuan_id')
+            ->where('k.jenis', $jenis);
+
+        if (empty($tgl_peminjaman)) {
+            $builder->where('YEAR(p.created_at)', date('Y'));
+        } else if (!empty($tgl_peminjaman)) {
+            $builder->like("p.created_at", $tgl_peminjaman . "%");
+        }
+        $builder->where('k.deleted_at', null)
+            ->where('b.deleted_at', null)
+            ->where('sb.deleted_at', null)
+            ->where('p.deleted_at', null);
+
+        $results = $builder->get()->getResult();
+
+        return $results;
+    }
 
     private function permintaanbarang($tgl_permintaan, $jenis)
     {
@@ -510,6 +535,22 @@ class LaporanController extends BaseController
             $dompdf->loadHtml(view('permintaan/cetakpdf', [
                 'title' => 'Laporan Permintaan Barang Persediaan',
                 'permintaan' => $permintaan,
+                'haritanggal' => $haritanggal,
+            ]));
+        } else if ($keterangan == "Peminjaman") {
+            $tgl_pinjam = $this->request->getVar('tgl_pinjam');
+            $haritanggal = format_tanggal($tgl_pinjam);
+            $tanggal = !empty($tgl_pinjam) ? date('d-m-Y', strtotime($tgl_pinjam)) : date('Y');
+            // if ($haritanggal) {
+            $filename = 'laporan-peminjaman-' . $tanggal;
+            // }
+            $peminjaman = $this->peminjamanbarang($tgl_pinjam, $jenis_kat);
+            // var_dump($peminjaman);
+            // die;
+            // load HTML content
+            $dompdf->loadHtml(view('peminjaman/cetakpdf', [
+                'title' => 'Laporan Peminjaman Barang Tetap',
+                'peminjaman' => $peminjaman,
                 'haritanggal' => $haritanggal,
             ]));
         }

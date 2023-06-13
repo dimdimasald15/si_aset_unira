@@ -4,8 +4,25 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title><?= $title; ?></title>
+  <meta name="description" content="Sistem Manajemen Aset UNIRA MALANG">
+  <meta name="author" content="DimasAldiSallam">
+  <title><?= $title; ?> | SI-ASET UNIRA MALANG</title>
+
+  <!--  Social tags      -->
+  <meta name="keywords" content="sistem informasi, manajemen aset, labelling assets, qr code, perguruan tinggi, UNIRA, malang, universitas">
+  <meta name="description" content="Sistem Informasi Manajemen Aset Universitas Islam Raden Rahmat Malang">
+  <!-- Schema.org markup for Google+ -->
+  <meta itemprop="name" content="Sistem Informasi Manajemen Aset">
+  <meta itemprop="description" content="Sistem Informasi Manajemen Aset Universitas Islam Raden Rahmat Malang">
+  <meta itemprop="image" content="<?= base_url('assets/images/unira.png') ?>">
+  <!-- Favicon -->
+  <link rel="icon" href="<?= base_url('assets/images/logo/logounira.jpg') ?>" type="image/png">
+
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+
+  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
   <link rel="stylesheet" href="<?= base_url() ?>/assets/css/bootstrap.css">
   <link rel="stylesheet" href="<?= base_url() ?>/assets/vendors/bootstrap-icons/bootstrap-icons.css">
   <link rel="stylesheet" href="<?= base_url() ?>/assets/css/app.css">
@@ -49,19 +66,9 @@
           <div class="form-check form-check-lg d-flex align-items-end">
             <input class="form-check-input me-2" type="checkbox" id="show-password" class="m-1">
             <label class="form-check-label text-gray-600" for="show-password"> Show password </label>
-            <!-- <input class="form-check-input me-2" type="checkbox" value="" id="flexCheckDefault">
-            <label class="form-check-label text-gray-600" for="flexCheckDefault">
-              Keep me logged in
-            </label> -->
           </div>
           <button class="btn btn-success btn-block btn-lg shadow-lg mt-5 btnlogin" type="submit">Log in</button>
-          <!-- </form> -->
           <?= form_close(); ?>
-          <!-- <div class="text-center mt-5 text-lg fs-4">
-            <p class="text-gray-600">Don't have an account? <a href="/mazer/applications/auth/register" class="font-bold">Sign
-                up</a>.</p>
-            <p><a class="font-bold" href="mazer/applications/auth/forgot-password">Forgot password?</a>.</p>
-          </div> -->
         </div>
       </div>
       <div class="col-lg-7 d-none d-lg-block">
@@ -82,8 +89,6 @@
         $('#password').attr('type', 'password');
       }
     });
-
-    // console.log($('.formLogin').attr('action'));
 
     $('.formLogin').submit(function(e) {
       e.preventDefault();

@@ -40,7 +40,7 @@
                 <input type="hidden" name="id" id="id">
                 <input type="hidden" name="jenis" id="jenis" value="<?= $jenis; ?>">
                 <div class="row mb-1">
-                  <label for="kd_kat">Kode <?= $menu; ?></label>
+                  <label for="subkode1">Kode <?= $menu; ?></label>
                 </div>
                 <div class="row mb-1">
                   <div class="col-md-3 position-relative">
@@ -219,8 +219,6 @@
   var jenis = $('#jenis').val();
   var datarestore = '';
   var datakategori = '';
-
-  console.log('awal:' + jenis);
 
   function clearForm() {
     formtambah.find("input").val("")
@@ -430,7 +428,6 @@
 
   $(document).ready(function() {
     formtambah.hide();
-    console.log(jenis);
     datakategori = $('#table-kategori').DataTable({
       processing: true,
       serverSide: true,
@@ -1013,7 +1010,6 @@
             url: "kategori-tetap/hapuspermanen",
             dataType: 'json',
             success: function(response) {
-              console.log(response);
               if (response.sukses) {
                 Swal.fire(
                   'Berhasil', response.sukses, 'success'

@@ -54,11 +54,11 @@
             </div>
             <div class="col-12">
               <div class="row mb-1">
-                <label for="namalantai mb-2">Nama Lantai</label>
+                <label for="namalantai">Nama Lantai</label>
               </div>
               <div class="row mb-1">
                 <div class="input-group mb-3">
-                  <label class="input-group-text" for="inputGroupSelect01"><i class="bi bi-layers"></i></label>
+                  <span class="input-group-text"><i class="bi bi-layers"></i></span>
                   <select name="nama_lantai" class="form-select" placeholder="Nama lantai" id="namalantai">
                     <option value="" selected>Pilih Lantai</option>
                     <option value="1">Lantai 1</option>
@@ -71,11 +71,11 @@
             </div>
             <div class="col-12">
               <div class="row mb-1">
-                <label for="namagedung mb-2">Nama Gedung</label>
+                <label for="namagedung">Nama Gedung</label>
               </div>
               <div class="row mb-1">
                 <div class="input-group mb-3">
-                  <label class="input-group-text" for="inputGroupSelect01"><i class="bi bi-building"></i></label>
+                  <span class="input-group-text"><i class="bi bi-building"></i></span>
                   <select class="form-select" name="gedung_id" id="namagedung">
                     <option value="" selected>Pilih Gedung</option>
                     <option value="1">Gedung KH KH. Mahmud Zubaidi (A)</option>

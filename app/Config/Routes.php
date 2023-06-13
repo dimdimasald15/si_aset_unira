@@ -36,7 +36,7 @@ $routes->get('auth/login', 'Auth::login');
 $routes->get('logout', 'Auth::logout');
 // $routes->get('public/detail-barang/(:segment)', 'BarangController::detailbarang/$1');
 $routes->get('detail-barang/(:segment)', 'BarangController::detailbarang/$1');
-$routes->get('laporan-kerusakan-aset/(:segment)', 'PelaporanController::index/$1');
+$routes->get('laporan-kerusakan-aset/(:segment)', 'PelaporanController::tampilpelaporanaset/$1');
 $routes->post('laporan-kerusakan-aset/simpan-laporan', 'PelaporanController::simpanlaporan');
 $routes->get('laporan-kerusakan-aset/edit-laporan/(:segment)', 'PelaporanController::tampileditlaporan/$1');
 $routes->post('laporan-kerusakan-aset/update-laporan/(:segment)', 'PelaporanController::updatelaporan/$1');
@@ -161,6 +161,7 @@ $routes->group('admin/peminjaman-barang-tetap', ['filter' => 'ceklogin'], functi
     $routes->match(['get', 'post'], 'restore', 'PeminjamanController::restoredata');
     $routes->post('hapuspermanen/(:any)', 'PeminjamanController::hapuspermanen/$1');
     $routes->match(['get', 'post'], 'hapuspermanen', 'PeminjamanController::hapuspermanen');
+    $routes->post('cetak', 'LaporanController::cetaklaporanpdf');
     // $routes->get('detail-barang/(:any)', 'BarangController::detailbarang/$1');
 });
 
@@ -213,6 +214,14 @@ $routes->group('admin/profile', ['filter' => 'ceklogin'], function ($routes) {
     $routes->get('/', 'ProfileController::index');
     $routes->post('ubahpassword', 'ProfileController::ubahpassword');
     $routes->post('gantifoto', 'ProfileController::gantifoto');
+});
+
+$routes->group('admin/notification', ['filter' => 'ceklogin'], function ($routes) {
+    $routes->get('/', 'PelaporanController::index');
+    $routes->match(['get', 'post'], '/detail/(:any)', 'PelaporanController::tampildetailpelaporan/$1');
+    $routes->post('multipledelete', 'PelaporanController::multipledeletetemporary');
+    $routes->post('restoredata', 'PelaporanController::restoredata');
+    $routes->post('multipledeletepermanen', 'PelaporanController::multipledeletepermanen');
 });
 
 

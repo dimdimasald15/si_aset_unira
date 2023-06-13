@@ -8,16 +8,11 @@ class Auth extends BaseController
 {
     protected $db;
     protected $session;
-    // private $session = session();
     public function __construct()
     {
         $this->db = \Config\Database::connect();
     }
 
-    // public function test()
-    // {
-    //     echo password_hash('123456', PASSWORD_BCRYPT);
-    // }
     public function index()
     {
         // Jika pengguna telah login, alihkan ke halaman dashboard
@@ -36,7 +31,6 @@ class Auth extends BaseController
     public function login()
     {
         if ($this->request->isAJAX()) {
-            // dd($_POST);
             $email = $this->request->getVar('email');
             $password = $this->request->getVar('password');
 
@@ -69,7 +63,7 @@ class Auth extends BaseController
             } else {
                 //cek user dulu ke database
                 $query_email = $this->db->query("SELECT * FROM petugas WHERE email = '$email'");
-
+                //object
                 $result = $query_email->getResult();
 
                 if (count($result) > 0) {
@@ -81,10 +75,12 @@ class Auth extends BaseController
                         //Jika password benar, maka buat session
                         $login = [
                             'isLoggedIn' => 1,
+                            'id' => $row->id,
                             'username' => $row->username,
                             'role' => $row->role,
                             'foto' => $row->foto
                         ];
+
                         $this->session->set($login);
 
                         $msg = [

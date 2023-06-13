@@ -63,11 +63,11 @@
               </div>
               <div class="col-12">
                 <div class="row mb-1">
-                  <label for="katid mb-2">Nama Kategori</label>
+                  <label for="katid">Nama Kategori</label>
                 </div>
                 <div class="row mb-1">
                   <div class="input-group mb-3">
-                    <label class="input-group-text" for="inputGroupSelect01"><i class="bi bi-layers"></i></label>
+                    <span class="input-group-text"><i class="bi bi-layers"></i></span>
                     <select name="kat_id" class="form-select p-2" id="katid" style="width: 400px;"></select>
                     <div class="invalid-feedback errkatid"></div>
                   </div>
@@ -125,7 +125,6 @@
     let saveMethod, globalId;
 
     function edit(id) {
-      // console.log('edit :' + id);
       clear_is_invalid();
       formtambah.show(500);
       saveMethod = "update";
@@ -139,7 +138,6 @@
         url: "<?= site_url('gedungcontroller/get_gedung_by_id/') ?>" + id,
         dataType: "json",
         success: function(response) {
-          console.log(response);
           isiForm(response);
         }
       });
@@ -176,8 +174,6 @@
     }
 
     function hapus(id, namagedung) {
-      // console.log(id + " & " + namagedung);
-      // console.log('delete : ' + namagedung);
       Swal.fire({
         title: `Apakah kamu yakin ingin menghapus data ${namagedung}?`,
         icon: 'warning',
