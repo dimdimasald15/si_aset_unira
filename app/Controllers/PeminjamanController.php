@@ -392,12 +392,37 @@ class PeminjamanController extends BaseController
         }
     }
 
+    public function tampilmodalcetak()
+    {
+        if (!$this->request->isAJAX()) {
+            $data = [
+                'title' => 'Error 404',
+                'msg' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/mazer/error-404', $data);
+        }
+
+        $jenis_kat = $this->request->getVar('jenis_kat');
+
+        $data = [
+            'title' => 'Cetak Peminjaman Barang',
+            'jenis_kat' => $jenis_kat
+        ];
+
+        $msg = [
+            'sukses' => view('peminjaman/modalcetak', $data)
+        ];
+
+        echo json_encode($msg);
+    }
+
     public function pilihanggota()
     {
         if ($this->request->isAJAX()) {
             $query = $this->db->table('anggota a')->select('a.id, a.nama_anggota')->join('peminjaman p', 'a.id=p.anggota_id')
                 ->where('p.status', 0)
-                ->where('p.deleted_at is null')->get();
+                ->where('p.deleted_at is null')->groupBy('a.id')
+                ->get();
             $msg = $query->getResultArray();
 
             echo json_encode($msg);
@@ -422,11 +447,10 @@ class PeminjamanController extends BaseController
                 ->join('stok_barang sb', 'b.id=sb.barang_id')
                 ->join('satuan s', 's.id=sb.satuan_id')
                 ->where('p.anggota_id', $anggota_id)
-                ->where('p.tgl_pinjam', $tgl_pinjam)
+                ->like('p.tgl_pinjam', "$tgl_pinjam%")
                 ->where('p.deleted_at IS NULL')
                 ->orderBy('id', 'ASC')
                 ->get()->getResultArray();
-
             $jmldata = count($data);
 
             $msg = [

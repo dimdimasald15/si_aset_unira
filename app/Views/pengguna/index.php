@@ -92,11 +92,11 @@
                             </div>
                             <div class="row mb-1">
                                 <div class="input-group mb-3">
-                                    <label class="input-group-text" for="inputGroupSelect01"><i class="bi bi-layers"></i></label>
+                                    <label class="input-group-text" for="role"><i class="bi bi-layers"></i></label>
                                     <select name="role" class="form-select" id="role" placeholder="Role">
                                         <option value="" selected> -- Pilih Role --</option>
                                         <option value="Administrator">Admin</option>
-                                        <option value="petugas">Petugas</option>
+                                        <option value="Petugas">Petugas</option>
                                     </select>
                                     <div class="invalid-feedback errrole"></div>
                                 </div>
@@ -208,8 +208,6 @@
 
         $('#formTambahPengguna').submit(function(e) {
             e.preventDefault();
-            // console.log('test');
-            e.preventDefault();
             let url = "";
             if (saveMethod == "update") {
                 url = "pengguna/update/" + globalId;
@@ -231,7 +229,6 @@
                     $('.form-control-icon').css("transform", "translate(0,-27px)");
                 },
                 success: function(response) {
-                    console.log(response);
                     if (response.error) {
                         if (response.error.nip) {
                             $('#nip').addClass('is-invalid');
@@ -292,7 +289,6 @@
     });
 
     function edit(id) {
-        console.log('edit :' + id);
         clear_is_invalid();
         formtambah.show(500);
         saveMethod = "update";
@@ -307,7 +303,6 @@
             url: "<?= site_url('penggunacontroller/get_pengguna_by_id/') ?>" + id,
             dataType: "json",
             success: function(response) {
-                console.log(response);
                 isiForm(response);
             }
         });
@@ -323,13 +318,17 @@
         formtambah.find("input[name='nip']").val(nip)
         formtambah.find("input[name='email']").val(email)
         formtambah.find("input[name='username']").val(username)
-        // formtambah.find("select[name*='kat_id']").val(kat_id)
-        formtambah.find("select[name*='role']").html('<option value = "' + role + '" selected >' + role + '</option>');
+        if (role == "Petugas") {
+            formtambah.find("select[name='role']").val(role);
+        } else {
+            formtambah.append('<option value="' + role + '">' +
+                role + '</option>');
+        }
+        // formtambah.find("select[name*='role']").html('<option value = "' + role + '" selected >' + role + '</option>');
     }
 
 
     function hapus(id, email) {
-        console.log(id + " & " + email);
         Swal.fire({
             title: `Apakah kamu yakin ingin menghapus data ${email}?`,
             icon: 'warning',
@@ -377,7 +376,7 @@
 
     function clearForm() {
         formtambah.find("input").val("")
-        formtambah.find("select").val("")
+        // formtambah.find("select").val("")
     }
 
     function clear_is_invalid() {

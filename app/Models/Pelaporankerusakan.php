@@ -39,13 +39,42 @@ class Pelaporankerusakan extends Model
         return $data;
     }
 
-    public function setSoftDelete($id)
+    public function setSoftDelete()
     {
         $session = \Config\Services::session();
         $data = [
             'deleted_by' => $session->get('username'),
             'deleted_at' => date("Y-m-d H:i:s", time())
         ];
-        $this->update($id, $data);
+
+        return $data;
+
+        // $this->update($id, $data);
+    }
+
+    public function setRestoreData()
+    {
+        $username = session()->get('username');
+
+        $username = session()->get('username');
+        // if (!empty($username) && !array_key_exists('updated_by', $data)) {
+        $data['updated_at'] = date('Y-m-d H:i:s');
+        $data['updated_by'] = $username;
+        $data['deleted_by'] = null;
+        $data['deleted_at'] = null;
+        // }
+        return $data;
+    }
+
+    public function paginatePelaporan(int $nmPage, string $string)
+    {
+        return $this->select('pelaporan_kerusakan.*, a.nama_anggota, a.no_anggota, a.level, u.singkatan, n.viewed_by_admin')
+            ->join('anggota a', 'a.id=pelaporan_kerusakan.anggota_id')
+            ->join('unit u', 'u.id=a.unit_id')
+            ->join('notifikasi n', 'pelaporan_kerusakan.id=n.laporan_id')
+            ->where('n.deleted_at IS NULL')
+            ->where('pelaporan_kerusakan.deleted_at IS NULL')
+            ->orderBy('pelaporan_kerusakan.id', 'DESC')
+            ->paginate($nmPage, $string);
     }
 }

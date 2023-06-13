@@ -1044,7 +1044,7 @@
     });
   }
 
-  function upload(id, nama_brg) {
+  function upload(id, nama_brg, foto_barang) {
     $('#cardmultipleinsert').hide(500);
     $.ajax({
       type: "post",
@@ -1052,6 +1052,7 @@
       data: {
         id: id,
         nama_brg: nama_brg,
+        foto_barang: foto_barang,
       },
       dataType: "json",
       success: function(response) {

@@ -1,670 +1,616 @@
-<?= $this->extend('/layouts/template2') ?>
+<?= $this->extend('layouts/template') ?>
 
 <?= $this->section('content') ?>
-<?php if ($barang) { ?>
-  <form class="form form-vertical py-2" id="formlaporbrg">
-    <?= csrf_field() ?>
-    <div class="row justify-content-center" id="intro">
-      <div class="col-lg-9 col-md-9 col-12">
-        <div class="card shadow border-0 mb-0">
-          <div class="card-header bg-transparent pb-1">
-            <div class="text-center text-muted">
-              <h3 class="mb-2 text-muted">Form Pelaporan Kerusakan Barang</h3>
-            </div>
-          </div>
-          <div class="card-body" style="padding: 0.5rem 1rem 1rem 1rem;">
-            <div class="row px-4 py-0 option">
-              <div class="col-md-12 d-flex justify-content-center">
-                <h6>Apakah anda sudah pernah melaporkan kerusakan aset?</h6>
-              </div>
-              <div class="col-md-12">
-                <div class="form-check">
-                  <input class="form-check-input" type="radio" name="pilihan" id="opsi1" value="anggota baru">
-                  <label class="form-check-label" for="opsi1">
-                    Tidak, saya belum pernah melaporkan kerusakan aset.
-                  </label>
-                </div>
-                <div class="form-check">
-                  <input class="form-check-input" type="radio" name="pilihan" id="opsi2" value="anggota lama">
-                  <label class="form-check-label" for="opsi2">
-                    Sudah, saya sudah pernah melaporkan kerusakan aset.
-                  </label>
-                  <div class="invalid-feedback erroption"></div>
-                </div>
-                <input type="hidden" name="no_laporan" id="nolaporan" value="<?= $no_laporan ?>">
-              </div>
-            </div>
-            <div class="row option">
-              <div class="col-12 d-flex justify-content-center">
-                <button type="button" class="btn btn-success mx-4 my-4 btn-block" id="btn-next1">Lanjutkan isi form</button>
-              </div>
-            </div>
-          </div>
-          <div class="card-footer shadow-sm">
-            <div class="row text-center">
-              <div class="col-lg-12">
-                <a href="<?= site_url() . $url_detail_brg ?>" class="text-decoration-underline"> Kembali ke halaman sebelumnya</a>
-              </div>
-            </div>
-          </div>
-        </div>
+<?php echo helper('converter_helper');
+?>
+<div class="page-heading email-application">
+  <div class="page-title">
+    <div class="row">
+      <div class="col-12 col-md-8 order-md-1 order-last">
+        <h3><?= $title; ?></h3>
+        <p class="text-subtitle text-muted">Kelola <?= strtolower($title); ?></p>
+      </div>
+      <div class="col-12 col-md-4 order-md-2 order-first">
+        <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
+          <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
+            <li class="breadcrumb-item"><a href="dashboard"><i class="fa fa-home"></i></a></li>
+            <?php foreach ($breadcrumb as $crumb) : ?>
+              <?php if (end($breadcrumb) == $crumb) : ?>
+                <li class="breadcrumb-item"><?= $crumb['name'] ?></li>
+              <?php else : ?>
+                <li class="breadcrumb-item active" aria-current="page"><a href="#"><?= $crumb['name'] ?></a></li>
+              <?php endif ?>
+            <?php endforeach ?>
+          </ol>
+        </nav>
       </div>
     </div>
-    <div class="row justify-content-center" id="newmember" style="display:none;">
-      <div class="col-lg-9 col-md-9 col-12">
-        <div class="card shadow">
-          <div class="card-header bg-transparent pb-1">
-            <div class="text-center text-muted">
-              <h3 class="mb-2 text-muted">Form Pendaftaran Pelapor Baru</h3>
+  </div>
+  <section class="section content-area-wrapper bg-dark text-white shadow">
+    <div class="sidebar-left bg-dark text-white">
+      <div class="sidebar">
+        <div class="sidebar-content email-app-sidebar d-flex">
+          <!-- sidebar close icon -->
+          <span class="sidebar-close-icon">
+            <i class="bx bx-x"></i>
+          </span>
+          <!-- sidebar close icon -->
+          <div class="email-app-menu bg-dark text-white">
+            <div class="form-group form-group-compose">
+              <!-- compose button  -->
+              <!-- <button type="button" class="btn btn-primary btn-block my-4 compose-btn">
+                <i class="bx bx-plus"></i>
+                Compose
+              </button> -->
             </div>
-          </div>
-          <div class="card-body" style="padding: 0.5rem 1rem 1rem 1rem;">
-            <div class="row mt-1">
-              <div class="form-body">
-                <div class="col-12">
-                  <div class="row g-2 mb-1">
-                    <div class="col-md-6">
-                      <label for="namaanggota" class="form-label">Nama Pelapor</label>
-                      <div class="input-group mb-1">
-                        <span class="input-group-text"><i class="bi bi-person"></i></span>
-                        <input type="text" class="form-control" placeholder="Masukkan Nama Anggota" id="namaanggota" name="nama_anggota">
-                        <div class="invalid-feedback errnamaanggota"></div>
-                      </div>
-                    </div>
-                    <div class="col-md-6">
-                      <div class="row mb-2">
-                        <label for="level">Level Pelapor</label>
-                      </div>
-                      <div class="input-group">
-                        <span class="input-group-text" id="basic-addon1"><i class="bi bi-person-badge-fill"></i></span>
-                        <select name="level" class="form-select p-2" id="level">
-                          <option value="" disabled selected>Pilih Level</option>
-                          <option value="Karyawan">Karyawan</option>
-                          <option value="Mahasiswa">Mahasiswa</option>
-                        </select>
-                        <div class="invalid-feedback errlevel"></div>
-                      </div>
-                    </div>
+            <div class="sidebar-menu-list ps">
+              <!-- sidebar menu  -->
+              <div class="list-group list-group-messages">
+                <a href="#" class="list-group-item pt-0 active" id="inbox-menu">
+                  <div class="fonticon-wrap d-inline me-3">
+                    <svg class="bi" width="1.5em" height="1.5em" fill="currentColor">
+                      <use xlink:href="<?= base_url() ?>assets/vendors/bootstrap-icons/bootstrap-icons.svg#envelope" />
+                    </svg>
+                    </i>
                   </div>
-                </div>
-                <div class="col-md-12">
-                  <div class="row g-2 mb-1">
-                    <div class="col-md-6 noanggota" style="display:none;">
-                    </div>
-                    <div class="col-md-6">
-                      <label for="unit" class="form-label">Unit Pelapor</label>
-                      <div class="input-group">
-                        <span class="input-group-text" id="basic-addon1"><i class="bi bi-building"></i></span>
-                        <select name="unit_id" class="form-select p-2" id="unit"></select>
-                        <div class="invalid-feedback errunit"></div>
-                      </div>
-                    </div>
+                  Inbox
+                  <span class="badge badge-sm badge-notification bg-light-success px-1 text-success" style="margin-left: 20px;"><?= $belumdibaca ?></span>
+                </a>
+                <a href="#" class="list-group-item" id="trash-menu">
+                  <div class="fonticon-wrap d-inline me-3">
+                    <svg class="bi" width="1.5em" height="1.5em" fill="currentColor">
+                      <use xlink:href="<?= base_url() ?>assets/vendors/bootstrap-icons/bootstrap-icons.svg#trash" />
+                    </svg>
                   </div>
-                </div>
-                <div class="col-md-12">
-                  <div class="row g-2 mb-1">
-                    <div class="col-md-6">
-                      <label for="nohp" class="form-label">No Hp Pelapor</label>
-                      <div class="input-group">
-                        <span class="input-group-text"><i class="bi bi-telephone"></i></span>
-                        <input type="text" class="form-control" placeholder="Masukkan No Handphone" id="nohp" name="no_hp">
-                        <div class="invalid-feedback errnohp"></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="row btngroup1" style="display: none;">
-                  <div class="col-12 d-flex justify-content-end">
-                    <button type="button" class="btn btn-white my-4 btn-cancel1" style="display:none;">&laquo; Kembali</button>
-                    <button type="button" class="btn btn-success my-4" id="btn-next2">Lanjutkan</button>
-                  </div>
-                </div>
+                  Trash
+                </a>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="row justify-content-center" id="formbrgrusak" style="display:none;">
-      <div class="col-lg-9 col-md-9 col-12">
-        <div class="card shadow">
-          <div class="card-header bg-transparent pb-1">
-            <div class="text-center text-muted">
-              <h3 class="mb-2 text-muted">Form Kerusakan Barang</h3>
-            </div>
-          </div>
-          <div class="card-body" style="padding: 0.5rem 1rem 1rem 1rem;">
-            <div class="row mt-1">
-              <div class="col-lg-12">
-                <div class="form-body">
-                  <div class="row d-flex justify-content-between">
-                    <div class="col-lg-12">
-                      <div class="col-12">
-                        <div class="row g-2 mb-1">
-                          <div class="col-md-12">
-                            <div class="row mb-1 oldmember" style="display:none;">
-                              <label for="idanggota">Nama Pelapor</label>
-                              <div class="row mb-1">
-                                <div class="input-group">
-                                  <span class="input-group-text" id="basic-addon1"><i class="bi bi-person"></i></span>
-                                  <select name="anggota_id" class="form-select p-2" id="idanggota" style="display: none;">
-                                  </select>
-                                  <div class="invalid-feedback erridanggota"></div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="col-md-12">
-                            <input type="hidden" name="stokbrg_id" id="id" value="<?= $barang->id ?>">
-                            <div class="row mb-1">
-                              <label for="idbrg">Nama Barang</label>
-                              <div class="row mb-1">
-                                <div class="input-group">
-                                  <span class="input-group-text" id="basic-addon1"><i class="bi bi-layers"></i></span>
-                                  <select name="barang_id" class="form-select p-2" id="idbrg" disabled>
-                                    <option value="<?= $barang->barang_id ?>" selected><?= $barang->nama_brg ?></option>
-                                  </select>
-                                  <div class="invalid-feedback erridbrg"></div>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="col-12">
-                        <div class="row g-2 mb-1">
-                          <div class="col-md-6">
-                            <div class="row mb-1">
-                              <label for="lokasi">Lokasi Penempatan</label>
-                            </div>
-                            <div class="row mb-1">
-                              <div class="input-group">
-                                <span class="input-group-text" id="basic-addon1"><i class="bi bi-geo-alt"></i></span>
-                                <select class="form-select" id="lokasi" name="ruang_id" disabled>
-                                  <option value="<?= $barang->ruang_id ?>" selected><?= $barang->nama_ruang ?></option>
-                                </select>
-                                <div class="invalid-feedback errlokasi"></div>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="col-md-3">
-                            <label for="jmlrusak" class="mb-1">Jumlah Barang Rusak</label>
-                            <div class="input-group">
-                              <span class="input-group-text" id="basic-addon1"><i class="bi bi-box-seam"></i></span>
-                              <input type="number" min="1" class="form-control" id="jmlrusak" placeholder="Masukkan Jumlah Barang rusak" name="jml_barang">
-                              <div class="invalid-feedback errjmlrusak"></div>
-                            </div>
-                          </div>
-                          <div class="col-md-3">
-                            <label for="satuan" class="mb-1">Satuan</label>
-                            <div class="input-group">
-                              <span class="input-group-text" id="basic-addon1"><i class="bi bi-dice-5"></i></span>
-                              <select name="satuan_id" class="form-select p-2" id="satuan" disabled>
-                                <option value="<?= $barang->satuan_id ?>" selected><?= $barang->kd_satuan ?></option>
-                              </select>
-                              <div class="invalid-feedback errsatuan"></div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="col-12">
-                      <div class="row g-2 mb-1">
-                        <div class="col-md-12">
-                          <label class="mb-1" for="title">Title laporan</label>
-                          <div class="input-group">
-                            <span class="input-group-text" id="basic-addon1"><i class="bi bi-file-earmark-text"></i></span>
-                            <input type="text" class="form-control" placeholder="Title Laporan" name="title" id="title" value="Laporan kerusakan aset <?= $barang->nama_brg ?> di <?= $barang->nama_ruang ?>" readonly>
-                          </div>
-                        </div>
-                        <div class="col-md-6">
-                          <label for="fotobrg" class="mb-1">Foto kerusakan barang</label>
-                          <div class="input-group mb-3">
-                            <span class="input-group-text" id="basic-addon1"><i class="bi bi-card-image"></i></span>
-                            <input type="file" class="form-control" placeholder="Upload foto barang rusak" id="fotobrg" name="foto_barang">
-                            <div class="invalid-feedback errfotobrg"></div>
-                          </div>
-                        </div>
-                        <div class="col-md-6 previewimage" style="display:none;"></div>
-                      </div>
-                      <div class="col-md-12">
-                        <label class="deskripsi" for="deskripsi">Deskripsi Kerusakan Barang</label>
-                        <div class="input-group">
-                          <span class="input-group-text" id="basic-addon1"><i class="bi bi-pencil"></i></span>
-                          <textarea class="form-control" id="deskripsi" name="deskripsi" name="deskripsi"></textarea>
-                          <div class="invalid-feedback errdeskripsi"></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="row btngroup2" style="display: none;">
-              <div class="col-12 d-flex justify-content-end">
-                <button type="button" class="btn btn-white my-4 btn-cancel1" style="display: none;">&laquo; Kembali</button>
-                <button type="button" class="btn btn-white my-4" id="btn-cancel2" style="display: none;">&laquo; Kembali</button>
-                <button type="button" class="btn btn-success my-4 btnsimpan">Submit !</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    </div>
-  </form>
+              <!-- sidebar menu  end-->
 
-  <div class="row justify-content-center" id="opsiubahlaporan" style="display:none;">
-  </div>
-<?php } else { ?>
-  <div class="card">
-    <div class="card-title text-center">
-      <div class="row m-3">
-        <h4>Mohon maaf, tidak dapat diproses.</h4>
+              <!-- sidebar label start -->
+              <!-- <label class="sidebar-label">Labels</label>
+              <div class="list-group list-group-labels">
+                <a href="#" class="list-group-item d-flex justify-content-between align-items-center">
+                  Product
+                  <span class="bullet bullet-success bullet-sm"></span>
+                </a>
+                <a href="#" class="list-group-item d-flex justify-content-between align-items-center">
+                  Work
+                  <span class="bullet bullet-primary bullet-sm"></span>
+                </a>
+                <a href="#" class="list-group-item d-flex justify-content-between align-items-center">
+                  Misc
+                  <span class="bullet bullet-warning bullet-sm"></span>
+                </a>
+                <a href="#" class="list-group-item d-flex justify-content-between align-items-center">
+                  Family
+                  <span class="bullet bullet-danger bullet-sm"></span>
+                </a>
+                <a href="#" class="list-group-item d-flex justify-content-between align-items-center">
+                  Design
+                  <span class="bullet bullet-info bullet-sm"></span>
+                </a>
+              </div> -->
+              <!-- sidebar label end -->
+              <!-- <div class="ps__rail-x" style="left: 0px; bottom: 0px;">
+                <div class="ps__thumb-x" tabindex="0" style="left: 0px; width: 0px;"></div>
+              </div>
+              <div class="ps__rail-y" style="top: 0px; right: 0px;">
+                <div class="ps__thumb-y" tabindex="0" style="top: 0px; height: 0px;"></div>
+              </div> -->
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-<?php } ?>
+    <div class="content-right bg-dark text-white">
+      <div class="content-overlay bg-dark text-white"></div>
+      <div class="content-wrapper bg-dark text-white">
+        <div class="content-header row">
+        </div>
+        <div class="content-body">
+          <!-- email app overlay -->
+          <div class="app-content-overlay"></div>
+          <div class="email-app-area">
+            <!-- Email list Area -->
+            <div class="email-app-list-wrapper">
+              <div class="email-app-list">
+                <div class="email-action">
+                  <!-- action left start here -->
+                  <div class="action-left d-flex align-items-center">
+                    <!-- select All checkbox -->
+                    <div class="checkbox checkbox-shadow checkbox-sm selectAll me-3">
+                      <input type="checkbox" id="checkall" class='form-check-input'>
+                      <label for="checkboxsmall"></label>
+                    </div>
+                    <!-- delete unread dropdown -->
+                    <ul class="list-inline m-0 d-flex">
+                      <li class="list-inline-item mail-delete" id="multipledelete">
+                        <button type="button" onclick="multipledelete()" class="btn btn-icon action-icon" data-toggle="tooltip">
+                          <span class="fonticon-wrap">
+                            <svg class="bi" width="1.5em" height="1.5em" fill="currentColor">
+                              <use xlink:href="<?= base_url() ?>assets/vendors/bootstrap-icons/bootstrap-icons.svg#trash" />
+                            </svg>
+                          </span>
+                          Hapus Sementara
+                        </button>
+                      </li>
+                      <li class="list-inline-item mail-delete" id="multipledeletepermanen" style="display:none;">
+                        <button type="button" onclick="multipledeletepermanen()" class="btn btn-icon action-icon" data-toggle="tooltip">
+                          <span class="fonticon-wrap">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3-fill" viewBox="0 0 16 16">
+                              <path d="M11 1.5v1h3.5a.5.5 0 0 1 0 1h-.538l-.853 10.66A2 2 0 0 1 11.115 16h-6.23a2 2 0 0 1-1.994-1.84L2.038 3.5H1.5a.5.5 0 0 1 0-1H5v-1A1.5 1.5 0 0 1 6.5 0h3A1.5 1.5 0 0 1 11 1.5Zm-5 0v1h4v-1a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5ZM4.5 5.029l.5 8.5a.5.5 0 1 0 .998-.06l-.5-8.5a.5.5 0 1 0-.998.06Zm6.53-.528a.5.5 0 0 0-.528.47l-.5 8.5a.5.5 0 0 0 .998.058l.5-8.5a.5.5 0 0 0-.47-.528ZM8 4.5a.5.5 0 0 0-.5.5v8.5a.5.5 0 0 0 1 0V5a.5.5 0 0 0-.5-.5Z" />
+                            </svg>
+                          </span>
+                          Hapus Permanen
+                        </button>
+                      </li>
+                      <li class="list-inline-item recycle" id="restoredata" style="display:none;">
+                        <button type="button" class="btn btn-icon action-icon" onclick="restoredata()">
+                          <span class="fonticon-wrap d-inline">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-recycle" viewBox="0 0 16 16">
+                              <path d="M9.302 1.256a1.5 1.5 0 0 0-2.604 0l-1.704 2.98a.5.5 0 0 0 .869.497l1.703-2.981a.5.5 0 0 1 .868 0l2.54 4.444-1.256-.337a.5.5 0 1 0-.26.966l2.415.647a.5.5 0 0 0 .613-.353l.647-2.415a.5.5 0 1 0-.966-.259l-.333 1.242-2.532-4.431zM2.973 7.773l-1.255.337a.5.5 0 1 1-.26-.966l2.416-.647a.5.5 0 0 1 .612.353l.647 2.415a.5.5 0 0 1-.966.259l-.333-1.242-2.545 4.454a.5.5 0 0 0 .434.748H5a.5.5 0 0 1 0 1H1.723A1.5 1.5 0 0 1 .421 12.24l2.552-4.467zm10.89 1.463a.5.5 0 1 0-.868.496l1.716 3.004a.5.5 0 0 1-.434.748h-5.57l.647-.646a.5.5 0 1 0-.708-.707l-1.5 1.5a.498.498 0 0 0 0 .707l1.5 1.5a.5.5 0 1 0 .708-.707l-.647-.647h5.57a1.5 1.5 0 0 0 1.302-2.244l-1.716-3.004z" />
+                            </svg>
+                          </span>
+                          Pulihkan Data
+                        </button>
+                      </li>
+                    </ul>
+                  </div>
+                  <!-- action left end here -->
+
+                  <!-- action right start here -->
+                  <div class="action-right d-flex flex-grow-1 align-items-center justify-content-around">
+                    <!-- search bar  -->
+                    <div class="email-fixed-search flex-grow-1">
+                      <div class="sidebar-toggle d-block d-lg-none">
+                        <i class="bx bx-menu"></i>
+                      </div>
+
+                      <!-- <div class="form-group position-relative  mb-0 has-icon-left">
+                        <input type="text" id="keywords" onkeyup="searchFilter();" class="form-control" placeholder="Cari laporan kerusakan aset..">
+                        <div class="form-control-icon">
+                          <svg class="bi" width="1.5em" height="1.5em" fill="currentColor">
+                            <use xlink:href="<?= base_url() ?>assets/vendors/bootstrap-icons/bootstrap-icons.svg#search" />
+                          </svg>
+                        </div>
+                      </div> -->
+                    </div>
+                    <!-- pagination and page count -->
+                    <?php if ($pager !== null) : ?>
+                      <span class="d-sm-block" style="margin-top:-10px;">
+                        <?php echo $pager->links('pelaporan', 'bootstrap_pagination'); ?>
+                      </span>
+                    <?php endif ?>
+                  </div>
+                </div>
+                <?php if ($no_laporan !== '') { ?>
+                  <div id="semuapelaporan"></div>
+                  <div class="media-body" id="detail_laporan_kerusakan">
+                    <div class="email-scroll-area ps ps--active-y">
+                      <!-- email details  -->
+                      <div class="row">
+                        <div class="col-12">
+                          <div class="email-detail-head">
+                            <div class="card" role="tablist">
+                              <div class="card-header d-flex justify-content-between align-items-center">
+                                <div class="collapse-title media">
+                                  <div class="pr-1">
+                                    <div class="avatar mr-75">
+                                      <img src="<?= base_url() ?>assets/images/faces/<?php
+                                                                                      $angka = rand(1, 7);
+                                                                                      echo $angka ?>.jpg" alt="avtar img holder" width="30" height="30">
+                                    </div>
+                                  </div>
+                                  <div class="media-body-text mt-25">
+                                    <span class="text-primary nama"><?= $pelaporan->nama_anggota ?></span>
+                                    <span class="d-sm-inline d-none" id="noanggota">&lt; <?= $pelaporan->no_anggota ?> &gt;</span>
+                                    <small class="text-muted d-block" id="level"><?= $pelaporan->level ?></small>
+                                  </div>
+                                </div>
+                                <div class="information d-sm-flex align-items-center">
+                                  <small class="text-muted me-3" id="created_at"><?= $pelaporan->created_at ?></small>
+                                  <span class="favorite text-secondary">
+                                    <svg class="bi" width="1.5em" height="1.5em" fill="currentColor">
+                                      <use xlink:href="<?= base_url() ?>assets/vendors/bootstrap-icons/bootstrap-icons.svg#star" />
+                                    </svg>
+                                  </span>
+                                </div>
+                              </div>
+                              <!-- <div id="collapse7" role="tabpanel" aria-labelledby="headingCollapse7" class="collapse show"> -->
+                              <div class="card-content">
+                                <div class="card-body py-1">
+                                  <p class="text-bold-500" id="title"><?= $pelaporan->title ?></p>
+                                  <p id='deskripsi'>
+                                    <?= $pelaporan->deskripsi ?>
+                                  </p>
+                                  <p class="mb-0">Hormat kami,</p>
+                                  <br>
+                                  <p class="text-bold-500 nama"><?= $pelaporan->nama_anggota ?></p>
+                                </div>
+                                <div class="card-footer pt-0 border-top">
+                                  <label class="sidebar-label">File foto kerusakan</label>
+                                  <ul class="list-unstyled mb-0">
+                                    <li class="cursor-pointer pb-25" id="foto">
+                                      <img src="<?= base_url() ?>assets/images/foto_kerusakan/<?= $pelaporan->foto ?>" alt="<?= $pelaporan->foto ?>.png" width="400">
+                                      <small class="text-muted ms-1 attchement-text"><?= $pelaporan->foto ?></small>
+                                    </li>
+                                  </ul>
+                                </div>
+                              </div>
+                              <!-- </div> -->
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                <?php } else { ?>
+                  <!-- email user list start -->
+                  <div class="pelaporan-detail"></div>
+                  <div class="email-user-list list-group ps ps--active-y bg-dark text-white">
+                    <?php if (count($pelaporan) > 0) { ?>
+                      <ul class="users-list-wrapper media-list data_pelaporan">
+                        <?php
+                        $fotoRandom = rand(1, 6);
+                        foreach ($pelaporan as $row) : ?>
+                          <li class="media <?= (!$row['viewed_by_admin']) ? '' : 'mail-read' ?>">
+                            <div class="user-action">
+                              <div class="checkbox-con me-3">
+                                <div class="checkbox checkbox-shadow checkbox-sm">
+                                  <input type="checkbox" name="id[]" class='form-check-input checkrow' value="<?= $row['id'] ?>">
+                                  <label for="checkboxsmall2"></label>
+                                </div>
+                              </div>
+                              <span class="favorite <?= !$row['viewed_by_admin'] ? 'text-warning' : '' ?>">
+                                <svg class="bi" width="1.5em" height="1.5em" fill="currentColor">
+                                  <use xlink:href="<?= base_url() ?>assets/vendors/bootstrap-icons/bootstrap-icons.svg#<?= !$row['viewed_by_admin'] ? 'envelope-fill' : 'envelope-open' ?>" />
+                                </svg>
+                              </span>
+                            </div>
+                            <div class="pr-50">
+                              <div class="avatar">
+                                <img class="rounded-circle" src="<?= base_url() ?>assets/images/faces/<?php
+                                                                                                      $angka = $fotoRandom++;
+                                                                                                      echo $angka; ?>.jpg" alt="Generic placeholder image">
+                              </div>
+                            </div>
+                            <div class="media-body" onclick="detaillaporan('<?= $row['no_laporan'] ?>', <?= $angka ?>)">
+                              <div class="user-details">
+                                <div class="mail-items">
+                                  <?php if ($row['level'] == 'Mahasiswa') { ?>
+                                    <span class="list-group-item-text"><?= $row['nama_anggota'] . " (NIM. " . $row['no_anggota'] . ")" ?></span>
+                                  <?php } else { ?>
+                                    <span class="list-group-item-text"><?= $row['nama_anggota'] . " (NIDN/NIP. " . $row['no_anggota'] . ")" ?></span>
+                                  <?php } ?>
+                                </div>
+                                <div class="mail-meta-item">
+                                  <span class="float-right">
+                                    <span class="mail-date text-black"><?= ubahTanggal($row['created_at']) ?></span>
+                                  </span>
+                                </div>
+                              </div>
+                              <div class="mail-message">
+                                <p class="list-group-item-text mb-0 text-black">
+                                  <?= $row['title'] ?>
+                                </p>
+                                <div class="mail-meta-item">
+                                  <span class="float-right">
+                                    <span class="bullet bullet-danger bullet-sm"></span>
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          </li>
+                        <?php endforeach; ?>
+                        <!-- email user list end -->
+                      </ul>
+                    <?php } else { ?>
+                      <ul class="users-list-wrapper media-list data_pelaporan">
+                        <li class="media">
+                          <i class="bx bx-error-circle font-large-2"></i>
+                          <h5>Data kosong</h5>
+                        </li>
+                      </ul>
+                    <?php } ?>
+
+                  </div>
+                <?php } ?>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
 <?= $this->endSection() ?>
+
+<?= $this->section('styles') ?>
+<link rel="stylesheet" href="<?= base_url() ?>assets/css/pages/email.css">
+<?= $this->endSection() ?>
+
 <?= $this->section('javascript') ?>
 <script>
-  function clearForm() {
-    var title = "";
-    if ($('#title').val() && $('#nolaporan').val()) {
-      title = $('#title').val();
-      nolaporan = $('#nolaporan').val();
-    }
-    $('#formlaporbrg').find("input").val("")
-    $('#title').val(title)
-    $('#nolaporan').val(nolaporan)
-    $('#unit').html('');
-    $('#level').val('');
-    $('#idanggota').val('');
-    $('.previewimage').empty();
-  }
-
-  function clear_is_invalid() {
-    if ($('#formlaporbrg').find('input').hasClass('is-invalid') || $('#formlaporbrg').find('select').hasClass('is-invalid')) {
-      $('#formlaporbrg').find('input').removeClass('is-invalid');
-      $('#formlaporbrg').find('select').removeClass('is-invalid');
-    }
-  }
-
-  function defaulthide() {
-    $('#newmember').hide();
-    $('#formbrgrusak').hide(500);
-    $('.oldmember').hide();
-    $('.noanggota').hide();
-    $('#idanggota').hide();
-    $('.btngroup1').hide();
-    $('.btngroup2').hide();
-    $('.btn-cancel1').hide();
-    $('#btn-cancel2').hide();
-    $('#opsiubahlaporan').hide();
-  }
-
   $(document).ready(function() {
-    defaulthide();
+    var no_laporan = "<?= $no_laporan ?>";
+    $('#checkall').prop('checked', false)
 
-    $('.btn-cancel1').on('click', function() {
-      $('#intro').show(500);
-      $('#newmember').hide(500);
-      // $('#formbrgrusak').hide(500);
-      clearForm();
-      defaulthide();
-      clear_is_invalid();
-    });
-
-    $('#btn-cancel2').on('click', function() {
-      $('#intro').hide(500);
-      $('#formbrgrusak').hide(500);
-      $('#newmember').show(500);
-      $('.btngroup2').hide();
-      $('.btn-cancel1').show();
-      // clearForm();
-      clear_is_invalid();
-    });
-
-    $('#btn-next1').on('click', function() {
-      var optionSelected = false;
-      $('.option .form-check-input').each(function() {
-        if ($(this).is(':checked')) {
-          optionSelected = true;
-          $(".option .form-check-input").removeClass("is-invalid");
-          $(".erroption").html('');
-          return false; // break out of the loop
-        }
-      });
-      if (!optionSelected) {
-        $(".option .form-check-input").addClass("is-invalid");
-        $(".erroption").html('Pilih salah satu opsi');
-        return; // stop here, don't proceed to the next form
-      }
-
-      if ($('#opsi1').is(':checked')) {
-        $('#intro').hide(500);
-        $('.oldmember').hide(500);
-        $('#idanggota').hide();
-        $('#newmember').show(500);
-        $('#formbrgrusak').hide();
-        $('.btn-cancel1').hide();
-      } else if ($('#opsi2').is(':checked')) {
-        $('#intro').hide(500);
-        $('#newmember').hide(500);
-        $('#formbrgrusak').show(500);
-        $('.oldmember').show();
-        $('#idanggota').show();
-        $('.btn-cancel1').show();
-        $('#btn-cancel2').hide();
-      }
-    });
-
-    $('#level').on('change', function(e) {
+    $('#inbox-menu').on('click', function(e) {
       e.preventDefault();
-      $('#level').removeClass('is-invalid');
-      $('.errlevel').html('');
-
-      level = $('#level').val();
-      pilihunit(level);
-
-      $('.noanggota').hide().html('');
-      if (level == 'Mahasiswa') {
-        $('.noanggota').show().append(
-          `<label for="noanggota" class="form-label">NIM</label>
-    <div class="input-group">
-      <span class="input-group-text"><i class="bi bi-card-list"></i></span>
-      <input type="text" class="form-control" placeholder="Masukkan NIM" id="noanggota" name="no_anggota">
-      <div class="invalid-feedback errnoanggota"></div>
-    </div>`
-        );
-      } else if (level == 'Karyawan') {
-        $('.noanggota').show().append(
-          `<label for="noanggota" class="form-label">Nomor Pegawai</label>
-    <div class="input-group">
-      <span class="input-group-text"><i class="bi bi-card-list"></i></span>
-      <input type="text" class="form-control" placeholder="Masukkan Nomor Pegawai" id="noanggota" name="no_anggota">
-      <div class="invalid-feedback errnoanggota"></div>
-    </div>`
-        );
+      $('#multipledelete').show();
+      $('#multipledeletepermanen').hide();
+      $('#restoredata').hide();
+      $(this).addClass('active');
+      $('#trash-menu').removeClass('active');
+      if (no_laporan !== "") {
+        $.ajax({
+          type: "post",
+          url: "<?= base_url('pelaporancontroller/tampilcardpelaporan?isRestored=0') ?>",
+          dataType: "json",
+          success: function(response) {
+            $('#detail_laporan_kerusakan').hide(500);
+            $('#semuapelaporan').html(response.data).show(500);
+          }
+        });
       } else {
-        $('.noanggota').hide().html('');
+        $('.pelaporan-detail').hide(500);
+        $('.email-user-list').show(500);
       }
-    })
-
-    $.ajax({
-      type: "get",
-      url: "<?= base_url() ?>/permintaancontroller/pilihanggota",
-      dataType: "json",
-      success: function(response) {
-        $('#idanggota').empty();
-        $('#idanggota').append('<option value="">Pilih Pelapor</option>');
-        $.each(response, function(key, value) {
-          $('#idanggota').append('<option value="' + value.id + '">' +
-            value.nama_anggota + ' (' + value.no_anggota + ')' + ' - ' + value.level + '</option>');
+    });
+    $('#trash-menu').on('click', function(e) {
+      e.preventDefault();
+      $(this).addClass('active');
+      $('#inbox-menu').removeClass('active');
+      $('#multipledelete').hide();
+      $('#multipledeletepermanen').show();
+      $('#restoredata').show();
+      if (no_laporan !== "") {
+        $.ajax({
+          type: "post",
+          url: "<?= base_url('pelaporancontroller/tampilcardpelaporan?isRestored=1') ?>",
+          dataType: "json",
+          success: function(response) {
+            $('#detail_laporan_kerusakan').hide(500);
+            $('#semuapelaporan').html(response.data).show(500);
+          }
+        });
+      } else {
+        $('.email-user-list').hide(500);
+        $.ajax({
+          type: "post",
+          url: "<?= base_url('pelaporancontroller/tampilcardpelaporan?isRestored=1') ?>",
+          dataType: "json",
+          success: function(response) {
+            $('.pelaporan-detail').html('');
+            $('.pelaporan-detail').html(response.data).show(500);
+            // $('#semuapelaporan').show(500);
+          }
         });
       }
     });
 
-    $('#idanggota').on('change', function(e) {
-      e.preventDefault();
-      $('#idanggota').removeClass('is-invalid');
-      $('.erridanggota').html('');
-      $('.btngroup2').show(500);
-      $('.btn-cancel1').show();
-      $('#btn-cancel2').hide();
-    })
-    $('#namaanggota').on('keyup', function(e) {
-      e.preventDefault();
-      $('#namaanggota').removeClass('is-invalid');
-      $('.errnamaanggota').html('');
-      $('.btngroup1').show(500);
-      $('.btn-cancel1').show();
-    })
-    $('#noanggota').on('keyup', function(e) {
-      e.preventDefault();
-      $('#noanggota').removeClass('is-invalid');
-      $('.errnoanggota').html('');
-    })
-    $('#unit').on('change', function(e) {
-      e.preventDefault();
-      $('#unit').removeClass('is-invalid');
-      $('.errunit').html('');
-    })
-
-    var namaanggota = "",
-      level = "",
-      unit_id = "",
-      no_anggota = "",
-      nohp = "";
-    $('#btn-next2').on('click', function() {
-      namaanggota = $('#namaanggota').val();
-      level = $('#level').val();
-      unit_id = $('#unit').val();
-      no_anggota = $('#noanggota').val();
-      nohp = $('#nohp').val();
-      $.ajax({
-        type: "post",
-        url: "<?= base_url('pelaporancontroller/cekanggota') ?>",
-        data: {
-          nama_anggota: namaanggota,
-          level: level,
-          unit_id: unit_id,
-          no_anggota: no_anggota,
-          nohp: nohp,
-        },
-        dataType: "json",
-        success: function(response) {
-          if (response.error) {
-            var errnamaanggota = response.error.nama_anggota;
-            var errnoanggota = response.error.no_anggota;
-            var errlevel = response.error.level;
-            var errunit = response.error.unit_id;
-            if (errnamaanggota) {
-              $('#namaanggota').addClass('is-invalid');
-              $('.errnamaanggota').html(errnamaanggota);
-            } else {
-              $('#namaanggota').removeClass('is-invalid');
-              $('.errnamaanggota').html('');
-            }
-            if (errnoanggota) {
-              $('#noanggota').addClass('is-invalid');
-              $('.errnoanggota').html(errnoanggota);
-            } else {
-              $('#noanggota').removeClass('is-invalid');
-              $('.errnoanggota').html('');
-            }
-            if (errlevel) {
-              $('#level').addClass('is-invalid');
-              $('.errlevel').html(errlevel);
-            } else {
-              $('#level').removeClass('is-invalid');
-              $('.errlevel').html('');
-            }
-            if (errunit) {
-              $('#unit').addClass('is-invalid');
-              $('.errunit').html(errunit);
-            } else {
-              $('#unit').removeClass('is-invalid');
-              $('.errunit').html('');
-            }
-
-          } else {
-            if (response.sukses) {
-              $('#newmember').hide(500);
-              $('#formbrgrusak').show(500);
-              $('.oldmember').hide(500);
-              $('#idanggota').hide();
-              $('.btngroup2').show(500);
-              $('#btn-cancel2').show();
-              $('.btn-cancel1').hide();
-            }
-          }
-        }
-      });
-    });
-
-    $('#fotobrg').change(function() {
-      var input = this;
-      if (input.files && input.files[0]) {
-        var reader = new FileReader();
-        reader.onload = function(e) {
-          $('.previewimage').html(` <label for="preview_img" class="mb-1">Preview Image</label>
-            <div class="input-group mb-3">
-              <img src="${e.target.result}" id="preview_img" class="img-thumbnail rounded mx-auto d-block" style="width: 200px; height: auto;">
-            </div>`).show();
-        };
-        reader.readAsDataURL(input.files[0]);
+    // Check Row
+    $('#checkall').click(function() {
+      if ($(this).is(':checked')) {
+        $('.checkrow').prop('checked', true);
       } else {
-        $('.previewimage').html('');
+        $('.checkrow').prop('checked', false);
       }
-    });
-
-    $('#jmlrusak').on('input', function(e) {
-      e.preventDefault();
-      $(this).removeClass('is-invalid');
-      $('.errjmlrusak').html('');
-    })
-    $('#fotobrg').on('input', function(e) {
-      e.preventDefault();
-      $(this).removeClass('is-invalid');
-      $('.errfotobrg').html('');
     })
 
-    $('.btnsimpan').on('click', function(e) {
-      e.preventDefault();
-      let formlaporbrg = $('#formlaporbrg')[0];
-
-      let data = new FormData(formlaporbrg);
-
-      $.ajax({
-        type: "post",
-        url: "simpan-laporan",
-        data: data,
-        enctype: 'multipart/form-data',
-        processData: false,
-        contentType: false,
-        beforeSend: function() {
-          $('.btnsimpan').attr('disable', 'disabled');
-          $('.btnsimpan').html('<i class="fa fa-spin fa-spinner"></i>');
-        },
-        complete: function() {
-          $('.btnsimpan').removeAttr('disable');
-          $('.btnsimpan').html('Submit !');
-        },
-        success: function(result) {
-          var response = JSON.parse(result);
-          if (response.error) {
-            erridanggota = response.error.anggota_id;
-            errjmlrusak = response.error.jml_barang;
-            errfotobrg = response.error.foto_barang;
-            errdeskripsi = response.error.deskripsi;
-            if (erridanggota) {
-              $('#idanggota').addClass('is-invalid');
-              $('.erridanggota').html(erridanggota);
-            } else {
-              $('#idanggota').removeClass('is-invalid');
-              $('.erridanggota').html('');
-            }
-            if (errjmlrusak) {
-              $('#jmlrusak').addClass('is-invalid');
-              $('.errjmlrusak').html(errjmlrusak);
-            } else {
-              $('#jmlrusak').removeClass('is-invalid');
-              $('.errjmlrusak').html('');
-            }
-            if (errfotobrg) {
-              $('#fotobrg').addClass('is-invalid');
-              $('.errfotobrg').html(errfotobrg);
-            } else {
-              $('#fotobrg').removeClass('is-invalid');
-              $('.errfotobrg').html('');
-            }
-            if (errdeskripsi) {
-              $('#deskripsi').addClass('is-invalid');
-              $('.errdeskripsi').html(response.error.deskripsi);
-            } else {
-              $('#deskripsi').removeClass('is-invalid');
-              $('.errdeskripsi').html('');
-            }
-          } else {
-            defaulthide();
-            Swal.fire(
-              'Berhasil!',
-              response.sukses,
-              'success'
-            ).then((result) => {
-              $('#opsiubahlaporan').empty();
-              $('#opsiubahlaporan').html(`
-              <div class="col-lg-9 col-md-9 col-12">
-                <div class="card shadow">
-                  <div class="card-header bg-transparent pb-1">
-                    <div class="text-center text-muted">
-                      <h3 class="mb-2 text-muted">Laporan Anda Telah Kami Terima!</h3>
-                    </div>
-                  </div>
-                  <div class="card-body" style="padding: 0.5rem 1rem 1rem 1rem;">
-                    <div class="row mt-1">
-                      <p>Terima kasih sudah melaporkan kerusakan aset di lingkungan Universitas Islam Raden Rahmat Malang. Jika ada kesalahan dalam laporan anda, anda dapat melakukan perubahan melalui link di bawah ini.</p>
-                      <br>
-                      <br>
-                      <a href="laporan-kerusakan-aset/edit-laporan/${response.laporan_id}" class="text-decoration-underline">Ubah laporan anda</a>
-                      <br>
-                      <a href="<?= site_url() . $url_detail_brg ?>" class="text-decoration-underline">&laquo; Kembali ke halaman detail barang</a>
-                    </div>
-                  </div>
-                </div>
-              </div>`).show(500);
-            })
-          }
-        },
-        error: function(xhr, ajaxOptions, thrownError) {
-          alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
+    // Check Row
+    $(document).on('click', '.checkrow', function() {
+      var isAllChecked = true;
+      $('.checkrow').each(function() {
+        if (!$(this).is(':checked')) {
+          isAllChecked = false;
         }
       });
-
-      return false;
-    })
-
-
+      $('#checkall').prop('checked', isAllChecked);
+    });
   });
 
-  function pilihunit(level) {
-    $('#unit').select2({
-      placeholder: 'Piih Unit',
-      minimumInputLength: 1,
-      allowClear: true,
-      width: "70%",
-      ajax: {
-        url: "<?= base_url() ?>/permintaancontroller/pilihunit",
-        dataType: 'json',
-        delay: 250,
-        data: function(params) {
-          return {
-            search: params.term,
-            level: level,
-          }
-        },
-        processResults: function(data, page) {
-          return {
-            results: data
-          };
-        },
-        cache: true
+  function multipledelete() {
+    let selectedRows = $('.data_pelaporan input[type="checkbox"]:checked');
+
+    if (selectedRows.length > 0) {
+      // var ids = [];
+      var selectedIds = $('input.checkrow:checked').map(function() {
+        return $(this).val();
+      }).get();
+      var jmldata = selectedIds.length;
+      Swal.fire({
+        title: 'Multiple Delete',
+        text: `Apakah kamu yakin ingin menghapus ${jmldata} data <?= strtolower($title); ?> secara temporary?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya, Hapus saja!',
+        cancelButtonText: 'Batalkan',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            type: "post",
+            url: `<?= $nav ?>/multipledelete`,
+            data: {
+              ids: selectedIds.join(","),
+              jmldata: jmldata,
+            },
+            dataType: 'json',
+            success: function(response) {
+              if (response.sukses) {
+                Swal.fire(
+                  'Berhasil', response.sukses, 'success'
+                ).then((result) => {
+                  location.href = "<?= site_url('admin/notification') ?>";
+
+                })
+              }
+            },
+            error: function(xhr, ajaxOptions, thrownError) {
+              alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
+            }
+          });
+        } else {
+          Swal.fire(
+            'Gagal', 'Tidak ada data <?= strtolower($title); ?> yang dihapus', 'info'
+          )
+        }
+      });
+    } else {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Perhatian',
+        text: 'Maaf silahkan pilih data <?= strtolower($title); ?> yang mau dihapus'
+      })
+    }
+  }
+
+  function detaillaporan(string, angka) {
+    $('.email-user-list').hide(500);
+    $.ajax({
+      // type: "post",
+      url: "<?= base_url('pelaporancontroller/tampildetailpelaporan/') ?>" + string,
+      data: {
+        angka: angka,
       },
-      templateResult: formatResult,
+      dataType: "json",
+      success: function(response) {
+        $('.pelaporan-detail').empty();
+        $('.pelaporan-detail').html(response.data).show(500);
+      }
     });
   }
 
-  function formatResult(data) {
-    if (!data.id) {
-      return data.text;
+  function restoredata() {
+    let selectedRows = $('.data_pelaporan input[type="checkbox"]:checked');
+
+    if (selectedRows.length > 0) {
+      // var ids = [];
+      var selectedIds = $('input.checkrow:checked').map(function() {
+        return $(this).val();
+      }).get();
+      var jmldata = selectedIds.length;
+      Swal.fire({
+        title: 'Pulihkan Data',
+        text: `Apakah kamu yakin ingin memulihkan ${jmldata} data <?= strtolower($title); ?>?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya, Pulihkan!',
+        cancelButtonText: 'Batalkan',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            type: "post",
+            url: `<?= $nav ?>/restoredata`,
+            data: {
+              ids: selectedIds.join(","),
+              jmldata: jmldata,
+            },
+            dataType: 'json',
+            success: function(response) {
+              if (response.sukses) {
+                Swal.fire(
+                  'Berhasil', response.sukses, 'success'
+                ).then((result) => {
+                  location.href = "<?= site_url('admin/notification') ?>";
+                })
+              }
+            },
+            error: function(xhr, ajaxOptions, thrownError) {
+              alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
+            }
+          });
+        } else {
+          Swal.fire(
+            'Gagal', 'Tidak ada data <?= strtolower($title); ?> yang dipulihkan', 'info'
+          )
+        }
+      });
+    } else {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Perhatian',
+        text: 'Maaf silahkan pilih data <?= strtolower($title); ?> yang mau dipulihkan'
+      })
     }
-
-    var $result = $(
-      `<span><i class="bi bi-circle-square"> </i>${data.text}</span>`
-    );
-
-    return $result;
   }
+
+  function multipledeletepermanen() {
+    let selectedRows = $('.data_pelaporan input[type="checkbox"]:checked');
+
+    if (selectedRows.length > 0) {
+      // var ids = [];
+      var selectedIds = $('input.checkrow:checked').map(function() {
+        return $(this).val();
+      }).get();
+      var jmldata = selectedIds.length;
+      Swal.fire({
+        title: 'Multiple Delete',
+        text: `Apakah kamu yakin ingin menghapus ${jmldata} data <?= strtolower($title); ?> secara permanen?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya, Hapus saja!',
+        cancelButtonText: 'Batalkan',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            type: "post",
+            url: `<?= $nav ?>/multipledeletepermanen`,
+            data: {
+              ids: selectedIds.join(","),
+              jmldata: jmldata,
+            },
+            dataType: 'json',
+            success: function(response) {
+              if (response.sukses) {
+                Swal.fire(
+                  'Berhasil', response.sukses, 'success'
+                ).then((result) => {
+                  location.href = "<?= site_url('admin/notification') ?>";
+                })
+              }
+            },
+            error: function(xhr, ajaxOptions, thrownError) {
+              alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
+            }
+          });
+        } else {
+          Swal.fire(
+            'Gagal', 'Tidak ada data <?= strtolower($title); ?> yang dihapus secara permanen', 'info'
+          )
+        }
+      });
+    } else {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Perhatian',
+        text: 'Maaf silahkan pilih data <?= strtolower($title); ?> yang mau dihapus secara permanen'
+      })
+    }
+  }
+
+  // function searchFilter(page_num) {
+  //   // page_num = page_num ? page_num : 0;
+  //   var keywords = $('#keywords').val();
+  //   // var sortBy = $('#sortBy').val();
+  //   $.ajax({
+  //     type: 'get',
+  //     url: 'admin/notification?keywords=' + keywords,
+  //     beforeSend: function() {
+  //       $('.loading').show();
+  //     },
+  //     success: function(html) {
+  //       $('#dataList').html(html);
+  //       $('.loading').fadeOut("slow");
+  //     }
+  //   });
+  // }
 </script>
 <?= $this->endSection() ?>

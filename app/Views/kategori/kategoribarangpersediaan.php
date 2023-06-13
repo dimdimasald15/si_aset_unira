@@ -40,7 +40,7 @@
                 <input type="hidden" name="id" id="id">
                 <input type="hidden" name="jenis" id="jenis" value="<?= $jenis; ?>">
                 <div class="row mb-1">
-                  <label for="kd_kat">Kode <?= $menu; ?></label>
+                  <label for="subkode1">Kode <?= $menu; ?></label>
                 </div>
                 <div class="row mb-1">
                   <div class="col-md-4 position-relative">
@@ -275,7 +275,6 @@
         slctSubkode1.empty();
         slctSubkode1.append('<option value="">SubKode 1</option>');
         $.each(result, function(key, value) {
-          console.log(value);
           slctSubkode1.append('<option value="' + value.subkode1 + '">' + value.subkode1 + '</option>');
         });
         slctSubkode1.append('<option value="other1">Lainnya</option>');
@@ -596,7 +595,6 @@
   }
 
   function edit(id) {
-    // console.log(id)
     clear_is_invalid();
     formtambah.show(500);
     saveMethod = "update";
@@ -610,7 +608,6 @@
       url: "<?= site_url('kategoricontroller/get_kategori_by_id/') ?>" + id,
       dataType: "json",
       success: function(response) {
-        console.log(response);
         isiForm(response);
       }
     });
@@ -629,8 +626,6 @@
     var kode2 = subkode[1]; // mendapatkan subkode 2
     var kode3 = subkode[2]; // mendapatkan subkode 3
     var kode4 = subkode[3]; // mendapatkan subkode 4
-
-    console.log(`${kode1} + ${kode2} + ${kode3} + ${kode4}`);
 
     getsubkode1(kode1);
     getsubkode2(kode1, kode2);
@@ -843,7 +838,6 @@
             url: "kategori-persediaan/hapuspermanen",
             dataType: 'json',
             success: function(response) {
-              console.log(response);
               if (response.sukses) {
                 Swal.fire(
                   'Berhasil', response.sukses, 'success'
