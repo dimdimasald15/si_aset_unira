@@ -36,16 +36,15 @@ class PenggunaController extends BaseController
     public function listdatapengguna()
     {
         if ($this->request->isAJAX()) {
-            $db = \Config\Database::connect();
-
-            $builder = $db->table('petugas')
-                ->select('petugas.id, petugas.nip, petugas.email, petugas.username, petugas.password, petugas.role, petugas.created_by, petugas.created_at, petugas.deleted_at')
-                ->where('petugas.role', 'petugas');
+            $id = session()->get('id');
+            $builder = $this->db->table('petugas')
+                ->select('id, nip, email, username, password, role, created_by, created_at, deleted_at')
+                ->where("id !=", $id);
 
             return DataTable::of($builder)
                 ->addNumbering('no')
                 ->filter(function ($builder) {
-                    $builder->where('petugas.deleted_at', null);
+                    $builder->where('deleted_at', null);
                 })
                 ->add('action', function ($row) {
                     return '<button type="button" class="btn btn-warning btn-sm btn-editpengguna" onclick="edit(' . $row->id . ')"> <i class="fa fa-pencil-square-o"></i></button>

@@ -1,4 +1,5 @@
 <div class="pelaporan-detail"></div>
+
 <div class="email-user-list list-group ps ps--active-y">
   <?php if (count($pelaporan) > 0) { ?>
     <ul class="users-list-wrapper media-list data_pelaporan">
@@ -21,9 +22,7 @@
           </div>
           <div class="pr-50">
             <div class="avatar">
-              <img class="rounded-circle" src="<?= base_url() ?>assets/images/faces/<?php
-                                                                                    $angka = $fotoRandom++;
-                                                                                    echo $angka; ?>.jpg" alt="Generic placeholder image">
+              <img class="rounded-circle" src="<?= base_url('uploads/default.jpg') ?>" alt="Generic placeholder image">
             </div>
           </div>
           <div class="media-body" onclick="detaillaporan('<?= $row['no_laporan'] ?>', <?= $angka ?>)">
