@@ -56,7 +56,7 @@
                   Inbox
                   <span class="badge badge-sm badge-notification bg-light-success px-1 text-success" style="margin-left: 20px;"><?= $belumdibaca ?></span>
                 </a>
-                <a href="#" class="list-group-item" id="trash-menu">
+                <a href="#" class="list-group-item" onclick="trashmenu()" id="trash-menu">
                   <div class="fonticon-wrap d-inline me-3">
                     <svg class="bi" width="1.5em" height="1.5em" fill="currentColor">
                       <use xlink:href="<?= base_url() ?>assets/vendors/bootstrap-icons/bootstrap-icons.svg#trash" />
@@ -166,15 +166,15 @@
                       <div class="sidebar-toggle d-block d-lg-none">
                         <i class="bx bx-menu"></i>
                       </div>
-
-                      <!-- <div class="form-group position-relative  mb-0 has-icon-left">
-                        <input type="text" id="keywords" onkeyup="searchFilter();" class="form-control" placeholder="Cari laporan kerusakan aset..">
+                      <div class="form-group position-relative  mb-0 has-icon-left">
+                        <input type="text" onkeyup="searchFilter(0);" class="form-control keywords" id="search1" placeholder="Cari laporan kerusakan aset..">
+                        <input type="text" onkeyup="searchFilter(1);" class="form-control keywords" id="search2" style="display:none;" placeholder="Cari laporan kerusakan aset..">
                         <div class="form-control-icon">
                           <svg class="bi" width="1.5em" height="1.5em" fill="currentColor">
                             <use xlink:href="<?= base_url() ?>assets/vendors/bootstrap-icons/bootstrap-icons.svg#search" />
                           </svg>
                         </div>
-                      </div> -->
+                      </div>
                     </div>
                     <!-- pagination and page count -->
                     <?php if ($pager !== null) : ?>
@@ -247,12 +247,17 @@
                   </div>
                 <?php } else { ?>
                   <!-- email user list start -->
-                  <div class="pelaporan-detail"></div>
+                  <div class="pelaporan-detail">
+                    <div class="row loading" style="display:none;">
+                      <div class="col d-flex justify-content-center mt-5">
+                        <img src="<?= base_url('assets/images/samples/Loading_icon.gif') ?>" class="loading" alt="loading">
+                      </div>
+                    </div>
+                  </div>
                   <div class="email-user-list list-group ps ps--active-y bg-dark text-white">
                     <?php if (count($pelaporan) > 0) { ?>
                       <ul class="users-list-wrapper media-list data_pelaporan">
                         <?php
-                        $fotoRandom = rand(1, 6);
                         foreach ($pelaporan as $row) : ?>
                           <li class="media <?= (!$row['viewed_by_admin']) ? '' : 'mail-read' ?>">
                             <div class="user-action">
@@ -270,9 +275,7 @@
                             </div>
                             <div class="pr-50">
                               <div class="avatar">
-                                <img class="rounded-circle" src="<?= base_url() ?>assets/images/faces/<?php
-                                                                                                      $angka = $fotoRandom++;
-                                                                                                      echo $angka; ?>.jpg" alt="Generic placeholder image">
+                                <img class="rounded-circle" src="<?= base_url('uploads/default.jpg') ?>" alt="Generic placeholder image">
                               </div>
                             </div>
                             <div class="media-body" onclick="detaillaporan('<?= $row['no_laporan'] ?>', <?= $angka ?>)">
@@ -343,6 +346,8 @@
       $('#restoredata').hide();
       $(this).addClass('active');
       $('#trash-menu').removeClass('active');
+      $('#search1').show();
+      $('#search2').hide();
       if (no_laporan !== "") {
         $.ajax({
           type: "post",
@@ -356,37 +361,6 @@
       } else {
         $('.pelaporan-detail').hide(500);
         $('.email-user-list').show(500);
-      }
-    });
-    $('#trash-menu').on('click', function(e) {
-      e.preventDefault();
-      $(this).addClass('active');
-      $('#inbox-menu').removeClass('active');
-      $('#multipledelete').hide();
-      $('#multipledeletepermanen').show();
-      $('#restoredata').show();
-      if (no_laporan !== "") {
-        $.ajax({
-          type: "post",
-          url: "<?= base_url('pelaporancontroller/tampilcardpelaporan?isRestored=1') ?>",
-          dataType: "json",
-          success: function(response) {
-            $('#detail_laporan_kerusakan').hide(500);
-            $('#semuapelaporan').html(response.data).show(500);
-          }
-        });
-      } else {
-        $('.email-user-list').hide(500);
-        $.ajax({
-          type: "post",
-          url: "<?= base_url('pelaporancontroller/tampilcardpelaporan?isRestored=1') ?>",
-          dataType: "json",
-          success: function(response) {
-            $('.pelaporan-detail').html('');
-            $('.pelaporan-detail').html(response.data).show(500);
-            // $('#semuapelaporan').show(500);
-          }
-        });
       }
     });
 
@@ -410,6 +384,41 @@
       $('#checkall').prop('checked', isAllChecked);
     });
   });
+
+  function trashmenu() {
+    var no_laporan = "<?= $no_laporan ?>";
+    $('#trash-menu').addClass('active');
+    $('#inbox-menu').removeClass('active');
+    $('#multipledelete').hide();
+    $('#multipledeletepermanen').show();
+    $('#restoredata').show();
+    $('#search1').hide();
+    $('#search2').show();
+    if (no_laporan !== "") {
+      $.ajax({
+        type: "post",
+        url: "<?= base_url('pelaporancontroller/tampilcardpelaporan?isRestored=1') ?>",
+        dataType: "json",
+        success: function(response) {
+          $('#detail_laporan_kerusakan').hide(500);
+          $('#semuapelaporan').html(response.data).show(500);
+        }
+      });
+    } else {
+      $('.email-user-list').hide(500);
+
+      $.ajax({
+        type: "post",
+        url: "<?= base_url('pelaporancontroller/tampilcardpelaporan?isRestored=1') ?>",
+        dataType: "json",
+        success: function(response) {
+          $('.pelaporan-detail').html('');
+          $('.pelaporan-detail').html(response.data).show(500);
+        }
+      });
+    }
+
+  }
 
   function multipledelete() {
     let selectedRows = $('.data_pelaporan input[type="checkbox"]:checked');
@@ -596,21 +605,43 @@
     }
   }
 
-  // function searchFilter(page_num) {
-  //   // page_num = page_num ? page_num : 0;
-  //   var keywords = $('#keywords').val();
-  //   // var sortBy = $('#sortBy').val();
-  //   $.ajax({
-  //     type: 'get',
-  //     url: 'admin/notification?keywords=' + keywords,
-  //     beforeSend: function() {
-  //       $('.loading').show();
-  //     },
-  //     success: function(html) {
-  //       $('#dataList').html(html);
-  //       $('.loading').fadeOut("slow");
-  //     }
-  //   });
-  // }
+  function searchFilter(bool) {
+    var keywords = '';
+    if ($('#search1').val()) {
+      var keywords = $('#search1').val();
+    }
+    if ($('#search2').val()) {
+      var keywords = $('#search2').val();
+    }
+    console.log(keywords);
+    console.log(bool);
+    $('.email-user-list').hide();
+    if (keywords !== '') {
+      $.ajax({
+        type: 'get',
+        url: '<?= base_url('pelaporancontroller/tampilcardpelaporan') ?>',
+        data: {
+          keywords: keywords,
+          isRestored: bool,
+        },
+        dataType: 'json',
+        beforeSend: function() {
+          $('.loading').show();
+        },
+        complete: function() {
+          $('.loading').fadeOut("slow");
+        },
+        success: function(response) {
+          $('.pelaporan-detail').html('');
+          $('.pelaporan-detail').html(response.data).show();
+        }
+      });
+    } else if (keywords == '' && bool == 0) {
+      $('.pelaporan-detail').html('').hide();
+      $('.email-user-list').show();
+    } else if (keywords == '' && bool == 1) {
+      trashmenu();
+    }
+  }
 </script>
 <?= $this->endSection() ?>

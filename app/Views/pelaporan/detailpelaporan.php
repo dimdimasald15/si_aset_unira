@@ -9,9 +9,7 @@
               <div class="collapse-title media">
                 <div class="pr-1">
                   <div class="avatar mr-75">
-                    <img src="<?= base_url() ?>assets/images/faces/<?php
-                                                                    $angka = rand(1, 7);
-                                                                    echo $angka ?>.jpg" alt="avtar img holder" width="30" height="30">
+                    <img src="<?= base_url('uploads/default.jpg') ?>" alt="avtar img holder" width="30" height="30">
                   </div>
                 </div>
                 <div class="media-body-text mt-25">

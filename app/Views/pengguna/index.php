@@ -96,7 +96,6 @@
                                     <select name="role" class="form-select" id="role" placeholder="Role">
                                         <option value="" selected> -- Pilih Role --</option>
                                         <option value="Administrator">Admin</option>
-                                        <option value="Petugas">Petugas</option>
                                     </select>
                                     <div class="invalid-feedback errrole"></div>
                                 </div>
@@ -113,8 +112,8 @@
     </div>
 </section>
 <section class="section">
-    <div class="card shadow mb-3 datalist-pengguna">
-        <div class="card-header shadow-sm">
+    <div class="card bg-dark text-white shadow mb-3 datalist-pengguna">
+        <div class="card-header bg-dark text-white shadow-sm">
             <div class="row justify-content-between align-items-center">
                 <div class="col-lg-9">
                     <h4 class="card-title">Data Pengguna</h4>

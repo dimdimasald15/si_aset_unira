@@ -532,18 +532,27 @@ class PelaporanController extends BaseController
             ];
             return view('errors/mazer/error-404', $data);
         }
-        $isRestored = filter_var($this->request->getGet('isRestored'), FILTER_VALIDATE_BOOLEAN);
-
+        $keywords = $this->request->getGet('keywords');
+        // $isRestored = filter_var($this->request->getGet('isRestored'), FILTER_VALIDATE_BOOLEAN);
+        $isRestored = intval($this->request->getGet('isRestored'));
+        // echo $keywords;
+        // echo $isRestored;
+        // die;
         $query = $this->db->table('pelaporan_kerusakan p')->select('p.*, a.nama_anggota, a.no_anggota, a.level, u.singkatan, n.viewed_by_admin')
             ->join('anggota a', 'a.id=p.anggota_id')
             ->join('unit u', 'u.id=a.unit_id')
             ->join('notifikasi n', 'p.id=n.laporan_id');
-        if ($isRestored) {
+        if ($isRestored == 1) {
             $query->where('n.deleted_at IS NOT NULL')
                 ->where('p.deleted_at IS NOT NULL');
-        } else {
+        } else if ($isRestored == 0) {
             $query->where('n.deleted_at IS NULL')
                 ->where('p.deleted_at IS NULL');
+        }
+        if ($keywords !== '' && !empty($keywords)) {
+            $query->like('a.nama_anggota', "%$keywords%")
+                ->orLike('a.no_anggota', "%$keywords%")
+                ->orLike('u.singkatan', "%$keywords%");
         }
         $pelaporan = $query->orderBy('p.id', 'DESC')->get()->getResultArray();
 
@@ -689,6 +698,46 @@ class PelaporanController extends BaseController
 
         $msg = [
             'sukses' => "$jmldata data pelaporan kerusakan aset berhasil dihapus secara permanen",
+        ];
+
+        echo json_encode($msg);
+    }
+
+    public function livesearchpelaporan()
+    {
+        // if (!$this->request->isAJAX()) {
+        //     $data = [
+        //         'title' => 'Error 404',
+        //         'msg' => 'Maaf tidak dapat diproses'
+        //     ];
+        //     return view('errors/mazer/error-404', $data);
+        // }
+        $keywords = $this->request->getGet('keywords');
+        $isRestored = filter_var($this->request->getGet('isRestored'), FILTER_VALIDATE_BOOLEAN);
+
+        $query = $this->db->table('pelaporan_kerusakan p')->select('p.*, a.nama_anggota, a.no_anggota, a.level, u.singkatan, n.viewed_by_admin')
+            ->join('anggota a', 'a.id=p.anggota_id')
+            ->join('unit u', 'u.id=a.unit_id')
+            ->join('notifikasi n', 'p.id=n.laporan_id')
+            ->like('a.nama_anggota', "%$keywords%")
+            ->orLike('a.no_anggota', "%$keywords%")
+            ->orLike('u.singkatan', "%$keywords%");
+
+        if ($isRestored) {
+            $query->where('n.deleted_at IS NOT NULL')
+                ->where('p.deleted_at IS NOT NULL');
+        } else {
+            $query->where('n.deleted_at IS NULL')
+                ->where('p.deleted_at IS NULL');
+        }
+        $pelaporan = $query->orderBy('p.id', 'DESC')->get()->getResultArray();
+        // var_dump($pelaporan);
+
+        $data = [
+            'pelaporan' => $pelaporan,
+        ];
+        $msg = [
+            'data' => view('pelaporan/semuapelaporan', $data),
         ];
 
         echo json_encode($msg);
