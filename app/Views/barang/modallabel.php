@@ -15,7 +15,7 @@
 </style>
 
 <div class="modal fade" id="modallabel" tabindex="-1" aria-labelledby="labelBarangModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
+  <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header bg-success">
         <h5 class="modal-title white" id="title"></h5>
@@ -27,37 +27,37 @@
         <div class="row d-flex justify-content-center">
           <div class="col-11">
             <div class="card card-label">
-              <div class="card-body">
+              <div class="card-body p-2">
                 <div class="row d-flex justify-content-between align-items-center">
-                  <div class="col-9">
+                  <div class="col-lg-auto">
                     <div class="infobrg"></div>
                   </div>
-                  <div class="col-3 text-center">
-                    <div class="row mb-2" id="qrcode"></div>
-                    <div class="row" id="urlqr"></div>
+                  <div class="col-lg-auto text-center" style="padding: 0px 80px">
+                    <div class="row my-2" id="qrcode"></div>
+                    <div class="row text-center" id="urlqr"></div>
                   </div>
                 </div>
               </div>
               <div class="card-footer pb-2 pt-1" style="background-color:#1fa164;color:white !important;">
                 <div class="row text-center">
-                  <h5 class="text-white">SARANA & PRASARANA UNIRA MALANG</h5>
+                  <h5 class="text-white">SARANA & PRASARANA <br> UNIVERSITAS ISLAM RADEN RAHMAT MALANG</h5>
                 </div>
               </div>
             </div>
           </div>
         </div>
         <div class="row d-flex justify-content-end mt-3">
-          <div class="col-lg-4 d-flex justify-content-end align-items-center">
+          <div class="col-sm-4 d-flex justify-content-start align-items-center">
             <h6>Cetak banyak label ke dalam pdf</h6>
           </div>
-          <div class="col-lg-2">
+          <div class="col-sm-4">
             <div class="input-group mb-3">
               <button class="btn btn-outline-success" type="button" id="minus-btn">-</button>
               <input type="number" class="form-control " id="qty-input" value="1">
               <button class="btn btn-outline-success" type="button" id="plus-btn">+</button>
             </div>
           </div>
-          <div class="col-lg-3">
+          <div class="col-sm-4">
             <button class="btn btn-success" type="button" id="cetakpdf"><i class="fa fa-print"></i> Cetak PDF</button>
           </div>
         </div>
@@ -77,14 +77,6 @@
 
   // Get the card element
   var card = $('.card-label')[0];
-  // Create a canvas element with the same dimensions as the card
-  var canvas = document.createElement('canvas');
-  canvas.width = card.clientWidth;
-  canvas.height = card.clientHeight;
-  // Draw the card onto the canvas
-  var context = canvas.getContext('2d');
-  context.fillStyle = '#ffffff';
-  context.fillRect(0, 0, canvas.width, canvas.height);
 
   function downloadImage() {
     html2canvas(card).then(function(canvas) {
@@ -104,25 +96,29 @@
   function imgQR(qrCanvas, centerImage, factor) {
     var h = qrCanvas.height;
     //center size
-    var cs = h * factor;
+    var cs = (h * factor);
     // Center offset
     var co = (h - cs) / 2;
     var ctx = qrCanvas.getContext("2d");
-    ctx.drawImage(centerImage, 0, 0, centerImage.width, centerImage.height, co, co, cs, cs + 10);
+    ctx.drawImage(centerImage, 0, 0, centerImage.width, (centerImage.height - 50), co, co, cs, cs + 10);
     ctx.strokeStyle = "#ffffff";
-    ctx.lineWidth = 2 // ketebalan garis tepi 2 piksel
+    ctx.lineWidth = 15 // ketebalan garis tepi 2 piksel
     ctx.strokeRect(co, co, cs, cs + 10); // membuat garis tepi persegi panjang di sekitar gambar
   }
 
   function cetakpdf() {
+    // Menampilkan tombol loading
+    $('#cetakpdf').attr('disabled', 'disabled');
+    $('#cetakpdf').html('<i class="fa fa-spin fa-spinner"></i> Loading...');
+
     var qty = parseInt($('#qty-input').val())
     var canvasArray = [];
 
     for (let i = 0; i < qty; i++) {
       var canvas = document.createElement('canvas');
       canvas.willReadFrequently = true;
-      canvas.width = 800;
-      canvas.height = 400;
+      canvas.width = 400;
+      canvas.height = 570;
       canvasArray.push(canvas);
     }
 
@@ -131,13 +127,15 @@
       var canvas2 = canvasArray[i];
       var ctx = canvas2.getContext('2d');
       var scale = canvas2.width / card.clientWidth;
+      // var scale = 1;
       ctx.scale(scale, scale);
+      ctx.imageSmoothingQuality = "High";
       promises.push(html2canvas(card, {
         canvas: canvas2,
         width: card.clientWidth,
         height: card.clientHeight,
         scale: scale,
-        dpi: 600,
+        dpi: 144,
       }));
     }
 
@@ -145,32 +143,56 @@
       var docDefinition = {
         pageSize: 'A4',
         pageMargins: [10, 10, 10, 10],
-        pageOrientation: 'landscape',
+        pageOrientation: 'portrait',
         content: []
       };
       var images = [];
       for (let i = 0; i < qty; i++) {
         images.push({
           image: canvasArray[i].toDataURL('image/png'),
-          width: 350,
-          margin: [10, 10, 10, 0]
+          width: 130,
+          margin: [10, 10, 10, 10]
         });
       }
 
       var content = [];
-      for (let i = 0; i < qty; i += 2) {
+      for (let i = 0; i < qty; i += 4) {
         var row = [];
-        for (let j = i; j < i + 2 && j < qty; j++) {
+        for (let j = i; j < i + 4 && j < qty; j++) {
           row.push(images[j]);
         }
         content.push({
           columns: row,
-          columnGap: 10
+          columnGap: 10,
         });
       }
 
       docDefinition.content = content;
+
+      // Menghilangkan tombol loading dan mengembalikan teks tombol
+      $('#cetakpdf').removeAttr('disabled');
+      $('#cetakpdf').html('Cetak PDF');
+
       pdfMake.createPdf(docDefinition).download(`labels-${kdbrg}-${idlokasi}.pdf`);
+
+      // Membuat objek PDF menggunakan pdfMake
+      // var pdfDoc = pdfMake.createPdf(docDefinition);
+
+      // Mendapatkan blob PDF
+      // pdfDoc.getBlob(function(blob) {
+      //   // Membuat URL objek blob dari data PDF
+      //   var blobUrl = URL.createObjectURL(blob);
+      //   // Membuka pratinjau PDF di jendela baru
+      //   var previewWindow = window.open(blobUrl, '_blank');
+      //   if (previewWindow == null || typeof(previewWindow) === 'undefined') {
+      //     alert('Pratinjau PDF diblokir oleh peramban. Harap izinkan jendela popup untuk melihat pratinjau.');
+      //   } else {
+      //     // Membebaskan URL objek blob saat jendela pratinjau ditutup
+      //     previewWindow.addEventListener('beforeunload', function() {
+      //       URL.revokeObjectURL(blobUrl);
+      //     });
+      //   }
+      // });
     });
   }
 
@@ -187,7 +209,7 @@
         var kodebarang = response.kode_brg;
         idlokasi = response.ruang_id;
         kdbrg = kodebarang.split(".").join("-");
-        const logo = "<?= base_url() ?>/assets/images/logo/logounira.jpg";
+        const logo = "<?= base_url('assets/images/logo/logounira.jpg') ?>";
         namabrg = response.nama_brg;
         const urlqrcode = `<?= base_url() ?>detail-barang/${kdbrg}-${idlokasi}`;
         const dateStr = response.tgl_pembelian;
@@ -202,45 +224,18 @@
         $('#title').text(`Cetak Label Barang - ${response.kode_brg} - ${response.nama_ruang}`);
 
         $('.infobrg').append(`
-        <div class="row m-0 d-flex justify-content-start text-center">
-          <div class="col-lg-2"><img src=${logo} class="mx-auto d-block" alt="Logo" width="75%"></div>
-          <div class="col-lg-10">
-            <h4>UNIVERSITAS ISLAM RADEN RAHMAT MALANG</h4>
-          </div>
-        </div>
-        <hr>
-        <div class="row text-left m-0">
-          <div class="col-lg-4"><h5>Nama Barang</h5></div>
-          <div class="col-lg-1"><h5> : </h5></div>
-          <div class="col-lg-6">
-          <h5>${response.nama_brg}</h5>
-          </div>
-        </div>
-        <hr>
-        <div class="row text-left m-0">
-          <div class="col-lg-4"><h5>Lokasi Barang</h5></div>
-          <div class="col-lg-1"><h5> : </h5></div>
-          <div class="col-lg-6">
-          <h5>${response.nama_ruang}</h5>
-          </div>
-        </div>
-        <hr>
-        <div class="row text-left m-0">
-          <div class="col-lg-4"><h5>Tgl Pembelian</h5></div>
-          <div class="col-lg-1"><h5> : </h5></div>
-          <div class="col-lg-6">
-          <h5>${tglbeli}</h5>
-          </div>
-        </div>
-        <hr>`);
+        <div class="row d-flex justify-content-start text-center">
+        <h3>${response.nama_brg.toUpperCase()}</h3>
+        <h4>(${response.nama_ruang.toUpperCase()})</h4>
+        </div>`);
 
         const icon = new Image();
         icon.onload = function() {
           // create qr code with logo
           var qrcode = new QRCode('qrcode', {
             text: `${urlqrcode}`,
-            width: 200,
-            height: 200,
+            width: 500,
+            height: 500,
             correctLevel: QRCode.CorrectLevel.H,
             colorDark: "#000000",
             colorLight: "#ffffff",
@@ -249,7 +244,7 @@
         }
         icon.src = logo;
 
-        $('#urlqr').append(`<p style="font-style:italic;">${urlqrcode}</p>`);
+        $('#urlqr').append(`<p class="fs-5" style="font-style:italic;color:black;">${urlqrcode}</p>`);
       },
       error: function(xhr, ajaxOptions, thrownError) {
         alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);

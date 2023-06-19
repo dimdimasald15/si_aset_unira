@@ -175,7 +175,6 @@ class PelaporanController extends BaseController
 
             $anggota_id = "";
             $no_laporan = $this->request->getVar('no_laporan');
-
             if ($this->request->getVar('pilihan') == "anggota lama") {
                 $anggota_id = $this->request->getVar('anggota_id');
 
@@ -212,28 +211,31 @@ class PelaporanController extends BaseController
                     'foto' => $namaBaru,
                 ];
             }
-
             $data_anggota = $this->anggota->find($anggota_id);
             $namaanggota = $data_anggota['nama_anggota'];
             $insertlaporan = $this->pelaporan->setInsertData($simpanlaporan, $namaanggota);
 
             $this->db->table('pelaporan_kerusakan')->insert($insertlaporan);
 
+            // var_dump($this->request->getVar());
+
+
             $laporan_id = $this->db->insertID();
 
             $simpannotif = [
                 'laporan_id' => $laporan_id,
                 'viewed_by_admin' => 0,
-                'viewed_by_petugas' => 0,
             ];
 
             $insertnotif = $this->notifikasi->setInsertData($simpannotif, $namaanggota);
             $this->db->table('notifikasi')->insert($insertnotif);
+            // var_dump($this->db->insertID());
+            // die;
 
             $this->db->transComplete();
             if ($this->db->transStatus() === false) {
                 // Jika terjadi kesalahan pada transaction
-                $msg = ['error' => 'Gagal menyimpan data permintaan'];
+                $msg = ['error' => 'Gagal menyimpan data pelaporan aset'];
             } else {
                 $msg = [
                     'sukses' => "Laporan anda berhasil terkirim. Terima kasih telah melapor.",
@@ -380,7 +382,7 @@ class PelaporanController extends BaseController
             ];
             return view('errors/mazer/error-404', $data);
         }
-
+        helper('converter_helper');
         $view = $this->request->getVar('view');
         if (isset($view)) {
             $query = $this->db->table('pelaporan_kerusakan p')->select('p.*, a.nama_anggota, a.no_anggota, a.level, u.singkatan, n.viewed_by_admin')
@@ -398,29 +400,39 @@ class PelaporanController extends BaseController
 
             if (count($result) > 0) {
                 $output .= '<li>
-                                <h5 class="dropdown-header">Notifikasi Kerusakan Aset</h5>
+                                <h5 class="dropdown-header">Pelaporan Kerusakan Aset</h5>
                                 <hr class="dropdown-divider">
                             </li>';
                 foreach ($result as $row) {
                     if (!$row['viewed_by_admin']) {
                         $output .= '
                         <li style="background-color:rgb(25, 135, 84, 0.1);">
-                            <a href="' . site_url('admin/notification?no_laporan=') . $row['no_laporan'] . '" class="dropdown-item"style="padding: 0.3rem 1.5rem;">
-                            <strong>' . $row["nama_anggota"] . ' (' . $row["no_anggota"] . ')-' . $row["level"] . '</strong>
-                            <br>
-                            <small>' . $row["title"] . '</small>
-                            </a>
-                        </li>
+                        <a href="' . site_url('admin/notification?no_laporan=') . $row['no_laporan'] . '" class="dropdown-item" style="padding: 0.3rem 1.5rem;">
+                          <div class="d-flex w-100 justify-content-around align-items-center">
+                          <div>
+                          <h6 class="mb-1"> ' . $row["nama_anggota"] . ' (' . $row["no_anggota"] . ')-' . $row["level"] . '</h6>
+                          <p class="mb-1">' . $row["title"] . '</p>
+                          <small>' . ubahTanggal($row["created_at"]) . '</small>
+                          </div>
+                            <small style="margin-left:15px;"><i class="bi bi-circle-fill text-warning"></i></small>
+                          </div>
+                        </a>
+                      </li>
                         ';
                     } else {
                         $output .= '
                         <li>
-                            <a href="' . site_url('admin/notification?no_laporan=') . $row['no_laporan'] . '" class="dropdown-item"style="padding: 0.3rem 1.5rem;">
-                            <strong>' . $row["nama_anggota"] . ' (' . $row["no_anggota"] . ')-' . $row["level"] . '</strong>
-                            <br>
-                            <small>' . $row["title"] . '</small>
-                            </a>
-                        </li>
+                        <a href="' . site_url('admin/notification?no_laporan=') . $row['no_laporan'] . '" class="dropdown-item" style="padding: 0.3rem 1.5rem;">
+                          <div class="d-flex w-100 justify-content-between align-items-center">
+                          <div>
+                          <h6 class="mb-1"> ' . $row["nama_anggota"] . ' (' . $row["no_anggota"] . ')-' . $row["level"] . '</h6>
+                          <p class="mb-1">' . $row["title"] . '</p>
+                          <small>' . ubahTanggal($row["created_at"]) . '</small>
+                          </div>
+                          <span style="margin-left:15px;"><i class="bi bi-eye text-secondary"></i></span>
+                          </div>
+                        </a>
+                      </li>
                         ';
                     }
                 }
@@ -446,11 +458,11 @@ class PelaporanController extends BaseController
 
     public function index()
     {
-        if ($this->request->getGet()) {
+        $no_laporan = '';
+        if ($this->request->getGet('no_laporan')) {
             $no_laporan = $this->request->getGet('no_laporan');
-        } else {
-            $no_laporan = '';
         }
+        $page    = isset($_GET["page_pelaporan"]) ? (int)$_GET["page_pelaporan"] : 1;
 
         $segments = $this->uri->getSegments();
         $breadcrumb = [];
@@ -481,8 +493,13 @@ class PelaporanController extends BaseController
             // var_dump($updatenotif);
             // die;
             $this->db->table('notifikasi')->where('id', $pelaporan->notif_id)->update($updatenotif);
+        } else if ($page) {
+            $pelaporan = $this->pelaporan->paginatePelaporan(5, 'pelaporan');
+            $pager = $this->pelaporan->pager;
+            $notviewed = $this->db->table('notifikasi n')->select('*')->where('viewed_by_admin', 0);
+            $belumdibaca = count($notviewed->get()->getResult());
         } else {
-            $pelaporan = $this->pelaporan->paginatePelaporan(10, 'pelaporan');
+            $pelaporan = $this->pelaporan->paginatePelaporan(5, 'pelaporan');
             $pager = $this->pelaporan->pager;
             $notviewed = $this->db->table('notifikasi n')->select('*')->where('viewed_by_admin', 0);
             $belumdibaca = count($notviewed->get()->getResult());
@@ -494,7 +511,6 @@ class PelaporanController extends BaseController
             'pelaporan' => $pelaporan,
             'no_laporan' => $no_laporan,
             'pager' => $pager ? $pager : null,
-            // 'links' => $links ? $links : null,
             'belumdibaca' => $belumdibaca ? $belumdibaca : '',
             'breadcrumb' => $breadcrumb
         ];
@@ -511,10 +527,8 @@ class PelaporanController extends BaseController
             ];
             return view('errors/mazer/error-404', $data);
         }
-        $angka = $this->request->getGet('angka');
         $data = [
             'no_laporan' => $no_laporan,
-            'angka' => $angka,
         ];
         $msg = [
             'data' => view('pelaporan/detailpelaporan', $data),
@@ -533,11 +547,8 @@ class PelaporanController extends BaseController
             return view('errors/mazer/error-404', $data);
         }
         $keywords = $this->request->getGet('keywords');
-        // $isRestored = filter_var($this->request->getGet('isRestored'), FILTER_VALIDATE_BOOLEAN);
         $isRestored = intval($this->request->getGet('isRestored'));
-        // echo $keywords;
-        // echo $isRestored;
-        // die;
+
         $query = $this->db->table('pelaporan_kerusakan p')->select('p.*, a.nama_anggota, a.no_anggota, a.level, u.singkatan, n.viewed_by_admin')
             ->join('anggota a', 'a.id=p.anggota_id')
             ->join('unit u', 'u.id=a.unit_id')
@@ -554,10 +565,20 @@ class PelaporanController extends BaseController
                 ->orLike('a.no_anggota', "%$keywords%")
                 ->orLike('u.singkatan', "%$keywords%");
         }
+
         $pelaporan = $query->orderBy('p.id', 'DESC')->get()->getResultArray();
+        // $pelaporan = $this->pelaporan->paginatePelaporan2(10, 'pelaporan', $keywords, $isRestored);
+
+        // $pager = $this->pelaporan->pager;
+        $notviewed = $this->db->table('notifikasi n')->select('*')->where('viewed_by_admin', 0);
+        $belumdibaca = count($notviewed->get()->getResult());
+        // var_dump($belumdibaca);
+        // die;
 
         $data = [
             'pelaporan' => $pelaporan,
+            // 'pager' => $pager ? $pager : null,
+            'belumdibaca' => $belumdibaca ? $belumdibaca : '',
         ];
         $msg = [
             'data' => view('pelaporan/semuapelaporan', $data),

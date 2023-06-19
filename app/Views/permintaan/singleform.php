@@ -139,8 +139,10 @@
       success: function(response) {
         $('#idanggota').empty();
         $('#idanggota').append('<option value="">Pilih Anggota</option>');
-        $.each(response, function(key, value) {
-          $('#idanggota').append('<option value="' + value.id + '">' + value.nama_anggota + '</option>');
+        $.each(response, function(key, val) {
+          $('#idanggota').append(`
+          <option value="${val.id}">${val.nama_anggota} (${val.level == "Mahasiswa"? `NIM ${val.no_anggota}`:`NIDN/NIP ${val.no_anggota}`})</option>
+          `);
         });
         $('#idanggota').append('<option value="other">Lainnya</option>');
       }

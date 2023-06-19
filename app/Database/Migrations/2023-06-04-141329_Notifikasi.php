@@ -26,10 +26,6 @@ class Notifikasi extends Migration
                 'type' => 'int',
                 'constraint' => '1',
             ],
-            'viewed_by_petugas' => [
-                'type' => 'int',
-                'constraint' => '1',
-            ],
             'created_by' => [
                 'type' => 'varchar',
                 'constraint' => '50',

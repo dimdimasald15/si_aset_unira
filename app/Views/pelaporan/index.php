@@ -36,12 +36,8 @@
           </span>
           <!-- sidebar close icon -->
           <div class="email-app-menu bg-dark text-white">
-            <div class="form-group form-group-compose">
-              <!-- compose button  -->
-              <!-- <button type="button" class="btn btn-primary btn-block my-4 compose-btn">
-                <i class="bx bx-plus"></i>
-                Compose
-              </button> -->
+            <div class="form-group form-group-compose mt-3">
+              <img src="<?= base_url() ?>/assets/images/logo/logouniralandscape.jpg" alt="Logo" style="max-width: 150px;">
             </div>
             <div class="sidebar-menu-list ps">
               <!-- sidebar menu  -->
@@ -115,7 +111,7 @@
             <!-- Email list Area -->
             <div class="email-app-list-wrapper">
               <div class="email-app-list">
-                <div class="email-action">
+                <div class="email-action <?= $no_laporan !== '' ? 'd-none' : '' ?>">
                   <!-- action left start here -->
                   <div class="action-left d-flex align-items-center">
                     <!-- select All checkbox -->
@@ -177,11 +173,14 @@
                       </div>
                     </div>
                     <!-- pagination and page count -->
-                    <?php if ($pager !== null) : ?>
-                      <span class="d-sm-block" style="margin-top:-10px;">
+                    <?php if ($pager !== null) { ?>
+                      <span class="d-sm-block pagination" style="margin-top:-10px;">
                         <?php echo $pager->links('pelaporan', 'bootstrap_pagination'); ?>
                       </span>
-                    <?php endif ?>
+                    <?php } else { ?>
+                      <span class="d-sm-block pagination" style="margin-top:-10px;">
+                      </span>
+                    <?php } ?>
                   </div>
                 </div>
                 <?php if ($no_laporan !== '') { ?>
@@ -197,9 +196,7 @@
                                 <div class="collapse-title media">
                                   <div class="pr-1">
                                     <div class="avatar mr-75">
-                                      <img src="<?= base_url() ?>assets/images/faces/<?php
-                                                                                      $angka = rand(1, 7);
-                                                                                      echo $angka ?>.jpg" alt="avtar img holder" width="30" height="30">
+                                      <img src="<?= base_url('uploads/default.jpg') ?>" alt="avtar img holder" width="30" height="30">
                                     </div>
                                   </div>
                                   <div class="media-body-text mt-25">
@@ -278,7 +275,7 @@
                                 <img class="rounded-circle" src="<?= base_url('uploads/default.jpg') ?>" alt="Generic placeholder image">
                               </div>
                             </div>
-                            <div class="media-body" onclick="detaillaporan('<?= $row['no_laporan'] ?>', <?= $angka ?>)">
+                            <div class="media-body" onclick="detaillaporan('<?= $row['no_laporan'] ?>')">
                               <div class="user-details">
                                 <div class="mail-items">
                                   <?php if ($row['level'] == 'Mahasiswa') { ?>
@@ -309,14 +306,14 @@
                         <!-- email user list end -->
                       </ul>
                     <?php } else { ?>
-                      <ul class="users-list-wrapper media-list data_pelaporan">
-                        <li class="media">
-                          <i class="bx bx-error-circle font-large-2"></i>
-                          <h5>Data kosong</h5>
-                        </li>
-                      </ul>
+                      <div class="users-list-wrapper media-list">
+                        <div class="container" style="text-align: center !important;color:#607080 !important;margin-top:150px;">
+                          <i class="bi bi-folder-x fs-1"></i>
+                          <br>
+                          <h5 style="color: #607080 !important;">Data tidak ada!</h5>
+                        </div>
+                      </div>
                     <?php } ?>
-
                   </div>
                 <?php } ?>
               </div>
@@ -349,6 +346,8 @@
       $('#search1').show();
       $('#search2').hide();
       if (no_laporan !== "") {
+        // $('.email-action').show(500);
+        $('.email-action').removeClass('d-none');
         $.ajax({
           type: "post",
           url: "<?= base_url('pelaporancontroller/tampilcardpelaporan?isRestored=0') ?>",
@@ -361,6 +360,8 @@
       } else {
         $('.pelaporan-detail').hide(500);
         $('.email-user-list').show(500);
+        $('.email-action').removeClass('d-none');
+
       }
     });
 
@@ -395,6 +396,8 @@
     $('#search1').hide();
     $('#search2').show();
     if (no_laporan !== "") {
+      // $('.email-action').show(500);
+      $('.email-action').removeClass('d-none');
       $.ajax({
         type: "post",
         url: "<?= base_url('pelaporancontroller/tampilcardpelaporan?isRestored=1') ?>",
@@ -406,6 +409,7 @@
       });
     } else {
       $('.email-user-list').hide(500);
+      $('.email-action').removeClass('d-none');
 
       $.ajax({
         type: "post",
@@ -417,6 +421,7 @@
         }
       });
     }
+
 
   }
 
@@ -477,14 +482,11 @@
     }
   }
 
-  function detaillaporan(string, angka) {
+  function detaillaporan(string) {
     $('.email-user-list').hide(500);
+    $('.email-action').addClass('d-none', true);
     $.ajax({
-      // type: "post",
       url: "<?= base_url('pelaporancontroller/tampildetailpelaporan/') ?>" + string,
-      data: {
-        angka: angka,
-      },
       dataType: "json",
       success: function(response) {
         $('.pelaporan-detail').empty();
@@ -613,8 +615,6 @@
     if ($('#search2').val()) {
       var keywords = $('#search2').val();
     }
-    console.log(keywords);
-    console.log(bool);
     $('.email-user-list').hide();
     if (keywords !== '') {
       $.ajax({

@@ -67,12 +67,26 @@ class DashboardController extends BaseController
     {
         if ($this->request->isAJAX()) {
             $jenis = $this->request->getGet('jenis_kat');
-            $query = $this->db->table('barang b')->select('COUNT(b.nama_brg) as result, SUM(b.harga_jual * sb.sisa_stok) AS total_valuasi')
+            $select1 = "SUM(b.harga_jual * sb.sisa_stok) AS total_valuasi";
+            $select2 = "count(b.id) as result";
+            $query1 = $this->db->table('barang b')->select($select1)
                 ->join('stok_barang sb', 'b.id=sb.barang_id')
                 ->join('kategori k', 'k.id=b.kat_id')
                 ->where('k.jenis', $jenis)
                 ->where('b.deleted_at is null')->get();
-            $msg = $query->getRowArray();
+            $result1 = $query1->getRowArray();
+
+            $query2 = $this->db->table('barang b')->select($select2)
+                ->join('kategori k', 'k.id=b.kat_id')
+                ->where('k.jenis', $jenis)
+                ->where('b.deleted_at is null')->get();
+            $result2 = $query2->getRowArray();
+
+            $msg = [
+                'total_valuasi' => $result1['total_valuasi'],
+                'result' => $result2['result']
+            ];
+
             echo json_encode($msg);
         } else {
             $data = [

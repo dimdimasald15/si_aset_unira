@@ -1,4 +1,4 @@
-<?= helper('converter_helper'); ?>
+<?= helper(['converter_helper', 'date']); ?>
 
 <html>
 
@@ -61,50 +61,98 @@
     <?php if (count($peminjaman) > 0) { ?>
       <p>Tabel 1. <?= $title ?></p>
       <table>
-        <thead class="text-center">
-          <tr>
-            <th>No.</th>
-            <th>Nama Peminjam</th>
-            <th>Unit</th>
-            <th>Nama Barang</th>
-            <th>Jumlah</th>
-            <th>Durasi pinjam</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <?php
-
-          foreach ($peminjaman as $key => $row) {
-            // echo "<pre>";
-            // var_dump($row);
-            // echo "</pre>";
-            // die;
-          ?>
+        <?php
+        foreach ($peminjaman as $key1 => $row1) {
+          // echo isBulanTahun($key1);
+          if (isBulanTahun($key1)) {
+        ?>
             <tr>
-              <td><?= $key + 1 ?></td>
-              <td><?= $row->nama_anggota ?></td>
-              <td><?= $row->singkatan ?></td>
-              <td><?= $row->nama_brg ?></td>
-              <td><?= $row->jml_barang . " " . $row->kd_satuan ?></td>
-              <td><?php
-                  $tgl1 = strtotime($row->tgl_pinjam);
-                  $tgl2 = strtotime($row->tgl_kembali);
-
-                  $jarak = $tgl2 - $tgl1;
-
-                  $hari = floor($jarak / 60 / 60 / 24);
-                  echo $hari . " hari";
-                  ?>
-              </td>
-              <td><?php
-                  $status = $row->status == 1 ? 'Sudah kembali' : 'Belum kembali';
-                  echo $status;
-                  ?>
-              </td>
+              <td class="text-center" style="font-style : bold;" colspan="9">Peminjaman Bulan <?= $key1 ?></td>
             </tr>
+          <?php
+          }
+          ?>
+          <thead class="text-center">
+            <tr>
+              <th>No.</th>
+              <th>Nama Peminjam</th>
+              <th>Unit</th>
+              <th>Nama Barang</th>
+              <th>Jumlah</th>
+              <th>Tanggal Pinjam</th>
+              <th>Durasi Pinjam</th>
+              <th>Keterangan</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php
+            $prevNamaAnggota = null;
+            $rowspanCount = 0;
+            $no = 1;
+
+            foreach ($row1 as $key => $row2) {
+              $currNamaAnggota = $row2['nama_anggota'];
+
+              if ($currNamaAnggota !== $prevNamaAnggota) {
+                $rowspanCount = countRowsWithSameNamaAnggota($row1, $currNamaAnggota);
+            ?>
+                <tr>
+                  <td class="text-center" rowspan="<?= $rowspanCount ?>"><?= $no++ ?> .</td>
+                  <td rowspan="<?= $rowspanCount ?>"><?= $currNamaAnggota ?></td>
+                  <td rowspan="<?= $rowspanCount ?>"><?= $row2['singkatan'] ?></td>
+                  <td><?= $row2['nama_brg'] ?></td>
+                  <td><?= $row2['jml_barang'] . " " . $row2['kd_satuan'] ?></td>
+                  <td><?= date('d/m/Y', strtotime($row2['tgl_pinjam'])) ?></td>
+                  <td><?php
+                      $tgl1 = strtotime($row2['tgl_pinjam']);
+                      $tgl2 = $row2['tgl_kembali'] ? strtotime($row2['tgl_kembali']) : now();
+
+                      $jarak = $tgl2 - $tgl1;
+
+                      $hari = floor($jarak / 60 / 60 / 24) + 1;
+                      echo $hari == 0 ? '&lt; 1 hari' : "$hari hari";
+                      ?>
+                  </td>
+                  <td><?= $row2['keterangan'] ?></td>
+                  <td><?php
+                      $status = $row2['status'] == 1 ? 'Sudah kembali' : 'Belum kembali';
+                      echo $status;
+                      ?>
+                  </td>
+
+                </tr>
+              <?php
+              } else {
+              ?>
+                <tr>
+                  <td><?= $row2['nama_brg'] ?></td>
+                  <td><?= $row2['jml_barang'] . " " . $row2['kd_satuan'] ?></td>
+                  <td><?= date('d/m/Y', strtotime($row2['tgl_pinjam'])) ?></td>
+                  <td><?php
+                      $tgl1 = strtotime($row2['tgl_pinjam']);
+                      $tgl2 = $row2['tgl_kembali'] ? strtotime($row2['tgl_kembali']) : now();
+
+                      $jarak = $tgl2 - $tgl1;
+
+                      $hari = floor($jarak / 60 / 60 / 24) + 1;
+                      echo $hari == 0 ? '&lt; 1 hari' : "$hari hari";
+                      ?>
+                  </td>
+                  <td><?= $row2['keterangan'] ?></td>
+                  <td><?php
+                      $status = $row2['status'] == 1 ? 'Sudah kembali' : 'Belum kembali';
+                      echo $status;
+                      ?>
+                  </td>
+                </tr>
+            <?php }
+
+              $prevNamaAnggota = $currNamaAnggota;
+            }
+            ?>
           <?php } ?>
-        </tbody>
+          </tbody>
       </table>
     <?php } else { ?>
       <p class="text-center mt-5" style="font-size: 20px;">Data Kosong! Tidak Ada Permintaan pada <?= $haritanggal ?></p>

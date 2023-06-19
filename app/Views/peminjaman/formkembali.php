@@ -122,7 +122,7 @@
                     <td>
                       <div class="input-group mb-3">
                         <span class="input-group-text"><i class="bi bi-calendar-check"></i></span>
-                        <input type="date" class="form-control" id="tglkembali${i}" name="tgl_kembali${i}" value="${val.tgl_kembali}" ${isBack}>
+                        <input type="datetime-local" class="form-control" id="tglkembali${i}" name="tgl_kembali${i}" value="${val.tgl_kembali}" ${isBack}>
                         <div class="invalid-feedback errtglkembali${i}"></div>
                       </div>
                     </td>   

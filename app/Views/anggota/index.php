@@ -398,10 +398,10 @@
     let addunit = `<table class="table" style="padding:20px;">
           
     <tr>
-          <th>Kategori Unit</th>
+          <th>${d.kategori_unit}</th>
           <td class="align-top">:</td>
-            <td class="align-top">${(d.kategori_unit)? `
-                ${d.kategori_unit}
+            <td class="align-top">${(d.singkatan)? `
+                ${d.singkatan}
               `:`-`}
               </td>
           </tr>

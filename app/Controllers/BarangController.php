@@ -10,6 +10,7 @@ use App\Models\StokBarang;
 use App\Models\RiwayatTransaksi;
 use \Hermawan\DataTables\DataTable;
 use App\Controllers\BaseController;
+use CodeIgniter\HTTP\Response;
 use PHPUnit\Framework\Constraint\Count;
 
 class BarangController extends BaseController
@@ -75,13 +76,12 @@ class BarangController extends BaseController
 
             $isRestore = filter_var($this->request->getGet('isRestore'), FILTER_VALIDATE_BOOLEAN);
             $builder = $this->db->table('stok_barang sb')
-                ->select('sb.id, sb.barang_id, k.nama_kategori, b.nama_brg, b.harga_beli, b.kode_brg, b.foto_barang, sb.jumlah_masuk, sb.jumlah_keluar, sb.sisa_stok, b.kat_id, sb.ruang_id, sb.satuan_id, sb.created_at, sb.created_by, sb.deleted_at, sb.deleted_by, r.nama_ruang')
+                ->select('sb.id, sb.barang_id, k.nama_kategori, b.nama_brg,b.warna, b.harga_beli, b.kode_brg, b.foto_barang, sb.jumlah_masuk, sb.jumlah_keluar, sb.sisa_stok, b.kat_id, sb.ruang_id, sb.satuan_id, sb.created_at, sb.created_by, sb.deleted_at, sb.deleted_by, r.nama_ruang')
                 ->join('barang b', 'b.id=sb.barang_id')
                 ->join('kategori k', 'k.id=b.kat_id ')
                 ->join('ruang r', 'sb.ruang_id = r.id')
                 ->join('satuan s', 'sb.satuan_id = s.id')
-                ->where('r.id', 54)
-                ->where('k.jenis', $jenis);
+                ->where('r.id', 54);
 
             return DataTable::of($builder)
                 ->addNumbering('no')
@@ -497,6 +497,184 @@ class BarangController extends BaseController
                 ];
             }
             echo json_encode($list);
+        } else {
+            $data = [
+                'message' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/html/error_404', $data);
+        }
+    }
+
+    public function pilihwarna()
+    {
+        if ($this->request->isAJAX()) {
+            $search = $this->request->getGet('search');
+            if (!is_string($search)) {
+                // Handle invalid search parameter
+                return $this->response->setJSON([]);
+            }
+            $datawarna = [
+                'aliceblue' => '#F0F8FF',
+                'antiquewhite' => '# FAEBD7',
+                'aqua' => '#00FFFF',
+                'aquamarine' => '#7FFFD4',
+                'azure' => '#F0FFFF',
+                'krem' => '#F5F5DC',
+                'bisque' => '#FFE4C4',
+                'hitam' => '#000000',
+                'blanchedalmond' => '#FFEBCD',
+                'biru' => '#0000FF',
+                'blueviolet' => '#8A2BE2',
+                'brown' => '#A52A2A',
+                'burlywood' => '# DEB887',
+                'cadetblue' => '#5F9EA0',
+                'chartreuse' => '#7FFF00',
+                'coklat' => '#D2691E',
+                'koral' => '# FF7F50',
+                'cornflowerblue' => '#6495ED',
+                'cornsilk' => '#FFF8DC',
+                'crimson' => '# DC143C',
+                'cyan' => '#00FFFF',
+                'darkblue' => '#00008B',
+                'darkcyan' => '#008B8B',
+                'darkgoldenrod' => '#B8860B',
+                'darkgray' => '#A9A9A9',
+                'darkgreen' => '#006400',
+                'darkgrey' => '#A9A9A9',
+                'darkkhaki' => '# BDB76B',
+                'darkmagenta' => '#8B008B',
+                'darkolivegreen' => '#556B2F',
+                'darkorange' => '# FF8C00',
+                'darkorchid' => '#9932CC',
+                'darkred' => '#8B0000',
+                'darksalmon' => '#E9967A',
+                'darkseagreen' => '#8FBC8F',
+                'darkslateblue' => '#483D8B',
+                'darkslategray' => '#2F4F4F',
+                'darkslategrey' => '#2F4F4F',
+                'darkturquoise' => '#00CED1',
+                'darkviolet' => '#9400D3',
+                'deeppink' => '# FF1493',
+                'deepskyblue' => '#00BFFF',
+                'dimgray' => '#696969',
+                'dimgrey' => '#696969',
+                'dodgerblue' => '#1E90FF',
+                'firebrick' => '#B22222',
+                'floralwhite' => '#FFFAF0',
+                'forestgreen' => '#228B22',
+                'fuchsia' => '# FF00FF',
+                'gainsboro' => '#DCDCDC',
+                'ghostwhite' => '#F8F8FF',
+                'gold' => '# FFD700',
+                'goldenrod' => '# DAA520',
+                'abu-abu' => '#808080',
+                'hijau' => '#008000',
+                'greenyellow' => '# ADFF2F',
+                'abu-abu' => '#808080',
+                'honeydew' => '#F0FFF0',
+                'hotpink' => '# FF69B4',
+                'indianred' => '# CD5C5C',
+                'indigo' => '#4B0082',
+                'ivory' => '#FFFFF0',
+                'khaki' => '#F0E68C',
+                'lavender' => '#E6E6FA',
+                'lavenderblush' => '#FFF0F5',
+                'lawngreen' => '#7CFC00',
+                'lemonchiffon' => '#FFFACD',
+                'lightblue' => '#ADD8E6',
+                'lightcoral' => '#F08080',
+                'lightcyan' => '#E0FFFF',
+                'lightgoldenrodyellow' => '#FAFAD2',
+                'lightgray' => '#D3D3D3',
+                'lightgreen' => '#90EE90',
+                'lightgrey' => '#D3D3D3',
+                'lightpink' => '# FFB6C1',
+                'lightsalmon' => '#FFA07A',
+                'lightseagreen' => '#20B2AA',
+                'lightskyblue' => '#87CEFA',
+                'lightslategray' => '#778899',
+                'lightslategrey' => '#778899',
+                'lightsteelblue' => '#B0C4DE',
+                'lightyellow' => '#FFFFE0',
+                'lime' => '#00FF00',
+                'limegreen' => '#32CD32',
+                'linen' => '#FAF0E6',
+                'magenta' => '# FF00FF',
+                'maroon' => '#800000',
+                'mediumaquamarine' => '#66CDAA',
+                'mediumblue' => '#0000CD',
+                'mediumorchid' => '# BA55D3',
+                'mediumpurple' => '#9370D0',
+                'mediumseagreen' => '#3CB371',
+                'mediumslateblue' => '#7B68EE',
+                'mediumspringgreen' => '#00FA9A',
+                'mediumturquoise' => '#48D1CC',
+                'mediumvioletred' => '#C71585',
+                'midnightblue' => '#191970',
+                'mintcream' => '#F5FFFA',
+                'mistyrose' => '#FFE4E1',
+                'moccasin' => '#FFE4B5',
+                'navajowhite' => '#FFDEAD',
+                'navy' => '#000080',
+                'oldlace' => '#FDF5E6',
+                'olive' => '#808000',
+                'olivedrab' => '#6B8E23',
+                'orange' => '#FFA500',
+                'orangered' => '#FF4500',
+                'anggrek' => '# DA70D6',
+                'palegoldenrod' => '#EEE8AA',
+                'palegreen' => '#98FB98',
+                'paleturquoise' => '# AFEEEE',
+                'palevioletred' => '# DB7093',
+                'papayawhip' => '#FFEFD5',
+                'peachpuff' => '# FFDAB9',
+                'peru' => '# CD853F',
+                'pink' => '# FFC0CB',
+                'prem' => '#DDA0DD',
+                'powderblue' => '#B0E0E6',
+                'ungu' => '#800080',
+                'merah' => '#FF0000',
+                'rosybrown' => '# BC8F8F',
+                'royalblue' => '#4169E1',
+                'saddlebrown' => '#8B4513',
+                'salmon' => '# FA8072',
+                'sandybrown' => '#F4A460',
+                'seagreen' => '#2E8B57',
+                'seashell' => '#FFF5EE',
+                'sienna' => '#A0522D',
+                'silver' => '#C0C0C0',
+                'skyblue' => '#87CEEB',
+                'slateblue' => '#6A5ACD',
+                'slategray' => '#708090',
+                'slategrey' => '#708090',
+                'snow' => '#FFFAFA',
+                'springgreen' => '#00FF7F',
+                'steelblue' => '#4682B4',
+                'tan' => '#D2B48C',
+                'teal' => '#008080',
+                'thistle' => '#D8BFD8',
+                'tomato' => '#FF6347',
+                'turquoise' => '#40E0D0',
+                'violet' => '#EE82EE',
+                'wheat' => '#F5DEB3',
+                'putih' => '#FFFFFF',
+                'whitesmoke' => '#F5F5F5',
+                'kuning' => '#FFFF00',
+                'yellowgreen' => '#9ACD32'
+            ];
+
+            $results = [];
+            foreach ($datawarna as $warna => $kode) {
+                if (stripos($warna, $search) !== false) {
+                    $results[] = [
+                        'id' => $warna,
+                        'text' => $warna,
+                        'kode' => $kode,
+                    ];
+                }
+            }
+
+            return $this->response->setJSON($results);
         } else {
             $data = [
                 'message' => 'Maaf tidak dapat diproses',
@@ -1481,6 +1659,7 @@ class BarangController extends BaseController
                     'nama_brg' => $namabrg,
                     'merk' => $this->request->getVar('merk'),
                     'warna' => $this->request->getVar('warna'),
+                    'tipe' => $this->request->getVar('tipe'),
                     'asal' => $this->request->getVar('asal'),
                     'toko' => $this->request->getVar('toko'),
                     'instansi' => $this->request->getVar('instansi'),
@@ -1835,6 +2014,7 @@ class BarangController extends BaseController
             $nama_brg = array();
             $merk = array();
             $warna = array();
+            $tipe = array();
             $toko = array();
             $instansi = array();
             $no_seri = array();
@@ -1859,6 +2039,7 @@ class BarangController extends BaseController
                 array_push($nama_brg, $this->request->getVar("nama_brg$j"));
                 array_push($merk, $this->request->getVar("merk$j"));
                 array_push($warna, $this->request->getVar("warna$j"));
+                array_push($tipe, $this->request->getVar("tipe$j"));
                 array_push($toko, $this->request->getVar("toko$j"));
                 array_push($instansi, $this->request->getVar("instansi$j"));
                 array_push($no_seri, $this->request->getVar("no_seri$j"));
@@ -1972,6 +2153,7 @@ class BarangController extends BaseController
                         'nama_brg' => $nama_brg[$i],
                         'merk' => $merk[$i],
                         'warna' => $warna[$i],
+                        'tipe' => $tipe[$i],
                         'asal' => $asal[$i],
                         'toko' => $toko[$i],
                         'instansi' => $instansi[$i],
@@ -2087,5 +2269,63 @@ class BarangController extends BaseController
             ];
             return view('errors/mazer/error-404', $data);
         }
+    }
+
+    public function notifikasi_persediaan()
+    {
+        if (!$this->request->isAJAX()) {
+            $data = [
+                'title' => 'Error 404',
+                'msg' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/mazer/error-404', $data);
+        }
+        // $view = $this->request->getVar('view');
+        $query = $this->db->table('stok_barang sb')
+            ->select('sb.*, k.nama_kategori, b.nama_brg,b.warna, b.harga_beli, b.kode_brg, b.foto_barang, s.kd_satuan')
+            ->join('barang b', 'b.id=sb.barang_id')
+            ->join('kategori k', 'k.id=b.kat_id ')
+            ->join('ruang r', 'sb.ruang_id = r.id')
+            ->join('satuan s', 'sb.satuan_id = s.id')
+            ->where('k.jenis', 'Barang Persediaan')
+            ->where('sb.deleted_at', null)
+            ->where('b.deleted_at', null)
+            ->having('sb.sisa_stok <= 3');
+
+        $result = $query->orderBy('sb.id', 'DESC')->limit(5)->get()->getResultArray();
+
+
+        $output = '';
+        if (count($result) > 0) {
+            $output .= '<li>
+                                <h5 class="dropdown-header">Notifikasi Barang Persediaan</h5>
+                                <hr class="dropdown-divider">
+                            </li>';
+            foreach ($result as $row) {
+                $output .= '
+                    <li style="background-color:rgb(25, 135, 84, 0.1);">
+                        <a href="#" class="dropdown-item" style="padding: 0.3rem 1.5rem;">
+                          <div class="d-flex w-100 justify-content-between align-items-center">
+                          <div>
+                          <h6 class="mb-1"> ' . $row["nama_brg"] . '</h6>
+                          <p class="mb-1">Stok barang hampir habis, sisa stok saat ini ' . $row["sisa_stok"] . '</p>
+                          <small>' . ubahTanggal($row["updated_at"] ? $row["updated_at"] : $row["created_at"]) . '</small>     
+                          </div>
+                          <small style="margin-left:15px;"><i class="bi bi-circle-fill text-danger"></i></small>
+                          </div>
+                        </a>
+                      </li>
+                        ';
+            }
+        } else {
+            $output .= '<li><a href="#" class="dropdown-item" class="text-bold text-italic">Tidak ada notifikasi baru ditemukan</a></li>';
+        }
+
+        $data = [
+            'notification' => $output,
+            'unseen_notification' => count($result),
+        ];
+
+        echo json_encode($data);
     }
 }

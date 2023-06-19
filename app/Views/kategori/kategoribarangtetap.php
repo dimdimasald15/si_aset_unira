@@ -150,7 +150,7 @@
             </svg>
             Tambah Kategori
           </button>
-          <button type="button" class="btn btn-danger" id="btn-restore"><i class="fa fa-trash-o"></i> Trash</button>
+          <button type="button" class="btn btn-primary" id="btn-restore"><i class="fa fa-recycle"></i> Recycle Bin</button>
         </div>
         <div class="col-lg-auto btn-datarestorekategori" style="display:none;">
           <button class="btn btn-success" onclick="restoreall()"><i class="fa fa-undo"></i> Pulihkan semua</button>

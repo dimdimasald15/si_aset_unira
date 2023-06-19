@@ -132,7 +132,7 @@
       <form class="formmultipledelete">
         <div class="row m-1">
           <div class="col-md-12 pb-0 pt-3 px-0 d-flex justify-content-end">
-            <button class="btn btn-warning mx-3" onclick="trfbarang()" type="button"><i class="fa fa-exchange" hidden></i> Transfer Barang</button>
+            <button class="btn btn-warning mx-3" onclick="trfbarang()" type="button"><i class="fa fa-exchange"></i> Transfer Barang</button>
             <button type="submit" class="btn btn-danger btn-multipledelete">
               <i class="fa fa-trash-o"></i> Multiple Delete
             </button>
