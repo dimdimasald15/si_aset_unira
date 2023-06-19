@@ -363,9 +363,10 @@ class LaporanController extends BaseController
         }
         return $groupedData;
     }
-    public function peminjamanbarang($tgl_peminjaman, $jenis)
+
+    public function peminjamanbarang1($tgl_peminjaman, $jenis)
     {
-        $builder = $this->db->table('peminjaman p')->select('p.id, p.anggota_id, p.barang_id, p.jml_barang, p.kondisi_pinjam, p.kondisi_kembali, p.jml_hari, p.tgl_pinjam, p.tgl_kembali, p.status, p.created_at, p.created_by, p.deleted_at, p.deleted_by, a.unit_id, a.nama_anggota, k.nama_kategori, b.nama_brg, u.singkatan, s.kd_satuan')
+        $builder = $this->db->table('peminjaman p')->select('p.id, p.anggota_id, p.barang_id, p.jml_barang, p.kondisi_pinjam, p.kondisi_kembali, p.jml_hari, p.tgl_pinjam, p.tgl_kembali,p.keterangan, p.status, p.created_at, p.created_by, a.nama_anggota, b.nama_brg, u.singkatan, s.kd_satuan')
             ->join('anggota a', 'a.id = p.anggota_id')
             ->join('barang b', 'b.id=p.barang_id')
             ->join('kategori k', 'k.id=b.kat_id')
@@ -382,11 +383,95 @@ class LaporanController extends BaseController
         $builder->where('k.deleted_at', null)
             ->where('b.deleted_at', null)
             ->where('sb.deleted_at', null)
+            ->where('p.deleted_at', null)
+            ->orderBy('p.id', 'ASC');
+
+        $results = $builder->get()->getResultArray();
+        $tgldibuat = [];
+        helper('converter_helper');
+        foreach ($results as $key => $val) {
+            array_push($tgldibuat, format_tanggal($val['created_at']));
+        }
+
+        foreach ($results as $key => &$result) {
+            $result['tgldibuat'] = $tgldibuat[$key];
+        }
+
+        // Array untuk menyimpan data yang telah dikelompokkan
+        $groupedData = [];
+
+        // Perulangan untuk mengelompokkan data berdasarkan bulan
+        foreach ($results as $key => &$item) {
+            // Ambil bulan saja dari tanggal
+            $dateString = $item["tgldibuat"];
+            if (empty($tgl_permintaan)) {
+                $haritanggal = explode(" ", $dateString)[2] . " " . explode(" ", $dateString)[3];
+            } else if (!empty($tgl_permintaan)) {
+                $haritanggal = $dateString;
+            }
+            // Tambahkan data ke dalam array sesuai dengan bulan
+            if (!isset($groupedData[$haritanggal])) {
+                $groupedData[$haritanggal] = [];
+            }
+            $groupedData[$haritanggal][] = $item;
+        }
+        return $groupedData;
+    }
+
+    public function peminjamanbarang2($m, $y, $jenis)
+    {
+        $builder = $this->db->table('peminjaman p')->select('p.id, p.anggota_id, p.barang_id, p.jml_barang, p.kondisi_pinjam, p.kondisi_kembali, p.jml_hari, p.tgl_pinjam, p.tgl_kembali, p.status, p.created_at, p.created_by, a.nama_anggota, b.nama_brg, u.singkatan, s.kd_satuan')
+            ->join('anggota a', 'a.id = p.anggota_id')
+            ->join('barang b', 'b.id=p.barang_id')
+            ->join('kategori k', 'k.id=b.kat_id')
+            ->join('unit u', 'u.id = a.unit_id')
+            ->join('stok_barang sb', 'b.id=sb.barang_id')
+            ->join('satuan s', 's.id=sb.satuan_id')
+            ->where('k.jenis', $jenis);
+
+        if (empty($y)) {
+            $builder->where('YEAR(p.created_at)', date('Y'));
+        } else if (!empty($m) && !empty($y)) {
+            $builder->where("MONTH(p.created_at)", $m);
+            $builder->where("YEAR(p.created_at)", $y);
+        } else if (!empty($y)) {
+            $builder->where("YEAR(p.created_at)", $y);
+        }
+        $builder->where('k.deleted_at', null)
+            ->where('b.deleted_at', null)
+            ->where('sb.deleted_at', null)
             ->where('p.deleted_at', null);
 
-        $results = $builder->get()->getResult();
+        $results = $builder->get()->getResultArray();
+        $tgldibuat = [];
+        helper('converter_helper');
+        foreach ($results as $key => $val) {
+            array_push($tgldibuat, format_tanggal($val['created_at']));
+        }
 
-        return $results;
+        foreach ($results as $key => &$result) {
+            $result['tgldibuat'] = $tgldibuat[$key];
+        }
+
+        // Array untuk menyimpan data yang telah dikelompokkan
+        $groupedData = [];
+
+        // Perulangan untuk mengelompokkan data berdasarkan bulan
+        foreach ($results as $key => &$item) {
+            // Ambil bulan saja dari tanggal
+            $dateString = $item["tgldibuat"];
+            if (empty($tgl_permintaan)) {
+                $haritanggal = explode(" ", $dateString)[2] . " " . explode(" ", $dateString)[3];
+            } else if (!empty($tgl_permintaan)) {
+                $haritanggal = $dateString;
+            }
+            // Tambahkan data ke dalam array sesuai dengan bulan
+            if (!isset($groupedData[$haritanggal])) {
+                $groupedData[$haritanggal] = [];
+            }
+            $groupedData[$haritanggal][] = $item;
+        }
+        return $groupedData;
     }
 
     private function permintaanbarang($tgl_permintaan, $jenis)
@@ -431,7 +516,7 @@ class LaporanController extends BaseController
         if (empty($tgl_permintaan)) {
             $builder->where('YEAR(p.created_at)', date('Y'));
         } else if (!empty($tgl_permintaan)) {
-            $builder->like("p.created_at", $tgl_permintaan . "%");
+            $builder->like("p.created_at", "$tgl_permintaan%");
         }
         $builder->where('k.deleted_at', null)
             ->where('b.deleted_at', null)
@@ -478,6 +563,8 @@ class LaporanController extends BaseController
         return $groupedData;
     }
 
+
+
     public function cetaklaporanpdf()
     {
         helper('converter_helper');
@@ -500,7 +587,7 @@ class LaporanController extends BaseController
                 $bulantahun = "tahun " . date('Y');
                 $filename = 'laporan-aset-' . date('Y');
             } else if (!empty($bulan) && !empty($tahun)) {
-                $bulantahun = "bulan " . format_bulan($bulan) . " tahun " . date('Y');
+                $bulantahun = "Bulan " . format_bulan($bulan) . " Tahun " . date('Y');
                 $filename = 'laporan-aset-' . $bulan . '-' . $tahun;
             } else if (!empty($tahun)) {
                 $bulantahun = "tahun " . date('Y');
@@ -524,34 +611,66 @@ class LaporanController extends BaseController
             // load HTML content
             $dompdf->loadHtml(view('laporan/laporanaset', $data));
         } else if ($keterangan == "Permintaan") {
-            $tgl_minta = $this->request->getVar('tgl_minta');
-            $haritanggal = format_tanggal($tgl_minta);
-            $tanggal = !empty($tgl_minta) ? date('d-m-Y', strtotime($tgl_minta)) : date('Y');
-            // if ($haritanggal) {
-            $filename = 'laporan-permintaan-' . $tanggal;
-            // }
-            $permintaan = $this->permintaanbarang($tgl_minta, $jenis_kat);
+            $opsi = $this->request->getVar('opsi');
+            if ($opsi == "opsi1") {
+                $tgl_minta = $this->request->getVar('tgl_minta');
+                $haritanggal = format_tanggal($tgl_minta);
+                $tanggal = !empty($tgl_minta) ? date('d-m-Y', strtotime($tgl_minta)) : date('Y');
+                // if ($haritanggal) {
+                $filename = 'laporan-permintaan-' . $tanggal;
+                // }
+                $permintaan = $this->permintaanbarang($tgl_minta, $jenis_kat);
+            } else if ($opsi == "opsi2") {
+                $bulantahun = '';
+                if (empty($bulan) & empty($tahun)) {
+                    $bulantahun = "tahun " . date('Y');
+                    $filename = 'laporan-permintaan-' . date('Y');
+                } else if (!empty($bulan) && !empty($tahun)) {
+                    $bulantahun = "Bulan " . format_bulan($bulan) . " Tahun " . date('Y');
+                    $filename = 'laporan-permintaan-' . $bulan . '-' . $tahun;
+                } else if (!empty($tahun)) {
+                    $bulantahun = "tahun " . date('Y');
+                    $filename = 'laporan-permintaan-' . $tahun;
+                }
+                $permintaan = $this->hitungmintabarang($bulan, $tahun, "Barang Persediaan");
+            }
+
             // load HTML content
             $dompdf->loadHtml(view('permintaan/cetakpdf', [
                 'title' => 'Laporan Permintaan Barang Persediaan',
                 'permintaan' => $permintaan,
-                'haritanggal' => $haritanggal,
+                'haritanggal' => $haritanggal ? $haritanggal : $bulantahun,
+                'opsi' => $opsi,
             ]));
         } else if ($keterangan == "Peminjaman") {
-            $tgl_pinjam = $this->request->getVar('tgl_pinjam');
-            $haritanggal = format_tanggal($tgl_pinjam);
-            $tanggal = !empty($tgl_pinjam) ? date('d-m-Y', strtotime($tgl_pinjam)) : date('Y');
-            // if ($haritanggal) {
-            $filename = 'laporan-peminjaman-' . $tanggal;
-            // }
-            $peminjaman = $this->peminjamanbarang($tgl_pinjam, $jenis_kat);
-            // var_dump($peminjaman);
-            // die;
+            $opsi = $this->request->getVar('opsi');
+            if ($opsi == "opsi1") {
+                $tgl_pinjam = $this->request->getVar('tgl_pinjam');
+                $haritanggal = format_tanggal($tgl_pinjam);
+                $tanggal = !empty($tgl_pinjam) ? date('d-m-Y', strtotime($tgl_pinjam)) : date('Y');
+
+                $filename = 'laporan-peminjaman-' . $tanggal;
+                $peminjaman = $this->peminjamanbarang1($tgl_pinjam, $jenis_kat);
+            } else if ($opsi == "opsi2") {
+                $bulantahun = '';
+                if (empty($bulan) & empty($tahun)) {
+                    $bulantahun = "tahun " . date('Y');
+                    $filename = 'laporan-permintaan-' . date('Y');
+                } else if (!empty($bulan) && !empty($tahun)) {
+                    $bulantahun = "Bulan " . format_bulan($bulan) . " Tahun " . date('Y');
+                    $filename = 'laporan-permintaan-' . $bulan . '-' . $tahun;
+                } else if (!empty($tahun)) {
+                    $bulantahun = "tahun " . date('Y');
+                    $filename = 'laporan-permintaan-' . $tahun;
+                }
+                $peminjaman = $this->peminjamanbarang2($bulan, $tahun, $jenis_kat);
+            }
+
             // load HTML content
             $dompdf->loadHtml(view('peminjaman/cetakpdf', [
                 'title' => 'Laporan Peminjaman Barang Tetap',
                 'peminjaman' => $peminjaman,
-                'haritanggal' => $haritanggal,
+                'haritanggal' => $haritanggal ? $haritanggal : $bulantahun,
             ]));
         }
         // (optional) setup the paper size and orientation
@@ -566,13 +685,13 @@ class LaporanController extends BaseController
 
     public function get_data_chart_permintaan()
     {
-        // if (!$this->request->isAJAX()) {
-        //     $data = [
-        //         'title' => 'Error 404',
-        //         'msg' => 'Maaf tidak dapat diproses',
-        //     ];
-        //     return view('errors/mazer/error-404', $data);
-        // }
+        if (!$this->request->isAJAX()) {
+            $data = [
+                'title' => 'Error 404',
+                'msg' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/mazer/error-404', $data);
+        }
         helper('converter_helper');
         $m = $this->request->getVar('m');
         $y = $this->request->getVar('y');

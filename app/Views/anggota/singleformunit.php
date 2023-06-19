@@ -49,7 +49,7 @@
             <div class="row mb-1">
               <div class="input-group mb-3">
                 <span class="input-group-text" id="basic-addon1"><i class="bi bi-info-circle"></i></span>
-                <textarea class="form-control" id="deskripsi" name="deskripsi" name="deskripsi"></textarea>
+                <textarea class="form-control" id="deskripsi" name="deskripsi"></textarea>
                 <div class="invalid-feedback errdeskripsi"></div>
               </div>
             </div>

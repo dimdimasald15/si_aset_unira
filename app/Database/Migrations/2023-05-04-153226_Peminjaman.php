@@ -31,6 +31,10 @@ class Peminjaman extends Migration
                 'type' => 'int',
                 'constraint' => '3',
             ],
+            'keterangan' => [
+                'type' => 'text',
+                'null' => TRUE,
+            ],
             'kondisi_pinjam' => [
                 'type' => 'varchar',
                 'constraint' => '20',

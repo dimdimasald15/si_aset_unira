@@ -56,7 +56,7 @@ class PeminjamanController extends BaseController
             $jenis = $this->request->getVar('jenis_kat');
             $isRestore = filter_var($this->request->getGet('isRestore'), FILTER_VALIDATE_BOOLEAN);
             $status = $this->request->getVar('status');
-            $builder = $this->db->table('peminjaman p')->select('p.id, p.anggota_id, p.barang_id, p.jml_barang, p.kondisi_pinjam, p.kondisi_kembali, p.jml_hari, p.tgl_pinjam, p.tgl_kembali, p.status, p.created_at, p.created_by, p.deleted_at, p.deleted_by, a.unit_id, a.nama_anggota, k.nama_kategori, b.nama_brg, u.singkatan, s.kd_satuan')
+            $builder = $this->db->table('peminjaman p')->select('p.id, p.anggota_id, p.barang_id, p.jml_barang,p.keterangan, p.kondisi_pinjam, p.kondisi_kembali, p.jml_hari, p.tgl_pinjam, p.tgl_kembali, p.status, p.created_at, p.created_by, p.deleted_at, p.deleted_by, a.unit_id, a.nama_anggota, k.nama_kategori, b.nama_brg, u.singkatan, s.kd_satuan')
                 ->join('anggota a', 'a.id = p.anggota_id')
                 ->join('barang b', 'b.id=p.barang_id')
                 ->join('kategori k', 'k.id=b.kat_id')
@@ -255,6 +255,13 @@ class PeminjamanController extends BaseController
                     'required' => '{field} tidak boleh kosong',
                 ],
             ];
+            $rules1['keterangan'] = [
+                'label' => 'Keterangan',
+                'rules' => 'required',
+                'errors' => [
+                    'required' => '{field} tidak boleh kosong',
+                ],
+            ];
 
             if (!$this->validate($rules1)) {
                 $errors1 = $validation->getErrors();
@@ -336,6 +343,7 @@ class PeminjamanController extends BaseController
                             'barang_id' => $barang_id[$i],
                             'jml_barang' => $jml_barang[$i],
                             'tgl_pinjam' => $this->request->getVar('tgl_pinjam'),
+                            'keterangan' => $this->request->getVar('keterangan'),
                             'status' => 0,
                             'kondisi_pinjam' => 'baik',
                         ];
@@ -403,10 +411,12 @@ class PeminjamanController extends BaseController
         }
 
         $jenis_kat = $this->request->getVar('jenis_kat');
+        $opsi = $this->request->getVar('opsi');
 
         $data = [
             'title' => 'Cetak Peminjaman Barang',
-            'jenis_kat' => $jenis_kat
+            'jenis_kat' => $jenis_kat,
+            'opsi' => $opsi,
         ];
 
         $msg = [

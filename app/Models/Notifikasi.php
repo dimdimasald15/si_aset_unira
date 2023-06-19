@@ -8,7 +8,7 @@ class Notifikasi extends Model
 {
     protected $table = "notifikasi";
     protected $primaryKey = 'id';
-    protected $allowedFields = ['id', 'laporan_id', 'petugas_id', 'viewed_by_admin', 'viewed_by_petugas', 'created_by', 'created_at', 'updated_by', 'updated_at', 'deleted_by', 'deleted_at'];
+    protected $allowedFields = ['id', 'laporan_id', 'petugas_id', 'viewed_by_admin', 'created_by', 'created_at', 'updated_by', 'updated_at', 'deleted_by', 'deleted_at'];
     protected $useSoftDeletes   = true;
     protected $useTimestamps = false;
     protected $createdField  = 'created_at';

@@ -61,82 +61,8 @@
   </div>
 </div>
 <section class="section">
-  <div class="col-12 col-md-12 viewtambahsingle">
-    <div class="card mb-3 text-white bg-dark shadow" id="cardsingleinsert" style="display:none;">
-      <div class="card-header text-white bg-dark shadow-sm">
-        <h5 class="card-title">Form Single Insert <?= $title; ?></h5>
-      </div>
-      <div class="card-content">
-        <div class="card-body">
-          <div class="row px-4 py-4 option">
-            <div class="col-md-12">
-              <h6>Pilihan tambah barang secara single</h6>
-            </div>
-            <div class="col-md-12">
-              <div class="form-check">
-                <input class="form-check-input" type="radio" name="flexRadioDefault" id="opsi1">
-                <label class="form-check-label" for="opsi1">
-                  Barang baru belum terdaftar di database
-                </label>
-              </div>
-              <div class="form-check">
-                <input class="form-check-input" type="radio" name="flexRadioDefault" id="opsi2">
-                <label class="form-check-label" for="opsi2">
-                  Barang sudah terdaftar di database (Tambah stok dan update tanggal pembelian)
-                </label>
-                <div class="invalid-feedback erroption"></div>
-              </div>
-            </div>
-          </div>
-          <div class="row option">
-            <div class="col-12 d-flex justify-content-end">
-              <button type="button" class="btn btn-white my-4 closeformsingle">Batal</button>
-              <button type="button" class="btn btn-primary my-4 btnnextsingle">Lanjutkan</button>
-            </div>
-          </div>
-          <div class="viewformsingle" style="display:none;"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="col-12 col-md-12 viewtambahmultiple">
-    <div class="card mb-3 text-white bg-dark shadow" id="cardmultipleinsert" style="display:none;">
-      <div class="card-header text-white bg-dark shadow-sm">
-        <h5 class="card-title">Form Multiple Insert <?= $title; ?></h5>
-      </div>
-      <div class="card-content">
-        <div class="card-body">
-          <div class="row px-4 py-4 optionmt">
-            <div class="col-md-12">
-              <h6>Pilihan tambah barang secara multiple</h6>
-            </div>
-            <div class="col-md-12">
-              <div class="form-check">
-                <input class="form-check-input" type="radio" name="flexRadioDefault" id="opsi1mt">
-                <label class="form-check-label" for="opsi1mt">
-                  Barang baru belum terdaftar di database
-                </label>
-              </div>
-              <div class="form-check">
-                <input class="form-check-input" type="radio" name="flexRadioDefault" id="opsi2mt">
-                <label class="form-check-label" for="opsi2mt">
-                  Barang sudah terdaftar di database (Tambah stok dan update tanggal pembelian)
-                </label>
-                <div class="invalid-feedback erroptionmt"></div>
-              </div>
-            </div>
-          </div>
-          <div class="row optionmt">
-            <div class="col-12 d-flex justify-content-end">
-              <button type="button" class="btn btn-white my-4 closeformmultiple">Batal</button>
-              <button type="button" class="btn btn-primary my-4 btnnextmultiple">Lanjutkan</button>
-            </div>
-          </div>
-          <div class="viewformmultiple" style="display:none;"></div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <div class="col-12 col-md-12 viewtambahmultiple" style="display:none;"></div>
+
   <div class="col-12 col-md-12 viewdata" style="display:none;"></div>
   <div class="card mb-3 text-white bg-dark shadow">
     <div class="card-header text-white bg-dark shadow-sm">
@@ -186,6 +112,7 @@
               <th>No.</th>
               <th>Kode Barang</th>
               <th>Nama Barang</th>
+              <th>Warna</th>
               <th>Jumlah Keluar</th>
               <th>Sisa Stok</th>
               <th>Lokasi</th>
@@ -208,10 +135,9 @@
                 Input Barang
               </button>
               <ul class="dropdown-menu shadow-lg">
-                <li><a class="dropdown-item" onclick="singleform()"><i class="fa fa-plus-square-o"></i> Tambah Barang
-                  </a>
+                <li><a class="dropdown-item" onclick="formtambahbaru()"><i class="fa fa-plus-square-o"></i> Barang Baru</a>
                 </li>
-                <li><a class="dropdown-item" onclick="multipleinsert()"><i class="fa fa-file-text"></i> Input Multiple</a>
+                <li><a class="dropdown-item" onclick="formtambahstok()"><i class="fa fa-file-text"></i> Tambah Stok Barang</a>
                 </li>
               </ul>
             </div>
@@ -232,6 +158,7 @@
                 <th <?= $jenis_kat == "Barang Persediaan" ? 'hidden' : '' ?>>QR Code</th>
                 <th>Kode Barang</th>
                 <th>Nama Barang</th>
+                <th>Warna</th>
                 <th>Jumlah Keluar</th>
                 <th>Sisa Stok</th>
                 <th>Lokasi</th>
@@ -368,10 +295,13 @@
             data: 'nama_brg'
           },
           {
+            data: 'warna'
+          },
+          {
             data: 'jumlah_keluar',
           },
           {
-            data: 'sisa_stok'
+            data: 'sisa_stok',
           },
           {
             data: 'nama_ruang'
@@ -448,10 +378,20 @@
           data: 'nama_brg'
         },
         {
+          data: 'warna'
+        },
+        {
           data: 'jumlah_keluar',
         },
         {
-          data: 'sisa_stok'
+          data: 'sisa_stok',
+          render: function(data, type, row) {
+            if (jenis_kat == "Barang Persediaan") {
+              return parseInt(data) <= 3 ? `${data}*` : data;
+            } else {
+              return data;
+            }
+          }
         },
         {
           data: 'nama_ruang'
@@ -877,76 +817,76 @@
     }
   }
 
-  function singleform() {
-    saveMethod = 'add';
-    $('#cardmultipleinsert').hide(500);
-    $('#cardsingleinsert').show(500);
-    $('.viewdata').hide(500);
-    $('.btnnextsingle').on('click', function() {
-      var optionSelected = false;
-      $('.option .form-check-input').each(function() {
-        if ($(this).is(':checked')) {
-          optionSelected = true;
-          $(".option .form-check-input").removeClass("is-invalid");
-          $(".erroption").html('');
-          return false; // break out of the loop
-        }
-      });
-      if (!optionSelected) {
-        $(".option .form-check-input").addClass("is-invalid");
-        $(".erroption").html('Pilih salah satu opsi');
-        return; // stop here, don't proceed to the next form
-      }
+  // function singleform() {
+  //   saveMethod = 'add';
+  //   $('#cardmultipleinsert').hide(500);
+  //   $('#cardsingleinsert').show(500);
+  //   $('.viewdata').hide(500);
+  //   $('.btnnextsingle').on('click', function() {
+  //     var optionSelected = false;
+  //     $('.option .form-check-input').each(function() {
+  //       if ($(this).is(':checked')) {
+  //         optionSelected = true;
+  //         $(".option .form-check-input").removeClass("is-invalid");
+  //         $(".erroption").html('');
+  //         return false; // break out of the loop
+  //       }
+  //     });
+  //     if (!optionSelected) {
+  //       $(".option .form-check-input").addClass("is-invalid");
+  //       $(".erroption").html('Pilih salah satu opsi');
+  //       return; // stop here, don't proceed to the next form
+  //     }
 
-      if ($('#opsi1').is(':checked')) {
-        $('.option').hide(500);
-        $.ajax({
-          url: "<?= base_url() ?>/barangcontroller/tampilsingleform",
-          data: {
-            jenis_kat: jenis_kat,
-            jenistrx: jenistrx,
-            nav: "<?= $nav ?>",
-            saveMethod: saveMethod,
-          },
-          dataType: "json",
-          success: function(response) {
-            $('.viewformsingle').html(response.data).show(500);
-            loadLokasi();
-          },
-          error: function(xhr, ajaxOptions, thrownError) {
-            alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
-          }
-        });
-      } else if ($('#opsi2').is(':checked')) {
-        $('.option').hide(500);
-        $.ajax({
-          type: "post",
-          url: "<?= base_url() ?>/barangcontroller/tampiltambahstok",
-          data: {
-            title: jenistrx,
-            jenis_kat: jenis_kat,
-            jenistrx: `tambah stok <?= strtolower($jenis_kat) ?> di sarpras`,
-            nav: "<?= $nav ?>",
-            saveMethod: "update",
-          },
-          dataType: "json",
-          success: function(response) {
-            $('.viewformsingle').html(response.data).show(500);
-          },
-          error: function(xhr, ajaxOptions, thrownError) {
-            alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
-          }
-        });
-      }
-    });
+  //     if ($('#opsi1').is(':checked')) {
+  //       $('.option').hide(500);
+  //       $.ajax({
+  //         url: "<?= base_url() ?>/barangcontroller/tampilsingleform",
+  //         data: {
+  //           jenis_kat: jenis_kat,
+  //           jenistrx: jenistrx,
+  //           nav: "<?= $nav ?>",
+  //           saveMethod: saveMethod,
+  //         },
+  //         dataType: "json",
+  //         success: function(response) {
+  //           $('.viewformsingle').html(response.data).show(500);
+  //           loadLokasi();
+  //         },
+  //         error: function(xhr, ajaxOptions, thrownError) {
+  //           alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
+  //         }
+  //       });
+  //     } else if ($('#opsi2').is(':checked')) {
+  //       $('.option').hide(500);
+  //       $.ajax({
+  //         type: "post",
+  //         url: "<?= base_url() ?>/barangcontroller/tampiltambahstok",
+  //         data: {
+  //           title: jenistrx,
+  //           jenis_kat: jenis_kat,
+  //           jenistrx: `tambah stok <?= strtolower($jenis_kat) ?> di sarpras`,
+  //           nav: "<?= $nav ?>",
+  //           saveMethod: "update",
+  //         },
+  //         dataType: "json",
+  //         success: function(response) {
+  //           $('.viewformsingle').html(response.data).show(500);
+  //         },
+  //         error: function(xhr, ajaxOptions, thrownError) {
+  //           alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
+  //         }
+  //       });
+  //     }
+  //   });
 
-    $('.closeformsingle').click(function(e) {
-      e.preventDefault();
-      $('#cardsingleinsert').hide(500);
-      $(".option .form-check-input").removeClass("is-invalid");
-      $('.erroption').html('');
-    });
-  }
+  //   $('.closeformsingle').click(function(e) {
+  //     e.preventDefault();
+  //     $('#cardsingleinsert').hide(500);
+  //     $(".option .form-check-input").removeClass("is-invalid");
+  //     $('.erroption').html('');
+  //   });
+  // }
 
   function edit(id) {
     console.log(id);
@@ -973,74 +913,47 @@
     });
   }
 
-  function multipleinsert() {
-    $('#cardmultipleinsert').show(500);
-    $('#cardsingleinsert').hide(500);
+  function formtambahbaru() {
     $('.viewdata').hide(500);
-    $('.btnnextmultiple').on('click', function() {
-      var optionSelected = false;
-      $('.optionmt .form-check-input').each(function() {
-        if ($(this).is(':checked')) {
-          optionSelected = true;
-          $(".optionmt .form-check-input").removeClass("is-invalid");
-          $(".erroptionmt").html('');
-          return false; // break out of the loop
-        }
-      });
-      if (!optionSelected) {
-        $(".optionmt .form-check-input").addClass("is-invalid");
-        $(".erroptionmt").html('Pilih salah satu opsi');
-        return; // stop here, don't proceed to the next form
-      }
-
-      if ($('#opsi1mt').is(':checked')) {
-        $('.optionmt').hide(500);
-        $.ajax({
-          type: "post",
-          url: "<?= base_url() ?>/barangcontroller/tampiltambahbarangmultiple",
-          data: {
-            title: jenistrx,
-            jenis_kat: jenis_kat,
-            jenistrx: `<?= strtolower($jenis_kat) ?>`,
-            nav: "<?= $nav ?>",
-            saveMethod: "add",
-          },
-          dataType: "json",
-          success: function(response) {
-            $('.viewformmultiple').html(response.data).show(500);
-          },
-          error: function(xhr, ajaxOptions, thrownError) {
-            alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
-          }
-        });
-      } else if ($('#opsi2mt').is(':checked')) {
-        $('.optionmt').hide(500);
-        $.ajax({
-          type: "post",
-          url: "<?= base_url() ?>/barangcontroller/tampiltambahstokmultiple",
-          data: {
-            title: jenistrx,
-            jenis_kat: jenis_kat,
-            jenistrx: `tambah stok <?= strtolower($jenis_kat) ?> di sarpras`,
-            nav: "<?= $nav ?>",
-            saveMethod: "update",
-          },
-          dataType: "json",
-          success: function(response) {
-            $('.viewformmultiple').html(response.data).show(500);
-          },
-          error: function(xhr, ajaxOptions, thrownError) {
-            alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
-          }
-        });
+    $.ajax({
+      type: "post",
+      url: "<?= base_url() ?>/barangcontroller/tampiltambahbarangmultiple",
+      data: {
+        title: jenistrx,
+        jenis_kat: jenis_kat,
+        jenistrx: `<?= strtolower($jenis_kat) ?>`,
+        nav: "<?= $nav ?>",
+        saveMethod: "add",
+      },
+      dataType: "json",
+      success: function(response) {
+        $('.viewtambahmultiple').html(response.data).show(500);
+      },
+      error: function(xhr, ajaxOptions, thrownError) {
+        alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
       }
     });
+  }
 
-    $('.closeformmultiple').click(function(e) {
-      e.preventDefault();
-      $('#cardmultipleinsert').hide(500);
-      $(".optionmt .form-check-input").removeClass("is-invalid");
-      $('.erroptionmt').html('');
+  function formtambahstok() {
+    $('.viewdata').hide(500);
+    $.ajax({
+      type: "post",
+      url: "<?= base_url() ?>/barangcontroller/tampiltambahstokmultiple",
+      data: {
+        title: jenistrx,
+        jenis_kat: jenis_kat,
+        jenistrx: `tambah stok <?= strtolower($jenis_kat) ?> di sarpras`,
+        nav: "<?= $nav ?>",
+        saveMethod: "update",
+      },
+      dataType: "json",
+      success: function(response) {
+        $('.viewtambahmultiple').html(response.data).show(500);
+      },
+      error: function(xhr, ajaxOptions, thrownError) {
+        alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
+      }
     });
   }
 

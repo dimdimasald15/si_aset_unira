@@ -92,21 +92,15 @@ helper('converter_helper');
                   </div>
                 </li>
                 <li class="nav-item dropdown me-1">
-                  <a class="nav-link active dropdown-toggle" href="#" data-bs-toggle="dropdown" aria-expanded="false">
-                    <i class='bi bi-envelope bi-sub fs-4 text-gray-600'></i>
+                  <a class="nav-link active dropdown-toggle count" data-bs-toggle="button" id="pelaporanmasuk" aria-expanded="false">
                   </a>
-                  <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
-                    <li>
-                      <h6 class="dropdown-header">Mail</h6>
-                    </li>
-                    <li><a class="dropdown-item" href="#">No new mail</a></li>
-                  </ul>
+                  <ul class="dropdown-menu dropdown-menu-end" id="showpelaporan" aria-labelledby="pelaporanmasuk"></ul>
                 </li>
                 <li class=" nav-item dropdown me-3">
-                  <a class="nav-link active dropdown-toggle count" data-bs-toggle="dropdown" id="count_dropdown" aria-expanded="false">
+                  <a class="nav-link active dropdown-toggle notifpersediaan" id="notifpersediaan" href="#" data-bs-toggle="button" aria-expanded="false">
                   </a>
-                  <ul class="dropdown-menu dropdown-menu-end dropdown-menu-notifikasi" aria-labelledby="count_dropdown"></ul>
-                  <!-- <div class="notifikasi"></div> -->
+                  <ul class="dropdown-menu dropdown-menu-end" id="shownotif" aria-labelledby="dropdownMenuButton">
+                  </ul>
                 </li>
               </ul>
               <div class="dropdown">
@@ -161,6 +155,7 @@ helper('converter_helper');
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment-with-locales.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/locale/id.min.js" integrity="sha512-he8U4ic6kf3kustvJfiERUpojM8barHoz0WYpAUDWQVn61efpm3aVAD8RWL8OloaDDzMZ1gZiubF9OSdYBqHfQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
   <script src="<?= base_url() ?>assets/vendors/chartjs/Chart.min.js"></script>
+
   <script>
     $(document).ready(function() {
       var username = "<?= $_SESSION['username'] ?>"
@@ -182,43 +177,54 @@ helper('converter_helper');
         }
       });
 
-      load_unseen_notification('');
+      load_unseen_pelaporan('');
+      $('#pelaporanmasuk').on('click', function(e) {
+        e.preventDefault();
+        $('#showpelaporan').toggleClass('show');
+        $('#shownotif').removeClass('show');
+        load_unseen_pelaporan('view');
+      });
 
-      // $('.lonceng_notif').on('click', function(e) {
-      //   e.preventDefault();
-      //   // e.stopPropagation();
-      //   console.log('tekann');
-      //   $('.count').html('');
-      //   load_unseen_notification('yes');
-      // });
-
-      // $('#dropdownContainer').on('click', function(e) {
-      //   if ($(this).hasClass('show')) {
-      //     console.log('show');
-      //     $(this).removeClass('show');
-      //     $(this).removeAttr('data-bs-toggle');
-      //     $(this).removeAttr('aria-expanded');
-      //   } else {
-      //     console.log('notshow');
-      //     $(this).addClass('show');
-      //     // $(this).attr('data-bs-toggle', 'dropdown');
-      //     $(this).attr('aria-expanded', 'true');
-      //   }
-      // });
-
-      // $('#dropdownContainer').on('click', '.dropdown-toggle', function(event) {
-      //   if ($(event.target).hasClass('count')) {
-      //     console.log('Dropdown toggle clicked');
-      //     // Your code here
-      //   }
-      // });
       setInterval(function() {
-        load_unseen_notification('');
+        load_unseen_pelaporan('');
       }, 5000);
+
+      load_unseen_notifpersediaan();
+      $('#notifpersediaan').on('click', function(e) {
+        e.preventDefault();
+        $('#shownotif').toggleClass('show');
+        $('#showpelaporan').removeClass('show');
+        load_unseen_notifpersediaan();
+      });
 
     });
 
-    function load_unseen_notification(view) {
+    function load_unseen_notifpersediaan() {
+      $.ajax({
+        url: "<?= base_url('barangcontroller/notifikasi_persediaan') ?>",
+        method: "POST",
+        dataType: "json",
+        success: function(data) {
+          $('#shownotif').html(data.notification);
+          $('#shownotif').append(`
+          <hr class="dropdown-divider">
+          <li><a class="dropdown-item" href="<?= site_url('admin/barang-persediaan-masuk') ?>">Lihat Selengkapnya</a></li>
+          `);
+          if (data.unseen_notification > 0) {
+            $('#notifpersediaan').html(`
+            <i class='bi bi-bell bi-sub fs-4 text-gray-600'></i>
+              <span class="badge rounded-pill badge-sm badge-notification bg-danger" style="color:white;cursor:pointer;" id="notification_count">${data.unseen_notification}</span>
+            `);
+          } else {
+            $('#notifpersediaan').html(`
+            <i class='bi bi-bell bi-sub fs-4 text-gray-600'></i>
+            `)
+          }
+        }
+      });
+    }
+
+    function load_unseen_pelaporan(view) {
       $.ajax({
         url: "<?= base_url('pelaporancontroller/notifikasi_viewed') ?>",
         method: "POST",
@@ -227,19 +233,19 @@ helper('converter_helper');
         },
         dataType: "json",
         success: function(data) {
-          $('.dropdown-menu-notifikasi').html(data.notification);
-          $('.dropdown-menu-notifikasi').append(`
+          $('#showpelaporan').html(data.notification);
+          $('#showpelaporan').append(`
           <hr class="dropdown-divider">
-          <li><a class="dropdown-item" href="<?= site_url('admin/notification') ?>">Lihat Semua Notifikasi</a></li>
+          <li><a class="dropdown-item" href="<?= site_url('admin/notification') ?>">Lihat Semua Pelaporan</a></li>
           `);
           if (data.unseen_notification > 0) {
-            $('.count').html(`
-            <i class='bi bi-bell bi-sub fs-4 text-gray-600'></i>
+            $('#pelaporanmasuk').html(`
+            <i class='bi bi-envelope bi-sub fs-4 text-gray-600'></i>
               <span class="badge rounded-pill badge-sm badge-notification bg-warning" style="color:black;cursor:pointer;" id="notification_count">${data.unseen_notification}</span>
             `);
           } else {
-            $('.count').html(`
-            <i class='bi bi-bell bi-sub fs-4 text-gray-600'></i>
+            $('#pelaporanmasuk').html(`
+            <i class='bi bi-envelope bi-sub fs-4 text-gray-600'></i>
             `)
           }
         }

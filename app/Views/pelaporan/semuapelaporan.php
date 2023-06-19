@@ -56,25 +56,30 @@
       <!-- email user list end -->
     </ul>
   <?php } else { ?>
-    <ul class="users-list-wrapper media-list data_pelaporan">
-      <li class="media">
-        <i class="bx bx-error-circle font-large-2"></i>
-        <h5>Data kosong</h5>
-      </li>
-    </ul>
+    <div class="users-list-wrapper media-list">
+      <div class="container" style="text-align: center !important;color:#607080 !important;margin-top:150px;">
+        <i class="bi bi-folder-x fs-1"></i>
+        <br>
+        <h5 style="color: #607080 !important;">Data tidak ada!</h5>
+      </div>
+    </div>
   <?php } ?>
 
 </div>
 
 <script>
-  function detaillaporan(string, angka) {
+  $(document).ready(function() {
+    $('.badge-notification').html("<?= $belumdibaca ?>");
+
+  });
+
+  function detaillaporan(string) {
     $('.email-user-list').hide(500);
+    $('.email-action').addClass('d-none', true);
+
     $.ajax({
       // type: "post",
       url: "<?= base_url('pelaporancontroller/tampildetailpelaporan/') ?>" + string,
-      data: {
-        angka: angka,
-      },
       dataType: "json",
       success: function(response) {
         $('.pelaporan-detail').empty();

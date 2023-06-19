@@ -46,39 +46,48 @@
               </div>
             </div>
           </div>
-          <div class="col-lg-12">
+          <div class="col-12">
+            <div class="row g-2 mb-1">
+              <div class="col-md-4">
+                <label for="merk" class="form-label">Merk</label>
+                <div class="input-group mb-3">
+                  <span class="input-group-text"><i class="bi bi-tags"></i></span>
+                  <input type="text" class="form-control" placeholder="Masukkan Merk" id="merk" name="merk">
+                  <div class="invalid-feedback errmerk"></div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label for="warna" class="form-label">Warna</label>
+                <div class="input-group mb-3">
+                  <span class="input-group-text"><i class="bi bi-palette"></i></span>
+                  <select class="form-select" id="warna" name="warna"></select>
+                  <div class="invalid-feedback errwarna">
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label for="tipe" class="form-label">Tipe Barang</label>
+                <div class="input-group mb-3">
+                  <span class="input-group-text"><i class="bi bi-tag-fill"></i></span>
+                  <input type="text" class="form-control" placeholder="Masukkan tipe" id="tipe" name="tipe">
+                  <div class="invalid-feedback errtipe"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-12">
             <div class="row mb-1">
               <label for="namabarang">Nama Barang</label>
             </div>
             <div class="row mb-1">
               <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon1"><i class="bi bi-card-text"></i></span>
-                <input type="text" class="form-control" placeholder="Masukkan Nama Barang" id="namabarang" name="nama_brg">
+                <span class="input-group-text"><i class="bi bi-card-text"></i></span>
+                <input type="text" class="form-control" placeholder="Masukkan Nama Barang" id="namabarang" name="nama_brg<?= $no; ?>" readonly>
                 <div class="invalid-feedback errnamabarang"></div>
               </div>
             </div>
           </div>
-          <div class="col-lg-12">
-            <div class="row g-2 mb-1">
-              <div class="col-md-6">
-                <label for="merk" class="form-label">Merk</label>
-                <div class="input-group mb-3">
-                  <span class="input-group-text" id="basic-addon1"><i class="bi bi-tags"></i></span>
-                  <input type="text" class="form-control" placeholder="Masukkan Merk" id="merk" name="merk">
-                  <div class="invalid-feedback errmerk"></div>
-                </div>
-              </div>
-              <div class="col-md-3">
-                <label for="warna" class="form-label">Warna</label>
-                <div class="input-group mb-3">
-                  <span class="input-group-text" id="basic-addon1"><i class="bi bi-palette"></i></span>
-                  <input type="color" class="form-control" placeholder="Masukkan Warna" id="warna" name="warna">
-                  <div class="invalid-feedback errwarna">
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+
           <div class="col-lg-12">
             <div class="row g-2 mb-1">
               <div class="col-md-5 mb-3 asalbrg">
@@ -323,6 +332,31 @@
       $('#kodebrg').removeClass('is-invalid');
       $('.errkodebrg').html('');
     })
+
+    $(`#warna`).select2({
+      placeholder: 'Piih Warna',
+      minimumInputLength: 1,
+      allowClear: true,
+      width: "70%",
+      ajax: {
+        url: `<?= base_url('barangcontroller/pilihwarna') ?>`,
+        dataType: 'json',
+        delay: 250,
+        data: function(params) {
+          return {
+            search: params.term,
+          }
+        },
+        processResults: function(data, page) {
+          return {
+            results: data
+          };
+        },
+        cache: true
+      },
+      templateResult: formatResult2,
+    });
+
     $('input[type="radio"]').click(function() {
       if ($(this).attr('id') == 'belibaru') {
         $('.belibaru').show();
@@ -423,6 +457,28 @@
       e.preventDefault();
       $('#jmlmasuk').removeClass('is-invalid');
       $('.errorjmlmasuk').html('');
+    })
+
+    $(document).on('change', `#katid,${`#merk`},#warna,#tipe`, function(e) {
+      e.preventDefault();
+      var categories = $(`#katid`).find('option:selected').text();
+      var merk = $(`#merk`).val();
+      var warna = $(`#warna`).val();
+      var tipe = $(`#tipe`).val();
+
+      if (categories !== null) {
+        console.log(categories);
+        $(`#namabarang`).val(categories);
+      }
+      if (categories !== '' && merk !== '') {
+        $(`#namabarang`).val(`${categories} ${merk}`);
+      }
+      if (categories !== '' && merk !== '' && warna !== null) {
+        $(`#namabarang`).val(`${categories} ${merk} ${warna}`);
+      }
+      if (categories !== '' && merk !== '' && warna !== null && tipe !== '') {
+        $(`#namabarang`).val(`${categories} ${merk} ${warna} ${tipe}`);
+      }
     })
 
     $('#formEditBarang').submit(function(e) {
@@ -566,6 +622,7 @@
     kode_brg,
     nama_brg,
     warna,
+    tipe,
     merk,
     toko,
     instansi,
@@ -600,9 +657,12 @@
     }
 
     $('#formEditBarang').find("input[name='nama_brg']").val(nama_brg)
-    $('#formEditBarang').find("input[name='warna']").val(warna)
+    $('#formEditBarang').find("select[name='warna']").html(`
+    <option>${warna}</option>
+    `)
     $('#formEditBarang').find("input[name='merk']").val(merk)
     $('#formEditBarang').find("input[name='toko']").val(toko)
+    $('#formEditBarang').find("input[name='tipe']").val(tipe)
     $('#formEditBarang').find("input[name='instansi']").val(instansi)
     $('#formEditBarang').find("input[name='no_seri']").val(no_seri)
     $('#formEditBarang').find("input[name='no_dokumen']").val(no_dokumen)
@@ -654,7 +714,7 @@
   }
 
   function clearForm() {
-    $('#tampilformeditbarang').find("#warna").val('#000000');
+    $('#tampilformeditbarang').find("#warna").val('');
     $('#tampilformeditbarang').find("input").val("")
     $('#tampilformeditbarang').find("select").html("")
     $('#tampilformeditbarang').find("input[type='radio']").prop('checked', false);
@@ -737,8 +797,9 @@
     $('#tampilformeditbarang').find("input[name='nama_brg']").val('');
     $('#tampilformeditbarang').find("input[name='harga_beli']").val('');
     $('#tampilformeditbarang').find("input[name='harga_jual']").val('');
-    $('#tampilformeditbarang').find("#warna").val('#000000');
+    $('#tampilformeditbarang').find("#warna").val('');
     $('#tampilformeditbarang').find("input[name='merk']").val('');
+    $('#tampilformeditbarang').find("input[name='tipe']").val('');
     $('#tampilformeditbarang').find("input[name='toko']").val('');
     $('#tampilformeditbarang').find("input[name='instansi']").val('');
     $('#tampilformeditbarang').find("input[name='no_seri']").val('');
@@ -753,6 +814,21 @@
 
     var $result = $(
       `<span><i class="bi bi-layers"> </i>${data.text}</span>`
+    );
+
+    return $result;
+  }
+
+  function formatResult2(data) {
+    if (!data.id) {
+      return data.text;
+    }
+    var $result = $(
+      `<span><i class="bi bi-palette"> </i>${data.text} <span class="dot" style="height: 25px;
+                        width: 25px;
+                        background-color: ${data.kode};
+                        border-radius: 50%;
+                        display: inline-block;"></span></span>`
     );
 
     return $result;

@@ -91,7 +91,7 @@
               <th>Asal</th>
               <th>Nama Barang</th>
               <th>Jumlah Barang</th>
-              <th>Satuan</th>
+              <th>Keterangan</th>
               <th>Deleted By</th>
               <th>Deleted At </th>
               <th>Action</th>
@@ -106,23 +106,24 @@
       <form class="formmultipledelete">
         <div class="row m-1">
           <div class="col-md-9 pb-0 pt-3 px-0 d-flex flex-row justify-content-start">
+            <div class="mx-1">
+              <button class="btn btn-success" type="button" onclick="singleform()"><i class="fa fa-plus-square-o"></i> Input Peminjaman</button>
+            </div>
+            <div class="mx-1">
+              <button class="btn btn-warning" type="button" id="tampilformkembali"><i class="fa fa-edit"></i> Form Pengembalian</button>
+            </div>
             <div class="btn-group">
-              <button type="button" class="btn btn-success dropdown-toggle me-1" data-bs-toggle="dropdown" aria-expanded="false">
-                Input Peminjaman
+              <button type="button" class="btn dropdown-toggle me-1" data-bs-toggle="dropdown" aria-expanded="false" style="background-color: #6610f2!important;color:white !important;">
+                <i class="fa fa-print"></i> Ekspor Pdf
               </button>
               <ul class="dropdown-menu shadow-lg">
-                <li><a class="dropdown-item" onclick="singleform()"><i class="fa fa-plus-square-o"></i> Tambah Peminjaman
+                <li><a class="dropdown-item" onclick="tampilcetakpdf('opsi1')"> Berdasarkan tanggal
                   </a>
                 </li>
-                <!-- <li><a class="dropdown-item" onclick="multipleinsert()"><i class="fa fa-file-text"></i> Input Multiple</a>
-                </li> -->
+                <li><a class="dropdown-item" onclick="tampilcetakpdf('opsi2')">Berdasarkan bulan & tahun
+                  </a>
+                </li>
               </ul>
-            </div>
-            <div class="mx-1">
-              <button class="btn btn-warning" id="tampilformkembali"><i class="fa fa-edit"></i> Form Pengembalian</button>
-            </div>
-            <div class="mx-1">
-              <button class="btn" style="background-color: #6610f2!important;color:white !important;" id="tampilmodalcetak"><i class="fa fa-print"></i> Ekspor Pdf</button>
             </div>
           </div>
           <div class="col-md-3 pb-0 pt-3 px-0 d-flex justify-content-end">
@@ -141,7 +142,7 @@
                 <th>Asal</th>
                 <th>Nama Barang</th>
                 <th>Jumlah Barang</th>
-                <th>Satuan</th>
+                <th>Keterangan</th>
                 <th>Tanggal Pinjam</th>
                 <th>Tanggal Kembali</th>
                 <th>Status</th>
@@ -227,10 +228,15 @@
           data: 'nama_brg',
         },
         {
-          data: 'jml_barang'
+          data: 'jml_barang',
+          render: function(data, type, row) {
+            return data + ' ' + row.kd_satuan;
+          },
+          // orderable: false,
+          searchable: false,
         },
         {
-          data: 'kd_satuan'
+          data: 'keterangan'
         },
         {
           data: 'tgl_pinjam',
@@ -330,7 +336,7 @@
         },
         dataType: "json",
         success: function(response) {
-          $('.viewform').show().html(response.data);
+          $('.viewform').fadeIn().html(response.data);
         }
       });
     });
@@ -464,23 +470,23 @@
 
       return false;
     })
-
-    $('#tampilmodalcetak').on('click', function(e) {
-      e.preventDefault();
-      $.ajax({
-        type: "post",
-        url: "<?= base_url('peminjamancontroller/tampilmodalcetak') ?>",
-        data: {
-          jenis_kat: jenis_kat,
-        },
-        dataType: "json",
-        success: function(response) {
-          $('.viewmodal').html(response.sukses).show(500);
-          $('#modalcetakpeminjaman').modal('show');
-        }
-      });
-    })
   });
+
+  function tampilcetakpdf(opsi) {
+    $.ajax({
+      type: "post",
+      url: "<?= base_url('peminjamancontroller/tampilmodalcetak') ?>",
+      data: {
+        jenis_kat: jenis_kat,
+        opsi: opsi,
+      },
+      dataType: "json",
+      success: function(response) {
+        $('.viewmodal').html(response.sukses).show(500);
+        $('#modalcetakpeminjaman').modal('show');
+      }
+    });
+  }
 
   function singleform() {
     $.ajax({
@@ -493,7 +499,7 @@
       },
       dataType: "json",
       success: function(response) {
-        $('.viewform').show().html(response.data);
+        $('.viewform').fadeIn().html(response.data);
       }
     });
   }
@@ -510,7 +516,7 @@
       },
       dataType: "json",
       success: function(response) {
-        $('.viewform').show().html(response.data);
+        $('.viewform').fadeIn().html(response.data);
       }
     });
   }

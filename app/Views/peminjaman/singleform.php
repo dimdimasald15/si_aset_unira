@@ -76,6 +76,18 @@
           </div>
         </div>
       </div>
+      <div class="col-md-12">
+        <div class="row mb-1">
+          <label for="keterangan">Keterangan <?= $title; ?></label>
+        </div>
+        <div class="row mb-1">
+          <div class="input-group mb-3">
+            <span class="input-group-text" id="basic-addon1"><i class="bi bi-info-circle"></i></span>
+            <textarea class="form-control" id="keterangan" name="keterangan"></textarea>
+            <div class="invalid-feedback errketerangan"></div>
+          </div>
+        </div>
+      </div>
       <?php $no = 1; ?>
       <table class="table table-responsive-sm table-borderless">
         <thead>
@@ -165,8 +177,10 @@
       success: function(response) {
         $('#idanggota').empty();
         $('#idanggota').append('<option value="">Pilih Anggota</option>');
-        $.each(response, function(key, value) {
-          $('#idanggota').append('<option value="' + value.id + '">' + value.nama_anggota + '</option>');
+        $.each(response, function(key, val) {
+          $('#idanggota').append(`
+          <option value="${val.id}">${val.nama_anggota} (${val.level == "Mahasiswa"? `NIM ${val.no_anggota}`:`NIDN/NIP ${val.no_anggota}`})</option>
+          `);
         });
         $('#idanggota').append('<option value="other">Lainnya</option>');
       }
@@ -356,6 +370,7 @@
             errnoanggota = response.error.no_anggota;
             errunit = response.error.unit_id;
             errtglpinjam = response.error.tgl_pinjam;
+            errketerangan = response.error.keterangan;
 
             if (errtglpinjam) {
               $('#tglpinjam').addClass('is-invalid');
@@ -364,7 +379,6 @@
               $('#tglpinjam').removeClass('is-invalid');
               $('.errtglpinjam').html('');
             }
-
             if (erranggotaid) {
               $('#idanggota').addClass('is-invalid');
               $('.erridanggota').html(erranggotaid);
@@ -399,6 +413,13 @@
             } else {
               $('#unit').removeClass('is-invalid');
               $('.errunit').html('');
+            }
+            if (errketerangan) {
+              $('#keterangan').addClass('is-invalid');
+              $('.errketerangan').html(errketerangan);
+            } else {
+              $('#keterangan').removeClass('is-invalid');
+              $('.errketerangan').html('');
             }
 
             jmldata = parseInt(response.jmldata);

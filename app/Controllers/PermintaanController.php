@@ -178,10 +178,12 @@ class PermintaanController extends BaseController
         }
 
         $jenis_kat = $this->request->getVar('jenis_kat');
+        $opsi = $this->request->getVar('opsi');
 
         $data = [
             'title' => 'Cetak Permintaan Barang',
-            'jenis_kat' => $jenis_kat
+            'jenis_kat' => $jenis_kat,
+            'opsi' => $opsi,
         ];
 
         $msg = [
