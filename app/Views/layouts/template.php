@@ -81,15 +81,19 @@ helper('converter_helper');
             </button>
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
               <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                <li class="nav-item dropdown me-1">
-                  <div class="col-lg-4 theme-toggle d-flex gap-2 align-items-center me-3" style="margin-top:15px;">
+                <li class="nav-item dropdown me-1 mt-2">
+                  <!-- <div class="col-lg-4 theme-toggle d-flex gap-2 align-items-center me-3" style="margin-top:12px;">
                     <i class="fa fa-sun-o text-secondary fs-5"></i>
                     <div class="form-check form-switch fs-6">
                       <input class="form-check-input me-0" type="checkbox" id="lightSwitch">
                       <label class="form-check-label"></label>
                     </div>
                     <i class="fa fa-moon-o text-secondary fs-5"></i>
-                  </div>
+                  </div> -->
+                  <label class="switch">
+                    <input type="checkbox" id="lightSwitch">
+                    <span class="slider"></span>
+                  </label>
                 </li>
                 <li class="nav-item dropdown me-1">
                   <a class="nav-link active dropdown-toggle count" data-bs-toggle="button" id="pelaporanmasuk" aria-expanded="false">

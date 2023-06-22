@@ -200,6 +200,12 @@ $routes->group('admin/anggota', ['filter' => 'ceklogin'], function ($routes) {
     $routes->post('updateanggota/(:any)', 'AnggotaController::updatedataanggota/$1');
     $routes->post('hapusanggota/(:any)', 'AnggotaController::hapusdataanggota/$1');
     $routes->match(['get', 'post'], 'restoreanggota', 'AnggotaController::restoredataanggota');
+    $routes->post('multipledeleteunit', 'AnggotaController::multipledeleteunittemporary');
+    $routes->post('multipledeleteanggota', 'AnggotaController::multipledeleteanggotatemporary');
+    $routes->post('hapuspermanenunit/(:any)', 'AnggotaController::hapuspermanenunit/$1');
+    $routes->match(['get', 'post'], 'hapuspermanenunit', 'AnggotaController::hapuspermanenunit');
+    $routes->post('hapuspermanenanggota/(:any)', 'AnggotaController::hapuspermanenanggota/$1');
+    $routes->match(['get', 'post'], 'hapuspermanenanggota', 'AnggotaController::hapuspermanenanggota');
 });
 
 $routes->group('admin/pengguna', ['filter' => 'ceklogin'], function ($routes) {

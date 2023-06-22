@@ -13,7 +13,7 @@
           <div class="col-md-6">
             <label for="namaanggota" class="form-label">Nama <?= $title ?></label>
             <div class="input-group mb-3">
-              <span class="input-group-text"><i class="bi bi-circle-square"></i></span>
+              <span class="input-group-text"><i class="bi bi-person"></i></span>
               <input type="text" class="form-control" placeholder="Masukkan Nama Anggota" id="namaanggota" name="nama_anggota">
               <div class="invalid-feedback errnamaanggota"></div>
             </div>
@@ -43,7 +43,7 @@
           <div class="col-md-6">
             <label for="unit" class="form-label">Unit <?= $title ?></label>
             <div class="input-group mb-3">
-              <span class="input-group-text" id="basic-addon1"><i class="bi bi-circle-square"></i></span>
+              <span class="input-group-text" id="basic-addon1"><i class="bi bi-card-text"></i></span>
               <select name="unit_id" class="form-select p-2" id="unit"></select>
               <div class="invalid-feedback errunit"></div>
             </div>
@@ -216,7 +216,7 @@
     $('.noanggota').hide().html('');
     if (level == 'Mahasiswa') {
       $('.noanggota').show().append(
-        `<label for="noanggota" class="form-label">NIM</label>
+        `<label class="form-label">NIM</label>
         <div class="input-group mb-3">
         <span class="input-group-text"><i class="bi bi-person"></i></span>
         <input type="text" class="form-control" placeholder="Masukkan NIM" id="noanggota" name="no_anggota" value="${no_anggota}">
@@ -225,7 +225,7 @@
       );
     } else if (level == 'Karyawan') {
       $('.noanggota').show().append(
-        `<label for="noanggota" class="form-label">Nomor Pegawai</label>
+        `<label class="form-label">Nomor Pegawai</label>
           <div class="input-group mb-3">
           <span class="input-group-text"><i class="bi bi-person"></i></span>
           <input type="text" class="form-control" placeholder="Masukkan Nomor Pegawai" id="noanggota" name="no_anggota" value="${no_anggota}">

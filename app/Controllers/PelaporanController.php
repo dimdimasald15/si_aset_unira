@@ -2,16 +2,17 @@
 
 namespace App\Controllers;
 
-use App\Models\Barang;
-use App\Models\RiwayatBarang;
-use App\Models\Kategori;
+use Exception;
 use App\Models\Ruang;
+use App\Models\Barang;
+use App\Models\Anggota;
+use App\Models\Kategori;
+use App\Models\Notifikasi;
 use App\Models\StokBarang;
+use CodeIgniter\Files\File;
+use App\Models\RiwayatBarang;
 use App\Models\RiwayatTransaksi;
 use App\Models\Pelaporankerusakan;
-use App\Models\Notifikasi;
-use App\Models\Anggota;
-use CodeIgniter\Files\File;
 use \Hermawan\DataTables\DataTable;
 use App\Controllers\BaseController;
 use PHPUnit\Framework\Constraint\Count;
@@ -167,9 +168,16 @@ class PelaporanController extends BaseController
             // tangkap file foto
             $filefoto = $this->request->getFile('foto_barang');
             $filename = $filefoto->getRandomName();
-            $namaBaru = str_replace(' ', '_', strtolower($filename)) . '.png';
-            // hapus ekstensi .jpg pada nama file
+            $namaBaru = str_replace(' ', '_', strtolower($filename));
+
+            // Menghapus ekstensi .jpg jika ada
             $namaBaru = str_replace('.jpg', '', $namaBaru);
+
+            // Menghapus ekstensi .png jika ada
+            $namaBaru = str_replace('.png', '', $namaBaru);
+
+            // Menambahkan kembali ekstensi .png
+            $namaBaru .= '.png';
 
             $filefoto->move(FCPATH . '/assets/images/foto_kerusakan/', $namaBaru);
 
@@ -228,9 +236,13 @@ class PelaporanController extends BaseController
             ];
 
             $insertnotif = $this->notifikasi->setInsertData($simpannotif, $namaanggota);
-            $this->db->table('notifikasi')->insert($insertnotif);
-            // var_dump($this->db->insertID());
-            // die;
+
+            try {
+                $this->db->table('notifikasi')->insert($insertnotif);
+            } catch (Exception $e) {
+                // echo "Pembaruan data stok gagal: " . $e->getMessage();
+                $msg = ['error' => "Simpan data notifikasi: " . $e->getMessage()];
+            }
 
             $this->db->transComplete();
             if ($this->db->transStatus() === false) {
@@ -318,9 +330,16 @@ class PelaporanController extends BaseController
 
             if ($filefoto->isValid() && !$filefoto->hasMoved()) {
                 $filename = $filefoto->getRandomName();
-                $namaBaru = str_replace(' ', '_', strtolower($filename)) . '.png';
-                // hapus ekstensi .jpg pada nama file
+                $namaBaru = str_replace(' ', '_', strtolower($filename));
+
+                // Menghapus ekstensi .jpg jika ada
                 $namaBaru = str_replace('.jpg', '', $namaBaru);
+
+                // Menghapus ekstensi .png jika ada
+                $namaBaru = str_replace('.png', '', $namaBaru);
+
+                // Menambahkan kembali ekstensi .png
+                $namaBaru .= '.png';
 
                 $filefoto->move(FCPATH . '/assets/images/foto_kerusakan/', $namaBaru);
             }
@@ -385,17 +404,17 @@ class PelaporanController extends BaseController
         helper('converter_helper');
         $view = $this->request->getVar('view');
         if (isset($view)) {
-            $query = $this->db->table('pelaporan_kerusakan p')->select('p.*, a.nama_anggota, a.no_anggota, a.level, u.singkatan, n.viewed_by_admin')
+            $query = $this->db->table('pelaporan_kerusakan p')->select('p.*,a.nama_anggota, a.no_anggota, a.level, u.singkatan, n.viewed_by_admin')
                 ->join('anggota a', 'a.id=p.anggota_id')
                 ->join('unit u', 'u.id=a.unit_id')
                 ->join('notifikasi n', 'p.id=n.laporan_id')
                 ->where('n.deleted_at IS NULL')
+                ->where('a.deleted_at IS NULL')
                 ->where('p.deleted_at IS NULL');
 
             $result = $query->orderBy('p.id', 'DESC')->limit(5)
                 ->get()->getResultArray();
-            // var_dump($result);
-            // die;
+
             $output = '';
 
             if (count($result) > 0) {
@@ -440,10 +459,14 @@ class PelaporanController extends BaseController
                 $output .= '<li><a href="#" class="dropdown-item" class="text-bold text-italic">Tidak ada notifikasi baru ditemukan</a></li>';
             }
 
-            // $query2 = $query->where('n.viewed_by_admin', 0);
-            $query2 = $this->db->table('notifikasi n')->select('*')->where('viewed_by_admin', 0);
-            // var_dump($query2->get()->getResult());
-            // die;
+
+            $query2 = $this->db->table('notifikasi n')->select('n.*')
+                ->join('pelaporan_kerusakan p', 'p.id=n.laporan_id')
+                ->join('anggota a', 'a.id=p.anggota_id')
+                ->where('n.viewed_by_admin', 0)
+                ->where('n.deleted_at IS NULL')
+                ->where('a.deleted_at IS NULL')
+                ->where('p.deleted_at IS NULL');
             $result2 = $query2->get()->getResultArray();
             $count = count($result2);
 
@@ -494,7 +517,7 @@ class PelaporanController extends BaseController
             // die;
             $this->db->table('notifikasi')->where('id', $pelaporan->notif_id)->update($updatenotif);
         } else if ($page) {
-            $pelaporan = $this->pelaporan->paginatePelaporan(5, 'pelaporan');
+            $pelaporan = $this->pelaporan->paginatePelaporan(10, 'pelaporan');
             $pager = $this->pelaporan->pager;
             $notviewed = $this->db->table('notifikasi n')->select('*')->where('viewed_by_admin', 0);
             $belumdibaca = count($notviewed->get()->getResult());
@@ -558,6 +581,7 @@ class PelaporanController extends BaseController
                 ->where('p.deleted_at IS NOT NULL');
         } else if ($isRestored == 0) {
             $query->where('n.deleted_at IS NULL')
+                ->where('a.deleted_at IS NULL')
                 ->where('p.deleted_at IS NULL');
         }
         if ($keywords !== '' && !empty($keywords)) {
@@ -726,13 +750,13 @@ class PelaporanController extends BaseController
 
     public function livesearchpelaporan()
     {
-        // if (!$this->request->isAJAX()) {
-        //     $data = [
-        //         'title' => 'Error 404',
-        //         'msg' => 'Maaf tidak dapat diproses'
-        //     ];
-        //     return view('errors/mazer/error-404', $data);
-        // }
+        if (!$this->request->isAJAX()) {
+            $data = [
+                'title' => 'Error 404',
+                'msg' => 'Maaf tidak dapat diproses'
+            ];
+            return view('errors/mazer/error-404', $data);
+        }
         $keywords = $this->request->getGet('keywords');
         $isRestored = filter_var($this->request->getGet('isRestored'), FILTER_VALIDATE_BOOLEAN);
 
@@ -745,10 +769,10 @@ class PelaporanController extends BaseController
             ->orLike('u.singkatan', "%$keywords%");
 
         if ($isRestored) {
-            $query->where('n.deleted_at IS NOT NULL')
+            $query->where('n.deleted_at IS NOT NULL')->where('a.deleted_at IS NOT NULL')
                 ->where('p.deleted_at IS NOT NULL');
         } else {
-            $query->where('n.deleted_at IS NULL')
+            $query->where('n.deleted_at IS NULL')->where('a.deleted_at IS NULL')
                 ->where('p.deleted_at IS NULL');
         }
         $pelaporan = $query->orderBy('p.id', 'DESC')->get()->getResultArray();

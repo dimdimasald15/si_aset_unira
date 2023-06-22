@@ -8,7 +8,7 @@
     <form action="<?= $nav ?>/simpandata" class="formpermintaan py-4">
       <?= csrf_field() ?>
       <div class="col-md-12">
-        <input type="hidden" name="id" id="id">
+        <!-- <input type="hidden" name="id" id="id"> -->
         <div class="row g-2 mb-1">
           <div class="col-md-4">
             <label for="namaanggota" class="form-label">Nama Peminta</label>
@@ -44,7 +44,7 @@
           <div class="col-md-6 noanggota" style="display:none;"></div>
           <div class="col-md-6">
             <div class="row mb-2">
-              <label for="unit mb-2">Unit Asal Peminta Baru</label>
+              <label for="unit">Unit Asal Peminta Baru</label>
             </div>
             <div class="row mb-1">
               <div class="input-group mb-3">
@@ -57,35 +57,41 @@
         </div>
       </div>
       <?php $no = 1; ?>
-      <table class="table table-responsive-sm table-borderless">
-        <thead>
-          <th>No</th>
-          <th>Nama Barang</th>
-          <th>Jumlah Permintaan</th>
-          <th>Satuan</th>
-          <th <?= $saveMethod == 'update' ? 'hidden' : '' ?>>#</th>
-        </thead>
-        <tbody id="tambahrow">
-          <tr>
-            <td><?= $no ?></td>
-            <td>
-              <select name="barang_id<?= $no ?>" class="form-select p-2" id="idbrg<?= $no ?>" style="width: 400px;"></select>
-              <div class="invalid-feedback erridbrg<?= $no ?>"></div>
-            </td>
-            <td> <input type="number" min="1" class="form-control" id="jumlah<?= $no ?>" placeholder="Masukkan Jumlah Permintaan Barang" name="jml_barang<?= $no ?>">
-              <div class="invalid-feedback errjumlah<?= $no ?>"></div>
-            </td>
-            <td>
-              <select name="satuan_id<?= $no ?>" class="form-select p-2" id="satuan<?= $no ?>"></select>
-              <div class="invalid-feedback errsatuan<?= $no ?>"></div>
-            </td>
-            <td style="width:1px; white-space:nowrap;" <?= $saveMethod == 'update' ? 'hidden' : '' ?>>
-              <button type="button" class="btn btn-primary btn-sm btntambahrow"><i class="fa fa-plus"></i></button>
-              <button type="button" class="btn btn-danger btn-sm btnhapusrow" style="display:none;"><i class="fa fa-times"></i></button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-responsive">
+        <table class="table table-borderless">
+          <thead>
+            <th>No</th>
+            <th>Nama Barang</th>
+            <th>Sisa Stok</th>
+            <th>Jumlah Permintaan</th>
+            <th>Satuan</th>
+            <th <?= $saveMethod == 'update' ? 'hidden' : '' ?>>#</th>
+          </thead>
+          <tbody id="tambahrow">
+            <tr>
+              <td><?= $no ?></td>
+              <td>
+                <select name="barang_id<?= $no ?>" class="form-select p-2" id="idbrg<?= $no ?>" style="width: 400px;"></select>
+                <div class="invalid-feedback erridbrg<?= $no ?>"></div>
+              </td>
+              <td> <input type="text" class="form-control" id="sisastok<?= $no ?>" placeholder="Sisa Stok Barang" name="sisa_stok<?= $no ?>" readonly>
+                <div class="invalid-feedback errsisastok<?= $no ?>"></div>
+              </td>
+              <td> <input type="number" min="1" class="form-control" id="jumlah<?= $no ?>" placeholder="Masukkan Jumlah Permintaan Barang" name="jml_barang<?= $no ?>">
+                <div class="invalid-feedback errjumlah<?= $no ?>"></div>
+              </td>
+              <td>
+                <select name="satuan_id<?= $no ?>" class="form-select p-2" id="satuan<?= $no ?>"></select>
+                <div class="invalid-feedback errsatuan<?= $no ?>"></div>
+              </td>
+              <td style="width:1px; white-space:nowrap;" <?= $saveMethod == 'update' ? 'hidden' : '' ?>>
+                <button type="button" class="btn btn-primary btn-sm btntambahrow"><i class="fa fa-plus"></i></button>
+                <button type="button" class="btn btn-danger btn-sm btnhapusrow" style="display:none;"><i class="fa fa-times"></i></button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
       <div class="viewalert" style="display:none;"></div>
       <div class=" row">
         <div class="col-12 d-flex justify-content-end">
@@ -102,6 +108,8 @@
   currIndex = lastNumb + 1;
   var rowCount = '';
   var level = '';
+  var sisa_stok_lama = [];
+  var jumlah_lama = [];
 
   function disabledinput() {
     // Menambahkan atribut disabled
@@ -141,10 +149,12 @@
         $('#idanggota').append('<option value="">Pilih Anggota</option>');
         $.each(response, function(key, val) {
           $('#idanggota').append(`
-          <option value="${val.id}">${val.nama_anggota} (${val.level == "Mahasiswa"? `NIM ${val.no_anggota}`:`NIDN/NIP ${val.no_anggota}`})</option>
+          <option value="${val.id}">${val.nama_anggota} - ${val.level == "Mahasiswa"? `NIM ${val.no_anggota}`:`NIDN/NIP ${val.no_anggota}`} - ${val.singkatan}</option>
           `);
         });
-        $('#idanggota').append('<option value="other">Lainnya</option>');
+        if ("<?= $saveMethod !== "update" ?>") {
+          $('#idanggota').append('<option value="other">Lainnya</option>');
+        }
       }
     });
 
@@ -225,6 +235,9 @@
           <select name="barang_id${index}" class="form-select p-2" id="idbrg${index}" style="width: 400px;"></select>
           <div class="invalid-feedback erridbrg${index}"></div>
         </td>
+        <td> <input type="number" class="form-control" id="sisastok${index}" placeholder="Sisa Stok Barang"  name="sisa_stok${index}" readonly>
+          <div class="invalid-feedback errsisastok${index}"></div>
+        </td>
         <td> <input type="number" min="1" class="form-control" id="jumlah${index}" placeholder="Masukkan Jumlah Permintaan Barang" name="jml_barang${index}">
           <div class="invalid-feedback errjumlah${index}"></div>
         </td>
@@ -262,6 +275,7 @@
 
       rowCount === 1 ? $('#tambahrow tr').find('.btnhapusrow').hide() :
         $("#tambahrow tr:last-child .btnhapusrow").show();
+      sisa_stok_lama.pop();
     })
 
     if (saveMethod == "update") {
@@ -299,7 +313,7 @@
       if (saveMethod == "add") {
         url = "<?= $nav ?>/simpan";
       } else if (saveMethod == "update") {
-        url = "<?= $nav ?>/update/" + globalId;
+        url = "<?= $nav . "/update/" ?>" + globalId;
       }
 
       var formdata = new FormData(this);
@@ -310,8 +324,9 @@
         type: "post",
         url: url,
         data: formdata,
-        contentType: false,
         processData: false,
+        contentType: false,
+        cache: false,
         beforeSend: function() {
           $('.btnsimpan').attr('disable', 'disabled');
           $('.btnsimpan').html('<i class="fa fa-spin fa-spinner"></i>');
@@ -403,8 +418,17 @@
               dataminta.ajax.reload();
             })
           }
-        }
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+          Swal.fire(
+            'Terjadi Kesalahan!',
+            response.error,
+            'error'
+          )
+        },
       });
+
+      return false;
     })
   });
 
@@ -490,6 +514,12 @@
                 if (response) {
                   $(`#satuan${j}`).prop('disabled', true);
                   $(`#satuan${j}`).html('<option value = "' + response.satuan_id + '" selected >' + response.kd_satuan + '</option>');
+                  $(`#sisastok${j}`).val(response.sisa_stok);
+                  if ("<?= $saveMethod ?>" == "update") {
+                    sisa_stok_lama.pop();
+                    $(`#jumlah${j}`).val('');
+                  }
+                  sisa_stok_lama.push(response.sisa_stok);
                 }
               }
             });
@@ -533,6 +563,36 @@
           e.preventDefault();
           $(`#jumlah${j}`).removeClass('is-invalid');
           $(`.errorjumlah${j}`).html('');
+          if ($(this).val() == '') {
+            if ("<?= $saveMethod == "update" ?>") {
+              var sisa_stok_update = parseInt(sisa_stok_lama[j - 1]) + parseInt(jumlah_lama[j - 1]);
+              $('.formpermintaan').find(`input[name='sisa_stok${j}']`).val(sisa_stok_update);
+            } else {
+              $('.formpermintaan').find(`input[name='sisa_stok${j}']`).val(sisa_stok_lama[j - 1]);
+            }
+          } else {
+            var jml_minta = $(this).val();
+            if ("<?= $saveMethod == "update" ?>") {
+              var sisa_stok_baru = parseInt(sisa_stok_lama[j - 1]) + parseInt(jumlah_lama[j - 1]) - parseInt(jml_minta);
+            } else {
+              var sisa_stok_baru = parseInt(sisa_stok_lama[j - 1]) - parseInt(jml_minta);
+            }
+            $(`#sisastok${j}`).val(sisa_stok_baru);
+          }
+          if ($(`#sisastok${j}`).val() < 0) {
+            $(`#sisastok${j}`).val(0)
+            $(`#sisastok${j}`).addClass('is-invalid');
+            $(`.errsisastok${j}`).html('sisa stok tidak boleh kurang dari 0');
+            $(`#jumlah${j}`).addClass('is-invalid');
+            $(`.errjumlah${j}`).html('input tidak boleh lebih dari ' + sisa_stok_lama[j - 1]);
+          } else {
+            $(`#sisastok${j}`).val(sisa_stok_baru)
+            $(`#sisastok${j}`).removeClass('is-invalid');
+            $(`.errsisastok${j}`).html('');
+            $(`#jmlkeluar${j}`).removeClass('is-invalid');
+            $(`.errjmlkeluar${j}`).html('');
+          }
+
         })
       })(i)
 
@@ -572,7 +632,6 @@
   }
 
   function isiForm({
-    id,
     nama_anggota,
     no_anggota,
     unit_id,
@@ -583,40 +642,17 @@
     anggota_id,
     nama_brg,
     satuan_id,
-    kd_satuan
+    kd_satuan,
+    sisa_stok
   }, jmldata) {
-    $('#id').val(id);
-    $('#namaanggota').val(nama_anggota);
-    $('#level').val(level);
-    $('.noanggota').hide().html('');
-    if (level == 'Mahasiswa') {
-      $('.noanggota').show().append(
-        `<label for="noanggota" class="form-label">NIM</label>
-        <div class="input-group mb-3">
-        <span class="input-group-text"><i class="bi bi-person"></i></span>
-        <input type="text" class="form-control" placeholder="Masukkan NIM" id="noanggota" name="no_anggota" value="${no_anggota}" readonly>
-        <div class="invalid-feedback errnoanggota"></div>
-        </div>`
-      );
-    } else if (level == 'Karyawan') {
-      $('.noanggota').show().append(
-        `<label for="noanggota" class="form-label">Nomor Pegawai</label>
-          <div class="input-group mb-3">
-          <span class="input-group-text"><i class="bi bi-person"></i></span>
-          <input type="text" class="form-control" placeholder="Masukkan Nomor Pegawai" id="noanggota" name="no_anggota" value="${no_anggota}" readonly>
-          <div class="invalid-feedback errnoanggota"></div>
-          </div>`
-      );
-    } else {
-      $('.noanggota').hide().html('');
-    }
-    $('#unit').html(`
-      <option value="${unit_id}">${singkatan}</option>
-    `);
+    $('#idanggota').val(anggota_id);
     for (let i = 1; i <= jmldata; i++) {
       $(`#idbrg${i}`).html(`
         <option value="${barang_id}">${nama_brg}</option>
       `);
+      sisa_stok_lama.push(sisa_stok);
+      jumlah_lama.push(jml_barang);
+      $(`#sisastok${i}`).val(sisa_stok);
       $(`#jumlah${i}`).val(jml_barang);
       $(`#satuan${i}`).prop('disabled', true);
       $(`#satuan${i}`).html(`

@@ -189,3 +189,62 @@ a:hover {
   background-color: var(--bs-green) !important;
   border-color: var(--bs-green) !important;
 }
+
+/* The switch - the box around the slider */
+.switch {
+  font-size: 17px;
+  position: relative;
+  display: inline-block;
+  width: 3.5em;
+  height: 2em;
+}
+
+/* Hide default HTML checkbox */
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.slider {
+  border: 3px solid #e1e3ea;
+  --background: #fff;
+  position: absolute;
+  cursor: pointer;
+  top: 7px;
+  left: 0;
+  right: 18px;
+  bottom: 3px;
+  background-color: var(--background);
+  transition: 0.5s;
+  border-radius: 30px;
+}
+
+.slider:focus {
+  border-color: #7cc7a4;
+  outline: 0;
+  box-shadow: 0 0 0 0.25rem rgba(67, 190, 129, 0.25);
+}
+
+.slider:before {
+  position: absolute;
+  content: '';
+  height: 0.8em;
+  width: 0.8em;
+  border-radius: 50%;
+  left: 10%;
+  bottom: 15%;
+  box-shadow: inset 8px -1px 0px 0px #6c757d;
+  background: var(--background);
+  transition: 0.5s;
+}
+
+input:checked + .slider {
+  background-color: #2ac67d;
+}
+
+input:checked + .slider:before {
+  transform: translateX(100%);
+  box-shadow: inset 15px -4px 0px 15px #fff000;
+}

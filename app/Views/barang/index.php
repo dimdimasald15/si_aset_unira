@@ -150,7 +150,7 @@
           </div>
         </div>
         <div class="table-responsive py-4">
-          <table class="table table-bordered" id="table-barang" width="100%">
+          <table class="table table-bordered" cellspacing="0" id="table-barang" width="100%">
             <thead class=" thead-dark">
               <tr>
                 <th><input type="checkbox" id="checkall"></th>
@@ -256,9 +256,9 @@
     // Center offset
     var co = (h - cs) / 2;
     var ctx = qrCanvas.getContext("2d");
-    ctx.drawImage(centerImage, 0, 0, centerImage.width, centerImage.height, co, co, cs, cs + 10);
+    ctx.drawImage(centerImage, 0, 0, centerImage.width, (centerImage.height - 50), co, co, cs, cs + 10);
     ctx.strokeStyle = "#ffffff";
-    ctx.lineWidth = 2 // ketebalan garis tepi 2 piksel
+    ctx.lineWidth = 15 // ketebalan garis tepi 2 piksel
     ctx.strokeRect(co, co, cs, cs + 10); // membuat garis tepi persegi panjang di sekitar gambar
   }
 
@@ -369,6 +369,7 @@
             return '<div id="qrcode-' + row.id + '"></div>';
           },
           visible: <?= $jenis_kat == "Barang Persediaan" ? 'false' : 'true' ?>, // menambahkan kolom baru dan menyembunyikannya
+          orderable: false,
           searchable: false,
         },
         {
@@ -451,7 +452,7 @@
             icon.src = logo;
           });
         }
-      }
+      },
     });
 
     $.ajax({

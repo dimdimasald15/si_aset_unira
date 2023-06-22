@@ -27,7 +27,7 @@
           </div>
         </div>
       </div>
-      <div id="tabledatabrg" style="display:none;">
+      <div class="table-responsive" id="tabledatabrg" style="display:none;">
         <table class="table table-responsive-sm table-borderless">
           <thead class="text-center">
             <th style="display:none;">Id</th>

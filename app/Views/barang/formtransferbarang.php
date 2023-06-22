@@ -309,14 +309,11 @@
           $(`#satuan${j}`).removeClass('is-invalid');
           $(`.errorsatuan${j}`).html('');
         })
+
         $(`#jmlkeluar${j}`).on('input', function(e) {
           e.preventDefault();
           $(`#jmlkeluar${j}`).removeClass('is-invalid');
           $(`.errorjmlkeluar${j}`).html('');
-        })
-
-        $(`#jmlkeluar${j}`).on('input', function(e) {
-          e.preventDefault();
           var jumlah_keluar_baru = $(`#jmlkeluar${j}`).val();
           var sisa_stok_baru = sisa_stok_lama[j - 1] - jumlah_keluar_baru;
           $('#formtrfbarang').find(`input[name='sisa_stok${j}']`).val(sisa_stok_baru)

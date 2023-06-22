@@ -2,11 +2,14 @@
 
 namespace App\Controllers;
 
-use App\Models\Anggota;
 use App\Models\Unit;
-use \Hermawan\DataTables\DataTable;
+use App\Models\Anggota;
 
+use \Hermawan\DataTables\DataTable;
 use App\Controllers\BaseController;
+// use CodeIgniter\Exceptions\PageNotFoundException;
+// use RuntimeException;
+use CodeIgniter\Database\Exceptions\DatabaseException;
 
 class AnggotaController extends BaseController
 {
@@ -57,6 +60,11 @@ class AnggotaController extends BaseController
                 ->postQuery(function ($builder) {
                     $builder->orderBy('id', 'desc');
                 })
+                ->add('checkRowUnit', function ($row) use ($isRestore) {
+                    if (!$isRestore) {
+                        return '<input type="checkbox" name="id[]" class="checkRowUnit" value="' . $row->id . '">';
+                    }
+                })
                 ->add('action', function ($row) use ($isRestore) {
                     if ($isRestore) {
                         return '
@@ -66,6 +74,7 @@ class AnggotaController extends BaseController
                         </button>
                         <ul class="dropdown-menu shadow-lg">
                             <li><a class="dropdown-item" onclick="restoreunit(' . $row->id . ', \'' . htmlspecialchars($row->nama_unit) . '\')"><i class="fa fa-undo"></i> Pulihkan</a></li>
+                            <li><a class="dropdown-item" onclick="hapuspermanenunit(' . $row->id . ', \'' . htmlspecialchars($row->nama_unit) . '\')"><i class="fa fa-trash-o"></i> Hapus Permanen</a></li>
                         </ul>
                         </div>
                         ';
@@ -112,6 +121,11 @@ class AnggotaController extends BaseController
                 ->postQuery(function ($builder) {
                     $builder->orderBy('a.id', 'desc');
                 })
+                ->add('checkRowAnggota', function ($row) use ($isRestore) {
+                    if (!$isRestore) {
+                        return '<input type="checkbox" name="id[]" class="checkRowAnggota" value="' . $row->id . '">';
+                    }
+                })
                 ->add('action', function ($row) use ($isRestore) {
                     if ($isRestore) {
                         return '
@@ -121,6 +135,7 @@ class AnggotaController extends BaseController
                         </button>
                         <ul class="dropdown-menu shadow-lg">
                             <li><a class="dropdown-item" onclick="restoreanggota(' . $row->id . ', \'' . htmlspecialchars($row->nama_anggota) . '\')"><i class="fa fa-undo"></i> Pulihkan</a></li>
+                            <li><a class="dropdown-item" onclick="hapuspermanenanggota(' . $row->id . ', \'' . htmlspecialchars($row->nama_anggota) . '\')"><i class="fa fa-trash-o"></i> Hapus Permanen</a></li>
                         </ul>
                         </div>
                         ';
@@ -651,6 +666,162 @@ class AnggotaController extends BaseController
 
             $msg = [
                 'sukses' => count($id) . " Data anggota berhasil dipulihkan",
+            ];
+        }
+
+        echo json_encode($msg);
+    }
+
+    public function multipledeleteunittemporary()
+    {
+        if (!$this->request->isAJAX()) {
+            $data = [
+                'title' => 'Error 404',
+                'msg' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/mazer/error-404', $data);
+        }
+
+        $id_unit = $this->request->getVar('id');
+        $jmldata = count($id_unit);
+
+        foreach ($id_unit as $id) {
+            $this->unit->setSoftDelete($id);
+        }
+
+        $msg = [
+            'sukses' => "$jmldata data unit berhasil dihapus secara temporary",
+        ];
+
+        echo json_encode($msg);
+    }
+    public function multipledeleteanggotatemporary()
+    {
+        if (!$this->request->isAJAX()) {
+            $data = [
+                'title' => 'Error 404',
+                'msg' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/mazer/error-404', $data);
+        }
+
+        $id_anggota = $this->request->getVar('id');
+        $jmldata = count($id_anggota);
+
+        foreach ($id_anggota as $id) {
+            $this->anggota->setSoftDelete($id);
+        }
+
+        $msg = [
+            'sukses' => "$jmldata data anggota berhasil dihapus secara temporary",
+        ];
+
+        echo json_encode($msg);
+    }
+
+    public function hapuspermanenunit($id = [])
+    {
+
+        if (!$this->request->isAJAX()) {
+            $data = [
+                'title' => 'Error 404',
+                'msg' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/mazer/error-404', $data);
+        }
+        $id = $this->request->getVar('id');
+        $id_unit = explode(",", $id);
+
+        if (count($id_unit) === 1) {
+            $nama_unit = $this->request->getVar('nama_unit');
+            try {
+                // Lakukan operasi penghapusan data unit
+                $this->unit->delete($id_unit, true);
+
+                // Jika operasi penghapusan berhasil
+                $msg = ['sukses' => "Data unit: $nama_unit berhasil dihapus secara permanen"];
+            } catch (DatabaseException $e) {
+                // Jika terjadi kesalahan saat penghapusan data unit
+                if (strpos($e->getMessage(), 'a foreign key constraint fails') !== false) {
+                    $msg = ['error' => 'Tidak dapat menghapus unit karena ada data anggota yang terkait'];
+                } else {
+                    $msg = ['error' => 'Hapus data unit gagal: ' . $e->getMessage()];
+                }
+            }
+        } else {
+            foreach ($id_unit as $ids) {
+                try {
+                    // Lakukan operasi penghapusan data unit
+                    $this->unit->delete($ids, true);
+
+                    // Jika operasi penghapusan berhasil
+                } catch (DatabaseException $e) {
+                    // Jika terjadi kesalahan saat penghapusan data unit
+                    if (strpos($e->getMessage(), 'a foreign key constraint fails') !== false) {
+                        $msg = ['error' => 'Tidak dapat menghapus unit yang masih memiliki data anggota yang terkait'];
+                    } else {
+                        $msg = ['error' => 'Hapus data unit gagal: ' . $e->getMessage()];
+                    }
+                }
+            }
+
+            $msg = [
+                'sukses' => count($id_unit) . " data unit berhasil dihapus secara permanen",
+            ];
+        }
+
+        echo json_encode($msg);
+    }
+
+    public function hapuspermanenanggota($id = [])
+    {
+        if (!$this->request->isAJAX()) {
+            $data = [
+                'title' => 'Error 404',
+                'msg' => 'Maaf tidak dapat diproses',
+            ];
+            return view('errors/mazer/error-404', $data);
+        }
+        $id = $this->request->getVar('id');
+        $id_anggota = explode(",", $id);
+
+        if (count($id_anggota) === 1) {
+            $nama_anggota = $this->request->getVar('nama_anggota');
+
+            try {
+                // Lakukan operasi penghapusan data unit
+                $this->anggota->delete($id_anggota, true);
+
+                $msg = [
+                    'sukses' => "Data anggota: $nama_anggota berhasil dihapus secara permanen",
+                ];
+            } catch (DatabaseException $e) {
+                // Jika terjadi kesalahan saat penghapusan data unit
+                if (strpos($e->getMessage(), 'a foreign key constraint fails') !== false) {
+                    $msg = ['error' => 'Tidak dapat menghapus anggota karena ada masih data pelaporan kerusakan aset/ peminjaman/ permintaan yang terkait'];
+                } else {
+                    $msg = ['error' => 'Hapus data anggota gagal: ' . $e->getMessage()];
+                }
+            }
+        } else {
+            $jmlhapus = 0;
+            foreach ($id_anggota as $ids) {
+                try {
+                    // Lakukan operasi penghapusan data unit
+                    $this->anggota->delete($ids, true);
+                    $jmlhapus += $this->anggota->affectedRows();
+                } catch (DatabaseException $e) {
+                    // Jika terjadi kesalahan saat penghapusan data unit
+                    if (strpos($e->getMessage(), 'a foreign key constraint fails') !== false) {
+                        $msg = ['error' => 'TTidak dapat menghapus anggota karena ada masih data pelaporan kerusakan aset/ peminjaman/ permintaan yang terkait'];
+                    } else {
+                        $msg = ['error' => 'Hapus data anggota gagal: ' . $e->getMessage()];
+                    }
+                }
+            }
+
+            $msg = [
+                'sukses' => "$jmlhapus data anggota berhasil dihapus secara permanen",
             ];
         }
 

@@ -2,14 +2,15 @@
 
 namespace App\Controllers;
 
-use App\Models\Barang;
-use App\Models\RiwayatBarang;
-use App\Models\Kategori;
+use Exception;
 use App\Models\Ruang;
-use App\Models\StokBarang;
-use App\Models\RiwayatTransaksi;
+use App\Models\Barang;
 use App\Models\Anggota;
+use App\Models\Kategori;
 use App\Models\Peminjaman;
+use App\Models\StokBarang;
+use App\Models\RiwayatBarang;
+use App\Models\RiwayatTransaksi;
 use \Hermawan\DataTables\DataTable;
 use App\Controllers\BaseController;
 
@@ -352,6 +353,8 @@ class PeminjamanController extends BaseController
 
                         $this->peminjaman->save($insert2);
 
+                        $peminjaman_id = $this->peminjaman->insertID();
+
                         $stokbrg = $this->db->table('stok_barang')->select('*')->where('barang_id', $barang_id[$i])->get()->getRowArray();
 
                         $ubahstok = [
@@ -376,7 +379,7 @@ class PeminjamanController extends BaseController
                         // Periksa apakah query terakhir adalah operasi update
                         $lastQuery = $this->db->getLastQuery();
 
-                        $this->riwayattrx->inserthistori($stokbrg['id'], $stokbrg, $updatestok, $jenistrx . " " . $anggota_id[$i], $lastQuery, $field_update);
+                        $this->riwayattrx->inserthistori($stokbrg['id'], $stokbrg, $updatestok, $jenistrx . " " . $peminjaman_id[$i], $lastQuery, $field_update);
                     }
 
                     $this->db->transComplete();
@@ -630,7 +633,7 @@ class PeminjamanController extends BaseController
     {
         if ($this->request->isAJAX()) {
             $id = $this->request->getGet('id');
-            $builder = $this->db->table('peminjaman p')->select('a.nama_anggota, a.no_anggota, a.unit_id, a.level, u.singkatan, p.id, p.barang_id, p.jml_barang, p.anggota_id, p.tgl_pinjam, b.nama_brg, sb.satuan_id, sb.sisa_stok, s.kd_satuan')
+            $builder = $this->db->table('peminjaman p')->select('a.nama_anggota, a.no_anggota, a.unit_id, a.level, u.singkatan, p.id, p.barang_id, p.jml_barang, p.anggota_id, p.keterangan, p.tgl_pinjam, b.nama_brg, sb.satuan_id, sb.sisa_stok, s.kd_satuan')
                 ->join('anggota a', 'a.id=p.anggota_id')
                 ->join('unit u', 'u.id=a.unit_id')
                 ->join('barang b', 'b.id=p.barang_id')
@@ -664,175 +667,259 @@ class PeminjamanController extends BaseController
         if ($this->request->isAJAX()) {
             $jmldata = $this->request->getVar('jmlbrg');
 
-            $jenistrx = $this->request->getVar('jenistrx');
-
-            $validation =  \Config\Services::validation();
-            $errors = array();
-            for ($a = 1; $a <= $jmldata; $a++) {
-                $rules = [
-                    'barang_id' . $a => [
-                        'label' => 'Nama barang',
+            $validation = \Config\Services::validation();
+            $rules1 = array();
+            $errors1 = array();
+            if (array_key_exists('nama_anggota', $this->request->getVar())) {
+                // melakukan sesuatu jika nama_anggota ada dalam $_POST
+                $rules1 = [
+                    'nama_anggota' => [
+                        'label' => 'Nama peminta baru',
                         'rules' => 'required',
                         'errors' => [
-                            'required' => "{field} form $a tidak boleh kosong",
-                        ]
+                            'required' => '{field} tidak boleh kosong',
+                        ],
                     ],
-                    'jml_barang' . $a => [
-                        'label' => 'Jumlah peminjaman',
+                    'level' => [
+                        'label' => 'Level peminta baru',
                         'rules' => 'required',
                         'errors' => [
-                            'required' => "{field} form $a tidak boleh kosong",
-                        ]
+                            'required' => '{field} tidak boleh kosong',
+                        ],
                     ],
-                ];
-                if (!$this->validate($rules)) {
-                    $errors = $validation->getErrors();
-                }
-            }
-
-            // check for errors
-            if (!empty($errors)) {
-                $msg = [
-                    'jmldata' => $jmldata,
-                    'error' => $errors,
+                    'no_anggota' => [
+                        'label' => 'Nomor ID peminta baru',
+                        'rules' => 'required|is_unique[anggota.no_anggota]',
+                        'errors' => [
+                            'required' => '{field} tidak boleh kosong',
+                            'is_unique' => '{field} sudah ada dan tidak boleh sama',
+                        ],
+                    ],
+                    'unit_id' => [
+                        'label' => 'Unit peminta baru',
+                        'rules' => 'required',
+                        'errors' => [
+                            'required' => '{field} tidak boleh kosong',
+                        ],
+                    ],
                 ];
             } else {
-                $peminjamanall = $this->db->table('peminjaman p')->select('p.id, p.barang_id, p.anggota_id, p.jml_barang, p.deleted_at, a.nama_anggota, a.no_anggota')->join('anggota a', 'a.id=p.anggota_id')->get()->getResultArray();
-
-                $this->db->transStart();
-                //Update Table stok barang + riwayat transaksi stok barang
-                $peminjaman = $this->peminjaman->find($id);
-                $isUpdated = $peminjaman['updated_at'];
-                if ($isUpdated == null) {
-                    $histori_trx = $this->db->table('riwayat_transaksi rt')->select('rt.old_value,sb.jumlah_keluar, sb.sisa_stok, rt.stokbrg_id')->join('stok_barang sb', 'sb.id=rt.stokbrg_id')
-                        ->where('sb.barang_id', $peminjaman['barang_id'])
-                        ->where('rt.jenis_transaksi', "Peminjaman Barang " . $peminjaman['anggota_id'])
-                        ->orderBy('rt.id', 'DESC')
-                        ->get()
-                        ->getRowArray();
-                } else if ($isUpdated !== null) {
-                    $histori_trx = $this->db->table('riwayat_transaksi rt')->select('rt.old_value,sb.jumlah_keluar, sb.sisa_stok, rt.stokbrg_id')->join('stok_barang sb', 'sb.id=rt.stokbrg_id')
-                        ->where('sb.barang_id', $peminjaman['barang_id'])
-                        ->where('rt.jenis_transaksi', "Update Peminjaman Barang " . $peminjaman['anggota_id'])
-                        ->orderBy('rt.id', 'DESC')
-                        ->get()
-                        ->getRowArray();
-                }
-                $stokbrg = $this->stokbarang->find($histori_trx['stokbrg_id']);
-                $oldval = json_decode($histori_trx['old_value']);
-                $ubahstok1 = [
-                    'jumlah_keluar' => $oldval->jumlah_keluar,
-                    'sisa_stok' => $oldval->sisa_stok,
+                // melakukan sesuatu jika nama_anggota tidak ada dalam $_POST
+                $rules1 = [
+                    'anggota_id' => [
+                        'label' => 'Nama peminta',
+                        'rules' => 'required',
+                        'errors' => [
+                            'required' => '{field} tidak boleh kosong',
+                        ],
+                    ],
                 ];
-                $updatestok1 = $this->stokbarang->setUpdateData($ubahstok1);
-                //periksa perubahan data
-                $data_lama1 = $stokbrg;
-                $data_baru1 = $updatestok1;
-                $field_update1 = [];
-                foreach ($data_baru1 as $key => $value) {
-                    if (isset($data_lama1[$key]) && $data_lama1[$key] !== $value) {
-                        $field_update1[] = $key;
-                    }
-                }
-                // update data ke database
-                $this->stokbarang->update($stokbrg['id'], $updatestok1);
-                // Periksa apakah query terakhir adalah operasi update
-                $lastQuery = $this->db->getLastQuery();
-                $this->riwayattrx->inserthistori($stokbrg['id'], $stokbrg, $updatestok1, "Update " . $jenistrx . " " . $peminjaman['anggota_id'], $lastQuery, $field_update1);
+            }
 
-                //update table peminjaman
-                $barang_id = array();
-                $jml_barang = array();
-                for ($b = 1; $b <= $jmldata; $b++) {
+            if (!$this->validate($rules1)) {
+                $errors1 = $validation->getErrors();
+            }
+            // check for errors
+            if (!empty($errors1)) {
+                $msg = [
+                    'jmldata' => $jmldata,
+                    'error' => $errors1
+                ];
+            } else {
+                $jenistrx = $this->request->getVar('jenistrx');
 
-                    array_push($barang_id, $this->request->getVar("barang_id$b"));
-                    array_push($jml_barang, $this->request->getVar("jml_barang$b"));
-                }
-
-                //deklarasi variabel yang akan menampung peminjaman dengan barang yang sudah ada.
-                $oldpeminjaman = array();
-                for ($i = 0; $i < $jmldata; $i++) {
-                    $data_ditemukan = false;
-                    $isDeleted = false;
-                    for ($j = 0; $j < count($peminjamanall); $j++) {
-                        if ($barang_id[$i] == $peminjamanall[$j]['barang_id'] && $this->request->getVar('anggota_id') == $peminjamanall[$j]['anggota_id'] && $peminjamanall[$j]['deleted_at'] == null) {
-                            $data_ditemukan = true;
-                            $isDeleted = false;
-                            array_push($oldpeminjaman, $peminjamanall[$j]);
-                        } else if ($barang_id[$i] == $peminjamanall[$j]['barang_id'] && $this->request->getVar('anggota_id') == $peminjamanall[$j]['anggota_id'] && $peminjamanall[$j]['deleted_at'] !== null) {
-                            $data_ditemukan = true;
-                            $isDeleted = true;
-                        }
-                    }
-
-                    if (!$data_ditemukan) {
-                        $ubahpinjam = [
-                            'barang_id' => $barang_id[$i],
-                            'jml_barang' => $jml_barang[$i],
-                            'tgl_pinjam' => $this->request->getVar("tgl_pinjam"),
-                        ];
-                        $updatepinjam = $this->peminjaman->setUpdateData($ubahpinjam);
-
-                        $this->peminjaman->update($id, $updatepinjam);
-                    } else if ($data_ditemukan && !$isDeleted) {
-                        $ubahpinjam = array();
-                        if ($oldpeminjaman[$i]['id'] !== $id) {
-                            $this->peminjaman->delete($id, true);
-                            $ubahpinjam = [
-                                'jml_barang' => intval($oldpeminjaman[$i]['jml_barang']) + intval($jml_barang[$i]),
-                            ];
-                        } else {
-                            $ubahpinjam = [
-                                'jml_barang' => $jml_barang[$i],
-                            ];
-                        }
-                        $ubahpinjam['tgl_pinjam'] = $this->request->getVar("tgl_pinjam");
-                        $updatepinjam = $this->peminjaman->setUpdateData($ubahpinjam);
-
-                        $this->peminjaman->update($oldpeminjaman[$i]['id'], $updatepinjam);
-                    } else if ($data_ditemukan && $isDeleted) {
-                        $ubahpinjam = [
-                            'jml_barang' => intval($oldpeminjaman[$i]['jml_barang']) + intval($jml_barang[$i]),
-                            'tgl_pinjam' => $this->request->getVar("tgl_pinjam"),
-                            'deleted_by' => null,
-                            'deleted_at' => null,
-                        ];
-                        $updatepinjam = $this->peminjaman->setUpdateData($ubahpinjam);
-
-                        $this->peminjaman->update($oldpeminjaman[$i]['id'], $updatepinjam);
-                    }
-                    // update table stok barang lagi
-                    $newstokbrg = $this->db->table('stok_barang')->select('*')->where('barang_id', $barang_id[$i])->get()->getRowArray();
-
-                    $ubahstok2 = [
-                        'jumlah_keluar' => (intval($newstokbrg['jumlah_keluar']) + intval($jml_barang[$i])),
-                        'sisa_stok' => (intval($newstokbrg['sisa_stok']) - intval($jml_barang[$i])),
+                $validation =  \Config\Services::validation();
+                $errors2 = array();
+                for ($a = 1; $a <= $jmldata; $a++) {
+                    $rules2 = [
+                        'barang_id' . $a => [
+                            'label' => 'Nama barang',
+                            'rules' => 'required',
+                            'errors' => [
+                                'required' => "{field} form $a tidak boleh kosong",
+                            ]
+                        ],
+                        'jml_barang' . $a => [
+                            'label' => 'Jumlah permintaan',
+                            'rules' => 'required',
+                            'errors' => [
+                                'required' => "{field} form $a tidak boleh kosong",
+                            ]
+                        ],
                     ];
+                    if (!$this->validate($rules2)) {
+                        $errors2 = $validation->getErrors();
+                    }
+                }
 
-                    $updatestok2 = $this->stokbarang->setUpdateData($ubahstok2);
+                // check for errors
+                if (!empty($errors2)) {
+                    $msg = [
+                        'jmldata' => $jmldata,
+                        'error' => $errors2
+                    ];
+                } else {
+                    //  else {
+                    $peminjamanall = $this->db->table('peminjaman p')->select('p.*, a.nama_anggota, a.no_anggota')->join('anggota a', 'a.id=p.anggota_id')->get()->getResultArray();
+
+                    $this->db->transStart();
+                    //Update Table stok barang + riwayat transaksi stok barang
+                    $peminjaman = $this->peminjaman->find($id);
+                    $isUpdated = $peminjaman['updated_at'];
+                    if ($isUpdated == null) {
+                        $histori_trx = $this->db->table('riwayat_transaksi rt')->select('rt.old_value,sb.jumlah_keluar, sb.sisa_stok, rt.stokbrg_id')->join('stok_barang sb', 'sb.id=rt.stokbrg_id')
+                            ->where('sb.barang_id', $peminjaman['barang_id'])
+                            ->where('rt.jenis_transaksi', "Peminjaman Barang " . $peminjaman['id'])
+                            ->orderBy('rt.id', 'DESC')
+                            ->get()
+                            ->getRowArray();
+                        $oldval = json_decode($histori_trx['old_value']);
+                        $ubahstok1 = [
+                            'jumlah_keluar' => $oldval->jumlah_keluar,
+                            'sisa_stok' => $oldval->sisa_stok,
+                        ];
+                    } else if ($isUpdated !== null) {
+                        $histori_trx = $this->db->table('riwayat_transaksi rt')->select('rt.old_value,sb.jumlah_keluar, sb.sisa_stok, rt.stokbrg_id')->join('stok_barang sb', 'sb.id=rt.stokbrg_id')
+                            ->where('sb.barang_id', $peminjaman['barang_id'])
+                            ->where('rt.jenis_transaksi', "Update Peminjaman Barang " . $peminjaman['id'])
+                            ->orderBy('rt.id', 'DESC')
+                            ->get()
+                            ->getRowArray();
+                        $oldval = json_decode($histori_trx['new_value']);
+                        $ubahstok1 = [
+                            'jumlah_keluar' => intval($oldval->jumlah_keluar) - intval($oldval->jumlah_keluar),
+                            'sisa_stok' => intval($oldval->sisa_stok) + intval($oldval->jumlah_keluar),
+                        ];
+                    }
+                    $stokbrg = $this->stokbarang->find($histori_trx['stokbrg_id']);
+
+                    $ubahstok1 = [
+                        'jumlah_keluar' => $oldval->jumlah_keluar,
+                        'sisa_stok' => $oldval->sisa_stok,
+                    ];
+                    $updatestok1 = $this->stokbarang->setUpdateData($ubahstok1);
                     //periksa perubahan data
-                    $data_lama2 = $newstokbrg;
-                    $data_baru2 = $updatestok2;
-                    $field_update2 = [];
-                    foreach ($data_baru2 as $key => $value) {
-                        if (isset($data_lama2[$key]) && $data_lama2[$key] !== $value) {
-                            $field_update2[] = $key;
+                    $data_lama1 = $stokbrg;
+                    $data_baru1 = $updatestok1;
+                    $field_update1 = [];
+                    foreach ($data_baru1 as $key => $value) {
+                        if (isset($data_lama1[$key]) && $data_lama1[$key] !== $value) {
+                            $field_update1[] = $key;
                         }
                     }
                     // update data ke database
-                    $this->stokbarang->update($newstokbrg['id'], $updatestok2);
+                    try {
+                        $this->stokbarang->update($stokbrg['id'], $updatestok1);
+                    } catch (Exception $e) {
+                        // echo "Pembaruan data stok gagal: " . $e->getMessage();
+                        $msg = ['error' => "Pembaruan data stok gagal: " . $e->getMessage()];
+                    }
                     // Periksa apakah query terakhir adalah operasi update
                     $lastQuery = $this->db->getLastQuery();
-                    $this->riwayattrx->inserthistori($newstokbrg['id'], $newstokbrg, $updatestok2, "Update " . $jenistrx . " " . $peminjaman['anggota_id'], $lastQuery, $field_update2);
-                }
 
-                $this->db->transComplete();
-                if ($this->db->transStatus() === false) {
-                    // Jika terjadi kesalahan pada transaction
-                    $msg = ['error' => 'Gagal mengubah data peminjaman'];
-                } else {
-                    // Jika berhasil disimpan
-                    $msg = ['sukses' => "Sukses $jmldata data peminjaman berhasil terupdate"];
+                    $this->riwayattrx->inserthistori($stokbrg['id'], $stokbrg, $updatestok1, "Update " . "Update Barang Tetap " . $peminjaman['id'], $lastQuery, $field_update1);
+
+                    //update table peminjaman
+                    $barang_id = array();
+                    $jml_barang = array();
+                    for ($b = 1; $b <= $jmldata; $b++) {
+
+                        array_push($barang_id, $this->request->getVar("barang_id$b"));
+                        array_push($jml_barang, $this->request->getVar("jml_barang$b"));
+                    }
+
+                    //deklarasi variabel yang akan menampung peminjaman dengan barang yang sudah ada.
+                    $oldPeminjamanAll = array();
+                    for ($i = 0; $i < $jmldata; $i++) {
+                        $data_ditemukan = false;
+                        $isDeleted = false;
+                        for ($j = 0; $j < count($peminjamanall); $j++) {
+                            if ($barang_id[$i] == $peminjamanall[$j]['barang_id'] && $this->request->getVar('anggota_id') == $peminjamanall[$j]['anggota_id'] && $peminjamanall[$j] && $peminjaman['created_at'] == $peminjamanall[$j]['created_at'] && ['deleted_at'] == null) {
+                                $data_ditemukan = true;
+                                $isDeleted = false;
+                                array_push($oldPeminjamanAll, $peminjamanall[$j]);
+                            } else if ($barang_id[$i] == $peminjamanall[$j]['barang_id'] && $this->request->getVar('anggota_id') == $peminjamanall[$j]['anggota_id'] && $peminjamanall[$j]['deleted_at'] !== null) {
+                                $data_ditemukan = true;
+                                $isDeleted = true;
+                            }
+                        }
+
+                        $oldpeminjaman = end($oldPeminjamanAll);
+
+                        if (!$data_ditemukan) {
+                            $ubahpinjam = [
+                                'barang_id' => $barang_id[$i],
+                                'jml_barang' => $jml_barang[$i],
+                                'tgl_pinjam' => $this->request->getVar("tgl_pinjam"),
+                            ];
+                            $updatepinjam = $this->peminjaman->setUpdateData($ubahpinjam);
+
+                            $this->peminjaman->update($id, $updatepinjam);
+                        } else if ($data_ditemukan && !$isDeleted) {
+                            $ubahpinjam = array();
+                            if ($oldpeminjaman['id'] !== $id) {
+                                $this->peminjaman->delete($id, true);
+                                $ubahpinjam = [
+                                    'jml_barang' => intval($oldpeminjaman['jml_barang']) + intval($jml_barang[$i]),
+                                ];
+                            } else {
+                                $ubahpinjam = [
+                                    'jml_barang' => $jml_barang[$i],
+                                ];
+                            }
+                            $ubahpinjam['tgl_pinjam'] = $this->request->getVar("tgl_pinjam");
+                            $updatepinjam = $this->peminjaman->setUpdateData($ubahpinjam);
+
+                            $this->peminjaman->update($oldpeminjaman['id'], $updatepinjam);
+                        } else if ($data_ditemukan && $isDeleted) {
+                            $ubahpinjam = [
+                                'jml_barang' => intval($oldpeminjaman['jml_barang']) + intval($jml_barang[$i]),
+                                'tgl_pinjam' => $this->request->getVar("tgl_pinjam"),
+                                'deleted_by' => null,
+                                'deleted_at' => null,
+                            ];
+                            $updatepinjam = $this->peminjaman->setUpdateData($ubahpinjam);
+
+                            $this->peminjaman->update($oldpeminjaman['id'], $updatepinjam);
+                        }
+                        // update table stok barang lagi
+                        $newstokbrg = $this->db->table('stok_barang')->select('*')->where('barang_id', $barang_id[$i])->get()->getRowArray();
+
+                        $ubahstok2 = [
+                            'jumlah_keluar' => (intval($newstokbrg['jumlah_keluar']) + intval($jml_barang[$i])),
+                            'sisa_stok' => (intval($newstokbrg['sisa_stok']) - intval($jml_barang[$i])),
+                        ];
+
+                        $updatestok2 = $this->stokbarang->setUpdateData($ubahstok2);
+                        //periksa perubahan data
+                        $data_lama2 = $newstokbrg;
+                        $data_baru2 = $updatestok2;
+                        $field_update2 = [];
+                        foreach ($data_baru2 as $key => $value) {
+                            if (isset($data_lama2[$key]) && $data_lama2[$key] !== $value) {
+                                $field_update2[] = $key;
+                            }
+                        }
+                        // update data ke database
+                        $this->stokbarang->update($newstokbrg['id'], $updatestok2);
+                        // Periksa apakah query terakhir adalah operasi update
+                        $lastQuery = $this->db->getLastQuery();
+
+                        if (!$data_ditemukan) {
+                            $this->riwayattrx->inserthistori($newstokbrg['id'], $newstokbrg, $updatestok2, "Update " . $jenistrx . " " . $peminjaman['id'], $lastQuery, $field_update2);
+                        } else {
+                            $this->riwayattrx->inserthistori($newstokbrg['id'], $newstokbrg, $updatestok2, "Update " . $jenistrx . " " . $oldpeminjaman['id'], $lastQuery, $field_update2);
+                        }
+                    }
+
+                    $this->db->transComplete();
+                    if ($this->db->transStatus() === false) {
+                        // Jika terjadi kesalahan pada transaction
+                        $msg = ['error' => 'Gagal mengubah data peminjaman'];
+                    } else {
+                        // Jika berhasil disimpan
+                        $msg = ['sukses' => "Sukses $jmldata data peminjaman berhasil terupdate"];
+                    }
                 }
             }
 
