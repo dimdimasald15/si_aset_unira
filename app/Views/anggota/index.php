@@ -48,7 +48,7 @@
               </div>
               <div class="col-lg-auto btn-datarestoreunit" style="display:none;">
                 <button class="btn btn-success" onclick="restoreallunit()"><i class="fa fa-undo"></i> Pulihkan semua</button>
-                <!-- <button class="btn btn-danger" onclick="hapuspermanenallunit()"><i class="fa fa-trash"></i> Hapus semua permanen</button> -->
+                <button class="btn btn-danger" onclick="hapuspermanenallunit()"><i class="fa fa-trash"></i> Hapus semua permanen</button>
               </div>
             </div>
           </div>
@@ -72,20 +72,30 @@
           </div>
         </div>
         <div class="card-body table-unit">
-          <div class="table-responsive py-4">
-            <table class="table table-flush" id="table-unit" width="100%">
-              <thead class=" thead-light">
-                <tr>
-                  <th></th>
-                  <th>Nama unit</th>
-                  <th>Singkatan</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-              </tbody>
-            </table>
-          </div>
+          <form id="formDeleteUnit">
+            <div class="row m-1">
+              <div class="col-md-12 pb-0 pt-3 px-0 d-flex justify-content-end">
+                <button type="submit" class="btn btn-danger btn-DeleteUnit">
+                  <i class="fa fa-trash-o"></i> Multiple Delete
+                </button>
+              </div>
+            </div>
+            <div class="table-responsive py-4">
+              <table class="table table-flush" id="table-unit" width="100%">
+                <thead class=" thead-light">
+                  <tr>
+                    <th><input type="checkbox" id="checkAllUnit"></th>
+                    <th></th>
+                    <th>Nama unit</th>
+                    <th>Singkatan</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
+            </div>
+          </form>
         </div>
         <div class="row m-2 btn-datarestoreunit" style="display:none;">
           <a href="<?= $nav ?>">&laquo; Kembali ke data unit</a>
@@ -110,7 +120,7 @@
               </div>
               <div class="col-lg-auto btn-datarestoreanggota" style="display:none;">
                 <button class="btn btn-success" onclick="restoreallanggota()"><i class="fa fa-undo"></i> Pulihkan semua</button>
-                <!-- <button class="btn btn-danger" onclick="hapuspermanenall()"><i class="fa fa-trash"></i> Hapus semua permanen</button> -->
+                <button class="btn btn-danger" onclick="hapuspermanenallanggota()"><i class="fa fa-trash"></i> Hapus semua permanen</button>
               </div>
             </div>
           </div>
@@ -135,21 +145,31 @@
           </div>
         </div>
         <div class="card-body table-anggota">
-          <div class="table-responsive py-4">
-            <table class="table table-flush" id="table-anggota" width="100%">
-              <thead class=" thead-light">
-                <tr>
-                  <th></th>
-                  <th>Nama Anggota</th>
-                  <th>No Anggota</th>
-                  <th>Nama Unit</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-              </tbody>
-            </table>
-          </div>
+          <form id="formDeleteAnggota">
+            <div class="row m-1">
+              <div class="col-md-12 pb-0 pt-3 px-0 d-flex justify-content-end">
+                <button type="submit" class="btn btn-danger btn-DeleteAnggota">
+                  <i class="fa fa-trash-o"></i> Multiple Delete
+                </button>
+              </div>
+            </div>
+            <div class="table-responsive py-4">
+              <table class="table table-flush" id="table-anggota" width="100%">
+                <thead class=" thead-light">
+                  <tr>
+                    <th><input type="checkbox" id="checkAllAnggota"></th>
+                    <th></th>
+                    <th>Nama Anggota</th>
+                    <th>No Anggota</th>
+                    <th>Nama Unit</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
+            </div>
+          </form>
         </div>
         <div class="row m-2 btn-datarestoreanggota" style="display:none;">
           <a href="anggota">&laquo; Kembali ke data anggota</a>
@@ -197,6 +217,10 @@
       ajax: `<?= base_url() ?>anggotacontroller/listdataanggota`,
       order: [],
       columns: [{
+          data: 'checkRowAnggota',
+          orderable: false,
+          searchable: false,
+        }, {
           className: 'dt-control',
           orderable: false,
           sortable: false,
@@ -253,10 +277,10 @@
             data: 'singkatan',
           },
           {
-            data: 'deleted_by'
+            data: 'deleted_at'
           },
           {
-            data: 'deleted_at'
+            data: 'deleted_by'
           },
           {
             data: 'action',
@@ -278,6 +302,11 @@
       },
       order: [],
       columns: [{
+          data: 'checkRowUnit',
+          orderable: false,
+          searchable: false,
+        },
+        {
           className: 'dt-control',
           orderable: false,
           sortable: false,
@@ -374,6 +403,163 @@
           $('.viewform').show().html(response.data);
         }
       });
+    })
+
+    // Check All Unit
+    $('#checkAllUnit').click(function() {
+      if ($(this).is(':checked')) {
+        $('.checkRowUnit').prop('checked', true);
+      } else {
+        $('.checkRowUnit').prop('checked', false);
+      }
+    })
+    // Check Row
+    $('.checkRowUnit').click(function() {
+      var allChecked = true;
+      $('.checkRowUnit').each(function() {
+        if (!$(this).is(':checked')) {
+          allChecked = false;
+        }
+      });
+      if (allChecked) {
+        $('#checkAllUnit').prop('checked', true);
+      } else {
+        $('#checkAllUnit').prop('checked', false);
+      }
+    });
+
+    // Check All Anggota
+    $('#checkAllAnggota').click(function() {
+      if ($(this).is(':checked')) {
+        $('.checkRowAnggota').prop('checked', true);
+      } else {
+        $('.checkRowAnggota').prop('checked', false);
+      }
+    })
+    // Check Row
+    $('.checkRowAnggota').click(function() {
+      var allChecked = true;
+      $('.checkRowAnggota').each(function() {
+        if (!$(this).is(':checked')) {
+          allChecked = false;
+        }
+      });
+      if (allChecked) {
+        $('#checkAllAnggota').prop('checked', true);
+      } else {
+        $('#checkAllAnggota').prop('checked', false);
+      }
+    });
+
+    //Temporary delete
+    $('#formDeleteUnit').submit(function(e) {
+      e.preventDefault();
+
+      let jmldata = $('.checkRowUnit:checked');
+      var formdata = new FormData(this);
+
+      if (jmldata.length === 0) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Perhatian',
+          text: 'Maaf silahkan pilih data unit yang mau dihapus'
+        })
+      } else {
+        Swal.fire({
+          title: 'Multiple Delete',
+          text: `Apakah kamu yakin ingin menghapus ${jmldata.length} data unit secara temporary?`,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Ya, Hapus saja!',
+          cancelButtonText: 'Batalkan',
+        }).then((result) => {
+          if (result.isConfirmed) {
+            $.ajax({
+              type: "post",
+              url: `<?= $nav ?>/multipledeleteunit`,
+              data: formdata,
+              processData: false,
+              contentType: false,
+              success: function(result) {
+                var response = JSON.parse(result);
+                if (response.sukses) {
+                  Swal.fire(
+                    'Berhasil', response.sukses, 'success'
+                  ).then((result) => {
+                    dataunit.ajax.reload();
+                  })
+                }
+              },
+              error: function(xhr, ajaxOptions, thrownError) {
+                alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
+              }
+            });
+          } else {
+            Swal.fire(
+              'Gagal', 'Tidak ada data unit yang dihapus', 'info'
+            )
+          }
+        });
+      }
+
+      return false;
+    })
+    //Temporary delete
+    $('#formDeleteAnggota').submit(function(e) {
+      e.preventDefault();
+
+      let jmldata = $('.checkRowAnggota:checked');
+      var formdata = new FormData(this);
+
+      if (jmldata.length === 0) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Perhatian',
+          text: 'Maaf silahkan pilih data anggota yang mau dihapus'
+        })
+      } else {
+        Swal.fire({
+          title: 'Multiple Delete',
+          text: `Apakah kamu yakin ingin menghapus ${jmldata.length} data anggota secara temporary?`,
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Ya, Hapus saja!',
+          cancelButtonText: 'Batalkan',
+        }).then((result) => {
+          if (result.isConfirmed) {
+            $.ajax({
+              type: "post",
+              url: `<?= $nav ?>/multipledeleteanggota`,
+              data: formdata,
+              processData: false,
+              contentType: false,
+              success: function(result) {
+                var response = JSON.parse(result);
+                if (response.sukses) {
+                  Swal.fire(
+                    'Berhasil', response.sukses, 'success'
+                  ).then((result) => {
+                    dataanggota.ajax.reload();
+                  })
+                }
+              },
+              error: function(xhr, ajaxOptions, thrownError) {
+                alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
+              }
+            });
+          } else {
+            Swal.fire(
+              'Gagal', 'Tidak ada data anggota yang dihapus', 'info'
+            )
+          }
+        });
+      }
+
+      return false;
     })
   });
 
@@ -768,6 +954,245 @@
                 ).then((result) => {
                   datarestoreanggota.ajax.reload();
                   dataanggota.ajax.reload();
+                })
+              } else if (response.error) {
+                Swal.fire(
+                  'Gagal!',
+                  response.error,
+                  'error'
+                );
+              }
+            },
+            error: function(xhr, ajaxOptions, thrownError) {
+              alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
+            }
+          });
+        }
+      });
+    }
+  }
+
+  function hapuspermanenunit(id, namaunit) {
+    Swal.fire({
+      width: 700,
+      title: `Menghapus data ${namaunit} secara permanen?`,
+      icon: 'warning',
+      text: 'Data akan terhapus selamanya dan tidak dapat dipulihkan lagi!',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Ya!',
+      cancelButtonText: 'Batalkan',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        $.ajax({
+          type: "post",
+          url: "<?= $nav ?>/hapuspermanenunit",
+          data: {
+            id: id,
+            nama_unit: namaunit,
+          },
+          dataType: 'json',
+          success: function(response) {
+            if (response.sukses) {
+              Swal.fire(
+                'Berhasil', response.sukses, 'success'
+              ).then((result) => {
+                datarestoreunit.ajax.reload();
+              })
+            } else if (response.error) {
+              Swal.fire(
+                'Gagal!',
+                response.error,
+                'error'
+              );
+            }
+          },
+          error: function(xhr, ajaxOptions, thrownError) {
+            console.log(xhr);
+            Swal.fire(
+              'Error!',
+              xhr.status + " + " + xhr.responseText + " + " + thrownError,
+              'error'
+            );
+          }
+        });
+      }
+    });
+  }
+
+  function hapuspermanenanggota(id, namaanggota) {
+    Swal.fire({
+      width: 700,
+      title: `Menghapus data ${namaanggota} secara permanen?`,
+      icon: 'warning',
+      text: 'Data akan terhapus selamanya dan tidak dapat dipulihkan lagi!',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Ya!',
+      cancelButtonText: 'Batalkan',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        $.ajax({
+          type: "post",
+          url: "<?= $nav ?>/hapuspermanenanggota",
+          data: {
+            id: id,
+            nama_anggota: namaanggota,
+          },
+          dataType: 'json',
+          success: function(response) {
+            if (response.sukses) {
+              Swal.fire(
+                'Berhasil', response.sukses, 'success'
+              ).then((result) => {
+                datarestoreanggota.ajax.reload();
+              })
+            } else if (response.error) {
+              Swal.fire(
+                'Gagal!',
+                response.error,
+                'error'
+              );
+            }
+          },
+          error: function(xhr, ajaxOptions, thrownError) {
+            alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
+          }
+        });
+      }
+    });
+  }
+
+  function hapuspermanenallunit() {
+    var api = $('#table-restoreunit').DataTable().rows();
+    var id = api.data().toArray().map(function(d) {
+      return d.id;
+    });
+    var nama_unit = api.data().toArray().map(function(d) {
+      return d.nama_unit;
+    })
+
+    if (api.count() === 0) { // jika tidak ada data
+      Swal.fire(
+        'Gagal!',
+        'Tidak ada data unit yang dapat dihapus secara permanen',
+        'error'
+      );
+    } else if (api.count() === 1) {
+      Swal.fire({
+        width: 700,
+        title: `Bersihkan semua data unit secara permanen?`,
+        icon: 'warning',
+        text: 'Data akan terhapus selamanya dan tidak dapat dipulihkan lagi!',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya!',
+        cancelButtonText: 'Batalkan',
+      }).then((result) => {
+        hapuspermanenunit(id.toString(), nama_unit.toString());
+      });
+    } else if (api.count() > 1) {
+      Swal.fire({
+        width: 700,
+        title: `Bersihkan semua data unit secara permanen?`,
+        icon: 'warning',
+        text: 'Data akan terhapus selamanya dan tidak dapat dipulihkan lagi!',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya!',
+        cancelButtonText: 'Batalkan',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            type: "post",
+            url: "<?= $nav ?>/hapuspermanenunit",
+            data: {
+              id: id.join(","),
+            },
+            dataType: 'json',
+            success: function(response) {
+              if (response.sukses) {
+                Swal.fire(
+                  'Berhasil', response.sukses, 'success'
+                ).then((result) => {
+                  datarestoreunit.ajax.reload();
+                })
+              } else if (response.error) {
+                Swal.fire(
+                  'Gagal!',
+                  response.error,
+                  'error'
+                );
+              }
+            },
+            error: function(xhr, ajaxOptions, thrownError) {
+              alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
+            }
+          });
+        }
+      });
+    }
+  }
+
+  function hapuspermanenallanggota() {
+    var api = $('#table-restoreanggota').DataTable().rows();
+    var id = api.data().toArray().map(function(d) {
+      return d.id;
+    });
+    var nama_anggota = api.data().toArray().map(function(d) {
+      return d.nama_anggota;
+    })
+
+    if (api.count() === 0) { // jika tidak ada data
+      Swal.fire(
+        'Gagal!',
+        'Tidak ada data anggota yang dapat dihapus secara permanen',
+        'error'
+      );
+    } else if (api.count() === 1) {
+      Swal.fire({
+        width: 700,
+        title: `Bersihkan semua data anggota secara permanen?`,
+        icon: 'warning',
+        text: 'Data akan terhapus selamanya dan tidak dapat dipulihkan lagi!',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya!',
+        cancelButtonText: 'Batalkan',
+      }).then((result) => {
+        hapuspermanenanggota(id.toString(), nama_anggota.toString());
+      });
+    } else if (api.count() > 1) {
+      Swal.fire({
+        width: 700,
+        title: `Bersihkan semua data anggota secara permanen?`,
+        icon: 'warning',
+        text: 'Data akan terhapus selamanya dan tidak dapat dipulihkan lagi!',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Ya!',
+        cancelButtonText: 'Batalkan',
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $.ajax({
+            type: "post",
+            url: "<?= $nav ?>/hapuspermanenanggota",
+            data: {
+              id: id.join(","),
+            },
+            dataType: 'json',
+            success: function(response) {
+              if (response.sukses) {
+                Swal.fire(
+                  'Berhasil', response.sukses, 'success'
+                ).then((result) => {
+                  datarestoreanggota.ajax.reload();
                 })
               } else if (response.error) {
                 Swal.fire(

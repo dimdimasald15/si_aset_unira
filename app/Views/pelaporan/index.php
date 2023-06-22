@@ -214,10 +214,9 @@
                                   </span>
                                 </div>
                               </div>
-                              <!-- <div id="collapse7" role="tabpanel" aria-labelledby="headingCollapse7" class="collapse show"> -->
                               <div class="card-content">
                                 <div class="card-body py-1">
-                                  <p class="text-bold-500" id="title"><?= $pelaporan->title ?></p>
+                                  <p class="fw-bolder" id="title"><?= $pelaporan->title ?></p>
                                   <p id='deskripsi'>
                                     <?= $pelaporan->deskripsi ?>
                                   </p>
@@ -344,6 +343,7 @@
       $(this).addClass('active');
       $('#trash-menu').removeClass('active');
       $('#search1').show();
+      $('#checkall').show();
       $('#search2').hide();
       if (no_laporan !== "") {
         // $('.email-action').show(500);
@@ -393,6 +393,7 @@
     $('#multipledelete').hide();
     $('#multipledeletepermanen').show();
     $('#restoredata').show();
+    $('#checkall').hide();
     $('#search1').hide();
     $('#search2').show();
     if (no_laporan !== "") {

@@ -89,39 +89,41 @@
         </div>
       </div>
       <?php $no = 1; ?>
-      <table class="table table-responsive-sm table-borderless">
-        <thead>
-          <th>No</th>
-          <th>Nama Barang</th>
-          <th>Sisa Stok</th>
-          <th>Jumlah peminjaman</th>
-          <th>Satuan</th>
-          <th <?= $saveMethod == 'update' ? 'hidden' : '' ?>>#</th>
-        </thead>
-        <tbody id="tambahrow">
-          <tr>
-            <td><?= $no ?></td>
-            <td>
-              <select name="barang_id<?= $no ?>" class="form-select p-2" id="idbrg<?= $no ?>" style="width: 400px;"></select>
-              <div class="invalid-feedback erridbrg<?= $no ?>"></div>
-            </td>
-            <td> <input type="number" class="form-control" id="sisastok<?= $no ?>" placeholder="Sisa Stok" disabled>
-              <div class="invalid-feedback errsisastok<?= $no ?>"></div>
-            </td>
-            <td> <input type="number" min="1" class="form-control" id="jumlah<?= $no ?>" placeholder="Masukkan Jumlah Barang" name="jml_barang<?= $no ?>">
-              <div class="invalid-feedback errjumlah<?= $no ?>"></div>
-            </td>
-            <td>
-              <select name="satuan_id<?= $no ?>" class="form-select p-2" id="satuan<?= $no ?>"></select>
-              <div class="invalid-feedback errsatuan<?= $no ?>"></div>
-            </td>
-            <td style="width:1px; white-space:nowrap;" <?= $saveMethod == 'update' ? 'hidden' : '' ?>>
-              <button type="button" class="btn btn-primary btn-sm btntambahrow"><i class="fa fa-plus"></i></button>
-              <button type="button" class="btn btn-danger btn-sm btnhapusrow" style="display:none;"><i class="fa fa-times"></i></button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-responsive">
+        <table class="table table-borderless">
+          <thead>
+            <th>No</th>
+            <th>Nama Barang</th>
+            <th>Sisa Stok</th>
+            <th>Jumlah peminjaman</th>
+            <th>Satuan</th>
+            <th <?= $saveMethod == 'update' ? 'hidden' : '' ?>>#</th>
+          </thead>
+          <tbody id="tambahrow">
+            <tr>
+              <td><?= $no ?></td>
+              <td>
+                <select name="barang_id<?= $no ?>" class="form-select p-2" id="idbrg<?= $no ?>" style="width: 400px;"></select>
+                <div class="invalid-feedback erridbrg<?= $no ?>"></div>
+              </td>
+              <td> <input type="number" class="form-control" id="sisastok<?= $no ?>" placeholder="Sisa Stok" disabled>
+                <div class="invalid-feedback errsisastok<?= $no ?>"></div>
+              </td>
+              <td> <input type="number" min="1" class="form-control" id="jumlah<?= $no ?>" placeholder="Masukkan Jumlah Barang" name="jml_barang<?= $no ?>">
+                <div class="invalid-feedback errjumlah<?= $no ?>"></div>
+              </td>
+              <td>
+                <select name="satuan_id<?= $no ?>" class="form-select p-2" id="satuan<?= $no ?>"></select>
+                <div class="invalid-feedback errsatuan<?= $no ?>"></div>
+              </td>
+              <td style="width:1px; white-space:nowrap;" <?= $saveMethod == 'update' ? 'hidden' : '' ?>>
+                <button type="button" class="btn btn-primary btn-sm btntambahrow"><i class="fa fa-plus"></i></button>
+                <button type="button" class="btn btn-danger btn-sm btnhapusrow" style="display:none;"><i class="fa fa-times"></i></button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
       <div class="viewalert" style="display:none;"></div>
       <div class=" row">
         <div class="col-12 d-flex justify-content-end">
@@ -179,10 +181,12 @@
         $('#idanggota').append('<option value="">Pilih Anggota</option>');
         $.each(response, function(key, val) {
           $('#idanggota').append(`
-          <option value="${val.id}">${val.nama_anggota} (${val.level == "Mahasiswa"? `NIM ${val.no_anggota}`:`NIDN/NIP ${val.no_anggota}`})</option>
+          <option value="${val.id}">${val.nama_anggota} - ${val.level == "Mahasiswa"? `NIM ${val.no_anggota}`:`NIDN/NIP ${val.no_anggota}`} - ${val.singkatan}</option>
           `);
         });
-        $('#idanggota').append('<option value="other">Lainnya</option>');
+        if (saveMethod !== "update") {
+          $('#idanggota').append('<option value="other">Lainnya</option>');
+        }
       }
     });
 
@@ -493,6 +497,7 @@
   }
 
   var sisa_stok_lama = [];
+  var jumlah_lama = [];
 
   function looping(row) {
     for (var i = 1; i <= row; i++) {
@@ -547,10 +552,14 @@
               dataType: "json",
               success: function(response) {
                 if (response) {
-                  sisa_stok_lama.push(response.sisa_stok);
-                  $(`#sisastok${j}`).val(response.sisa_stok);
                   $(`#satuan${j}`).prop('disabled', true);
                   $(`#satuan${j}`).html('<option value = "' + response.satuan_id + '" selected >' + response.kd_satuan + '</option>');
+                  $(`#sisastok${j}`).val(response.sisa_stok);
+                  if (<?= $saveMethod == "update" ?>) {
+                    sisa_stok_lama.pop();
+                    $(`#jumlah${j}`).val('');
+                  }
+                  sisa_stok_lama.push(response.sisa_stok);
                 }
               }
             });
@@ -592,27 +601,36 @@
           $(`.errorsatuan${j}`).html('');
         })
         $(`#jumlah${j}`).on('input', function(e) {
-          e.preventDefault();
           $(`#jumlah${j}`).removeClass('is-invalid');
           $(`.errorjumlah${j}`).html('');
-
-          var jumlah_pinjam = $(`#jumlah${j}`).val();
-          var sisa_stok_baru = sisa_stok_lama[j - 1] - jumlah_pinjam;
-
-
-          $(`#sisastok${j}`).val(sisa_stok_baru);
+          if ($(this).val() == '') {
+            if (<?= $saveMethod == "update" ?>) {
+              var sisa_stok_update = parseInt(sisa_stok_lama[j - 1]) + parseInt(jumlah_lama[j - 1]);
+              $('.formpeminjaman').find(`input[name='sisa_stok${j}']`).val(sisa_stok_update);
+            } else {
+              $('.formpeminjaman').find(`input[name='sisa_stok${j}']`).val(sisa_stok_lama[j - 1]);
+            }
+          } else {
+            var jml_minta = $(this).val();
+            if (<?= $saveMethod == "update" ?>) {
+              var sisa_stok_baru = parseInt(sisa_stok_lama[j - 1]) + parseInt(jumlah_lama[j - 1]) - parseInt(jml_minta);
+            } else {
+              var sisa_stok_baru = parseInt(sisa_stok_lama[j - 1]) - parseInt(jml_minta);
+            }
+            $(`#sisastok${j}`).val(sisa_stok_baru);
+          }
           if ($(`#sisastok${j}`).val() < 0) {
-            $(`#sisastok${j}`).val(0);
+            $(`#sisastok${j}`).val(0)
             $(`#sisastok${j}`).addClass('is-invalid');
             $(`.errsisastok${j}`).html('sisa stok tidak boleh kurang dari 0');
             $(`#jumlah${j}`).addClass('is-invalid');
-            $(`.errjumlah${j}`).html('input jumlah peminjaman sudah melebihi kapasitas sisa stok');
+            $(`.errjumlah${j}`).html('input tidak boleh lebih dari ' + sisa_stok_lama[j - 1]);
           } else {
-            $(`#sisastok${j}`).val(sisa_stok_baru);
+            $(`#sisastok${j}`).val(sisa_stok_baru)
             $(`#sisastok${j}`).removeClass('is-invalid');
             $(`.errsisastok${j}`).html('');
-            $(`#jumlah${j}`).removeClass('is-invalid');
-            $(`.errjumlah${j}`).html('');
+            $(`#jmlkeluar${j}`).removeClass('is-invalid');
+            $(`.errjmlkeluar${j}`).html('');
           }
         })
       })(i)
@@ -659,20 +677,22 @@
     nama_anggota,
     tgl_pinjam,
     barang_id,
+    keterangan,
     jml_barang,
     nama_brg,
     sisa_stok,
     satuan_id,
     kd_satuan
   }, jmldata) {
-    $('#id').val(id);
-    $('#idanggota').empty().append('<option value="' + anggota_id + '">' + nama_anggota + '</option>');
+    $('#idanggota').val(anggota_id);
     $('#tglpinjam').val(tgl_pinjam);
+    $('#keterangan').val(keterangan);
     for (let i = 1; i <= jmldata; i++) {
       $(`#idbrg${i}`).html(`
         <option value="${barang_id}">${nama_brg}</option>
       `);
-      sisa_stok_lama.push((parseInt(sisa_stok) + parseInt(jml_barang)));
+      sisa_stok_lama.push(parseInt(sisa_stok));
+      jumlah_lama.push(parseInt(jml_barang));
       $(`#sisastok${i}`).val(sisa_stok);
       $(`#jumlah${i}`).val(jml_barang);
       $(`#satuan${i}`).prop('disabled', true);

@@ -359,7 +359,7 @@
             let reader = new FileReader();
             reader.onload = function(e) {
                 $('#image-preview').attr('src', e.target.result);
-                $('#image-preview').show();
+                $('#image-preview').show(500);
             }
             reader.readAsDataURL(file);
         });
@@ -370,7 +370,7 @@
             clearForm();
             formgantifoto.show(500);
             formubahpassword.hide(500);
-            $('.viewform').hide();
+            $('.viewform').hide(500);
         })
 
         $('.batal-form-foto').on('click', function(e) {
@@ -521,6 +521,8 @@
             dataType: "json",
             success: function(response) {
                 $('.viewform').show(500).html(response.data);
+                formgantifoto.hide(500);
+                formubahpassword.hide(500);
             },
             error: function(xhr, ajaxOptions, thrownError) {
                 alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);

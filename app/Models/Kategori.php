@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use CodeIgniter\I18n\Time;
+
 
 class Kategori extends Model
 {
@@ -26,7 +28,7 @@ class Kategori extends Model
             !empty($username) &&
             !array_key_exists('created_by', $data)
         ) {
-            $data['data']['created_at'] = date('Y-m-d H:i:s');
+            $data['data']['created_at'] = Time::now('Asia/Jakarta', 'id_ID');
             $data['data']['created_by'] = $username;
         }
         return $data;
@@ -36,7 +38,7 @@ class Kategori extends Model
     {
         $username = session()->get('username');
         if (!empty($username) && !array_key_exists('updated_by', $data)) {
-            $data['data']['updated_at'] = date('Y-m-d H:i:s');
+            $data['data']['updated_at'] = Time::now('Asia/Jakarta', 'id_ID');
             $data['data']['updated_by'] = $username;
         }
         return $data;
@@ -47,7 +49,7 @@ class Kategori extends Model
         $session = \Config\Services::session();
         $data = [
             'deleted_by' => $session->get('username'),
-            'deleted_at' => date("Y-m-d H:i:s", time())
+            'deleted_at' => Time::now('Asia/Jakarta', 'id_ID')
         ];
         $this->update($id, $data);
     }

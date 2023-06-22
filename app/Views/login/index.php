@@ -48,7 +48,7 @@
           <div class="form-group position-relative mb-4">
             <div class="input-group has-validation">
               <span class="input-group-text"><i class="bi bi-envelope"></i></span>
-              <input type="email" class="form-control form-control-xl" placeholder="Email" name="email" id="email" aria-describedby="inputGroupPrepend" required>
+              <input type="email" class="form-control form-control-xl" placeholder="Email" name="email" id="email" aria-describedby="inputGroupPrepend">
               <div class="invalid-feedback erremail"></div>
             </div>
           </div>
@@ -90,6 +90,17 @@
       }
     });
 
+    $('#email').on('input', function(e) {
+      e.preventDefault();
+      $('#email').removeClass('is-invalid');
+      $('.erremail').html('');
+    })
+    $('#password').on('input', function(e) {
+      e.preventDefault();
+      $('#password').removeClass('is-invalid');
+      $('.errpassword').html('');
+    })
+
     $('.formLogin').submit(function(e) {
       e.preventDefault();
       $.ajax({
@@ -117,10 +128,10 @@
 
             if (response.error.password) {
               $('#password').addClass('is-invalid');
-              $('.errpass').html(response.error.password);
+              $('.errpassword').html(response.error.password);
             } else {
               $('#password').removeClass('is-invalid');
-              $('.errpass').html('');
+              $('.errpassword').html('');
             }
           }
           if (response.sukses) {

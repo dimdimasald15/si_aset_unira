@@ -120,9 +120,9 @@ class BarangController extends BaseController
                         Action
                     </button>
                     <ul class="dropdown-menu shadow-lg">
-                        <li><a class="dropdown-item" onclick="restore(' . $row->id . ', \'' . htmlspecialchars($row->nama_brg) . '\')"><i class="fa fa-undo"></i> Pulihkan</a>
+                        <li><a class="dropdown-item" onclick="restore(' . $row->id . ', \'' . htmlspecialchars($row->nama_brg) . '\', \'' . htmlspecialchars($row->nama_ruang) . '\')"><i class="fa fa-undo"></i> Pulihkan</a>
                         </li>
-                        <li><a class="dropdown-item" onclick="hapuspermanen(' . $row->id . ', \'' . htmlspecialchars($row->nama_brg) . '\')"><i class="fa fa-trash-o"></i> Hapus Permanen</a>
+                        <li><a class="dropdown-item" onclick="hapuspermanen(' . $row->id . ', \'' . htmlspecialchars($row->nama_brg) . '\', \'' . htmlspecialchars($row->nama_ruang) . '\')"><i class="fa fa-trash-o"></i> Hapus Permanen</a>
                         </li>
                     </ul>
                     </div>
@@ -2307,9 +2307,13 @@ class BarangController extends BaseController
                         <a href="#" class="dropdown-item" style="padding: 0.3rem 1.5rem;">
                           <div class="d-flex w-100 justify-content-between align-items-center">
                           <div>
-                          <h6 class="mb-1"> ' . $row["nama_brg"] . '</h6>
-                          <p class="mb-1">Stok barang hampir habis, sisa stok saat ini ' . $row["sisa_stok"] . '</p>
-                          <small>' . ubahTanggal($row["updated_at"] ? $row["updated_at"] : $row["created_at"]) . '</small>     
+                          <h6 class="mb-1"> ' . $row["nama_brg"] . '</h6>';
+                if ($row['sisa_stok'] == 0) {
+                    $output .= '<p class="mb-1">Stok barang sudah habis, sisa stok saat ini ' . $row["sisa_stok"] . ' ' . $row['kd_satuan'] . '</p>';
+                } else {
+                    $output .= '  <p class="mb-1">Stok barang hampir habis, sisa stok saat ini ' . $row["sisa_stok"] . ' ' . $row['kd_satuan'] . '</p>';
+                }
+                $output .= '<small>' . ubahTanggal($row["updated_at"] ? $row["updated_at"] : $row["created_at"]) . '</small>     
                           </div>
                           <small style="margin-left:15px;"><i class="bi bi-circle-fill text-danger"></i></small>
                           </div>

@@ -206,7 +206,7 @@ class ProfileController extends BaseController
         $data = [
             'nip' => $nip,
             'nav' => 'profile',
-            'title' => 'MyProfile',
+            'title' => 'Profile',
             'saveMethod' => 'update',
         ];
 

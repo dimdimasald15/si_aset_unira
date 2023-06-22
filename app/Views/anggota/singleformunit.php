@@ -32,7 +32,7 @@
         <div class="row g-2 mb-1">
           <div class="col-md-6">
             <div class="row mb-2">
-              <label for="kat_unit mb-2">Kategori <?= $title ?></label>
+              <label for="kat_unit">Kategori <?= $title ?></label>
             </div>
             <div class="row mb-1">
               <div class="input-group mb-3">

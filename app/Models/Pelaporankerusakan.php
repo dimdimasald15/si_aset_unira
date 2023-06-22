@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use CodeIgniter\Model;
+use CodeIgniter\I18n\Time;
+
 
 class Pelaporankerusakan extends Model
 {
@@ -23,7 +25,7 @@ class Pelaporankerusakan extends Model
     {
         // $username = session()->get('username');
         if (!empty($username) && !array_key_exists('created_by', $data)) {
-            $data['created_at'] = date('Y-m-d H:i:s');
+            $data['created_at'] = Time::now('Asia/Jakarta', 'id_ID');
             $data['created_by'] = $username;
         }
         return $data;
@@ -33,7 +35,7 @@ class Pelaporankerusakan extends Model
     {
         // $username = session()->get('username');
         if (!empty($username) && !array_key_exists('updated_by', $data)) {
-            $data['updated_at'] = date('Y-m-d H:i:s');
+            $data['updated_at'] = Time::now('Asia/Jakarta', 'id_ID');
             $data['updated_by'] = $username;
         }
         return $data;
@@ -44,7 +46,7 @@ class Pelaporankerusakan extends Model
         $session = \Config\Services::session();
         $data = [
             'deleted_by' => $session->get('username'),
-            'deleted_at' => date("Y-m-d H:i:s", time())
+            'deleted_at' => Time::now('Asia/Jakarta', 'id_ID')
         ];
 
         return $data;
@@ -58,7 +60,7 @@ class Pelaporankerusakan extends Model
 
         $username = session()->get('username');
         // if (!empty($username) && !array_key_exists('updated_by', $data)) {
-        $data['updated_at'] = date('Y-m-d H:i:s');
+        $data['updated_at'] = Time::now('Asia/Jakarta', 'id_ID');
         $data['updated_by'] = $username;
         $data['deleted_by'] = null;
         $data['deleted_at'] = null;
@@ -73,6 +75,7 @@ class Pelaporankerusakan extends Model
             ->join('unit u', 'u.id=a.unit_id')
             ->join('notifikasi n', 'pelaporan_kerusakan.id=n.laporan_id')
             ->where('n.deleted_at IS NULL')
+            ->where('a.deleted_at IS NULL')
             ->where('pelaporan_kerusakan.deleted_at IS NULL')
             ->orderBy('pelaporan_kerusakan.id', 'DESC')
             ->paginate($nmPage, $string);
@@ -85,12 +88,13 @@ class Pelaporankerusakan extends Model
             ->join('unit u', 'u.id=a.unit_id')
             ->join('notifikasi n', 'pelaporan_kerusakan.id=n.laporan_id')
             ->where('n.deleted_at IS NULL')
+            ->where('a.deleted_at IS NULL')
             ->where('pelaporan_kerusakan.deleted_at IS NULL');
         if ($isRestored == 1) {
-            $pelaporan->where('n.deleted_at IS NOT NULL')
+            $pelaporan->where('n.deleted_at IS NOT NULL')->where('a.deleted_at IS NOT NULL')
                 ->where('pelaporan_kerusakan.deleted_at IS NOT NULL');
         } else if ($isRestored == 0) {
-            $pelaporan->where('n.deleted_at IS NULL')
+            $pelaporan->where('n.deleted_at IS NULL')->where('a.deleted_at IS NULL')
                 ->where('pelaporan_kerusakan.deleted_at IS NULL');
         }
         if ($keywords !== '' && !empty($keywords)) {

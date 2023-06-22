@@ -132,7 +132,7 @@
       <form class="formmultipledelete">
         <div class="row m-1">
           <div class="col-md-12 pb-0 pt-3 px-0 d-flex justify-content-end">
-            <button class="btn btn-warning mx-3" onclick="trfbarang()" type="button"><i class="fa fa-exchange"></i> Transfer Barang</button>
+            <button class="btn btn-warning mx-3" onclick="trfbarang()" type="button"><i class="fa fa-exchange" hidden></i> Transfer Barang</button>
             <button type="submit" class="btn btn-danger btn-multipledelete">
               <i class="fa fa-trash-o"></i> Multiple Delete
             </button>
@@ -452,63 +452,8 @@
         $('#checkall').prop('checked', false);
       }
     });
-    //Temporary multiple delete
-    $('.formmultipledelete').submit(function(e) {
-      e.preventDefault();
 
-      let jmldata = $('.checkrow:checked');
-      var formdata = new FormData(this);
-      formdata.append('jenis_kat', jenis_kat);
-
-      if (jmldata.length === 0) {
-        Swal.fire({
-          icon: 'warning',
-          title: 'Perhatian',
-          text: 'Maaf silahkan pilih data <?= strtolower($title); ?> yang mau dihapus'
-        })
-      } else {
-        Swal.fire({
-          title: 'Multiple Delete',
-          text: `Apakah kamu yakin ingin menghapus ${jmldata.length} data <?= strtolower($title); ?> secara temporary?`,
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
-          confirmButtonText: 'Ya, Hapus saja!',
-          cancelButtonText: 'Batalkan',
-        }).then((result) => {
-          if (result.isConfirmed) {
-            $.ajax({
-              type: "post",
-              url: `<?= $nav ?>/multipledelete`,
-              data: formdata,
-              processData: false,
-              contentType: false,
-              success: function(result) {
-                var response = JSON.parse(result);
-                if (response.sukses) {
-                  Swal.fire(
-                    'Berhasil', response.sukses, 'success'
-                  ).then((result) => {
-                    dataalokasi.ajax.reload();
-                  })
-                }
-              },
-              error: function(xhr, ajaxOptions, thrownError) {
-                alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
-              }
-            });
-          } else {
-            Swal.fire(
-              'Gagal', 'Tidak ada data <?= strtolower($title); ?> yang dihapus', 'info'
-            )
-          }
-        });
-      }
-
-      return false;
-    })
-
+    //Temporary delete
     $('.formmultipledelete').submit(function(e) {
       e.preventDefault();
 

@@ -27,7 +27,7 @@
                 <div class="form-check">
                   <input class="form-check-input" type="radio" name="pilihan" id="opsi2" value="anggota lama">
                   <label class="form-check-label" for="opsi2">
-                    Sudah, saya sudah pernah melaporkan kerusakan aset.
+                    Ya, saya sudah pernah melaporkan kerusakan aset.
                   </label>
                   <div class="invalid-feedback erroption"></div>
                 </div>
@@ -607,7 +607,7 @@
                       <p>Terima kasih sudah melaporkan kerusakan aset di lingkungan Universitas Islam Raden Rahmat Malang. Jika ada kesalahan dalam laporan anda, anda dapat melakukan perubahan melalui link di bawah ini.</p>
                       <br>
                       <br>
-                      <a href="laporan-kerusakan-aset/edit-laporan/${response.laporan_id}" class="text-decoration-underline">Ubah laporan anda</a>
+                      <a href="edit-laporan/${response.laporan_id}" class="text-decoration-underline">Ubah laporan anda</a>
                       <br>
                       <a href="<?= site_url() . $url_detail_brg ?>" class="text-decoration-underline">&laquo; Kembali ke halaman detail barang</a>
                     </div>

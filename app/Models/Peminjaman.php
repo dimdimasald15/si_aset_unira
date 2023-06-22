@@ -49,7 +49,7 @@ class Peminjaman extends Model
         $session = \Config\Services::session();
         $data = [
             'deleted_by' => $session->get('username'),
-            'deleted_at' => date("Y-m-d H:i:s", time())
+            'deleted_at' => Time::now('Asia/Jakarta', 'id_ID'),
         ];
         $this->update($id, $data);
     }

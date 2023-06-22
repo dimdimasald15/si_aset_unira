@@ -98,7 +98,7 @@ class Auth extends BaseController
                 } else {
                     $msg = [
                         'error' => [
-                            'email' => 'email anda ridak ditemukan',
+                            'email' => 'email anda tidak ditemukan',
                         ],
                     ];
                 }

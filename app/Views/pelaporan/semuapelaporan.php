@@ -60,7 +60,7 @@
       <div class="container" style="text-align: center !important;color:#607080 !important;margin-top:150px;">
         <i class="bi bi-folder-x fs-1"></i>
         <br>
-        <h5 style="color: #607080 !important;">Data tidak ada!</h5>
+        <h5 style="color: #607080 !important;">No matching records found</h5>
       </div>
     </div>
   <?php } ?>
