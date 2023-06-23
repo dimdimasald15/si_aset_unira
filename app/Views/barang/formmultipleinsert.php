@@ -314,7 +314,7 @@
     if (idkategori !== null) {
       $.ajax({
         type: "post",
-        url: "<?= base_url() ?>/barangcontroller/getkdbrgbykdkat",
+        url: "<?= base_url() ?>barangcontroller/getkdbrgbykdkat",
         data: {
           katid: idkategori,
         },
@@ -355,7 +355,7 @@
       // jika data lokasi belum tersedia di cache, muat data baru dari server
       $.ajax({
         type: "get",
-        url: "<?= base_url() ?>/barangcontroller/pilihlokasi",
+        url: "<?= base_url() ?>barangcontroller/pilihlokasi",
         data: {
           search: "Sarana",
         },
@@ -485,13 +485,12 @@
 
             $.ajax({
               type: "post",
-              url: "<?= base_url() ?>" + '/barangcontroller/getbarangbyany',
+              url: "<?= base_url() ?>" + 'barangcontroller/getbarangbyany',
               data: {
                 kode_brg: kdbrglama,
               },
               dataType: "json",
               success: function(response) {
-                // isiFormmt(response, j)
                 Swal.fire({
                   icon: 'warning',
                   text: `${response.nama_brg} dengan kode barang ${response.kode_brg} sudah ada, lebih baik lakukan update barang melalui menu update barang. Sistem akan merekomendasikan opsi lain untuk subkode barang.`,
@@ -577,7 +576,7 @@
           allowClear: true,
           width: "100%",
           ajax: {
-            url: "<?= base_url() ?>/barangcontroller/pilihsatuan",
+            url: "<?= base_url() ?>barangcontroller/pilihsatuan",
             dataType: 'json',
             delay: 250,
             data: function(params) {
@@ -858,7 +857,7 @@
                   </div>
                 </div>
                 <div class="col-md-6">
-                  <label for="sataun${index}" class="mb-1">Satuan <?= $title; ?></label>
+                  <label for="satuan${index}" class="mb-1">Satuan <?= $title; ?></label>
                   <div class="input-group mb-3">
                     <select name="satuan_id${index}" class="form-select p-2 " id="satuan${index}"></select>
                     <div class="invalid-feedback errsatuan${index}"></div>
