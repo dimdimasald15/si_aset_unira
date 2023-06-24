@@ -666,6 +666,7 @@ class PengalokasianController extends BaseController
     public function tampillabelbarang()
     {
         if ($this->request->isAJAX()) {
+            // var_dump($this->request->getVar());
             $id = $this->request->getVar('id');
             $jenis = $this->request->getVar('jenis_kat');
 

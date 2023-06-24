@@ -27,22 +27,22 @@ helper('converter_helper');
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet">
 
   <!-- Page plugins -->
-  <link rel="stylesheet" href="<?= base_url() ?>/assets/css/bootstrap.css">
-  <link rel="stylesheet" href="<?= base_url() ?>/assets/vendors/perfect-scrollbar/perfect-scrollbar.css">
-  <link rel="stylesheet" href="<?= base_url() ?>/assets/vendors/bootstrap-icons/bootstrap-icons.css">
-  <link rel="stylesheet" href="<?= base_url() ?>/assets/css/app.css">
-  <link rel="stylesheet" href="<?= base_url() ?>/assets/css/mystyle/mystyle.css">
-  <link rel="stylesheet" href="<?= base_url() ?>/assets/css/mystyle/custom.css">
+  <link rel="stylesheet" href="<?= base_url() ?>assets/css/bootstrap.css">
+  <link rel="stylesheet" href="<?= base_url() ?>assets/vendors/perfect-scrollbar/perfect-scrollbar.css">
+  <link rel="stylesheet" href="<?= base_url() ?>assets/vendors/bootstrap-icons/bootstrap-icons.css">
+  <link rel="stylesheet" href="<?= base_url() ?>assets/css/app.css">
+  <link rel="stylesheet" href="<?= base_url() ?>assets/css/mystyle/mystyle.css">
+  <link rel="stylesheet" href="<?= base_url() ?>assets/css/mystyle/custom.css">
   <?= $this->renderSection('styles') ?>
-  <link rel="stylesheet" href="<?= base_url() ?>/assets/vendors/iconly/bold.css">
-  <link rel="stylesheet" href="<?= base_url() ?>/assets/vendors/DataTables/datatables.min.css">
+  <link rel="stylesheet" href="<?= base_url() ?>assets/vendors/iconly/bold.css">
+  <link rel="stylesheet" href="<?= base_url() ?>assets/vendors/DataTables/datatables.min.css">
   <!-- sweetalert2 -->
-  <link href="<?= base_url() ?>/assets/vendors/sweetalert2/sweetalert2.min.css" rel="stylesheet" type="text/css">
+  <link href="<?= base_url() ?>assets/vendors/sweetalert2/sweetalert2.min.css" rel="stylesheet" type="text/css">
 
   <!-- fontawesome -->
-  <link href="<?= base_url() ?>/assets/vendors/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+  <link href="<?= base_url() ?>assets/vendors/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
-  <script src="<?= base_url() ?>/assets/vendors/jquery/jquery.min.js"></script>
+  <script src="<?= base_url() ?>assets/vendors/jquery/jquery.min.js"></script>
   <!-- Select2 -->
   <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
@@ -60,10 +60,10 @@ helper('converter_helper');
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js" integrity="sha512-a9NgEEK7tsCvABL7KqtUTQjl69z7091EVPpw5KxPlZ93T141ffe1woLtbXTX+r2/8TtTvRX/v4zTL2UlMUPgwg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
   <!-- QrCode.JS -->
-  <script src="<?= base_url() ?>/assets/vendors/davidshimjs-qrcodejs/qrcode.min.js"></script>
+  <script src="<?= base_url() ?>assets/vendors/davidshimjs-qrcodejs/qrcode.min.js"></script>
 
   <!-- chartjs -->
-  <link rel="stylesheet" href="<?= base_url() ?>/assets/vendors/chartjs/Chart.min.css">
+  <link rel="stylesheet" href="<?= base_url() ?>assets/vendors/chartjs/Chart.min.css">
 </head>
 
 <body>
@@ -152,7 +152,7 @@ helper('converter_helper');
 
   <!-- Optional Js -->
   <script src="<?= base_url() ?>assets/vendors/DataTables/datatables.min.js"></script>
-  <!-- <script src="<?= base_url() ?>/assets/vendors/fontawesome/all.min.js"></script> -->
+  <!-- <script src="<?= base_url() ?>assets/vendors/fontawesome/all.min.js"></script> -->
   <script src="<?= base_url() ?>assets/vendors/DataTables/DataTables-1.13.3/js/jquery.dataTables.min.js"></script>
   <script src="<?= base_url() ?>assets/vendors/sweetalert2/sweetalert2.all.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
@@ -165,14 +165,14 @@ helper('converter_helper');
       var username = "<?= $_SESSION['username'] ?>"
       $.ajax({
         type: "post",
-        url: "<?= base_url('profilecontroller/getfotobyusername') ?>",
+        url: "profile/getfotobyusername",
         data: {
           username: username,
         },
         dataType: "json",
         success: function(response) {
           $('#avatar').append(`
-            ${response.foto?`<img src="<?= base_url(); ?>/uploads/${response.foto}" alt="Profile Picture">` : `<img src="<?= base_url() ?>/uploads/default.jpg">`
+            ${response.foto?`<img src="<?= base_url(); ?>/uploads/${response.foto}" alt="Profile Picture">` : `<img src="<?= base_url() ?>uploads/default.jpg">`
               }                
           `);
         },
@@ -205,7 +205,7 @@ helper('converter_helper');
 
     function load_unseen_notifpersediaan() {
       $.ajax({
-        url: "<?= base_url('barangcontroller/notifikasi_persediaan') ?>",
+        url: "notification/notifikasipersediaan",
         method: "POST",
         dataType: "json",
         success: function(data) {
@@ -230,7 +230,7 @@ helper('converter_helper');
 
     function load_unseen_pelaporan(view) {
       $.ajax({
-        url: "<?= base_url('pelaporancontroller/notifikasi_viewed') ?>",
+        url: "notification/getnotifikasipelaporan",
         method: "POST",
         data: {
           view: view

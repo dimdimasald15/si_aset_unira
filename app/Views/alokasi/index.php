@@ -814,7 +814,7 @@
   function cetaklabel(id) {
     $.ajax({
       type: "post",
-      url: "<?= base_url() ?>/pengalokasiancontroller/tampillabelbarang",
+      url: "<?= $nav ?>/tampillabelbarang",
       data: {
         id: id,
       },
@@ -837,7 +837,7 @@
 
       $.ajax({
         type: 'post',
-        url: '<?= base_url() ?>pengalokasiancontroller/tampiltransferform',
+        url: '<?= $nav ?>/tampiltransferform',
         data: {
           ids: selectedIds.join(","),
           title: "<?= $title ?>",

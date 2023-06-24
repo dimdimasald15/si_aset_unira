@@ -43,6 +43,10 @@ $routes->post('laporan-kerusakan-aset/update-laporan/(:segment)', 'PelaporanCont
 
 $routes->group('admin/dashboard', ['filter' => 'ceklogin'], function ($routes) {
     $routes->get('/', 'DashboardController::index');
+    $routes->get('getcountbrgkeluar', 'DashboardController::getcountbrgkeluar');
+    $routes->get('getcountgedung', 'DashboardController::getcountgedung');
+    $routes->get('getcountruang', 'DashboardController::getcountruang');
+    $routes->get('getcountbrg', 'DashboardController::getcountbrg');
 });
 
 $routes->group('admin/ruang', ['filter' => 'ceklogin'], function ($routes) {
@@ -112,6 +116,13 @@ $routes->group('admin/barang-tetap-masuk', ['filter' => 'ceklogin'], function ($
     $routes->match(['get', 'post'], 'hapuspermanen', 'BarangController::hapuspermanen');
     $routes->get('detail-barang/(:any)', 'BarangController::detailbarang/$1');
     $routes->post('multipledelete', 'BarangController::multipledeletetemporary');
+
+    $routes->post('tampillabelbarang', 'BarangController::tampillabelbarang');
+    $routes->post('tampiltransferform', 'BarangController::tampiltransferform');
+    $routes->post('tampileditform', 'BarangController::tampileditform');
+    $routes->post('tampiltambahbarangmultiple', 'BarangController::tampiltambahbarangmultiple');
+    $routes->post('tampiltambahstokmultiple', 'BarangController::tampiltambahstokmultiple');
+    $routes->post('tampilcardupload', 'BarangController::tampilcardupload');
 });
 
 $routes->group('admin/barang-persediaan-masuk', ['filter' => 'ceklogin'], function ($routes) {
@@ -132,6 +143,13 @@ $routes->group('admin/barang-persediaan-masuk', ['filter' => 'ceklogin'], functi
     $routes->match(['get', 'post'], 'hapuspermanen', 'BarangController::hapuspermanen');
     $routes->get('detail-barang/(:any)', 'BarangController::detailbarang/$1');
     $routes->post('multipledelete', 'BarangController::multipledeletetemporary');
+
+    $routes->post('tampillabelbarang', 'BarangController::tampillabelbarang');
+    $routes->post('tampiltransferform', 'BarangController::tampiltransferform');
+    $routes->post('tampileditform', 'BarangController::tampileditform');
+    $routes->post('tampiltambahbarangmultiple', 'BarangController::tampiltambahbarangmultiple');
+    $routes->post('tampiltambahstokmultiple', 'BarangController::tampiltambahstokmultiple');
+    $routes->post('tampilcardupload', 'BarangController::tampilcardupload');
 });
 
 $routes->group('admin/permintaan-barang-persediaan', ['filter' => 'ceklogin'], function ($routes) {
@@ -179,6 +197,8 @@ $routes->group('admin/alokasi-barang-tetap', ['filter' => 'ceklogin'], function 
     $routes->post('hapuspermanen/(:any)', 'PengalokasianController::hapuspermanen/$1');
     $routes->match(['get', 'post'], 'hapuspermanen', 'PengalokasianController::hapuspermanen');
     $routes->post('multipledelete', 'PengalokasianController::multipledeletetemporary');
+    $routes->post('tampillabelbarang', 'PengalokasianController::tampillabelbarang');
+    $routes->post('tampiltransferform', 'PengalokasianController::tampiltransferform');
     $routes->get('detail-barang/(:any)', 'BarangController::detailbarang/$1');
 });
 
@@ -220,6 +240,7 @@ $routes->group('admin/profile', ['filter' => 'ceklogin'], function ($routes) {
     $routes->get('/', 'ProfileController::index');
     $routes->post('ubahpassword', 'ProfileController::ubahpassword');
     $routes->post('gantifoto', 'ProfileController::gantifoto');
+    $routes->post('getfotobyusername', 'ProfileController::getfotobyusername');
 });
 
 $routes->group('admin/notification', ['filter' => 'ceklogin'], function ($routes) {
@@ -228,8 +249,9 @@ $routes->group('admin/notification', ['filter' => 'ceklogin'], function ($routes
     $routes->post('multipledelete', 'PelaporanController::multipledeletetemporary');
     $routes->post('restoredata', 'PelaporanController::restoredata');
     $routes->post('multipledeletepermanen', 'PelaporanController::multipledeletepermanen');
+    $routes->post('getnotifikasipelaporan', 'PelaporanController::getnotifikasipelaporan');
+    $routes->post('notifikasipersediaan', 'BarangController::notifikasipersediaan');
 });
-
 
 /*
  * --------------------------------------------------------------------

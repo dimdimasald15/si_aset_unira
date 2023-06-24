@@ -590,7 +590,7 @@
   function cetaklabel(id) {
     $.ajax({
       type: "post",
-      url: "<?= base_url() ?>/barangcontroller/tampillabelbarang",
+      url: "<?= $nav ?>/tampillabelbarang",
       data: {
         id: id,
       },
@@ -818,77 +818,6 @@
     }
   }
 
-  // function singleform() {
-  //   saveMethod = 'add';
-  //   $('#cardmultipleinsert').hide(500);
-  //   $('#cardsingleinsert').show(500);
-  //   $('.viewdata').hide(500);
-  //   $('.btnnextsingle').on('click', function() {
-  //     var optionSelected = false;
-  //     $('.option .form-check-input').each(function() {
-  //       if ($(this).is(':checked')) {
-  //         optionSelected = true;
-  //         $(".option .form-check-input").removeClass("is-invalid");
-  //         $(".erroption").html('');
-  //         return false; // break out of the loop
-  //       }
-  //     });
-  //     if (!optionSelected) {
-  //       $(".option .form-check-input").addClass("is-invalid");
-  //       $(".erroption").html('Pilih salah satu opsi');
-  //       return; // stop here, don't proceed to the next form
-  //     }
-
-  //     if ($('#opsi1').is(':checked')) {
-  //       $('.option').hide(500);
-  //       $.ajax({
-  //         url: "<?= base_url() ?>/barangcontroller/tampilsingleform",
-  //         data: {
-  //           jenis_kat: jenis_kat,
-  //           jenistrx: jenistrx,
-  //           nav: "<?= $nav ?>",
-  //           saveMethod: saveMethod,
-  //         },
-  //         dataType: "json",
-  //         success: function(response) {
-  //           $('.viewformsingle').html(response.data).show(500);
-  //           loadLokasi();
-  //         },
-  //         error: function(xhr, ajaxOptions, thrownError) {
-  //           alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
-  //         }
-  //       });
-  //     } else if ($('#opsi2').is(':checked')) {
-  //       $('.option').hide(500);
-  //       $.ajax({
-  //         type: "post",
-  //         url: "<?= base_url() ?>/barangcontroller/tampiltambahstok",
-  //         data: {
-  //           title: jenistrx,
-  //           jenis_kat: jenis_kat,
-  //           jenistrx: `tambah stok <?= strtolower($jenis_kat) ?> di sarpras`,
-  //           nav: "<?= $nav ?>",
-  //           saveMethod: "update",
-  //         },
-  //         dataType: "json",
-  //         success: function(response) {
-  //           $('.viewformsingle').html(response.data).show(500);
-  //         },
-  //         error: function(xhr, ajaxOptions, thrownError) {
-  //           alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
-  //         }
-  //       });
-  //     }
-  //   });
-
-  //   $('.closeformsingle').click(function(e) {
-  //     e.preventDefault();
-  //     $('#cardsingleinsert').hide(500);
-  //     $(".option .form-check-input").removeClass("is-invalid");
-  //     $('.erroption').html('');
-  //   });
-  // }
-
   function edit(id) {
     console.log(id);
     saveMethod = "update";
@@ -898,7 +827,7 @@
 
     $.ajax({
       type: "post",
-      url: "<?= site_url('barangcontroller/tampileditform') ?>",
+      url: "<?= $nav ?>/tampileditform",
       data: {
         id: id,
         jenis_kat: jenis_kat,
@@ -909,7 +838,6 @@
       dataType: "json",
       success: function(response) {
         $('.viewdata').html(response.data).show(500);
-        // loadLokasi();
       }
     });
   }
@@ -918,7 +846,7 @@
     $('.viewdata').hide(500);
     $.ajax({
       type: "post",
-      url: "<?= base_url() ?>/barangcontroller/tampiltambahbarangmultiple",
+      url: "<?= $nav ?>/tampiltambahbarangmultiple",
       data: {
         title: jenistrx,
         jenis_kat: jenis_kat,
@@ -940,7 +868,7 @@
     $('.viewdata').hide(500);
     $.ajax({
       type: "post",
-      url: "<?= base_url() ?>/barangcontroller/tampiltambahstokmultiple",
+      url: "<?= $nav ?>/tampiltambahstokmultiple",
       data: {
         title: jenistrx,
         jenis_kat: jenis_kat,
@@ -962,7 +890,7 @@
     $('#cardmultipleinsert').hide(500);
     $.ajax({
       type: "post",
-      url: "<?= base_url() ?>/barangcontroller/tampilcardupload",
+      url: "<?= $nav ?>/tampilcardupload",
       data: {
         id: id,
         nama_brg: nama_brg,
@@ -986,7 +914,7 @@
 
       $.ajax({
         type: 'post',
-        url: '<?= base_url() ?>/barangcontroller/tampiltransferform',
+        url: '<?= $nav ?>/tampiltransferform',
         data: {
           ids: selectedIds.join(","),
           title: "<?= $title ?>",

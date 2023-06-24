@@ -148,7 +148,7 @@
   function getCountBrgKeluar(jenistrx, targetId, hrefLink) {
     $.ajax({
       type: "get",
-      url: `<?= base_url() ?>/dashboardcontroller/getcountbrgkeluar`,
+      url: `dashboard/getcountbrgkeluar`,
       data: {
         jenistrx: jenistrx,
       },
@@ -180,7 +180,7 @@
   function getCountProp(method, targetId, hrefLink) {
     $.ajax({
       type: "get",
-      url: `<?= base_url() ?>/dashboardcontroller/${method}`,
+      url: `dashboard/${method}`,
       dataType: "json",
       success: function(response) {
         $(targetId).find('h6').after(`
@@ -198,7 +198,7 @@
 
   function getCountBarang(method, jenis_kat, targetId, hrefLink) {
     $.ajax({
-      url: `<?= base_url() ?>/dashboardcontroller/${method}`,
+      url: `dashboard/${method}`,
       data: {
         jenis_kat: jenis_kat,
       },

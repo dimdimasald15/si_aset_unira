@@ -2271,7 +2271,7 @@ class BarangController extends BaseController
         }
     }
 
-    public function notifikasi_persediaan()
+    public function notifikasipersediaan()
     {
         if (!$this->request->isAJAX()) {
             $data = [

@@ -14,7 +14,7 @@ echo $foto;
           <div class="col-md-auto">
             <label for="fotobrg" class="mb-1">Gambar <?= $nama_brg; ?></label>
             <?php if ($fotobrg) { ?>
-              <img src="<?= base_url() ?>/assets/images/foto_barang/<?= $fotobrg ?>" alt="Gambar Barang" class="rounded mx-auto d-block shadow-sm mb-3" style="width:300px; height:auto;">
+              <img src="<?= base_url() ?>assets/images/foto_barang/<?= $fotobrg ?>" alt="Gambar Barang" class="rounded mx-auto d-block shadow-sm mb-3" style="width:300px; height:auto;">
             <?php } else { ?>
               <img src="https://via.placeholder.com/150x150.png?text=No+Image" alt="No Image" class="rounded mx-auto d-block shadow-sm mb-3" style="width:150px; height:auto;">
             <?php } ?>

@@ -214,7 +214,7 @@
     dataanggota = $('#table-anggota').DataTable({
       processing: true,
       serverSide: true,
-      ajax: `<?= base_url() ?>anggotacontroller/listdataanggota`,
+      ajax: `<?= base_url('anggotacontroller/listdataanggota') ?>`,
       order: [],
       columns: [{
           data: 'checkRowAnggota',
@@ -256,7 +256,7 @@
         processing: true,
         serverSide: true,
         ajax: {
-          url: '<?= base_url() ?>anggotacontroller/listdataanggota?isRestore=1',
+          url: '<?= base_url('anggotacontroller/listdataanggota?isRestore=1') ?>',
         },
         order: [],
         columns: [{
@@ -298,7 +298,7 @@
       processing: true,
       serverSide: true,
       ajax: {
-        url: '<?= base_url() ?>anggotacontroller/listdataunit?isRestore=0',
+        url: '<?= base_url('anggotacontroller/listdataunit?isRestore=0') ?>',
       },
       order: [],
       columns: [{
@@ -339,7 +339,7 @@
         processing: true,
         serverSide: true,
         ajax: {
-          url: '<?= base_url() ?>anggotacontroller/listdataunit?isRestore=1',
+          url: '<?= base_url('anggotacontroller/listdataunit?isRestore=1') ?>',
         },
         order: [],
         columns: [{
@@ -378,7 +378,7 @@
       e.preventDefault();
       $.ajax({
         type: "get",
-        url: "<?= base_url() ?>anggotacontroller/singleformunit",
+        url: "<?= base_url('anggotacontroller/singleformunit') ?>",
         data: {
           nav: "<?= $nav ?>",
           saveMethod: "add",
@@ -393,7 +393,7 @@
       e.preventDefault();
       $.ajax({
         type: "get",
-        url: "<?= base_url() ?>anggotacontroller/singleformanggota",
+        url: "<?= base_url('anggotacontroller/singleformanggota') ?>",
         data: {
           nav: "<?= $nav ?>",
           saveMethod: "add",
@@ -635,7 +635,7 @@
   function editunit(id) {
     $.ajax({
       type: "get",
-      url: "<?= base_url() ?>anggotacontroller/singleformunit",
+      url: "<?= base_url('anggotacontroller/singleformunit') ?>",
       data: {
         nav: "<?= $nav ?>",
         saveMethod: "update",
@@ -651,7 +651,7 @@
   function editanggota(id) {
     $.ajax({
       type: "get",
-      url: "<?= base_url() ?>anggotacontroller/singleformanggota",
+      url: "<?= base_url('anggotacontroller/singleformanggota') ?>",
       data: {
         nav: "<?= $nav ?>",
         saveMethod: "update",

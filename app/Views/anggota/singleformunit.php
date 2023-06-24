@@ -79,7 +79,7 @@
 
     $.ajax({
       type: "get",
-      url: "<?= base_url() ?>/anggotacontroller/getkategoriunit",
+      url: "<?= base_url('anggotacontroller/getkategoriunit') ?>",
       dataType: "json",
       success: function(response) {
         $('#kat_unit').empty();
@@ -94,7 +94,7 @@
       globalId = "<?= $globalId ?>";
       $.ajax({
         type: "post",
-        url: "<?= base_url() ?>anggotacontroller/getdataunitbyid",
+        url: "<?= base_url('anggotacontroller/getdataunitbyid') ?>",
         data: {
           id: globalId,
         },

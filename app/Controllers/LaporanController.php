@@ -332,7 +332,7 @@ class LaporanController extends BaseController
                 $filterArray[$nama_brg] = [
                     'nama_brg' => $nama_brg,
                     'kode_brg' => $kode_brg,
-                    '$warna' => $$warna,
+                    '$warna' => $warna,
                     'hrg_beli_brg' => $hrg_beli_brg,
                     'jml_msk' => $row['jml_msk'],
                     'total_harga' => $row['total_harga'],

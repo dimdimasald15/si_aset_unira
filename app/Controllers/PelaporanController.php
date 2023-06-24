@@ -392,7 +392,7 @@ class PelaporanController extends BaseController
         echo json_encode($msg);
     }
 
-    public function notifikasi_viewed()
+    public function getnotifikasipelaporan()
     {
         if (!$this->request->isAJAX()) {
             $data = [
