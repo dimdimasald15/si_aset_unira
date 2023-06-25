@@ -295,10 +295,16 @@
             data: 'nama_brg'
           },
           {
-            data: 'warna'
+            data: 'warna',
+            render: function(data) {
+              return capitalize(data);
+            }
           },
           {
             data: 'jumlah_keluar',
+            render: function(data, type, row) {
+              return `${data} ${row.kd_satuan}`;
+            }
           },
           {
             data: 'sisa_stok',
@@ -379,18 +385,24 @@
           data: 'nama_brg'
         },
         {
-          data: 'warna'
+          data: 'warna',
+          render: function(data) {
+            return capitalize(data);
+          }
         },
         {
           data: 'jumlah_keluar',
+          render: function(data, type, row) {
+            return `${data} ${row.kd_satuan}`;
+          }
         },
         {
           data: 'sisa_stok',
           render: function(data, type, row) {
             if (jenis_kat == "Barang Persediaan") {
-              return parseInt(data) <= 3 ? `${data}*` : data;
+              return parseInt(data) <= 3 ? `${data} ${row.kd_satuan}*` : data;
             } else {
-              return data;
+              return `${data} ${row.kd_satuan}`;
             }
           }
         },
