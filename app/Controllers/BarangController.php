@@ -2152,13 +2152,16 @@ class BarangController extends BaseController
                     'error' => $errors
                 ];
             } else {
+
+                $kd_kategori = $this->request->getVar('kd_kategori');
+                $skbrg_lain = $this->request->getVar('skbrg_lain');
                 $this->db->transStart();
 
                 for ($i = 0; $i < $jmldata; $i++) {
                     // echo "sukses";
                     $simpanbrgmt = [
                         'kat_id' => $kat_id[$i],
-                        'kode_brg' => $kode_brg[$i],
+                        'kode_brg' => $kd_kategori[$i] . '.' . $skbrg_lain[$i],
                         'nama_brg' => $nama_brg[$i],
                         'merk' => $merk[$i],
                         'warna' => $warna[$i],

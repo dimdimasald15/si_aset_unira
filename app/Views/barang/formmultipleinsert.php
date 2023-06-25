@@ -863,7 +863,7 @@
                   </div>
                 </div>
                 <div class="col-md-6">
-                  <label for="sataun${index}" class="mb-1">Satuan <?= $title; ?></label>
+                  <label for="satuan${index}" class="mb-1">Satuan <?= $title; ?></label>
                   <div class="input-group mb-3">
                     <select name="satuan_id${index}" class="form-select p-2 " id="satuan${index}"></select>
                     <div class="invalid-feedback errsatuan${index}"></div>
