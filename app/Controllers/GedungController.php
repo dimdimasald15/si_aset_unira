@@ -157,9 +157,10 @@ class GedungController extends BaseController
         }
     }
 
-    public function get_gedung_by_id($id)
+    public function getgedungbyid()
     {
         if ($this->request->isAJAX()) {
+            $id = $this->request->getGet('id');
             $builder = $this->db->table('gedung g')
                 ->select('g.id, g.nama_gedung, g.prefix, g.kat_id, k.nama_kategori')
                 ->join('kategori k', 'g.kat_id = k.id')

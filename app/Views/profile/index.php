@@ -19,16 +19,16 @@
 
     <link rel="preconnect" href="https://fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="<?= base_url() ?>/assets/css/bootstrap.css">
-    <link rel="stylesheet" href="<?= base_url() ?>/assets/vendors/bootstrap-icons/bootstrap-icons.css">
-    <link rel="stylesheet" href="<?= base_url() ?>/assets/css/app.css">
-    <link rel="stylesheet" href="<?= base_url() ?>/assets/css/mystyle/mystyle.css">
-    <link href="<?= base_url() ?>/assets/vendors/sweetalert2/sweetalert2.min.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="<?= base_url() ?>assets/css/bootstrap.css">
+    <link rel="stylesheet" href="<?= base_url() ?>assets/vendors/bootstrap-icons/bootstrap-icons.css">
+    <link rel="stylesheet" href="<?= base_url() ?>assets/css/app.css">
+    <link rel="stylesheet" href="<?= base_url() ?>assets/css/mystyle/mystyle.css">
+    <link href="<?= base_url() ?>assets/vendors/sweetalert2/sweetalert2.min.css" rel="stylesheet" type="text/css">
 
     <!-- fontawesome -->
-    <link href="<?= base_url() ?>/assets/vendors/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-    <!-- <link href="<?= base_url() ?>/assets/vendors/fontawesome/all.min.css" rel="stylesheet" type="text/css"> -->
-    <script src="<?= base_url() ?>/assets/vendors/jquery/jquery.min.js"></script>
+    <link href="<?= base_url() ?>assets/vendors/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <!-- <link href="<?= base_url() ?>assets/vendors/fontawesome/all.min.css" rel="stylesheet" type="text/css"> -->
+    <script src="<?= base_url() ?>assets/vendors/jquery/jquery.min.js"></script>
     <!-- Select2 -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
@@ -89,7 +89,7 @@
         <div class="container d-block">
             <a href="dashboard"><i class="bi bi-chevron-left"></i></a>
             <a class="navbar-brand ms-4" href="dashboard">
-                <img src="<?= base_url() ?>/assets/images/logo/logouniralandscape.jpg" style="width:200px; height: auto;">
+                <img src="<?= base_url() ?>assets/images/logo/logouniralandscape.jpg" style="width:200px; height: auto;">
             </a>
         </div>
     </nav>
@@ -138,9 +138,8 @@
                                     <div class="input-group mb-3">
                                         <span class="input-group-text" id="basic-addon1"><i class="bi bi-card-image"></i></span>
                                         <input type="file" class="form-control image-preview-filepond" name="foto" id="foto">
-                                        <div class="invalid-feedback errfotobrg"></div>
+                                        <div class="invalid-feedback errfoto"></div>
                                     </div>
-                                    <div class="invalid-feedback errfoto"></div>
                                     <img id="image-preview" src="" alt="Preview" style="display:none;">
                                 </div>
                             </div>
@@ -329,7 +328,7 @@
     </div>
 </body>
 <script src="<?= base_url() ?>assets/js/bootstrap.bundle.min.js"></script>
-<script src="<?= base_url() ?>/assets/vendors/sweetalert2/sweetalert2.all.min.js"></script>
+<script src="<?= base_url() ?>assets/vendors/sweetalert2/sweetalert2.all.min.js"></script>
 <!-- Initialize the tooltip -->
 <script>
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
@@ -355,6 +354,8 @@
 
 
         $('#foto').change(function() {
+            $('#foto').removeClass('is-invalid');
+            $('.errfoto').html('');
             let file = this.files[0];
             let reader = new FileReader();
             reader.onload = function(e) {
@@ -400,7 +401,7 @@
             // Kirim data form menggunakan jQuery Ajax
             $.ajax({
                 type: "POST",
-                url: "<?= base_url('admin/profile/ubahpassword'); ?>",
+                url: "profile/ubahpassword",
                 dataType: "json",
                 data: $(this).serialize(),
                 beforeSend: function() {
@@ -453,7 +454,7 @@
 
             $.ajax({
                 type: 'POST',
-                url: '<?= site_url('admin/profile/gantifoto') ?>',
+                url: 'profile/gantifoto',
                 data: formData,
                 enctype: 'multipart/form-data',
                 processData: false,
@@ -470,7 +471,6 @@
                     $('.form-control-icon').css("transform", "translate(0,-27px)");
                 },
                 success: function(response) {
-                    console.log(response);
                     if (response.error) {
                         if (response.error.foto) {
                             $('#foto').addClass('is-invalid');
@@ -514,7 +514,7 @@
     function ubahprofil(nip) {
         $.ajax({
             type: "post",
-            url: "<?= base_url('profilecontroller/tampilformeditprofil') ?>",
+            url: "profile/tampilformeditprofil",
             data: {
                 nip: nip
             },

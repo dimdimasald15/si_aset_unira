@@ -392,10 +392,11 @@
   function tampilcetakpdf(opsi) {
     $.ajax({
       type: "post",
-      url: "<?= base_url('permintaancontroller/tampilmodalcetak') ?>",
+      url: "<?= $nav . '/tampilmodalcetak' ?>",
       data: {
         jenis_kat: jenis_kat,
         opsi: opsi,
+        nav: "<?= $nav ?>",
       },
       dataType: "json",
       success: function(response) {
@@ -408,7 +409,7 @@
   function singleform() {
     $.ajax({
       type: "get",
-      url: "<?= base_url('permintaancontroller/tampilsingleform') ?>",
+      url: "<?= $nav ?>/tampilsingleform",
       data: {
         saveMethod: "add",
         nav: "<?= $nav ?>",
@@ -424,7 +425,7 @@
   function edit(id) {
     $.ajax({
       type: "get",
-      url: "<?= base_url('permintaancontroller/tampilsingleform') ?>",
+      url: "<?= $nav . '/tampilsingleform' ?>",
       data: {
         globalId: id,
         saveMethod: "update",

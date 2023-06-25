@@ -232,7 +232,7 @@
 
     getLaporanDefault(brgtetap, brgpersediaan);
     tlokasi = datalokbrg.DataTable({
-      ajax: `<?= base_url() ?>/laporancontroller/getdatalokasibrg`,
+      ajax: `<?= $nav ?>/getdatalokasibrg`,
       columns: [{
           className: 'dt-control',
           orderable: false,
@@ -260,7 +260,7 @@
     });
 
     tpermintaan = $('#table-permintaan').DataTable({
-      ajax: `<?= base_url() ?>/laporancontroller/get_data_table_permintaan`,
+      ajax: `<?= $nav ?>/getdatatablepermintaan`,
       columns: [{
           className: 'dt-control',
           orderable: false,
@@ -376,7 +376,7 @@
   function permintaan_chart(m, y) {
     $.ajax({
       type: "get",
-      url: `<?= base_url() ?>/laporancontroller/get_data_chart_permintaan?m=${m}&y=${y}`,
+      url: `<?= $nav ?>/getdatachartpermintaan?m=${m}&y=${y}`,
       dataType: "json",
       success: function(response) {
         // Mendapatkan referensi elemen canvas
@@ -582,7 +582,7 @@
   function getCountBrgKeluar(jenistrx, targetId, hrefLink, bulan, tahun) {
     $.ajax({
       type: "get",
-      url: `<?= base_url() ?>/laporancontroller/getcountbrgkeluar`,
+      url: `<?= $nav ?>/getcountbrgkeluar`,
       data: {
         jenistrx: jenistrx,
         m: bulan,
@@ -614,7 +614,7 @@
 
   function getCountBarang(method, jenis_kat, targetId, hrefLink, bulan, tahun) {
     $.ajax({
-      url: `<?= base_url() ?>/laporancontroller/${method}`,
+      url: `<?= $nav ?>/${method}`,
       data: {
         jenis_kat: jenis_kat,
         m: bulan,

@@ -88,7 +88,7 @@
 
     $.ajax({
       type: "get",
-      url: "<?= base_url('profilecontroller/getprofilebynip') ?>",
+      url: "<?= $nav . '/getprofilebynip' ?>",
       data: {
         nip: "<?= $nip ?>"
       },
@@ -126,7 +126,7 @@
 
       $.ajax({
         type: "post",
-        url: "<?= base_url('profilecontroller/updatedata') ?>" + `/${id}`,
+        url: "<?= $nav ?>" + `/updatedata/${id}`,
         data: formdata,
         dataType: "json",
         beforeSend: function() {

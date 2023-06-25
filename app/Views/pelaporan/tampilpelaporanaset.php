@@ -393,7 +393,7 @@
 
     $.ajax({
       type: "get",
-      url: "<?= base_url() ?>/permintaancontroller/pilihanggota",
+      url: "pelaporan/pilihanggota",
       dataType: "json",
       success: function(response) {
         $('#idanggota').empty();
@@ -444,7 +444,7 @@
       nohp = $('#nohp').val();
       $.ajax({
         type: "post",
-        url: "<?= base_url('pelaporancontroller/cekanggota') ?>",
+        url: "pelaporan/cekanggota",
         data: {
           nama_anggota: namaanggota,
           level: level,
@@ -635,7 +635,7 @@
       allowClear: true,
       width: "70%",
       ajax: {
-        url: "<?= base_url() ?>/permintaancontroller/pilihunit",
+        url: "pelaporan/pilihunit",
         dataType: 'json',
         delay: 250,
         data: function(params) {

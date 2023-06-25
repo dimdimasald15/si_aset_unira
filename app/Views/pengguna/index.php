@@ -298,8 +298,11 @@
         $("#password").parent().parent().parent().remove();
 
         $.ajax({
-            type: "get",
-            url: "<?= site_url('penggunacontroller/get_pengguna_by_id/') ?>" + id,
+            type: "post",
+            url: "<?= $nav ?>/getpenggunabyid",
+            data: {
+                id: id
+            },
             dataType: "json",
             success: function(response) {
                 isiForm(response);

@@ -663,31 +663,6 @@ class PengalokasianController extends BaseController
         }
     }
 
-    public function tampillabelbarang()
-    {
-        if ($this->request->isAJAX()) {
-            // var_dump($this->request->getVar());
-            $id = $this->request->getVar('id');
-            $jenis = $this->request->getVar('jenis_kat');
-
-            $data = [
-                'id' => $id,
-                'title' => $jenis,
-            ];
-            $msg = [
-                'sukses' => view('barang/modallabel', $data),
-            ];
-
-            echo json_encode($msg);
-        } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
-            return view('errors/mazer/error-404', $data);
-        }
-    }
-
     public function tampiltransferform()
     {
         if ($this->request->isAJAX()) {

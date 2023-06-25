@@ -57,20 +57,20 @@
                 </div>
               </div>
               <div class="col-md-4">
+                <label for="tipe" class="form-label">Tipe Barang</label>
+                <div class="input-group mb-3">
+                  <span class="input-group-text"><i class="bi bi-tag-fill"></i></span>
+                  <input type="text" class="form-control" placeholder="Masukkan tipe" id="tipe" name="tipe">
+                  <div class="invalid-feedback errtipe"></div>
+                </div>
+              </div>
+              <div class="col-md-4">
                 <label for="warna" class="form-label">Warna</label>
                 <div class="input-group mb-3">
                   <span class="input-group-text"><i class="bi bi-palette"></i></span>
                   <select class="form-select" id="warna" name="warna"></select>
                   <div class="invalid-feedback errwarna">
                   </div>
-                </div>
-              </div>
-              <div class="col-md-4">
-                <label for="tipe" class="form-label">Tipe Barang</label>
-                <div class="input-group mb-3">
-                  <span class="input-group-text"><i class="bi bi-tag-fill"></i></span>
-                  <input type="text" class="form-control" placeholder="Masukkan tipe" id="tipe" name="tipe">
-                  <div class="invalid-feedback errtipe"></div>
                 </div>
               </div>
             </div>
@@ -315,6 +315,27 @@
       hideskbrgother()
     })
 
+    $(document).on('change', `#katid, #merk, #warna, #tipe`, function(e) {
+      e.preventDefault();
+      var categories = $(`#katid`).find('option:selected').text();
+      var merk = $(`#merk`).val();
+      var warna = capitalize($(`#warna`).val());
+      var tipe = $(`#tipe`).val();
+      $(`#namabarang`).val('')
+      if (categories !== null) {
+        $(`#namabarang`).val(categories);
+      }
+      if (categories !== '' && merk !== '') {
+        $(`#namabarang`).val(`${categories} ${merk}`);
+      }
+      if (categories !== '' && merk !== '' && tipe !== '') {
+        $(`#namabarang`).val(`${categories} ${merk} ${tipe}`);
+      }
+      if (categories !== '' && merk !== '' && tipe !== '' && warna !== null) {
+        $(`#namabarang`).val(`${categories} ${merk} ${tipe} - ${warna} `);
+      }
+    })
+
     $('#skbarang').on('change', function(e) {
       e.preventDefault();
       if ($(this).val() == '') {
@@ -339,7 +360,7 @@
       allowClear: true,
       width: "70%",
       ajax: {
-        url: `<?= base_url('barangcontroller/pilihwarna') ?>`,
+        url: `<?= $nav ?>/pilihwarna`,
         dataType: 'json',
         delay: 250,
         data: function(params) {
@@ -425,7 +446,7 @@
       allowClear: true,
       width: "100%",
       ajax: {
-        url: "<?= base_url() ?>/barangcontroller/pilihsatuan",
+        url: "<?= $nav ?>/pilihsatuan",
         dataType: 'json',
         delay: 250,
         data: function(params) {
@@ -459,27 +480,7 @@
       $('.errorjmlmasuk').html('');
     })
 
-    $(document).on('change', `#katid,${`#merk`},#warna,#tipe`, function(e) {
-      e.preventDefault();
-      var categories = $(`#katid`).find('option:selected').text();
-      var merk = $(`#merk`).val();
-      var warna = $(`#warna`).val();
-      var tipe = $(`#tipe`).val();
-
-      if (categories !== null) {
-        console.log(categories);
-        $(`#namabarang`).val(categories);
-      }
-      if (categories !== '' && merk !== '') {
-        $(`#namabarang`).val(`${categories} ${merk}`);
-      }
-      if (categories !== '' && merk !== '' && warna !== null) {
-        $(`#namabarang`).val(`${categories} ${merk} ${warna}`);
-      }
-      if (categories !== '' && merk !== '' && warna !== null && tipe !== '') {
-        $(`#namabarang`).val(`${categories} ${merk} ${warna} ${tipe}`);
-      }
-    })
+    console.log(" nav = <?= $nav ?>");
 
     $('#formEditBarang').submit(function(e) {
       e.preventDefault();
@@ -776,8 +777,8 @@
   function getsubkdotherbarang(idkategori) {
     if (idkategori !== null) {
       $.ajax({
-        type: "post",
-        url: "<?= base_url() ?>/barangcontroller/getkdbrgbykdkat",
+        type: "get",
+        url: "<?= $nav ?>/getkdbrgbykdkat",
         data: {
           katid: idkategori,
         },

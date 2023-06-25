@@ -232,7 +232,7 @@
           allowClear: true,
           width: "50%",
           ajax: {
-            url: `<?= base_url() ?>/barangcontroller/pilihbarang`,
+            url: `<?= $nav ?>/pilihbarang`,
             dataType: 'json',
             delay: 250,
             data: function(params) {
@@ -257,7 +257,7 @@
           allowClear: true,
           width: "100%",
           ajax: {
-            url: "<?= base_url() ?>/barangcontroller/pilihsatuan",
+            url: "<?= $nav ?>/pilihsatuan",
             dataType: 'json',
             delay: 250,
             data: function(params) {
@@ -281,7 +281,7 @@
           allowClear: true,
           width: "50%",
           ajax: {
-            url: "<?= base_url() ?>/barangcontroller/pilihlokasi",
+            url: "<?= $nav ?>/pilihlokasi",
             dataType: 'json',
             delay: 250,
             data: function(params) {

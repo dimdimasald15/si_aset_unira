@@ -268,8 +268,11 @@
 
   function getsubkode1(kode1) {
     $.ajax({
-      url: "<?= site_url('kategoricontroller/getsubkode1/') ?>" + jenis,
-      type: "GET",
+      url: "<?= $nav ?>/getsubkode1",
+      data: {
+        jenis: jenis,
+      },
+      type: "post",
       dataType: "json",
       success: function(result) {
         slctSubkode1.empty();
@@ -296,7 +299,7 @@
   function getsubkode2(subkode1, kode2) {
     $.ajax({
       type: "post",
-      url: "<?= site_url('kategoricontroller/getsubkode2') ?>",
+      url: "<?= $nav ?>/getsubkode2",
       data: {
         subkode1: subkode1,
       },
@@ -604,8 +607,11 @@
     formtambah.find("button[type='submit']").html('Perbarui');
 
     $.ajax({
-      type: "get",
-      url: "<?= site_url('kategoricontroller/get_kategori_by_id/') ?>" + id,
+      type: "post",
+      url: "<?= $nav ?>/getkategoribyid",
+      data: {
+        id: id
+      },
       dataType: "json",
       success: function(response) {
         isiForm(response);

@@ -683,7 +683,7 @@ class LaporanController extends BaseController
         $dompdf->stream($filename, ['Attachment' => 0]);
     }
 
-    public function get_data_chart_permintaan()
+    public function getdatachartpermintaan()
     {
         if (!$this->request->isAJAX()) {
             $data = [
@@ -785,7 +785,7 @@ class LaporanController extends BaseController
         echo json_encode($resultArray1);
     }
 
-    public function get_data_table_permintaan()
+    public function getdatatablepermintaan()
     {
         if ($this->request->isAJAX()) {
             $m = $this->request->getGet('m');

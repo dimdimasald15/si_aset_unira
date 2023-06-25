@@ -3,7 +3,7 @@
     <div class="sidebar-header">
       <div class="d-flex justify-content-between align-items-center">
         <div class="logo col-lg-8">
-          <a href="dashboard"><img src="<?= base_url() ?>/assets/images/logo/logouniralandscape.jpg" alt="Logo" style="max-width: 200px;"></a>
+          <a href="dashboard"><img src="<?= base_url() ?>assets/images/logo/logouniralandscape.jpg" alt="Logo" style="max-width: 200px;"></a>
         </div>
         <div class="toggler">
           <a href="#" class="sidebar-hide d-xl-none d-block"><i class="bi bi-x bi-middle"></i></a>

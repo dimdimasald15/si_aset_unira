@@ -169,10 +169,8 @@ class PelaporanController extends BaseController
             $filefoto = $this->request->getFile('foto_barang');
             $filename = $filefoto->getRandomName();
             $namaBaru = str_replace(' ', '_', strtolower($filename));
-
             // Menghapus ekstensi .jpg jika ada
             $namaBaru = str_replace('.jpg', '', $namaBaru);
-
             // Menghapus ekstensi .png jika ada
             $namaBaru = str_replace('.png', '', $namaBaru);
 

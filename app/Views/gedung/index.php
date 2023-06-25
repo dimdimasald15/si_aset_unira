@@ -135,7 +135,10 @@
 
       $.ajax({
         type: "get",
-        url: "<?= site_url('gedungcontroller/get_gedung_by_id/') ?>" + id,
+        url: "<?= site_url('admin/gedung/getgedungbyid') ?>",
+        data: {
+          id: id
+        },
         dataType: "json",
         success: function(response) {
           isiForm(response);

@@ -593,6 +593,7 @@
       url: "<?= $nav ?>/tampillabelbarang",
       data: {
         id: id,
+        nav: "<?= $nav ?>"
       },
       dataType: 'json',
       success: function(response) {
@@ -819,7 +820,6 @@
   }
 
   function edit(id) {
-    console.log(id);
     saveMethod = "update";
     globalId = id;
     $('#cardmultipleinsert').hide(500);
@@ -895,6 +895,7 @@
         id: id,
         nama_brg: nama_brg,
         foto_barang: foto_barang,
+        nav: "<?= $nav ?>"
       },
       dataType: "json",
       success: function(response) {

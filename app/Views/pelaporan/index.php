@@ -350,7 +350,7 @@
         $('.email-action').removeClass('d-none');
         $.ajax({
           type: "post",
-          url: "<?= base_url('pelaporancontroller/tampilcardpelaporan?isRestored=0') ?>",
+          url: "notification/tampilcardpelaporan?isRestored=0",
           dataType: "json",
           success: function(response) {
             $('#detail_laporan_kerusakan').hide(500);
@@ -401,7 +401,7 @@
       $('.email-action').removeClass('d-none');
       $.ajax({
         type: "post",
-        url: "<?= base_url('pelaporancontroller/tampilcardpelaporan?isRestored=1') ?>",
+        url: "notification/tampilcardpelaporan?isRestored=1",
         dataType: "json",
         success: function(response) {
           $('#detail_laporan_kerusakan').hide(500);
@@ -414,7 +414,7 @@
 
       $.ajax({
         type: "post",
-        url: "<?= base_url('pelaporancontroller/tampilcardpelaporan?isRestored=1') ?>",
+        url: "notification/tampilcardpelaporan?isRestored=1",
         dataType: "json",
         success: function(response) {
           $('.pelaporan-detail').html('');
@@ -487,7 +487,7 @@
     $('.email-user-list').hide(500);
     $('.email-action').addClass('d-none', true);
     $.ajax({
-      url: "<?= base_url('pelaporancontroller/tampildetailpelaporan/') ?>" + string,
+      url: "notification/tampildetailpelaporan/" + string,
       dataType: "json",
       success: function(response) {
         $('.pelaporan-detail').empty();
@@ -620,7 +620,7 @@
     if (keywords !== '') {
       $.ajax({
         type: 'get',
-        url: '<?= base_url('pelaporancontroller/tampilcardpelaporan') ?>',
+        url: 'notification/tampilcardpelaporan',
         data: {
           keywords: keywords,
           isRestored: bool,

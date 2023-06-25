@@ -79,7 +79,7 @@
 
     $.ajax({
       type: "get",
-      url: "<?= base_url('anggotacontroller/getkategoriunit') ?>",
+      url: "<?= $nav . '/getkategoriunit' ?>",
       dataType: "json",
       success: function(response) {
         $('#kat_unit').empty();
@@ -94,7 +94,7 @@
       globalId = "<?= $globalId ?>";
       $.ajax({
         type: "post",
-        url: "<?= base_url('anggotacontroller/getdataunitbyid') ?>",
+        url: "<?= $nav . '/getdataunitbyid' ?>",
         data: {
           id: globalId,
         },
@@ -180,7 +180,7 @@
     $(`#id`).val(id);
     $(`#namaunit`).val(nama_unit);
     $(`#singkatan`).val(singkatan);
-    $(`#kat_unit option[value="${kategori_unit}"]`).prop('selected', true);
+    $(`#kat_unit`).val(kategori_unit);
     $(`#deskripsi`).val(deskripsi);
   }
 </script>

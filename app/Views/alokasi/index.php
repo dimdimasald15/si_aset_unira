@@ -817,6 +817,7 @@
       url: "<?= $nav ?>/tampillabelbarang",
       data: {
         id: id,
+        nav: "<?= $nav ?>"
       },
       dataType: 'json',
       success: function(response) {

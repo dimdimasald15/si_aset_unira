@@ -103,14 +103,14 @@ echo $foto;
       }
     });
     $modal.on('shown.bs.modal', function() {
-      var aspectRatio = '';
-      if (jenis_kat === 'Barang Tetap') {
-        aspectRatio = 16 / 9;
-      } else if (jenis_kat === 'Barang Persediaan') {
-        aspectRatio = 1;
-      }
+      // var aspectRatio = '';
+      // if (jenis_kat === 'Barang Tetap') {
+      //   aspectRatio = 2;
+      // } else if (jenis_kat === 'Barang Persediaan') {
+      //   aspectRatio = 1;
+      // }
       cropper = new Cropper(crop_image, {
-        aspectRatio: aspectRatio,
+        aspectRatio: 1,
         viewMode: 3,
         preview: '.preview'
       });
@@ -146,13 +146,9 @@ echo $foto;
       let formupload = $('#formUpload')[0];
 
       let data = new FormData(formupload);
-
-      // let gambar_pangkas = $('#cropped_image').val();
-
-      // data.append('gambar_pangkas', gambar_pangkas);
       $.ajax({
         type: "post",
-        url: "<?= site_url('barangcontroller/simpanupload') ?>",
+        url: "<?= $nav ?>/simpanupload",
         data: data,
         enctype: 'multipart/form-data',
         processData: false,
