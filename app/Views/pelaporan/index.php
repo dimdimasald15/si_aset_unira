@@ -217,6 +217,9 @@
                               <div class="card-content">
                                 <div class="card-body py-1">
                                   <p class="fw-bolder" id="title"><?= $pelaporan->title ?></p>
+                                  <p class="subject">
+                                    Subject : <?= $pelaporan->jml_barang . ' ' . $pelaporan->kd_satuan . ' ' . $pelaporan->nama_brg ?>
+                                  </p>
                                   <p id='deskripsi'>
                                     <?= $pelaporan->deskripsi ?>
                                   </p>

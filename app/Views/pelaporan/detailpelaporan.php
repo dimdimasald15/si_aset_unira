@@ -13,13 +13,13 @@
                   </div>
                 </div>
                 <div class="media-body-text mt-25">
-                  <span class="text-primary nama"><?= $pelaporan->nama_anggota ?></span>
-                  <span class="d-sm-inline d-none" id="noanggota">&lt; <?= $pelaporan->no_anggota ?> &gt;</span>
-                  <small class="text-muted d-block" id="level"><?= $pelaporan->level ?></small>
+                  <span class="text-primary nama"></span>
+                  <span class="d-sm-inline d-none" id="noanggota"></span>
+                  <small class="text-muted d-block" id="level"></small>
                 </div>
               </div>
               <div class="information d-sm-flex align-items-center">
-                <small class="text-muted me-3" id="created_at"><?= $pelaporan->created_at ?></small>
+                <small class="text-muted me-3" id="created_at"></small>
                 <span class="favorite text-secondary">
                   <svg class="bi" width="1.5em" height="1.5em" fill="currentColor">
                     <use xlink:href="<?= base_url() ?>assets/vendors/bootstrap-icons/bootstrap-icons.svg#star" />
@@ -30,20 +30,17 @@
             <!-- <div id="collapse7" role="tabpanel" aria-labelledby="headingCollapse7" class="collapse show"> -->
             <div class="card-content">
               <div class="card-body py-1">
-                <p class="text-bold-500" id="title"><?= $pelaporan->title ?></p>
-                <p id='deskripsi'>
-                  <?= $pelaporan->deskripsi ?>
-                </p>
+                <p class="fw-bolder" id="title"></p>
+                <p class="subject"></p>
+                <p id='deskripsi'></p>
                 <p class="mb-0">Hormat kami,</p>
                 <br>
-                <p class="text-bold-500 nama"><?= $pelaporan->nama_anggota ?></p>
+                <p class="text-bold-500 nama"></p>
               </div>
               <div class="card-footer pt-0 border-top">
                 <label class="sidebar-label">File foto kerusakan</label>
                 <ul class="list-unstyled mb-0">
                   <li class="cursor-pointer pb-25" id="foto">
-                    <img src="<?= base_url() ?>assets/images/foto_kerusakan/<?= $pelaporan->foto ?>" alt="<?= $pelaporan->foto ?>.png" width="400">
-                    <small class="text-muted ms-1 attchement-text"><?= $pelaporan->foto ?></small>
                   </li>
                 </ul>
               </div>
@@ -72,6 +69,7 @@
         $('#level').html(response.level);
         $('#created_at').html(ubahTanggal(response.created_at));
         $('#title').html(response.title);
+        $('.subject').html(`Subject : ${response.jml_barang} ${response.kd_satuan} ${response.nama_brg}`);
         $('#deskripsi').html(response.deskripsi);
         $('#foto').html(`
         <img src="<?= base_url() ?>assets/images/foto_kerusakan/${response.foto}" alt="${response.foto}.png" width="400">

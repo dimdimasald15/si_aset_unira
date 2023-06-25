@@ -496,9 +496,12 @@ class PelaporanController extends BaseController
         }
 
         if ($no_laporan) {
-            $query = $this->db->table('pelaporan_kerusakan p')->select('p.*, a.nama_anggota, a.no_anggota, a.level, u.singkatan, n.viewed_by_admin, n.id as notif_id')
+            $query = $this->db->table('pelaporan_kerusakan p')->select('p.*, a.nama_anggota, a.no_anggota, a.level, u.singkatan, n.viewed_by_admin,b.nama_brg, s.kd_satuan')
                 ->join('anggota a', 'a.id=p.anggota_id')
                 ->join('unit u', 'u.id=a.unit_id')
+                ->join('stok_barang sb', 'sb.id=p.stokbrg_id')
+                ->join('barang b', 'b.id=sb.barang_id')
+                ->join('satuan s', 's.id=sb.satuan_id')
                 ->join('notifikasi n', 'p.id=n.laporan_id')
                 ->where('p.no_laporan', $no_laporan);
             $pelaporan = $query->get()->getRow();
@@ -619,9 +622,12 @@ class PelaporanController extends BaseController
             return view('errors/mazer/error-404', $data);
         }
         $no_laporan = $this->request->getVar('no_laporan');
-        $query = $this->db->table('pelaporan_kerusakan p')->select('p.*, a.nama_anggota, a.no_anggota, a.level, u.singkatan, n.viewed_by_admin')
+        $query = $this->db->table('pelaporan_kerusakan p')->select('p.*, a.nama_anggota, a.no_anggota, a.level, u.singkatan, n.viewed_by_admin,b.nama_brg, s.kd_satuan')
             ->join('anggota a', 'a.id=p.anggota_id')
             ->join('unit u', 'u.id=a.unit_id')
+            ->join('stok_barang sb', 'sb.id=p.stokbrg_id')
+            ->join('barang b', 'b.id=sb.barang_id')
+            ->join('satuan s', 's.id=sb.satuan_id')
             ->join('notifikasi n', 'p.id=n.laporan_id')
             ->where('p.no_laporan', $no_laporan);
 
