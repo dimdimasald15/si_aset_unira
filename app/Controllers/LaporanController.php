@@ -97,8 +97,6 @@ class LaporanController extends BaseController
         }
     }
 
-
-
     public function hitungstokbarang($m, $y)
     {
         $builder = $this->db->table('stok_barang sb')
@@ -148,6 +146,7 @@ class LaporanController extends BaseController
         $results = $builder->get()->getResult();
         return $results;
     }
+
     private function hitungmintabarang($m, $y, $jenis)
     {
         $builder = $this->db->table('riwayat_barang rb')
@@ -366,7 +365,7 @@ class LaporanController extends BaseController
 
     public function peminjamanbarang1($tgl_peminjaman, $jenis)
     {
-        $builder = $this->db->table('peminjaman p')->select('p.id, p.anggota_id, p.barang_id, p.jml_barang, p.kondisi_pinjam, p.kondisi_kembali, p.jml_hari, p.tgl_pinjam, p.tgl_kembali,p.keterangan, p.status, p.created_at, p.created_by, a.nama_anggota, b.nama_brg, u.singkatan, s.kd_satuan')
+        $builder = $this->db->table('peminjaman p')->select('p.*, a.nama_anggota, b.nama_brg, u.singkatan, s.kd_satuan')
             ->join('anggota a', 'a.id = p.anggota_id')
             ->join('barang b', 'b.id=p.barang_id')
             ->join('kategori k', 'k.id=b.kat_id')
@@ -420,7 +419,7 @@ class LaporanController extends BaseController
 
     public function peminjamanbarang2($m, $y, $jenis)
     {
-        $builder = $this->db->table('peminjaman p')->select('p.id, p.anggota_id, p.barang_id, p.jml_barang, p.kondisi_pinjam, p.kondisi_kembali, p.jml_hari, p.tgl_pinjam, p.tgl_kembali, p.status, p.created_at, p.created_by, a.nama_anggota, b.nama_brg, u.singkatan, s.kd_satuan')
+        $builder = $this->db->table('peminjaman p')->select('p.*, a.nama_anggota, b.nama_brg, u.singkatan, s.kd_satuan')
             ->join('anggota a', 'a.id = p.anggota_id')
             ->join('barang b', 'b.id=p.barang_id')
             ->join('kategori k', 'k.id=b.kat_id')

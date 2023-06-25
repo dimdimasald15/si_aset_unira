@@ -181,7 +181,7 @@
         $('#idanggota').append('<option value="">Pilih Anggota</option>');
         $.each(response, function(key, val) {
           $('#idanggota').append(`
-          <option value="${val.id}">${val.nama_anggota} - ${val.level == "Mahasiswa"? `NIM ${val.no_anggota}`:`NIDN/NIP ${val.no_anggota}`} - ${val.singkatan}</option>
+          <option value="${val.id}">${val.nama_anggota} - ${val.level == "Mahasiswa"? `NIM ${val.no_anggota}`:`NIDN/NIY ${val.no_anggota}`} - ${val.singkatan}</option>
           `);
         });
         if (saveMethod !== "update") {
@@ -555,7 +555,8 @@
                   $(`#satuan${j}`).prop('disabled', true);
                   $(`#satuan${j}`).html('<option value = "' + response.satuan_id + '" selected >' + response.kd_satuan + '</option>');
                   $(`#sisastok${j}`).val(response.sisa_stok);
-                  if (<?= $saveMethod == "update" ?>) {
+                  console.log("<?= $saveMethod ?>")
+                  if ("<?= $saveMethod ?>" == "update") {
                     sisa_stok_lama.pop();
                     $(`#jumlah${j}`).val('');
                   }
@@ -604,7 +605,7 @@
           $(`#jumlah${j}`).removeClass('is-invalid');
           $(`.errorjumlah${j}`).html('');
           if ($(this).val() == '') {
-            if (<?= $saveMethod == "update" ?>) {
+            if ("<?= $saveMethod ?>" == "update") {
               var sisa_stok_update = parseInt(sisa_stok_lama[j - 1]) + parseInt(jumlah_lama[j - 1]);
               $('.formpeminjaman').find(`input[name='sisa_stok${j}']`).val(sisa_stok_update);
             } else {
@@ -612,7 +613,7 @@
             }
           } else {
             var jml_minta = $(this).val();
-            if (<?= $saveMethod == "update" ?>) {
+            if ("<?= $saveMethod ?>" == "update") {
               var sisa_stok_baru = parseInt(sisa_stok_lama[j - 1]) + parseInt(jumlah_lama[j - 1]) - parseInt(jml_minta);
             } else {
               var sisa_stok_baru = parseInt(sisa_stok_lama[j - 1]) - parseInt(jml_minta);

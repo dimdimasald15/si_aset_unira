@@ -280,7 +280,7 @@
                                   <?php if ($row['level'] == 'Mahasiswa') { ?>
                                     <span class="list-group-item-text"><?= $row['nama_anggota'] . " (NIM. " . $row['no_anggota'] . ")" ?></span>
                                   <?php } else { ?>
-                                    <span class="list-group-item-text"><?= $row['nama_anggota'] . " (NIDN/NIP. " . $row['no_anggota'] . ")" ?></span>
+                                    <span class="list-group-item-text"><?= $row['nama_anggota'] . " (NIDN/NIY. " . $row['no_anggota'] . ")" ?></span>
                                   <?php } ?>
                                 </div>
                                 <div class="mail-meta-item">

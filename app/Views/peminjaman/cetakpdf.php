@@ -90,7 +90,6 @@
             $prevNamaAnggota = null;
             $rowspanCount = 0;
             $no = 1;
-
             foreach ($row1 as $key => $row2) {
               $currNamaAnggota = $row2['nama_anggota'];
 
