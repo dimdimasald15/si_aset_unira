@@ -143,7 +143,7 @@ class BarangController extends BaseController
                         </li>
                         <li><a class="dropdown-item" onclick="upload(' . $row->barang_id . ', \'' . htmlspecialchars($row->nama_brg) . '\', \'' . htmlspecialchars($row->foto_barang) . '\')"><i class="bi bi-image"></i> Update Gambar Barang</a>
                         </li>
-                        <li><a class="dropdown-item" onclick="hapus(' . $row->id . ', \'' . htmlspecialchars($row->nama_brg) . '\')"><i class="fa fa-trash-o"></i> Hapus Barang</a>
+                        <li><a class="dropdown-item" onclick="hapus(' . $row->id . ', \'' . htmlspecialchars($row->nama_brg) . '\', \'' . htmlspecialchars($row->nama_ruang) . '\')"><i class="fa fa-trash-o"></i> Hapus Barang</a>
                         </li>
                     </ul>
                 </div>';
@@ -167,11 +167,13 @@ class BarangController extends BaseController
             $id = $this->request->getVar('id');
             $nama_brg = $this->request->getVar('nama_brg');
             $fotobrg = $this->request->getVar('foto_barang');
+            $nav = $this->request->getVar('nav');
 
             $data = [
                 'id' => $id,
                 'nama_brg' => $nama_brg,
                 'fotobrg' => $fotobrg,
+                'nav' => $nav,
                 'title' => 'Barang Tetap',
             ];
 
@@ -225,11 +227,11 @@ class BarangController extends BaseController
     {
         if ($this->request->isAJAX()) {
             $id = $this->request->getVar('id');
-            $jenis = $this->request->getVar('jenis_kat');
+            $nav = $this->request->getVar('nav');
 
             $data = [
                 'id' => $id,
-                'title' => $jenis,
+                'nav' => $nav,
             ];
             $msg = [
                 'sukses' => view('barang/modallabel', $data),
@@ -737,13 +739,12 @@ class BarangController extends BaseController
     public function getkdbrgbykdkat()
     {
         if ($this->request->isAJAX()) {
-            $id = $this->request->getVar('katid');
+            $id = $this->request->getGet('katid');
             $getkdbarang = $this->db->table('barang b')
                 ->select('SUBSTR(b.kode_brg, -3) AS subkdbarang, k.kd_kategori')
                 ->join('kategori k', 'b.kat_id = k.id')
                 ->where('b.kat_id', $id)
                 ->orderBy('b.id', 'DESC')
-                ->limit(1)
                 ->get()
                 ->getRow();
             if (empty($getkdbarang)) {
@@ -1790,9 +1791,17 @@ class BarangController extends BaseController
                 list($type, $gambar) = explode(';', $gambar);
                 list(, $gambar) = explode(',', $gambar);
                 $gambar = base64_decode($gambar);
-                $namafile = str_replace(' ', '_', strtolower($filename)) . '.png';
-                // hapus ekstensi .jpg pada nama file
+                // $namafile = str_replace(' ', '_', strtolower($filename)) . '.png';
+                // // hapus ekstensi .jpg pada nama file
+                // $namafile = str_replace('.jpg', '', $namafile);
+                $namafile = str_replace(' ', '_', strtolower($filename));
+                // Menghapus ekstensi .jpg jika ada
                 $namafile = str_replace('.jpg', '', $namafile);
+                // Menghapus ekstensi .png jika ada
+                $namafile = str_replace('.png', '', $namafile);
+
+                // Menambahkan kembali ekstensi .png
+                $namafile .= '.png';
 
                 file_put_contents(FCPATH . '/assets/images/foto_barang/' . $namafile, $gambar);
 
@@ -2274,7 +2283,7 @@ class BarangController extends BaseController
         }
     }
 
-    public function notifikasi_persediaan()
+    public function notifikasipersediaan()
     {
         if (!$this->request->isAJAX()) {
             $data = [

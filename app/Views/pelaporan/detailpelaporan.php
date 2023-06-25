@@ -61,7 +61,7 @@
     var no_laporan = "<?= $no_laporan ?>";
     $.ajax({
       type: "post",
-      url: "<?= base_url('pelaporancontroller/getLaporanByNoLaporan') ?>",
+      url: "notification/getLaporanByNoLaporan",
       data: {
         no_laporan: no_laporan,
       },

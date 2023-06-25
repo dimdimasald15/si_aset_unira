@@ -174,7 +174,7 @@
 
     $.ajax({
       type: "get",
-      url: "<?= base_url() ?>/permintaancontroller/pilihanggota",
+      url: "<?= $nav ?>/pilihanggota",
       dataType: "json",
       success: function(response) {
         $('#idanggota').empty();
@@ -330,7 +330,10 @@
 
       $.ajax({
         type: "get",
-        url: "<?= base_url() ?>/peminjamancontroller/getpeminjamanbyid?id=" + globalId,
+        url: "<?= $nav ?>/getpeminjamanbyid",
+        data: {
+          id: globalId
+        },
         dataType: "json",
         success: function(response) {
           isiForm(response.data, response.jmldata);
@@ -476,7 +479,7 @@
       allowClear: true,
       width: "70%",
       ajax: {
-        url: "<?= base_url() ?>/permintaancontroller/pilihunit",
+        url: "<?= $nav ?>/pilihunit",
         dataType: 'json',
         delay: 250,
         data: function(params) {
@@ -510,7 +513,7 @@
           allowClear: true,
           width: "100%",
           ajax: {
-            url: `<?= base_url() ?>/barangcontroller/pilihbarang`,
+            url: `<?= $nav ?>/pilihbarang`,
             dataType: 'json',
             delay: 250,
             data: function(params) {
@@ -544,7 +547,7 @@
           if (b_id != null && r_id != null) {
             $.ajax({
               type: "post",
-              url: "<?= base_url() ?>/barangcontroller/cekbrgdanruang",
+              url: "<?= $nav ?>/cekbrgdanruang",
               data: {
                 barang_id: b_id,
                 ruang_id: r_id,
@@ -555,7 +558,6 @@
                   $(`#satuan${j}`).prop('disabled', true);
                   $(`#satuan${j}`).html('<option value = "' + response.satuan_id + '" selected >' + response.kd_satuan + '</option>');
                   $(`#sisastok${j}`).val(response.sisa_stok);
-                  console.log("<?= $saveMethod ?>")
                   if ("<?= $saveMethod ?>" == "update") {
                     sisa_stok_lama.pop();
                     $(`#jumlah${j}`).val('');
@@ -578,7 +580,7 @@
           allowClear: true,
           width: "100%",
           ajax: {
-            url: "<?= base_url() ?>/barangcontroller/pilihsatuan",
+            url: "<?= $nav ?>/pilihsatuan",
             dataType: 'json',
             delay: 250,
             data: function(params) {

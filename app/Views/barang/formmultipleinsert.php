@@ -49,7 +49,7 @@
                           <label for="skbarang<?= $no ?>"></label>
                           <div class="input-group mb-3">
                             <select name="skbrg[]" class="form-select" id="skbarang<?= $no ?>"></select>
-                            <input type="text" class="form-control" placeholder="Kode Barang" id="skbarang-other<?= $no ?>" name="skbrg_lain[]" readonly style="display:none;">
+                            <input type="text" class="form-control" placeholder="Kode Barang" id="skbarang-other<?= $no ?>" name="skbrg_lain[]" style="display:none;">
                             <input type="text" class="form-control" id="skbrgfix<?= $no ?>" name="kode_brg<?= $no; ?>" readonly style="display:none;">
                             <div class="invalid-feedback errskbarang<?= $no ?>"></div>
                           </div>
@@ -67,20 +67,20 @@
                           </div>
                         </div>
                         <div class="col-md-4">
+                          <label for="tipe<?= $no ?>" class="form-label">Tipe Barang</label>
+                          <div class="input-group mb-3">
+                            <span class="input-group-text"><i class="bi bi-tag-fill"></i></span>
+                            <input type="text" class="form-control" placeholder="Masukkan tipe" id="tipe<?= $no ?>" name="tipe<?= $no ?>">
+                            <div class="invalid-feedback errtipe<?= $no ?>"></div>
+                          </div>
+                        </div>
+                        <div class="col-md-4">
                           <label for="warna<?= $no ?>" class="form-label">Warna</label>
                           <div class="input-group mb-3">
                             <span class="input-group-text"><i class="bi bi-palette"></i></span>
                             <select class="form-select" id="warna<?= $no ?>" name="warna<?= $no ?>"></select>
                             <div class="invalid-feedback errwarna<?= $no ?>">
                             </div>
-                          </div>
-                        </div>
-                        <div class="col-md-4">
-                          <label for="tipe<?= $no ?>" class="form-label">Tipe Barang</label>
-                          <div class="input-group mb-3">
-                            <span class="input-group-text"><i class="bi bi-tag-fill"></i></span>
-                            <input type="text" class="form-control" placeholder="Masukkan tipe" id="tipe<?= $no ?>" name="tipe<?= $no ?>">
-                            <div class="invalid-feedback errtipe<?= $no ?>"></div>
                           </div>
                         </div>
                       </div>
@@ -267,7 +267,6 @@
   lastNumb = parseInt("<?= $no ?>");
   currIndex = lastNumb + 1;
   var rowCount = '';
-  var kd_brgmt = '';
   var kdbrgothermt = '';
 
   function clearFormmt(row) {
@@ -313,8 +312,8 @@
   function getsubkdotherbarangmt(idkategori, row) {
     if (idkategori !== null) {
       $.ajax({
-        type: "post",
-        url: "<?= base_url() ?>barangcontroller/getkdbrgbykdkat",
+        type: "get",
+        url: "<?= $nav ?>/getkdbrgbykdkat",
         data: {
           katid: idkategori,
         },
@@ -327,23 +326,27 @@
   }
 
   kodebrgSet = new Set();
+  var newkode = '';
 
   function checkKodeBarangDuplikat(row) {
-    let kodeBarang = $('#skbrgfix' + row).val();
+    let kodeBarang = $(`#skbrgfix${row}`).val();
     var kdbrglain = parseInt($(`#skbarang-other${row}`).val());
     kdbrglain = kdbrglain + 1;
     let sbkdbrgbaru = kdbrglain.toString().padStart(3, '0');
 
     if (kodebrgSet.has(kodeBarang)) {
+      newkode = `${sbkdbrgbaru}`;
       Swal.fire({
         icon: 'info',
         text: 'Kode barang ' + kodeBarang + ' sudah dimasukkan sebelumnya. Sistem akan merekomendasikan subkode barang yang baru.',
       }).then((result) => {
         $(`#skbarang-other${row}`).val(sbkdbrgbaru);
       })
+      // isDuplicate = 1;
     } else {
       // Tambahkan kode barang ke Set jika belum ada
       kodebrgSet.add(kodeBarang);
+      // isDuplicate = 0;
     }
   }
 
@@ -355,7 +358,7 @@
       // jika data lokasi belum tersedia di cache, muat data baru dari server
       $.ajax({
         type: "get",
-        url: "<?= base_url() ?>barangcontroller/pilihlokasi",
+        url: "<?= $nav ?>/pilihlokasi",
         data: {
           search: "Sarana",
         },
@@ -405,7 +408,7 @@
         allowClear: true,
         width: "70%",
         ajax: {
-          url: `<?= base_url('barangcontroller/pilihwarna') ?>`,
+          url: `<?= $nav ?>/pilihwarna`,
           dataType: 'json',
           delay: 250,
           data: function(params) {
@@ -427,7 +430,6 @@
         $(`#katid${j}`).on('change', function(e) {
           e.preventDefault();
           var katid = $(this).val();
-
           if (katid == null) {
             kd_brg = '';
             clearFormmt(j);
@@ -440,25 +442,23 @@
           $(`#skbarang-other${j}`).hide();
         })
 
-        $(document).on('change', `#katid${j},${`#merk${j}`},#warna${j},#tipe${j}`, function(e) {
+        $(document).on('change', `#katid${j}, #merk${j}, #warna${j},#tipe${j}`, function(e) {
           e.preventDefault();
           var categories = $(`#katid${j}`).find('option:selected').text();
           var merk = $(`#merk${j}`).val();
-          var warna = $(`#warna${j}`).val();
+          var warna = capitalize(`${$(`#warna${j}`).val()}`);
           var tipe = $(`#tipe${j}`).val();
-
           if (categories !== null) {
-            console.log(categories);
             $(`#namabarang${j}`).val(categories);
           }
           if (categories !== '' && merk !== '') {
             $(`#namabarang${j}`).val(`${categories} ${merk}`);
           }
-          if (categories !== '' && merk !== '' && warna !== null) {
-            $(`#namabarang${j}`).val(`${categories} ${merk} ${warna}`);
+          if (categories !== '' && merk !== '' && tipe !== '') {
+            $(`#namabarang${j}`).val(`${categories} ${merk} ${tipe}`);
           }
-          if (categories !== '' && merk !== '' && warna !== null && tipe !== '') {
-            $(`#namabarang${j}`).val(`${categories} ${merk} ${warna} ${tipe}`);
+          if (categories !== '' && merk !== '' && tipe !== '' && warna !== null) {
+            $(`#namabarang${j}`).val(`${categories} ${merk} ${tipe} - ${warna} `);
           }
         })
 
@@ -467,16 +467,22 @@
           if ($(this).val() == '') {
             // clearformwithtriggermt(j);
             $(`#skbrgfix${j}`).val('');
+            $(`#skbrgfix${j}`).show();
             $(`#skbarang-other${j}`).hide();
             checkKodeBarangDuplikat(j);
           } else if ($(this).val() == `otherbrg${j}`) {
-            // clearformwithtriggermt(j);
             $(`#skbarang-other${j}`).show();
             $(`#skbarang-other${j}`).val(kdbrgothermt);
-            kd_brgmt = `${$(`#subkdkategori${j}`).val()}.${$(`#skbarang-other${j}`).val()}`;
-            // $(`#skbrgfix${j}`).show();
+            // $(`#skbarang${j} option[value=""]`).after(`<option value="${kdbrgothermt}">${kdbrgothermt}</option>`)
+            var kd_brgmt = `${$(`#subkdkategori${j}`).val()}.${$(`#skbarang-other${j}`).val()}`;
+            $(`#skbrgfix${j}`).show();
             $(`#skbrgfix${j}`).val(kd_brgmt);
             checkKodeBarangDuplikat(j);
+            if (newkode !== '') {
+              var newkd_brgmt = `${$(`#subkdkategori${j}`).val()}.${newkode}`;
+              $(`#skbrgfix${j}`).val(newkd_brgmt);
+              checkKodeBarangDuplikat(j);
+            }
           } else {
             // clearformwithtriggermt(j);
             var kdbrglama = `${$(`#subkdkategori${j}`).val()}.${$(`#skbarang${j}`).val()}`;
@@ -485,7 +491,7 @@
 
             $.ajax({
               type: "post",
-              url: "<?= base_url() ?>" + 'barangcontroller/getbarangbyany',
+              url: "<?= $nav ?>" + '/getbarangbyany',
               data: {
                 kode_brg: kdbrglama,
               },
@@ -500,6 +506,7 @@
                   $(`#skbarang-other${j}`).val(kdbrgothermt);
                   kodebrgbaru = `${$(`#subkdkategori${j}`).val()}.${$(`#skbarang-other${j}`).val()}`;
                   $(`#skbrgfix${j}`).val(kodebrgbaru);
+                  $(`#skbrgfix${j}`).show();
                   checkKodeBarangDuplikat(j);
                 })
               }
@@ -576,7 +583,7 @@
           allowClear: true,
           width: "100%",
           ajax: {
-            url: "<?= base_url() ?>barangcontroller/pilihsatuan",
+            url: "<?= $nav ?>/pilihsatuan",
             dataType: 'json',
             delay: 250,
             data: function(params) {
@@ -674,7 +681,7 @@
                 <label for="skbarang${index}"></label>
                 <div class="input-group mb-3">
                   <select name="skbrg[]" class="form-select" id="skbarang${index}"></select>
-                  <input type="text" class="form-control" placeholder="Kode Barang" id="skbarang-other${index}" name="skbrg_lain[]" readonly style="display:none;">
+                  <input type="text" class="form-control" placeholder="Kode Barang" id="skbarang-other${index}" name="skbrg_lain[]" style="display:none;">
                   <input type="text" class="form-control" id="skbrgfix${index}" name="kode_brg${index}" readonly style="display:none;">
                   <div class="invalid-feedback errskbarang${index}"></div>
                 </div>
@@ -690,8 +697,15 @@
                   <input type="text" class="form-control" placeholder="Masukkan Merk" id="merk${index}" name="merk${index}">
                   <div class="invalid-feedback errmerk${index}"></div>
                 </div>
+              </div>              
+              <div class="col-md-4">
+                <label for="tipe${index}" class="form-label">Tipe Barang</label>
+                <div class="input-group mb-3">
+                  <span class="input-group-text"><i class="bi bi-tag-fill"></i></span>
+                  <input type="text" class="form-control" placeholder="Masukkan tipe" id="tipe${index}" name="tipe${index}">
+                  <div class="invalid-feedback errtipe${index}"></div>
+                </div>
               </div>
-              
               <div class="col-md-4">
                 <label for="warna${index}" class="form-label">Warna</label>
                 <div class="input-group mb-3">
@@ -699,14 +713,6 @@
                   <select class="form-select" id="warna${index}" name="warna${index}"></select>
                   <div class="invalid-feedback errwarna${index}">
                   </div>
-                </div>
-              </div>
-              <div class="col-md-4">
-                <label for="tipe${index}" class="form-label">Tipe Barang</label>
-                <div class="input-group mb-3">
-                  <span class="input-group-text"><i class="bi bi-tag-fill"></i></span>
-                  <input type="text" class="form-control" placeholder="Masukkan tipe" id="tipe${index}" name="tipe${index}">
-                  <div class="invalid-feedback errtipe${index}"></div>
                 </div>
               </div>
             </div>

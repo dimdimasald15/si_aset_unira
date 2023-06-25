@@ -212,10 +212,11 @@ class PenggunaController extends BaseController
         }
     }
 
-    public function get_pengguna_by_id($id)
+    public function getpenggunabyid()
     {
         // var_dump($id);
         if ($this->request->isAJAX()) {
+            $id = $this->request->getVar('id');
             $builder = $this->db->table('petugas')
                 ->select('*')
                 ->where('petugas.id', $id)

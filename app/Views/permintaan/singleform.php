@@ -5,7 +5,7 @@
     </div>
   </div>
   <div class="card-body">
-    <form action="<?= $nav ?>/simpandata" class="formpermintaan py-4">
+    <form class="formpermintaan py-4">
       <?= csrf_field() ?>
       <div class="col-md-12">
         <!-- <input type="hidden" name="id" id="id"> -->
@@ -142,7 +142,7 @@
 
     $.ajax({
       type: "get",
-      url: "<?= base_url() ?>/permintaancontroller/pilihanggota",
+      url: "<?= $nav ?>/pilihanggota",
       dataType: "json",
       success: function(response) {
         $('#idanggota').empty();
@@ -299,7 +299,10 @@
 
       $.ajax({
         type: "get",
-        url: "<?= base_url() ?>/permintaancontroller/getpermintaanbyid?id=" + globalId,
+        url: "<?= $nav ?>/getpermintaanbyid",
+        data: {
+          id: globalId,
+        },
         dataType: "json",
         success: function(response) {
           isiForm(response.data, response.jmldata);
@@ -439,7 +442,7 @@
       allowClear: true,
       width: "70%",
       ajax: {
-        url: "<?= base_url() ?>/permintaancontroller/pilihunit",
+        url: "<?= $nav ?>/pilihunit",
         dataType: 'json',
         delay: 250,
         data: function(params) {
@@ -470,7 +473,7 @@
           allowClear: true,
           width: "100%",
           ajax: {
-            url: `<?= base_url() ?>/barangcontroller/pilihbarang`,
+            url: `<?= $nav ?>/pilihbarang`,
             dataType: 'json',
             delay: 250,
             data: function(params) {
@@ -504,7 +507,7 @@
           if (b_id != null && r_id != null) {
             $.ajax({
               type: "post",
-              url: "<?= base_url() ?>/barangcontroller/cekbrgdanruang",
+              url: "<?= $nav ?>/cekbrgdanruang",
               data: {
                 barang_id: b_id,
                 ruang_id: r_id,
@@ -536,7 +539,7 @@
           allowClear: true,
           width: "100%",
           ajax: {
-            url: "<?= base_url() ?>/barangcontroller/pilihsatuan",
+            url: "<?= $nav ?>/pilihsatuan",
             dataType: 'json',
             delay: 250,
             data: function(params) {

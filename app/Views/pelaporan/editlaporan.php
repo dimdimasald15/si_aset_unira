@@ -144,7 +144,7 @@
     var namaanggota = "<?= $laporan->nama_anggota ?>";
     $.ajax({
       type: "get",
-      url: "<?= base_url() ?>/permintaancontroller/pilihanggota",
+      url: "<?= site_url('laporan-kerusakan-aset/pelaporan/pilihanggota') ?>",
       dataType: "json",
       success: function(response) {
         $('#idanggota').empty();

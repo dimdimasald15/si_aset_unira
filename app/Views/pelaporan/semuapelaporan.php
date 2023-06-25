@@ -79,7 +79,7 @@
 
     $.ajax({
       // type: "post",
-      url: "<?= base_url('pelaporancontroller/tampildetailpelaporan/') ?>" + string,
+      url: "notification/tampildetailpelaporan/" + string,
       dataType: "json",
       success: function(response) {
         $('.pelaporan-detail').empty();

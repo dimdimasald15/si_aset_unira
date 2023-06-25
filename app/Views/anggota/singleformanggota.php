@@ -119,7 +119,7 @@
       globalId = "<?= $globalId ?>";
       $.ajax({
         type: "post",
-        url: "<?= base_url() ?>anggotacontroller/getdataanggotabyid",
+        url: "<?= $nav ?>/getdataanggotabyid",
         data: {
           id: globalId,
         },
@@ -249,7 +249,7 @@
       allowClear: true,
       width: "70%",
       ajax: {
-        url: "<?= base_url() ?>/permintaancontroller/pilihunit",
+        url: "<?= $nav ?>/pilihunit",
         dataType: 'json',
         delay: 250,
         data: function(params) {

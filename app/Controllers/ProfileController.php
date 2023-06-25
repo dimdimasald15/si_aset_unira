@@ -12,7 +12,6 @@ class ProfileController extends BaseController
     protected $uri, $auth, $pengguna, $gedung;
     public function __construct()
     {
-
         $this->uri = service('uri');
         $this->pengguna = new Pengguna();
         $this->gedung = new Gedung();

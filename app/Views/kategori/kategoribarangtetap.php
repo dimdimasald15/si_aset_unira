@@ -242,7 +242,7 @@
 
     $.ajax({
       type: "post",
-      url: "kategori-tetap/getnamakategori",
+      url: "<?= $nav ?>/getnamakategori",
       data: {
         subkode1: subkd1,
         subkode2: subkd2,
@@ -306,8 +306,11 @@
 
   function getsubkode1(kode1) {
     $.ajax({
-      url: "<?= site_url('kategoricontroller/getsubkode1/') ?>" + jenis,
-      type: "GET",
+      url: "<?= $nav ?>/getsubkode1",
+      data: {
+        jenis: jenis,
+      },
+      type: "post",
       dataType: "json",
       success: function(result) {
         slctSubkode1.empty();
@@ -334,7 +337,7 @@
   function getsubkode2(subkode1, kode2) {
     $.ajax({
       type: "post",
-      url: "<?= site_url('kategoricontroller/getsubkode2') ?>",
+      url: "<?= $nav ?>/getsubkode2",
       data: {
         subkode1: subkode1,
       },
@@ -363,7 +366,7 @@
   function getsubkode3(subkode1, subkode2, kode3) {
     $.ajax({
       type: "post",
-      url: "<?= site_url('kategoricontroller/getsubkode3') ?>",
+      url: "<?= $nav ?>/getsubkode3",
       data: {
         subkode1: subkode1,
         subkode2: subkode2,
@@ -397,7 +400,7 @@
   function getsubkode4(subkode1, subkode2, subkode3, kode4) {
     $.ajax({
       type: "post",
-      url: "<?= site_url('kategoricontroller/getsubkode4') ?>",
+      url: "<?= $nav ?>/getsubkode4",
       data: {
         subkode1: subkode1,
         subkode2: subkode2,
@@ -432,7 +435,7 @@
       processing: true,
       serverSide: true,
       ajax: {
-        url: 'kategori-tetap/listdatakategori' + `?jenis=${jenis}&isRestore=0`,
+        url: '<?= $nav ?>/listdatakategori' + `?jenis=${jenis}&isRestore=0`,
       },
       order: [],
       columns: [{
@@ -618,9 +621,9 @@
       e.preventDefault();
       let url = "";
       if (saveMethod == "update") {
-        url = "kategori-tetap/update/" + globalId;
+        url = "<?= $nav ?>/update/" + globalId;
       } else if (saveMethod == "add") {
-        url = "kategori-tetap/simpan";
+        url = "<?= $nav ?>/simpan";
       }
       kd_kategori = inputkd_kat.val();
       nama_kategori = inputnmkat.val();
@@ -696,7 +699,7 @@
         processing: true,
         serverSide: true,
         ajax: {
-          url: 'kategori-tetap/tampildatarestore' + `?jenis=${jenis}&isRestore=1`,
+          url: '<?= $nav ?>/tampildatarestore' + `?jenis=${jenis}&isRestore=1`,
         },
         order: [],
         columns: [{
@@ -774,8 +777,11 @@
     formtambah.find("button[type='submit']").html('Perbarui');
 
     $.ajax({
-      type: "get",
-      url: "<?= site_url('kategoricontroller/get_kategori_by_id/') ?>" + id,
+      type: "post",
+      url: "<?= $nav ?>/getkategoribyid",
+      data: {
+        id: id
+      },
       dataType: "json",
       success: function(response) {
         isiForm(response);
@@ -821,7 +827,7 @@
       if (result.isConfirmed) {
         $.ajax({
           type: "post",
-          url: "kategori-tetap/hapus/" + id,
+          url: "<?= $nav ?>/hapus/" + id,
           data: {
             nama_kategori: namakategori
           },
@@ -862,7 +868,7 @@
       if (result.isConfirmed) {
         $.ajax({
           type: "post",
-          url: "kategori-tetap/restore/" + id,
+          url: "<?= $nav ?>/restore/" + id,
           data: {
             nama_kategori: namakategori,
             jenis: jenis
@@ -912,7 +918,7 @@
         if (result.isConfirmed) {
           $.ajax({
             type: "post",
-            url: "kategori-tetap/restore",
+            url: "<?= $nav ?>/restore",
             data: {
               jenis: jenis
             },
@@ -956,7 +962,7 @@
       if (result.isConfirmed) {
         $.ajax({
           type: "post",
-          url: "kategori-tetap/hapuspermanen/" + id,
+          url: "<?= $nav ?>/hapuspermanen/" + id,
           data: {
             nama_kategori: namakategori
           },
@@ -1007,7 +1013,7 @@
         if (result.isConfirmed) {
           $.ajax({
             type: "post",
-            url: "kategori-tetap/hapuspermanen",
+            url: "<?= $nav ?>/hapuspermanen",
             dataType: 'json',
             success: function(response) {
               if (response.sukses) {

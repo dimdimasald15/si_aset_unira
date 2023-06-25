@@ -185,7 +185,10 @@
 
     $.ajax({
       type: "get",
-      url: "<?= site_url('ruangcontroller/get_ruang_by_id/') ?>" + id,
+      url: "<?= site_url('admin/ruang/getruangbyid') ?>",
+      data: {
+        id: id,
+      },
       dataType: "json",
       success: function(response) {
         isiForm(response);

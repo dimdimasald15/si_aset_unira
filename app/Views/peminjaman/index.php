@@ -327,7 +327,7 @@
       e.preventDefault();
       $.ajax({
         type: "get",
-        url: "<?= base_url() ?>/peminjamancontroller/tampilformkembali",
+        url: "<?= $nav ?>/tampilformkembali",
         data: {
           saveMethod: "update",
           nav: "<?= $nav ?>",
@@ -475,7 +475,7 @@
   function tampilcetakpdf(opsi) {
     $.ajax({
       type: "post",
-      url: "<?= base_url('peminjamancontroller/tampilmodalcetak') ?>",
+      url: "<?= $nav . '/tampilmodalcetak' ?>",
       data: {
         jenis_kat: jenis_kat,
         opsi: opsi,
@@ -491,7 +491,7 @@
   function singleform() {
     $.ajax({
       type: "get",
-      url: "<?= base_url() ?>/peminjamancontroller/tampilsingleform",
+      url: "<?= $nav ?>/tampilsingleform",
       data: {
         saveMethod: "add",
         nav: "<?= $nav ?>",
@@ -507,7 +507,7 @@
   function edit(id) {
     $.ajax({
       type: "get",
-      url: "<?= base_url() ?>/peminjamancontroller/tampilsingleform",
+      url: "<?= $nav ?>/tampilsingleform",
       data: {
         globalId: id,
         saveMethod: "update",

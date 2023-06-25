@@ -199,7 +199,7 @@
   $(document).ready(function() {
     $.ajax({
       type: "get",
-      url: "<?= base_url() ?>/barangcontroller/getdatastokbarangbyid",
+      url: "<?= $nav ?>/getdatastokbarangbyid",
       data: {
         id: id
       },

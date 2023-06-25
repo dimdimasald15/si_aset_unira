@@ -236,10 +236,10 @@ class RuangController extends BaseController
         }
     }
 
-    public function get_ruang_by_id($id)
+    public function getruangbyid()
     {
         if ($this->request->isAJAX()) {
-            // $id = $this->request->getVar('id');
+            $id = $this->request->getGet('id');
             $row = $this->ruang->find($id);
             echo json_encode($row);
         } else exit('Maaf tidak dapat diproses');

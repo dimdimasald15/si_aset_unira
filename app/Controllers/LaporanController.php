@@ -331,7 +331,7 @@ class LaporanController extends BaseController
                 $filterArray[$nama_brg] = [
                     'nama_brg' => $nama_brg,
                     'kode_brg' => $kode_brg,
-                    '$warna' => $$warna,
+                    '$warna' => $warna,
                     'hrg_beli_brg' => $hrg_beli_brg,
                     'jml_msk' => $row['jml_msk'],
                     'total_harga' => $row['total_harga'],
@@ -682,7 +682,7 @@ class LaporanController extends BaseController
         $dompdf->stream($filename, ['Attachment' => 0]);
     }
 
-    public function get_data_chart_permintaan()
+    public function getdatachartpermintaan()
     {
         if (!$this->request->isAJAX()) {
             $data = [
@@ -784,7 +784,7 @@ class LaporanController extends BaseController
         echo json_encode($resultArray1);
     }
 
-    public function get_data_table_permintaan()
+    public function getdatatablepermintaan()
     {
         if ($this->request->isAJAX()) {
             $m = $this->request->getGet('m');

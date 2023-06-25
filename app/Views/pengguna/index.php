@@ -298,8 +298,11 @@
         $("#password").parent().parent().parent().remove();
 
         $.ajax({
-            type: "get",
-            url: "<?= site_url('penggunacontroller/get_pengguna_by_id/') ?>" + id,
+            type: "post",
+            url: "<?= $nav ?>/getpenggunabyid",
+            data: {
+                id: id
+            },
             dataType: "json",
             success: function(response) {
                 isiForm(response);
@@ -317,15 +320,8 @@
         formtambah.find("input[name='nip']").val(nip)
         formtambah.find("input[name='email']").val(email)
         formtambah.find("input[name='username']").val(username)
-        if (role == "Petugas") {
-            formtambah.find("select[name='role']").val(role);
-        } else {
-            formtambah.append('<option value="' + role + '">' +
-                role + '</option>');
-        }
-        // formtambah.find("select[name*='role']").html('<option value = "' + role + '" selected >' + role + '</option>');
+        $('#role').val(role);
     }
-
 
     function hapus(id, email) {
         Swal.fire({

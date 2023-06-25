@@ -63,7 +63,7 @@ class KategoriController extends BaseController
     }
 
     // public function listdataKategori($jenis, $isRestore)
-    public function listdataKategori()
+    public function listdatakategori()
     {
         if ($this->request->isAJAX()) {
             $jenis = $this->request->getGet('jenis');
@@ -176,20 +176,23 @@ class KategoriController extends BaseController
     }
 
 
-    public function getsubkode1($jenisbarang)
+    public function getsubkode1()
     {
         if ($this->request->isAJAX()) {
+            $jenisbarang = $this->request->getVar('jenis');
             // echo $jenisbarang;
             if ($jenisbarang == 'Barang Tetap') {
                 $query = $this->db->query("SELECT DISTINCT SUBSTRING(kd_kategori, 1, 1) AS subkode1 
                     FROM kategori 
-                    WHERE jenis = '$jenisbarang' 
+                    WHERE jenis = '$jenisbarang'
+                    AND deleted_at IS NULL 
                     ORDER BY subkode1");
                 $result = $query->getResultArray();
             } else if ($jenisbarang == 'Barang Persediaan') {
                 $query = $this->db->query("SELECT DISTINCT LEFT(SUBSTRING_INDEX(kd_kategori, '.', 1), 3) AS subkode1 
                     FROM kategori
                     WHERE jenis = '$jenisbarang'
+                    AND deleted_at IS NULL
                     ORDER BY subkode1;");
                 $result = $query->getResultArray();
             }
@@ -358,9 +361,10 @@ class KategoriController extends BaseController
         }
     }
 
-    public function get_kategori_by_id($id)
+    public function getkategoribyid()
     {
         if ($this->request->isAJAX()) {
+            $id = $this->request->getVar('id');
             $builder =  $this->db->table('kategori')
                 ->select('*')
                 ->where('id', $id)
