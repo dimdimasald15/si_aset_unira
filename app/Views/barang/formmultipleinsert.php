@@ -467,7 +467,7 @@
           if ($(this).val() == '') {
             // clearformwithtriggermt(j);
             $(`#skbrgfix${j}`).val('');
-            $(`#skbrgfix${j}`).show();
+            // $(`#skbrgfix${j}`).show();
             $(`#skbarang-other${j}`).hide();
             checkKodeBarangDuplikat(j);
           } else if ($(this).val() == `otherbrg${j}`) {
@@ -475,7 +475,7 @@
             $(`#skbarang-other${j}`).val(kdbrgothermt);
             // $(`#skbarang${j} option[value=""]`).after(`<option value="${kdbrgothermt}">${kdbrgothermt}</option>`)
             var kd_brgmt = `${$(`#subkdkategori${j}`).val()}.${$(`#skbarang-other${j}`).val()}`;
-            $(`#skbrgfix${j}`).show();
+            // $(`#skbrgfix${j}`).show();
             $(`#skbrgfix${j}`).val(kd_brgmt);
             checkKodeBarangDuplikat(j);
             if (newkode !== '') {
@@ -506,7 +506,7 @@
                   $(`#skbarang-other${j}`).val(kdbrgothermt);
                   kodebrgbaru = `${$(`#subkdkategori${j}`).val()}.${$(`#skbarang-other${j}`).val()}`;
                   $(`#skbrgfix${j}`).val(kodebrgbaru);
-                  $(`#skbrgfix${j}`).show();
+                  // $(`#skbrgfix${j}`).show();
                   checkKodeBarangDuplikat(j);
                 })
               }

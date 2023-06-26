@@ -303,7 +303,8 @@ class BarangController extends BaseController
                     ->join('satuan s', 'sb.satuan_id = s.id')
                     ->where('b.id', $id)
                     ->get();
-            } else if (!empty($kode_brg)) {
+            }
+            if (!empty($kode_brg)) {
                 $getbarang = $this->db->table('barang b')
                     ->select('b.id, b.kat_id, b.kode_brg, b.nama_brg, b.merk, b.warna, b.asal, b.harga_beli, b.harga_jual, b.toko, b.instansi, b.no_seri, b.no_dokumen, b.foto_barang, b.tgl_pembelian')
                     ->where('kode_brg', $kode_brg)

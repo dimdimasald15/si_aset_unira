@@ -596,7 +596,7 @@
           <div class="getpeminjaman">
           <h6 class="font-extrabold">${response.data.pengguna}</h6>
           <h6 class="text-muted font-semibold">Barang dipinjam</h6>
-          <h6 class="font-extrabold">${response.data.total_brg}</h6>
+          <h6 class="font-extrabold">${response.data.total_brg? `${response.data.total_brg}`:`0`}</h6>
           </div>
         `);
         } else if (response.jenistrx == "Permintaan") {

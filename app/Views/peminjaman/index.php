@@ -252,7 +252,9 @@
               weekday: 'long',
               year: 'numeric',
               month: 'long',
-              day: 'numeric'
+              day: 'numeric',
+              hour: 'numeric',
+              minute: 'numeric',
             };
             var formattedDate = new Date(year, month, day, hours, minutes, seconds).toLocaleDateString('id-ID', options);
             return formattedDate;
@@ -273,7 +275,9 @@
                 weekday: 'long',
                 year: 'numeric',
                 month: 'long',
-                day: 'numeric'
+                day: 'numeric',
+                hour: 'numeric',
+                minute: 'numeric',
               };
               var formattedDate = new Date(year, month, day, hours, minutes, seconds).toLocaleDateString('id-ID', options);
               return formattedDate;
@@ -310,7 +314,9 @@
               weekday: 'long',
               year: 'numeric',
               month: 'long',
-              day: 'numeric'
+              day: 'numeric',
+              hour: 'numeric',
+              minute: 'numeric',
             };
             var formattedDate = new Date(year, month, day, hours, minutes, seconds).toLocaleDateString('id-ID', options);
             return formattedDate;
@@ -399,7 +405,9 @@
                 weekday: 'long',
                 year: 'numeric',
                 month: 'long',
-                day: 'numeric'
+                day: 'numeric',
+                hour: 'numeric',
+                minute: 'numeric',
               };
               var formattedDate = new Date(year, month, day, hours, minutes, seconds).toLocaleDateString('id-ID', options);
               return formattedDate;

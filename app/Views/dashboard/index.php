@@ -158,7 +158,7 @@
           $(targetId).find('h6').after(`
           <h6 class="font-extrabold">${response.data.pengguna}</h6>
           <h6 class="text-muted font-semibold">Barang dipinjam</h6>
-          <h6 class="font-extrabold">${response.data.total_brg}</h6>
+          <h6 class="font-extrabold">${response.data.total_brg? `${response.data.total_brg}`:`0`}</h6>
         `);
         } else if (response.jenistrx == "Permintaan") {
           $(targetId).find('h6').after(`

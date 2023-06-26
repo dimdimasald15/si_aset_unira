@@ -339,7 +339,7 @@
         processing: true,
         serverSide: true,
         ajax: {
-          url: '<?= $nav . 'listdataunit?isRestore=1' ?>',
+          url: '<?= $nav . '/listdataunit?isRestore=1' ?>',
         },
         order: [],
         columns: [{
