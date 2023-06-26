@@ -281,7 +281,7 @@
 
   function getsubkdbarangmt(idkategori, row) {
     $.ajax({
-      url: "<?= site_url('barangcontroller/getsubkdbarang') ?>",
+      url: "<?= $nav . '/getsubkdbarang' ?>",
       type: "POST",
       data: {
         katid: idkategori,

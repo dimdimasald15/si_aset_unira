@@ -126,7 +126,7 @@
       // jika data lokasi belum tersedia di cache, muat data baru dari server
       $.ajax({
         type: "get",
-        url: "<?= base_url() ?>/barangcontroller/pilihlokasi",
+        url: "<?= $nav ?>/pilihlokasi",
         data: {
           search: "Sarana",
         },
@@ -315,7 +315,7 @@
       let url = "";
 
       if (saveMethod == "update") {
-        url = "<?= base_url() ?>/barangcontroller/updatedatastokmultiple";
+        url = "<?= $nav ?>/updatedatastokmultiple";
       } else if (saveMethod == "add") {
         url = "<?= $nav ?>/simpanstok";
       }
@@ -415,7 +415,7 @@
           allowClear: true,
           width: "50%",
           ajax: {
-            url: `<?= base_url() ?>/barangcontroller/pilihbarang`,
+            url: `<?= $nav ?>/pilihbarang`,
             dataType: 'json',
             delay: 250,
             data: function(params) {
@@ -440,7 +440,7 @@
           allowClear: true,
           width: "100%",
           ajax: {
-            url: "<?= base_url() ?>/barangcontroller/pilihsatuan",
+            url: "<?= $nav ?>/pilihsatuan",
             dataType: 'json',
             delay: 250,
             data: function(params) {
@@ -487,7 +487,7 @@
           if (b_id != null && r_id != null) {
             $.ajax({
               type: "post",
-              url: "<?= base_url() ?>/barangcontroller/cekbrgdanruang",
+              url: "<?= $nav ?>/cekbrgdanruang",
               data: {
                 barang_id: b_id,
                 ruang_id: r_id,
