@@ -258,8 +258,8 @@
     });
 
     $.ajax({
-      type: "get",
-      url: "<?= site_url('barangcontroller/getbarangbyany') ?>",
+      type: "post",
+      url: "<?= $nav . '/getbarangbyany' ?>",
       data: {
         id: <?= $id ?>,
       },
@@ -479,8 +479,6 @@
       $('#jmlmasuk').removeClass('is-invalid');
       $('.errorjmlmasuk').html('');
     })
-
-    console.log(" nav = <?= $nav ?>");
 
     $('#formEditBarang').submit(function(e) {
       e.preventDefault();
@@ -739,7 +737,7 @@
 
   function getsubkdbarang(idkategori, kode1) {
     $.ajax({
-      url: "<?= site_url('barangcontroller/getsubkdbarang') ?>",
+      url: "<?= $nav . '/getsubkdbarang' ?>",
       type: "POST",
       data: {
         katid: idkategori,

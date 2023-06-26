@@ -257,6 +257,18 @@
       $('.errornoanggota').html('');
     })
 
+    $('#tglpinjam').on('input', function(e) {
+      e.preventDefault();
+      $('#tglpinjam').removeClass('is-invalid');
+      $('.errortglpinjam').html('');
+    })
+
+    $('#keterangan').on('input', function(e) {
+      e.preventDefault();
+      $('#keterangan').removeClass('is-invalid');
+      $('.errorketerangan').html('');
+    })
+
     $('.btntambahrow').on('click', function(e) {
       e.preventDefault();
       var index = currIndex++;

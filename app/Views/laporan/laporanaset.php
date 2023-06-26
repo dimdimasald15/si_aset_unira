@@ -29,14 +29,10 @@
   <!-- Page plugins -->
   <link rel="stylesheet" href="<?= base_url() ?>/assets/css/bootstrap.css">
   <link rel="stylesheet" href="<?= base_url() ?>/assets/vendors/bootstrap-icons/bootstrap-icons.css">
-  <!-- <link rel="stylesheet" href="<?= base_url() ?>/assets/css/mystyle/mystyle.css"> -->
   <?= $this->renderSection('styles') ?>
   <link rel="stylesheet" href="<?= base_url() ?>/assets/vendors/iconly/bold.css">
   <link rel="stylesheet" href="<?= base_url() ?>/assets/vendors/DataTables/datatables.min.css">
   <link rel="stylesheet" href="<?= base_url() ?>/assets/css/mystyle/pdfstyle.css">
-  <style>
-
-  </style>
 </head>
 
 <body>

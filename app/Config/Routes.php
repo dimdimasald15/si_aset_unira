@@ -154,6 +154,7 @@ $routes->group('admin/barang-tetap-masuk', ['filter' => 'ceklogin'], function ($
     $routes->get('pilihwarna', 'BarangController::pilihwarna');
     $routes->get('getkdbrgbykdkat', 'BarangController::getkdbrgbykdkat');
     $routes->post('getbarangbyany', 'BarangController::getbarangbyany');
+    $routes->post('getsubkdbarang', 'BarangController::getsubkdbarang');
 });
 
 $routes->group('admin/barang-persediaan-masuk', ['filter' => 'ceklogin'], function ($routes) {
@@ -191,6 +192,7 @@ $routes->group('admin/barang-persediaan-masuk', ['filter' => 'ceklogin'], functi
     $routes->get('pilihwarna', 'BarangController::pilihwarna');
     $routes->get('getkdbrgbykdkat', 'BarangController::getkdbrgbykdkat');
     $routes->post('getbarangbyany', 'BarangController::getbarangbyany');
+    $routes->post('getsubkdbarang', 'BarangController::getsubkdbarang');
 });
 
 $routes->group('admin/alokasi-barang-tetap', ['filter' => 'ceklogin'], function ($routes) {

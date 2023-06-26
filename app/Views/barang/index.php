@@ -308,6 +308,9 @@
           },
           {
             data: 'sisa_stok',
+            render: function(data, type, row) {
+              return `${data} ${row.kd_satuan}`;
+            }
           },
           {
             data: 'nama_ruang'
@@ -400,7 +403,7 @@
           data: 'sisa_stok',
           render: function(data, type, row) {
             if (jenis_kat == "Barang Persediaan") {
-              return parseInt(data) <= 3 ? `${data} ${row.kd_satuan}*` : data;
+              return parseInt(data) <= 3 ? `${data} ${row.kd_satuan}*` : `${data} ${row.kd_satuan}`;
             } else {
               return `${data} ${row.kd_satuan}`;
             }

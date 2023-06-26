@@ -586,10 +586,10 @@ class LaporanController extends BaseController
                 $bulantahun = "tahun " . date('Y');
                 $filename = 'laporan-aset-' . date('Y');
             } else if (!empty($bulan) && !empty($tahun)) {
-                $bulantahun = "Bulan " . format_bulan($bulan) . " Tahun " . date('Y');
+                $bulantahun = "Bulan " . format_bulan($bulan) . " Tahun " . $tahun;
                 $filename = 'laporan-aset-' . $bulan . '-' . $tahun;
             } else if (!empty($tahun)) {
-                $bulantahun = "tahun " . date('Y');
+                $bulantahun = "tahun " . $tahun;
                 $filename = 'laporan-aset-' . $tahun;
             }
 
@@ -625,10 +625,10 @@ class LaporanController extends BaseController
                     $bulantahun = "tahun " . date('Y');
                     $filename = 'laporan-permintaan-' . date('Y');
                 } else if (!empty($bulan) && !empty($tahun)) {
-                    $bulantahun = "Bulan " . format_bulan($bulan) . " Tahun " . date('Y');
+                    $bulantahun = "Bulan " . format_bulan($bulan) . " Tahun " . $tahun;
                     $filename = 'laporan-permintaan-' . $bulan . '-' . $tahun;
                 } else if (!empty($tahun)) {
-                    $bulantahun = "tahun " . date('Y');
+                    $bulantahun = "tahun " . $tahun;
                     $filename = 'laporan-permintaan-' . $tahun;
                 }
                 $permintaan = $this->hitungmintabarang($bulan, $tahun, "Barang Persediaan");
@@ -638,7 +638,7 @@ class LaporanController extends BaseController
             $dompdf->loadHtml(view('permintaan/cetakpdf', [
                 'title' => 'Laporan Permintaan Barang Persediaan',
                 'permintaan' => $permintaan,
-                'haritanggal' => $haritanggal ? $haritanggal : $bulantahun,
+                'haritanggal' => !empty($haritanggal) ? $haritanggal : $bulantahun,
                 'opsi' => $opsi,
             ]));
         } else if ($keterangan == "Peminjaman") {
@@ -656,10 +656,10 @@ class LaporanController extends BaseController
                     $bulantahun = "tahun " . date('Y');
                     $filename = 'laporan-permintaan-' . date('Y');
                 } else if (!empty($bulan) && !empty($tahun)) {
-                    $bulantahun = "Bulan " . format_bulan($bulan) . " Tahun " . date('Y');
+                    $bulantahun = "Bulan " . format_bulan($bulan) . " Tahun " . $tahun;
                     $filename = 'laporan-permintaan-' . $bulan . '-' . $tahun;
                 } else if (!empty($tahun)) {
-                    $bulantahun = "tahun " . date('Y');
+                    $bulantahun = "tahun " . $tahun;
                     $filename = 'laporan-permintaan-' . $tahun;
                 }
                 $peminjaman = $this->peminjamanbarang2($bulan, $tahun, $jenis_kat);
@@ -669,7 +669,7 @@ class LaporanController extends BaseController
             $dompdf->loadHtml(view('peminjaman/cetakpdf', [
                 'title' => 'Laporan Peminjaman Barang Tetap',
                 'peminjaman' => $peminjaman,
-                'haritanggal' => $haritanggal ? $haritanggal : $bulantahun,
+                'haritanggal' => !empty($haritanggal) ? $haritanggal : $bulantahun,
             ]));
         }
         // (optional) setup the paper size and orientation
@@ -679,7 +679,9 @@ class LaporanController extends BaseController
         $dompdf->render();
 
         // output the generated pdf
-        $dompdf->stream($filename, ['Attachment' => 0]);
+        // $dompdf->stream($filename, ['Attachment' => 0]);
+        $dompdf->stream($filename, ['Attachment' => false]);
+        exit(0);
     }
 
     public function getdatachartpermintaan()
