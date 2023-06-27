@@ -271,6 +271,9 @@ $routes->group('admin/peminjaman-barang-tetap', ['filter' => 'ceklogin'], functi
     $routes->get('pilihsatuan', 'BarangController::pilihsatuan');
     $routes->post('cekbrgdanruang', 'BarangController::cekbrgdanruang');
 
+    $routes->post('updatedatakembali', 'PeminjamanController::updatedatakembali');
+    $routes->get('getdatapeminjaman', 'PeminjamanController::getdatapeminjaman');
+    $routes->get('pilihpeminjam', 'PeminjamanController::pilihanggota');
     // $routes->get('detail-barang/(:any)', 'BarangController::detailbarang/$1');
 });
 
