@@ -496,7 +496,7 @@ class PelaporanController extends BaseController
         }
 
         if ($no_laporan) {
-            $query = $this->db->table('pelaporan_kerusakan p')->select('p.*, a.nama_anggota, a.no_anggota, a.level, u.singkatan, n.viewed_by_admin,b.nama_brg, s.kd_satuan')
+            $query = $this->db->table('pelaporan_kerusakan p')->select('p.*, a.nama_anggota, a.no_anggota, a.level, u.singkatan,n.id as notif_id, n.viewed_by_admin,b.nama_brg, s.kd_satuan')
                 ->join('anggota a', 'a.id=p.anggota_id')
                 ->join('unit u', 'u.id=a.unit_id')
                 ->join('stok_barang sb', 'sb.id=p.stokbrg_id')
@@ -514,8 +514,7 @@ class PelaporanController extends BaseController
             ];
 
             $updatenotif = $this->notifikasi->setUpdateData($ubahnotif);
-            // var_dump($updatenotif);
-            // die;
+
             $this->db->table('notifikasi')->where('id', $pelaporan->notif_id)->update($updatenotif);
         } else if ($page) {
             $pelaporan = $this->pelaporan->paginatePelaporan(10, 'pelaporan');
