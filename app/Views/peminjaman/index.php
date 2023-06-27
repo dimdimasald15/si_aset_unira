@@ -335,7 +335,7 @@
         type: "get",
         url: "<?= $nav ?>/tampilformkembali",
         data: {
-          saveMethod: "update",
+          saveMethod: "update-kembali",
           nav: "<?= $nav ?>",
           jenis_kat: jenis_kat,
           formname: "Form Kembali"
@@ -512,7 +512,7 @@
     });
   }
 
-  function edit(id) {
+  function edit(id, status) {
     $.ajax({
       type: "get",
       url: "<?= $nav ?>/tampilsingleform",
@@ -521,6 +521,7 @@
         saveMethod: "update",
         nav: "<?= $nav ?>",
         jenis_kat: jenis_kat,
+        status: status,
       },
       dataType: "json",
       success: function(response) {
@@ -529,7 +530,7 @@
     });
   }
 
-  function hapus(id, namaanggota, namabrg, jml, satuan, ) {
+  function hapus(id, namaanggota, namabrg, jml, satuan) {
     Swal.fire({
       width: 700,
       title: `Apakah kamu yakin ingin menghapus data peminjaman ${namaanggota} atas ${jml} ${satuan} ${namabrg}?`,

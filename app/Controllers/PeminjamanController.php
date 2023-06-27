@@ -108,20 +108,19 @@ class PeminjamanController extends BaseController
                     </div>
                     ';
                     } else {
-                        $action = '';
-                        if ($row->status == 0) {
-                            $action .= '<div class="btn-group btn-group-sm mb-1">
+                        $action = '<div class="btn-group btn-group-sm mb-1">
                             <button type="button" class="btn btn-success dropdown-toggle me-1" data-bs-toggle="dropdown" aria-expanded="false">
                                 Action
                             </button>
                             <ul class="dropdown-menu shadow-lg">
-                            <li><a class="dropdown-item" onclick="edit(' . $row->id . ')"><i class="fa fa-pencil-square-o"></i> Update Peminjaman</a>
-                                </li>
-                                <li><a class="dropdown-item" onclick="hapus(' . $row->id . ', \'' . htmlspecialchars($row->nama_anggota) . '\', \'' . htmlspecialchars($row->nama_brg) . '\', \'' . htmlspecialchars($row->jml_barang) . '\', \'' . htmlspecialchars($row->kd_satuan) . '\')"><i class="fa fa-trash-o"></i> Hapus Peminjaman</a>
-                                </li>
-                            </ul>
-                            </div>';
+                            <li><a class="dropdown-item" onclick="edit(' . $row->id . ',' . $row->status . ')"><i class="fa fa-pencil-square-o"></i> Update Peminjaman</a>
+                                </li>';
+                        if ($row->status == 0) {
+                            $action .= '<li><a class="dropdown-item" onclick="hapus(' . $row->id . ', \'' . htmlspecialchars($row->nama_anggota) . '\', \'' . htmlspecialchars($row->nama_brg) . '\', \'' . htmlspecialchars($row->jml_barang) . '\', \'' . htmlspecialchars($row->kd_satuan) . '\')"><i class="fa fa-trash-o"></i> Hapus Peminjaman</a>
+                                </li>';
                         }
+                        $action .= ' </ul>
+                        </div>';
                         return $action;
                     }
                 })
@@ -149,6 +148,7 @@ class PeminjamanController extends BaseController
         $globalId = $this->request->getGet('globalId');
         $nav = $this->request->getGet('nav');
         $jenis_kat = $this->request->getGet('jenis_kat');
+        $status = $this->request->getGet('status');
 
         $data = [
             'globalId' => $globalId ? $globalId : '',
@@ -158,8 +158,14 @@ class PeminjamanController extends BaseController
             'jenis_kat' => $jenis_kat,
         ];
 
+        if ($status == 1) {
+            $view = view('peminjaman/formkembali', $data);
+        } else {
+            $view = view('peminjaman/singleform', $data);
+        }
+
         $msg = [
-            'data' => view('peminjaman/singleform', $data),
+            'data' => $view,
         ];
 
         echo json_encode($msg);
@@ -346,7 +352,7 @@ class PeminjamanController extends BaseController
                             'tgl_pinjam' => $this->request->getVar('tgl_pinjam'),
                             'keterangan' => $this->request->getVar('keterangan'),
                             'status' => 0,
-                            'kondisi_pinjam' => 'baik',
+                            'kondisi_pinjam' => 'Baik',
                         ];
 
                         $insert2 = $this->peminjaman->setInsertData($simpanpeminjaman);
@@ -432,7 +438,7 @@ class PeminjamanController extends BaseController
     public function pilihanggota()
     {
         if ($this->request->isAJAX()) {
-            $query = $this->db->table('anggota a')->select('a.id, a.nama_anggota')->join('peminjaman p', 'a.id=p.anggota_id')
+            $query = $this->db->table('peminjaman p')->select('a.id, a.nama_anggota')->join('anggota a', 'a.id=p.anggota_id')
                 ->where('p.status', 0)
                 ->where('p.deleted_at is null')->groupBy('a.id')
                 ->get();
@@ -461,6 +467,7 @@ class PeminjamanController extends BaseController
                 ->join('satuan s', 's.id=sb.satuan_id')
                 ->where('p.anggota_id', $anggota_id)
                 ->like('p.tgl_pinjam', "$tgl_pinjam%")
+                ->where('p.status', 0)
                 ->where('p.deleted_at IS NULL')
                 ->orderBy('id', 'ASC')
                 ->get()->getResultArray();
@@ -495,6 +502,7 @@ class PeminjamanController extends BaseController
         if ($this->request->isAJAX()) {
             $jenistrx = $this->request->getVar('jenistrx');
             $jmldata = $this->request->getVar('jmldata');
+            $saveMethod = $this->request->getVar('saveMethod');
 
             $validation =  \Config\Services::validation();
             $errors1 = [];
@@ -526,25 +534,27 @@ class PeminjamanController extends BaseController
                 ];
             } else {
                 $errors2 = array();
-                for ($a = 0; $a < $jmldata; $a++) {
-                    $rules2 = [
-                        'kondisi_kembali' . $a => [
-                            'label' => 'Kondisi kembali',
-                            'rules' => 'required',
-                            'errors' => [
-                                'required' => "{field} barang " . ($a + 1) . " tidak boleh kosong",
-                            ]
-                        ],
-                        'tgl_kembali' . $a => [
-                            'label' => 'Tanggal kembali',
-                            'rules' => 'required',
-                            'errors' => [
-                                'required' => "{field} barang " . ($a + 1) . " tidak boleh kosong",
-                            ]
-                        ],
-                    ];
-                    if (!$this->validate($rules2)) {
-                        $errors2 = $validation->getErrors();
+                if ($saveMethod !== "update") {
+                    for ($a = 0; $a < $jmldata; $a++) {
+                        $rules2 = [
+                            'kondisi_kembali' . $a => [
+                                'label' => 'Kondisi kembali',
+                                'rules' => 'required',
+                                'errors' => [
+                                    'required' => "{field} barang " . ($a + 1) . " tidak boleh kosong",
+                                ]
+                            ],
+                            'tgl_kembali' . $a => [
+                                'label' => 'Tanggal kembali',
+                                'rules' => 'required',
+                                'errors' => [
+                                    'required' => "{field} barang " . ($a + 1) . " tidak boleh kosong",
+                                ]
+                            ],
+                        ];
+                        if (!$this->validate($rules2)) {
+                            $errors2 = $validation->getErrors();
+                        }
                     }
                 }
                 // check for errors
@@ -574,20 +584,28 @@ class PeminjamanController extends BaseController
                         $pengembalian = [
                             'jml_hari' => $selisih_hari->format('%a'),
                             'kondisi_kembali' => $kondisi_kembali[$i],
-                            'tgl_kembali' => $tgl_kembali[$i],
-                            'status' => $status[$i],
+                            'tgl_kembali' => $tgl_kembali[$i] ? $tgl_kembali : NULL,
+                            'status' => $status[$i] == NULL ? 0 : $status[$i],
                         ];
 
                         $updatedata = $this->peminjaman->setUpdateData($pengembalian);
                         $this->peminjaman->update($id[$i],  $updatedata);
                         // update stok barang
                         $stokbrg = $this->db->table('stok_barang')->select('*')->where('barang_id', $barang_id[$i])->get()->getRowArray();
-
-                        $ubahstok = [
-                            'jumlah_keluar' => (intval($stokbrg['jumlah_keluar']) - intval($jml_barang[$i])),
-                            'sisa_stok' => (intval($stokbrg['sisa_stok']) + intval($jml_barang[$i])),
-                        ];
-
+                        $namaTransaksi = "";
+                        if ($saveMethod !== 'update') {
+                            $ubahstok = [
+                                'jumlah_keluar' => (intval($stokbrg['jumlah_keluar']) - intval($jml_barang[$i])),
+                                'sisa_stok' => (intval($stokbrg['sisa_stok']) + intval($jml_barang[$i])),
+                            ];
+                            $namaTransaksi = $jenistrx . " " . $id[$i];
+                        } else {
+                            $ubahstok = [
+                                'jumlah_keluar' => (intval($stokbrg['jumlah_keluar']) + intval($jml_barang[$i])),
+                                'sisa_stok' => (intval($stokbrg['sisa_stok']) - intval($jml_barang[$i])),
+                            ];
+                            $namaTransaksi = "Update " . $jenistrx . " " . $id[$i];
+                        }
                         $updatestok = $this->stokbarang->setUpdateData($ubahstok);
 
                         //periksa perubahan data
@@ -604,8 +622,9 @@ class PeminjamanController extends BaseController
 
                         // Periksa apakah query terakhir adalah operasi update
                         $lastQuery = $this->db->getLastQuery();
+                        // var_dump($lastQuery);
 
-                        $this->riwayattrx->inserthistori($stokbrg['id'], $stokbrg, $updatestok, $jenistrx . " " . $anggota_id, $lastQuery, $field_update);
+                        $this->riwayattrx->inserthistori($stokbrg['id'], $stokbrg, $updatestok, $namaTransaksi, $lastQuery, $field_update);
                     }
 
                     $this->db->transComplete();
@@ -633,7 +652,7 @@ class PeminjamanController extends BaseController
     {
         if ($this->request->isAJAX()) {
             $id = $this->request->getGet('id');
-            $builder = $this->db->table('peminjaman p')->select('a.nama_anggota, a.no_anggota, a.unit_id, a.level, u.singkatan, p.id, p.barang_id, p.jml_barang, p.anggota_id, p.keterangan, p.tgl_pinjam, b.nama_brg, sb.satuan_id, sb.sisa_stok, s.kd_satuan')
+            $builder = $this->db->table('peminjaman p')->select('a.nama_anggota, a.no_anggota, a.unit_id, a.level, u.singkatan, p.*, b.nama_brg, sb.satuan_id, sb.sisa_stok, s.kd_satuan')
                 ->join('anggota a', 'a.id=p.anggota_id')
                 ->join('unit u', 'u.id=a.unit_id')
                 ->join('barang b', 'b.id=p.barang_id')

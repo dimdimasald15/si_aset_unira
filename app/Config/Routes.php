@@ -155,6 +155,8 @@ $routes->group('admin/barang-tetap-masuk', ['filter' => 'ceklogin'], function ($
     $routes->get('getkdbrgbykdkat', 'BarangController::getkdbrgbykdkat');
     $routes->post('getbarangbyany', 'BarangController::getbarangbyany');
     $routes->post('getsubkdbarang', 'BarangController::getsubkdbarang');
+    $routes->post('updatedatastokmultiple', 'BarangController::updatedatastokmultiple');
+    // $routes->post('simpanstok', 'BarangController::simpanstok');
 });
 
 $routes->group('admin/barang-persediaan-masuk', ['filter' => 'ceklogin'], function ($routes) {
@@ -193,6 +195,8 @@ $routes->group('admin/barang-persediaan-masuk', ['filter' => 'ceklogin'], functi
     $routes->get('getkdbrgbykdkat', 'BarangController::getkdbrgbykdkat');
     $routes->post('getbarangbyany', 'BarangController::getbarangbyany');
     $routes->post('getsubkdbarang', 'BarangController::getsubkdbarang');
+    $routes->post('updatedatastokmultiple', 'BarangController::updatedatastokmultiple');
+    // $routes->post('simpanstok', 'BarangController::simpanstok');
 });
 
 $routes->group('admin/alokasi-barang-tetap', ['filter' => 'ceklogin'], function ($routes) {
@@ -267,6 +271,9 @@ $routes->group('admin/peminjaman-barang-tetap', ['filter' => 'ceklogin'], functi
     $routes->get('pilihsatuan', 'BarangController::pilihsatuan');
     $routes->post('cekbrgdanruang', 'BarangController::cekbrgdanruang');
 
+    $routes->post('updatedatakembali', 'PeminjamanController::updatedatakembali');
+    $routes->get('getdatapeminjaman', 'PeminjamanController::getdatapeminjaman');
+    $routes->get('pilihpeminjam', 'PeminjamanController::pilihanggota');
     // $routes->get('detail-barang/(:any)', 'BarangController::detailbarang/$1');
 });
 

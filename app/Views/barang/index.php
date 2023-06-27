@@ -730,7 +730,7 @@
           data: {
             id: id,
             nama_brg: namabrg,
-            nama_brg: namaruang,
+            nama_ruang: namaruang,
             jenis_kat: jenis_kat,
           },
           dataType: 'json',
