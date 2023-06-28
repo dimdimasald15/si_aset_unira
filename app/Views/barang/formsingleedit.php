@@ -82,7 +82,7 @@
             <div class="row mb-1">
               <div class="input-group mb-3">
                 <span class="input-group-text"><i class="bi bi-card-text"></i></span>
-                <input type="text" class="form-control" placeholder="Masukkan Nama Barang" id="namabarang" name="nama_brg<?= $no; ?>" readonly>
+                <input type="text" class="form-control" placeholder="Masukkan Nama Barang" id="namabarang" name="nama_brg" readonly>
                 <div class="invalid-feedback errnamabarang"></div>
               </div>
             </div>
@@ -265,6 +265,7 @@
       },
       dataType: "json",
       success: function(response) {
+        console.log(response);
         isiForm(response);
       }
     });

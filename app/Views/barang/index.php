@@ -835,6 +835,7 @@
   }
 
   function edit(id) {
+    console.log(id);
     saveMethod = "update";
     globalId = id;
     $('#cardmultipleinsert').hide(500);

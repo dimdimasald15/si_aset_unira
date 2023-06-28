@@ -865,12 +865,12 @@ class LaporanController extends BaseController
             $m = $this->request->getGet('m');
             $y = $this->request->getGet('y');
             if ($jenistrx == "Peminjaman") {
-                $query = $this->db->table("$jenistrx")
+                $query = $this->db->table("peminjaman")
                     ->select('SUM(CASE WHEN status = 0 THEN jml_barang ELSE 0 END) AS total_brg')
                     ->select('COUNT(DISTINCT CASE WHEN status = 0 THEN anggota_id END) AS pengguna')
                     ->where('status', 0);
             } else if ($jenistrx == "Permintaan") {
-                $query = $this->db->table("$jenistrx")->select(' COUNT(DISTINCT anggota_id) as pengguna, SUM(jml_barang) as total_brg');
+                $query = $this->db->table("permintaan")->select(' COUNT(DISTINCT anggota_id) as pengguna, SUM(jml_barang) as total_brg');
             }
             if (!empty($m) && !empty($y)) {
                 $query->where("MONTH(created_at)", $m);
