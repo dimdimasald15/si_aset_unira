@@ -335,18 +335,18 @@ class PeminjamanController extends BaseController
                         $agg_id = $this->request->getVar('anggota_id');
                     }
 
-                    $anggota_id = array();
+                    // $anggota_id = array();
                     $barang_id = array();
                     $jml_barang = array();
                     for ($b = 1; $b <= $jmldata; $b++) {
-                        array_push($anggota_id, $agg_id);
+                        // array_push($anggota_id, $agg_id);
                         array_push($barang_id, $this->request->getVar("barang_id$b"));
                         array_push($jml_barang, $this->request->getVar("jml_barang$b"));
                     }
 
                     for ($i = 0; $i < $jmldata; $i++) {
                         $simpanpeminjaman = [
-                            'anggota_id' => $anggota_id[$i],
+                            'anggota_id' => $agg_id,
                             'barang_id' => $barang_id[$i],
                             'jml_barang' => $jml_barang[$i],
                             'tgl_pinjam' => $this->request->getVar('tgl_pinjam'),
@@ -385,7 +385,7 @@ class PeminjamanController extends BaseController
                         // Periksa apakah query terakhir adalah operasi update
                         $lastQuery = $this->db->getLastQuery();
 
-                        $this->riwayattrx->inserthistori($stokbrg['id'], $stokbrg, $updatestok, $jenistrx . " " . $peminjaman_id[$i], $lastQuery, $field_update);
+                        $this->riwayattrx->inserthistori($stokbrg['id'], $stokbrg, $updatestok, $jenistrx . " " . $peminjaman_id, $lastQuery, $field_update);
                     }
 
                     $this->db->transComplete();
