@@ -19,7 +19,16 @@ use PHPUnit\Framework\Constraint\Count;
 
 class PelaporanController extends BaseController
 {
-    protected $barang, $kategori, $uri, $stokbarang, $riwayatbarang, $ruang, $riwayattrx, $pelaporan, $notifikasi, $anggota;
+    protected $barang;
+    protected $kategori;
+    protected $uri;
+    protected $stokbarang;
+    protected $riwayatbarang;
+    protected $ruang;
+    protected $riwayattrx;
+    protected $pelaporan;
+    protected $notifikasi;
+    protected $anggota;
     public function __construct()
     {
         $this->barang = new Barang();
@@ -544,10 +553,7 @@ class PelaporanController extends BaseController
     public function tampildetailpelaporan($no_laporan)
     {
         if (!$this->request->isAJAX()) {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses'
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
         $data = [
@@ -563,10 +569,7 @@ class PelaporanController extends BaseController
     public function tampilcardpelaporan()
     {
         if (!$this->request->isAJAX()) {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses'
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
         $keywords = $this->request->getGet('keywords');
@@ -614,10 +617,7 @@ class PelaporanController extends BaseController
     public function getLaporanByNoLaporan()
     {
         if (!$this->request->isAJAX()) {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses'
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
         $no_laporan = $this->request->getVar('no_laporan');
@@ -638,10 +638,7 @@ class PelaporanController extends BaseController
     public function multipledeletetemporary()
     {
         if (!$this->request->isAJAX()) {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses'
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
 
@@ -676,10 +673,7 @@ class PelaporanController extends BaseController
     public function multipledeletepermanen()
     {
         if (!$this->request->isAJAX()) {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses'
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
 
@@ -711,10 +705,7 @@ class PelaporanController extends BaseController
     public function restoredata()
     {
         if (!$this->request->isAJAX()) {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses'
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
 
@@ -754,10 +745,7 @@ class PelaporanController extends BaseController
     public function livesearchpelaporan()
     {
         if (!$this->request->isAJAX()) {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses'
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
         $keywords = $this->request->getGet('keywords');

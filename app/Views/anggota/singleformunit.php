@@ -91,6 +91,7 @@
     });
 
     if (saveMethod == "update") {
+      $('#tampilsingleformunit').find('.card-title').html('Ubah Data Unit');
       globalId = "<?= $globalId ?>";
       $.ajax({
         type: "post",
@@ -106,6 +107,22 @@
         }
       });
     }
+
+    $('#namaunit').on('input', function(e) {
+      e.preventDefault();
+      $(this).removeClass('is-invalid');
+      $(`.errnamaunit`).html('');
+    })
+    $('#singkatan').on('input', function(e) {
+      e.preventDefault();
+      $(this).removeClass('is-invalid');
+      $(`.errsingkatan`).html('');
+    })
+    $('#kat_unit').on('change', function(e) {
+      e.preventDefault();
+      $(this).removeClass('is-invalid');
+      $(`.errkat_unit`).html('');
+    })
 
     $('.formunit').submit(function(e) {
       e.preventDefault();
@@ -134,22 +151,21 @@
               $(`.errnamaunit`).html(namaunit);
             } else {
               $(`#namaunit`).removeClass('is-invalid');
-              $(`.errnamaunit`).html(namaunit);
-
+              $(`.errnamaunit`).html('');
             }
             if (singkatan) {
               $(`#singkatan`).addClass('is-invalid');
               $(`.errsingkatan`).html(singkatan);
             } else {
               $(`#singkatan`).removeClass('is-invalid');
-              $(`.errsingkatan`).html(singkatan);
+              $(`.errsingkatan`).html('');
             }
             if (kat_unit) {
               $(`#kat_unit`).addClass('is-invalid');
               $(`.errkat_unit`).html(kat_unit);
             } else {
               $(`#kat_unit`).removeClass('is-invalid');
-              $(`.errkat_unit`).html(kat_unit);
+              $(`.errkat_unit`).html('');
             }
           } else {
             $('#tampilsingleformunit').hide(500);

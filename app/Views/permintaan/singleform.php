@@ -8,7 +8,6 @@
     <form class="formpermintaan py-4">
       <?= csrf_field() ?>
       <div class="col-md-12">
-        <!-- <input type="hidden" name="id" id="id"> -->
         <div class="row g-2 mb-1">
           <div class="col-md-4">
             <label for="namaanggota" class="form-label">Nama Peminta</label>
@@ -143,6 +142,9 @@
     $.ajax({
       type: "get",
       url: "<?= $nav ?>/pilihanggota",
+      data: {
+        jenistrx: 'permintaan'
+      },
       dataType: "json",
       success: function(response) {
         $('#idanggota').empty();

@@ -14,7 +14,13 @@ use PHPUnit\Framework\Constraint\Count;
 
 class PengalokasianController extends BaseController
 {
-    protected $barang, $kategori, $uri, $stokbarang, $riwayatbarang, $ruang, $riwayattrx;
+    protected $barang;
+    protected $kategori;
+    protected $uri;
+    protected $stokbarang;
+    protected $riwayatbarang;
+    protected $ruang;
+    protected $riwayattrx;
     public function __construct()
     {
         $this->barang = new Barang();
@@ -78,7 +84,6 @@ class PengalokasianController extends BaseController
                     }
                     if ($isRestore) {
                         $builder->where('sb.deleted_at IS NOT NULL');
-                        // $builder->where('b.deleted_at IS NOT NULL');
                         $builder->where('k.jenis', $jenis);
                     } else {
                         $builder->where('sb.deleted_at', null);
@@ -132,10 +137,7 @@ class PengalokasianController extends BaseController
                 })
                 ->toJson(true);
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }
@@ -181,10 +183,7 @@ class PengalokasianController extends BaseController
             }
             echo json_encode($list);
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }
@@ -249,10 +248,7 @@ class PengalokasianController extends BaseController
             }
             echo json_encode($list);
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }
@@ -382,10 +378,7 @@ class PengalokasianController extends BaseController
                 echo json_encode($msg);
             }
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }
@@ -451,10 +444,7 @@ class PengalokasianController extends BaseController
 
             echo json_encode($msg);
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }
@@ -606,10 +596,7 @@ class PengalokasianController extends BaseController
 
             return json_encode($msg);
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }
@@ -655,10 +642,7 @@ class PengalokasianController extends BaseController
 
             return json_encode($msg);
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }
@@ -700,10 +684,7 @@ class PengalokasianController extends BaseController
 
             echo json_encode($msg);
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }

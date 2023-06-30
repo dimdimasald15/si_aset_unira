@@ -36,14 +36,12 @@ class GedungController extends BaseController
 
     public function listdatagedung()
     {
-        // return json_encode('test');
         if ($this->request->isAJAX()) {
             $this->db = \Config\Database::connect();
 
             $builder = $this->db->table('gedung')
                 ->select('gedung.id, nama_gedung, prefix, gedung.created_at, gedung.created_by, gedung.deleted_at, kategori.kd_kategori, kategori.nama_kategori')
                 ->join('kategori', 'gedung.kat_id=kategori.id');
-            // var_dump($builder);
 
             return DataTable::of($builder)
                 ->addNumbering('no')
@@ -56,10 +54,7 @@ class GedungController extends BaseController
                 })
                 ->toJson(true);
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }
@@ -88,10 +83,7 @@ class GedungController extends BaseController
             }
             echo json_encode($list);
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }
@@ -149,10 +141,7 @@ class GedungController extends BaseController
             }
             echo json_encode($msg);
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }
@@ -170,10 +159,7 @@ class GedungController extends BaseController
 
             echo json_encode($row);
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }
@@ -232,10 +218,7 @@ class GedungController extends BaseController
             }
             echo json_encode($msg);
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }
@@ -258,10 +241,7 @@ class GedungController extends BaseController
                 echo json_encode($msg);
             }
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }

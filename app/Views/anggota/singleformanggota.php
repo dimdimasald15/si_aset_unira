@@ -113,9 +113,15 @@
       } else {
         $('.noanggota').hide().html('');
       }
+
+      $('#noanggota').on('input', function(e) {
+        $(this).removeClass('is-invalid');
+        $(`.errnoanggota`).html('');
+      })
     })
 
     if (saveMethod == "update") {
+      $('#tampilsingleformanggota').find('.card-title').html('Ubah Data Anggota');
       globalId = "<?= $globalId ?>";
       $.ajax({
         type: "post",
@@ -129,6 +135,19 @@
         }
       });
     }
+
+    $('#namaanggota').on('input', function(e) {
+      $(this).removeClass('is-invalid');
+      $(`.errnamaanggota`).html('');
+    })
+    $('#level').on('change', function(e) {
+      $(this).removeClass('is-invalid');
+      $(`.errlevel`).html('');
+    })
+    $('#unit').on('change', function(e) {
+      $(this).removeClass('is-invalid');
+      $(`.errunit`).html('');
+    })
 
     $('.formanggota').submit(function(e) {
       e.preventDefault();
@@ -153,34 +172,34 @@
             var namaanggota = response.error.nama_anggota;
             var level = response.error.level;
             var noanggota = response.error.no_anggota;
-            var unit = response.error.unit;
+            var unit = response.error.unit_id;
             if (namaanggota) {
               $(`#namaanggota`).addClass('is-invalid');
               $(`.errnamaanggota`).html(namaanggota);
             } else {
               $(`#namaanggota`).removeClass('is-invalid');
-              $(`.errnamaanggota`).html(namaanggota);
+              $(`.errnamaanggota`).html('');
             }
             if (level) {
               $(`#level`).addClass('is-invalid');
               $(`.errlevel`).html(level);
             } else {
               $(`#level`).removeClass('is-invalid');
-              $(`.errlevel`).html(level);
+              $(`.errlevel`).html('');
             }
             if (noanggota) {
               $(`#noanggota`).addClass('is-invalid');
               $(`.errnoanggota`).html(noanggota);
             } else {
               $(`#noanggota`).removeClass('is-invalid');
-              $(`.errnoanggota`).html(noanggota);
+              $(`.errnoanggota`).html('');
             }
             if (unit) {
               $(`#unit`).addClass('is-invalid');
               $(`.errunit`).html(unit);
             } else {
               $(`#unit`).removeClass('is-invalid');
-              $(`.errunit`).html(unit);
+              $(`.errunit`).html('');
             }
           } else {
             $('#tampilsingleformanggota').hide(500);

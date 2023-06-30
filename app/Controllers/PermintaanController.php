@@ -17,7 +17,15 @@ use PHPUnit\Framework\Constraint\Count;
 
 class PermintaanController extends BaseController
 {
-    protected $barang, $kategori, $uri, $stokbarang, $riwayatbarang, $ruang, $riwayattrx, $anggota, $permintaan;
+    protected $barang;
+    protected $kategori;
+    protected $uri;
+    protected $stokbarang;
+    protected $riwayatbarang;
+    protected $ruang;
+    protected $riwayattrx;
+    protected $anggota;
+    protected $permintaan;
     public function __construct()
     {
         $this->barang = new Barang();
@@ -121,10 +129,7 @@ class PermintaanController extends BaseController
                 })
                 ->toJson(true);
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }
@@ -160,10 +165,7 @@ class PermintaanController extends BaseController
 
             echo json_encode($msg);
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }
@@ -171,10 +173,7 @@ class PermintaanController extends BaseController
     public function tampilmodalcetak()
     {
         if (!$this->request->isAJAX()) {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
 
@@ -237,10 +236,7 @@ class PermintaanController extends BaseController
             }
             echo json_encode($list);
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }
@@ -248,20 +244,25 @@ class PermintaanController extends BaseController
     public function pilihanggota()
     {
         if ($this->request->isAJAX()) {
+            $jenistrxExists = array_key_exists('jenistrx', $this->request->getGet());
 
-            $query = $this->db->table('anggota a')->select('a.*, u.singkatan')->join('unit u', 'u.id=a.unit_id')
+            $query = $this->db->table('anggota a')
+                ->select('a.*, u.singkatan')
+                ->join('unit u', 'u.id=a.unit_id')
                 ->where('u.deleted_at is null')
                 ->where('a.deleted_at is null')
-                ->orderBy('a.nama_anggota', 'ASC')
-                ->get();
-            $msg = $query->getResultArray();
+                ->orderBy('a.level', 'ASC')
+                ->orderBy('a.nama_anggota', 'ASC');
+
+            if ($jenistrxExists) {
+                $query->where('a.level', 'Karyawan');
+            }
+
+            $msg = $query->get()->getResultArray();
 
             echo json_encode($msg);
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }
@@ -448,10 +449,7 @@ class PermintaanController extends BaseController
 
             echo json_encode($msg);
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }
@@ -482,10 +480,7 @@ class PermintaanController extends BaseController
 
             echo json_encode($msg);
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }
@@ -797,10 +792,7 @@ class PermintaanController extends BaseController
 
             echo json_encode($msg);
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }
@@ -853,10 +845,7 @@ class PermintaanController extends BaseController
                 echo json_encode($msg);
             }
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }
@@ -910,10 +899,7 @@ class PermintaanController extends BaseController
 
             echo json_encode($msg);
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }
@@ -1040,10 +1026,7 @@ class PermintaanController extends BaseController
             }
             echo json_encode($msg);
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }
@@ -1082,10 +1065,7 @@ class PermintaanController extends BaseController
 
             return json_encode($msg);
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }

@@ -34,7 +34,6 @@ $routes->setAutoRoute(true);
 $routes->get('auth', 'Auth::index');
 $routes->get('auth/login', 'Auth::login');
 $routes->get('logout', 'Auth::logout');
-// $routes->get('public/detail-barang/(:segment)', 'BarangController::detailbarang/$1');
 $routes->get('detail-barang/(:segment)', 'BarangController::detailbarang/$1');
 $routes->get('laporan-kerusakan-aset/(:segment)', 'PelaporanController::tampilpelaporanaset/$1');
 $routes->post('laporan-kerusakan-aset/simpan-laporan', 'PelaporanController::simpanlaporan');
