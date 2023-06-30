@@ -8,7 +8,8 @@ use \Hermawan\DataTables\DataTable;
 
 class RuangController extends BaseController
 {
-    protected $ruang, $uri;
+    protected $ruang;
+    protected $uri;
 
     public function __construct()
     {
@@ -77,10 +78,7 @@ class RuangController extends BaseController
                 })
                 ->toJson(true);
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }
@@ -120,10 +118,7 @@ class RuangController extends BaseController
 
             return json_encode($msg);
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }
@@ -149,10 +144,7 @@ class RuangController extends BaseController
 
             return json_encode($msg);
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }
@@ -228,10 +220,7 @@ class RuangController extends BaseController
             }
             echo json_encode($msg);
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }
@@ -299,10 +288,7 @@ class RuangController extends BaseController
             }
             echo json_encode($msg);
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }

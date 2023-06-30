@@ -16,7 +16,15 @@ use App\Controllers\BaseController;
 
 class PeminjamanController extends BaseController
 {
-    protected $barang, $kategori, $uri, $stokbarang, $riwayatbarang, $ruang, $riwayattrx, $anggota, $peminjaman;
+    protected $barang;
+    protected $kategori;
+    protected $uri;
+    protected $stokbarang;
+    protected $riwayatbarang;
+    protected $ruang;
+    protected $riwayattrx;
+    protected $anggota;
+    protected $peminjaman;
     public function __construct()
     {
         $this->barang = new Barang();
@@ -71,7 +79,7 @@ class PeminjamanController extends BaseController
                     if ($isRestore && $status == 0) {
                         $builder->where('p.deleted_at IS NOT NULL');
                         $builder->where('k.jenis', $jenis);
-                    } else if ($isRestore == 0 && $status == 0) {
+                    } elseif ($isRestore == 0 && $status == 0) {
                         $builder->where('p.deleted_at', null);
                         $builder->where('b.deleted_at', null);
                         $builder->where('a.deleted_at', null);
@@ -126,10 +134,7 @@ class PeminjamanController extends BaseController
                 })
                 ->toJson(true);
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }
@@ -137,10 +142,7 @@ class PeminjamanController extends BaseController
     public function tampilsingleform()
     {
         if (!$this->request->isAJAX()) {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404('tampilsingleform');
             return view('errors/mazer/error-404', $data);
         }
 
@@ -193,10 +195,7 @@ class PeminjamanController extends BaseController
 
             echo json_encode($msg);
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }
@@ -335,11 +334,9 @@ class PeminjamanController extends BaseController
                         $agg_id = $this->request->getVar('anggota_id');
                     }
 
-                    // $anggota_id = array();
                     $barang_id = array();
                     $jml_barang = array();
                     for ($b = 1; $b <= $jmldata; $b++) {
-                        // array_push($anggota_id, $agg_id);
                         array_push($barang_id, $this->request->getVar("barang_id$b"));
                         array_push($jml_barang, $this->request->getVar("jml_barang$b"));
                     }
@@ -401,10 +398,7 @@ class PeminjamanController extends BaseController
 
             echo json_encode($msg);
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }
@@ -412,10 +406,7 @@ class PeminjamanController extends BaseController
     public function tampilmodalcetak()
     {
         if (!$this->request->isAJAX()) {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
 
@@ -438,7 +429,9 @@ class PeminjamanController extends BaseController
     public function pilihanggota()
     {
         if ($this->request->isAJAX()) {
-            $query = $this->db->table('peminjaman p')->select('a.id, a.nama_anggota')->join('anggota a', 'a.id=p.anggota_id')
+            $query = $this->db->table('peminjaman p')->select('a.*, u.singkatan')
+                ->join('anggota a', 'a.id=p.anggota_id')
+                ->join('unit u', 'u.id=a.unit_id')
                 ->where('p.status', 0)
                 ->where('p.deleted_at is null')->groupBy('a.id')
                 ->get();
@@ -446,10 +439,7 @@ class PeminjamanController extends BaseController
 
             echo json_encode($msg);
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }
@@ -489,10 +479,7 @@ class PeminjamanController extends BaseController
 
             echo json_encode($msg);
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }
@@ -640,10 +627,7 @@ class PeminjamanController extends BaseController
 
             echo json_encode($msg);
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }
@@ -674,10 +658,7 @@ class PeminjamanController extends BaseController
 
             echo json_encode($msg);
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }
@@ -797,7 +778,7 @@ class PeminjamanController extends BaseController
                             'jumlah_keluar' => $oldval->jumlah_keluar,
                             'sisa_stok' => $oldval->sisa_stok,
                         ];
-                    } else if ($isUpdated !== null) {
+                    } elseif ($isUpdated !== null) {
                         $histori_trx = $this->db->table('riwayat_transaksi rt')->select('rt.old_value,sb.jumlah_keluar, sb.sisa_stok, rt.stokbrg_id')->join('stok_barang sb', 'sb.id=rt.stokbrg_id')
                             ->where('sb.barang_id', $peminjaman['barang_id'])
                             ->where('rt.jenis_transaksi', "Update Peminjaman Barang " . $peminjaman['id'])
@@ -857,7 +838,7 @@ class PeminjamanController extends BaseController
                                 $data_ditemukan = true;
                                 $isDeleted = false;
                                 array_push($oldPeminjamanAll, $peminjamanall[$j]);
-                            } else if ($barang_id[$i] == $peminjamanall[$j]['barang_id'] && $this->request->getVar('anggota_id') == $peminjamanall[$j]['anggota_id'] && $peminjamanall[$j]['deleted_at'] !== null) {
+                            } elseif ($barang_id[$i] == $peminjamanall[$j]['barang_id'] && $this->request->getVar('anggota_id') == $peminjamanall[$j]['anggota_id'] && $peminjamanall[$j]['deleted_at'] !== null) {
                                 $data_ditemukan = true;
                                 $isDeleted = true;
                             }
@@ -874,7 +855,7 @@ class PeminjamanController extends BaseController
                             $updatepinjam = $this->peminjaman->setUpdateData($ubahpinjam);
 
                             $this->peminjaman->update($id, $updatepinjam);
-                        } else if ($data_ditemukan && !$isDeleted) {
+                        } elseif ($data_ditemukan && !$isDeleted) {
                             $ubahpinjam = array();
                             if ($oldpeminjaman['id'] !== $id) {
                                 $this->peminjaman->delete($id, true);
@@ -890,7 +871,7 @@ class PeminjamanController extends BaseController
                             $updatepinjam = $this->peminjaman->setUpdateData($ubahpinjam);
 
                             $this->peminjaman->update($oldpeminjaman['id'], $updatepinjam);
-                        } else if ($data_ditemukan && $isDeleted) {
+                        } elseif ($data_ditemukan && $isDeleted) {
                             $ubahpinjam = [
                                 'jml_barang' => intval($oldpeminjaman['jml_barang']) + intval($jml_barang[$i]),
                                 'tgl_pinjam' => $this->request->getVar("tgl_pinjam"),
@@ -944,10 +925,7 @@ class PeminjamanController extends BaseController
 
             echo json_encode($msg);
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }
@@ -1000,10 +978,7 @@ class PeminjamanController extends BaseController
                 echo json_encode($msg);
             }
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }
@@ -1059,10 +1034,7 @@ class PeminjamanController extends BaseController
 
             echo json_encode($msg);
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }
@@ -1189,10 +1161,7 @@ class PeminjamanController extends BaseController
             }
             echo json_encode($msg);
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }
@@ -1231,10 +1200,7 @@ class PeminjamanController extends BaseController
 
             return json_encode($msg);
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }

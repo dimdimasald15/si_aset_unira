@@ -7,13 +7,13 @@ use App\Models\Anggota;
 
 use \Hermawan\DataTables\DataTable;
 use App\Controllers\BaseController;
-// use CodeIgniter\Exceptions\PageNotFoundException;
-// use RuntimeException;
 use CodeIgniter\Database\Exceptions\DatabaseException;
 
 class AnggotaController extends BaseController
 {
-    protected $anggota, $unit, $uri;
+    protected $anggota;
+    protected $unit;
+    protected $uri;
     public function __construct()
     {
         $this->anggota = new Anggota();
@@ -92,10 +92,7 @@ class AnggotaController extends BaseController
                 })
                 ->toJson(true);
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }
@@ -153,10 +150,7 @@ class AnggotaController extends BaseController
                 })
                 ->toJson(true);
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }
@@ -182,10 +176,7 @@ class AnggotaController extends BaseController
 
             echo json_encode($msg);
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }
@@ -211,10 +202,7 @@ class AnggotaController extends BaseController
 
             echo json_encode($msg);
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }
@@ -227,10 +215,7 @@ class AnggotaController extends BaseController
 
             echo json_encode($msg);
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }
@@ -238,10 +223,7 @@ class AnggotaController extends BaseController
     public function simpandataunit()
     {
         if (!$this->request->isAJAX()) {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
 
@@ -305,10 +287,7 @@ class AnggotaController extends BaseController
     public function getdataunitbyid()
     {
         if (!$this->request->isAJAX()) {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
         $id = $this->request->getVar('id');
@@ -319,10 +298,7 @@ class AnggotaController extends BaseController
     public function updatedataunit($id)
     {
         if (!$this->request->isAJAX()) {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
 
@@ -384,10 +360,7 @@ class AnggotaController extends BaseController
     public function hapusdataunit($id)
     {
         if (!$this->request->isAJAX()) {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
 
@@ -410,10 +383,7 @@ class AnggotaController extends BaseController
     public function restoredataunit($id = [])
     {
         if (!$this->request->isAJAX()) {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
 
@@ -448,10 +418,7 @@ class AnggotaController extends BaseController
     public function simpandataanggota()
     {
         if (!$this->request->isAJAX()) {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
 
@@ -523,10 +490,7 @@ class AnggotaController extends BaseController
     public function getdataanggotabyid()
     {
         if (!$this->request->isAJAX()) {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
         $id = $this->request->getVar('id');
@@ -537,10 +501,7 @@ class AnggotaController extends BaseController
     public function updatedataanggota($id)
     {
         if (!$this->request->isAJAX()) {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
 
@@ -611,10 +572,7 @@ class AnggotaController extends BaseController
     public function hapusdataanggota($id)
     {
         if (!$this->request->isAJAX()) {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
 
@@ -637,10 +595,7 @@ class AnggotaController extends BaseController
     public function restoredataanggota($id = [])
     {
         if (!$this->request->isAJAX()) {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
 
@@ -675,10 +630,7 @@ class AnggotaController extends BaseController
     public function multipledeleteunittemporary()
     {
         if (!$this->request->isAJAX()) {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
 
@@ -698,10 +650,7 @@ class AnggotaController extends BaseController
     public function multipledeleteanggotatemporary()
     {
         if (!$this->request->isAJAX()) {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
 
@@ -723,10 +672,7 @@ class AnggotaController extends BaseController
     {
 
         if (!$this->request->isAJAX()) {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
         $id = $this->request->getVar('id');
@@ -776,10 +722,7 @@ class AnggotaController extends BaseController
     public function hapuspermanenanggota($id = [])
     {
         if (!$this->request->isAJAX()) {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
         $id = $this->request->getVar('id');

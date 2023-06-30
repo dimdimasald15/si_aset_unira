@@ -89,10 +89,7 @@ class DashboardController extends BaseController
 
             echo json_encode($msg);
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }
@@ -104,10 +101,7 @@ class DashboardController extends BaseController
             $msg = $query->getRowArray();
             echo json_encode($msg);
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }
@@ -119,10 +113,7 @@ class DashboardController extends BaseController
             $msg = $query->getRowArray();
             echo json_encode($msg);
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }
@@ -130,15 +121,11 @@ class DashboardController extends BaseController
     public function getcountbrgkeluar()
     {
         if (!$this->request->isAJAX()) {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
 
         $jenistrx = $this->request->getGet('jenistrx');
-        // $namatable = strtolower($jenistrx);
         if ($jenistrx == "Peminjaman") {
             $query = $this->db->table("peminjaman")
                 ->select('SUM(CASE WHEN status = 0 THEN jml_barang ELSE 0 END) AS total_brg')
@@ -146,7 +133,7 @@ class DashboardController extends BaseController
                 ->where('status', 0)
                 ->where('deleted_at is null')
                 ->get();
-        } else if ($jenistrx == "Permintaan") {
+        } elseif ($jenistrx == "Permintaan") {
             $query = $this->db->table("permintaan")->select(' COUNT(DISTINCT anggota_id) as pengguna, SUM(jml_barang) as total_brg')->where('deleted_at is null')->get();
         }
         $data = $query->getRowArray();

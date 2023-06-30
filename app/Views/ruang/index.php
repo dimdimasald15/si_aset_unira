@@ -34,13 +34,12 @@
       </div>
     </div>
     <div class="card-body">
-      <form class="form form-vertical" id="formTambah">
+      <form class="form py-4" id="formTambah">
         <?= csrf_field() ?>
         <div class="form-body">
           <div class="row">
             <div class="col-12">
               <input type="hidden" name="id" id="id">
-              <!-- <div class="form-group has-icon-left"> -->
               <div class="row mb-1">
                 <label for="namaruang">Nama Ruang</label>
               </div>

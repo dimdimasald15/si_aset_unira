@@ -9,7 +9,10 @@ use App\Controllers\BaseController;
 
 class ProfileController extends BaseController
 {
-    protected $uri, $auth, $pengguna, $gedung;
+    protected $uri;
+    protected $auth;
+    protected $pengguna;
+    protected $gedung;
     public function __construct()
     {
         $this->uri = service('uri');
@@ -54,10 +57,7 @@ class ProfileController extends BaseController
 
             echo json_encode($msg);
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }
@@ -182,10 +182,7 @@ class ProfileController extends BaseController
 
             return $this->response->setJSON($msg);
         } else {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
     }
@@ -193,10 +190,7 @@ class ProfileController extends BaseController
     public function tampilformeditprofil()
     {
         if (!$this->request->isAJAX()) {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
 
@@ -219,10 +213,7 @@ class ProfileController extends BaseController
     public function getprofilebynip()
     {
         if (!$this->request->isAJAX()) {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
 
@@ -237,10 +228,7 @@ class ProfileController extends BaseController
     public function updatedata($id)
     {
         if (!$this->request->isAJAX()) {
-            $data = [
-                'title' => 'Error 404',
-                'msg' => 'Maaf tidak dapat diproses',
-            ];
+            $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
         $validation = \Config\Services::validation();

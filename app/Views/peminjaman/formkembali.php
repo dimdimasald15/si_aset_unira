@@ -80,8 +80,10 @@
         success: function(response) {
           $('#idanggota').empty();
           $('#idanggota').append('<option value="">Pilih Anggota</option>');
-          $.each(response, function(key, value) {
-            $('#idanggota').append('<option value="' + value.id + '">' + value.nama_anggota + '</option>');
+          $.each(response, function(key, val) {
+            $('#idanggota').append(`
+          <option value="${val.id}">${val.nama_anggota} - ${val.level == "Mahasiswa"? `NIM ${val.no_anggota}`:`NIDN/NIY ${val.no_anggota}`} - ${val.singkatan}</option>
+          `);
           });
         }
       });
@@ -148,7 +150,7 @@
                     <td>
                       <div class="form-check">
                         <input class="form-check-input mt-0" type="checkbox" name="status[]" id="status${i}" value="${checkboxVal}" ${isChecked}>
-                        <label for="status">${bgtext}</label>
+                        <label for="status${i}">${bgtext}</label>
                       </div>
                     </td>
                   </tr>
@@ -336,7 +338,7 @@
                       <td>
                         <div class="form-check">
                           <input class="form-check-input mt-0" type="checkbox" name="status[]" id="status${i}" value="${checkboxVal}" ${isChecked}>
-                          <label for="status">${bgtext}</label>
+                          <label for="status${i}">${bgtext}</label>
                         </div>
                       </td>
                     </tr>

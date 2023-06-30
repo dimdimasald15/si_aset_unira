@@ -57,4 +57,13 @@ abstract class BaseController extends Controller
         $this->session = \Config\Services::session();
         $this->db = \Config\Database::connect();
     }
+
+    public function errorPage404()
+    {
+        $data = [
+            'title' => 'Error 404',
+            'msg' => 'Maaf tidak dapat diproses',
+        ];
+        return $data;
+    }
 }
