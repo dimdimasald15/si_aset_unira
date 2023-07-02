@@ -9,7 +9,7 @@
       <div class="card shadow">
         <div class="card-header bg-transparent pb-1">
           <div class="text-center text-muted">
-            <h3 class="mb-2 text-muted">Form Kerusakan Barang</h3>
+            <h3 class="mb-2 text-muted"><?= $title ?> Kerusakan Barang</h3>
           </div>
         </div>
         <div class="card-body" style="padding: 0.5rem 1rem 1rem 1rem;">

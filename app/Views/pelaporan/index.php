@@ -117,7 +117,7 @@
                     <!-- select All checkbox -->
                     <div class="checkbox checkbox-shadow checkbox-sm selectAll me-3">
                       <input type="checkbox" id="checkall" class='form-check-input'>
-                      <label for="checkboxsmall"></label>
+                      <label for="checkall"></label>
                     </div>
                     <!-- delete unread dropdown -->
                     <ul class="list-inline m-0 d-flex">
@@ -257,13 +257,14 @@
                     <?php if (count($pelaporan) > 0) { ?>
                       <ul class="users-list-wrapper media-list data_pelaporan">
                         <?php
+                        $no = 1;
                         foreach ($pelaporan as $row) : ?>
                           <li class="media <?= (!$row['viewed_by_admin']) ? '' : 'mail-read' ?>">
                             <div class="user-action">
                               <div class="checkbox-con me-3">
                                 <div class="checkbox checkbox-shadow checkbox-sm">
-                                  <input type="checkbox" name="id[]" class='form-check-input checkrow' value="<?= $row['id'] ?>">
-                                  <label for="checkboxsmall2"></label>
+                                  <input type="checkbox" name="id[]" class='form-check-input checkrow' value="<?= $row['id'] ?>" id="checkboxsmall<?= $no ?>">
+                                  <label for="checkboxsmall<?= $no ?>"></label>
                                 </div>
                               </div>
                               <span class="favorite <?= !$row['viewed_by_admin'] ? 'text-warning' : '' ?>">
@@ -352,7 +353,7 @@
         // $('.email-action').show(500);
         $('.email-action').removeClass('d-none');
         $.ajax({
-          type: "post",
+          type: "get",
           url: "notification/tampilcardpelaporan?isRestored=0",
           dataType: "json",
           success: function(response) {
@@ -403,7 +404,7 @@
       // $('.email-action').show(500);
       $('.email-action').removeClass('d-none');
       $.ajax({
-        type: "post",
+        type: "get",
         url: "notification/tampilcardpelaporan?isRestored=1",
         dataType: "json",
         success: function(response) {
@@ -416,7 +417,7 @@
       $('.email-action').removeClass('d-none');
 
       $.ajax({
-        type: "post",
+        type: "get",
         url: "notification/tampilcardpelaporan?isRestored=1",
         dataType: "json",
         success: function(response) {
