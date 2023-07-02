@@ -284,6 +284,7 @@ class PelaporanController extends BaseController
         $data = [
             'laporan' => $laporan,
             'url_detail_brg' => $url_detail_brg,
+            'title' => 'Form Ubah Laporan'
         ];
 
         return view('pelaporan/editlaporan', $data);

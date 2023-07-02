@@ -42,7 +42,6 @@ $routes->post('laporan-kerusakan-aset/update-laporan/(:segment)', 'PelaporanCont
 
 $routes->group('laporan-kerusakan-aset/pelaporan', function ($routes) {
     $routes->post('simpan-laporan', 'PelaporanController::simpanlaporan');
-    $routes->get('edit-laporan/(:segment)', 'PelaporanController::tampileditlaporan/$1');
     $routes->post('update-laporan/(:segment)', 'PelaporanController::updatelaporan/$1');
     $routes->get('pilihanggota', 'PermintaanController::pilihanggota');
     $routes->post('cekanggota', 'PelaporanController::cekanggota');
@@ -341,7 +340,7 @@ $routes->group('admin/notification', ['filter' => 'ceklogin'], function ($routes
     $routes->post('getnotifikasipelaporan', 'PelaporanController::getnotifikasipelaporan');
     $routes->post('notifikasipersediaan', 'BarangController::notifikasipersediaan');
 
-    $routes->post('tampilcardpelaporan', 'PelaporanController::tampilcardpelaporan');
+    $routes->get('tampilcardpelaporan', 'PelaporanController::tampilcardpelaporan');
     $routes->get('tampildetailpelaporan/(:any)', 'PelaporanController::tampildetailpelaporan/$1');
     $routes->post('getLaporanByNoLaporan', 'PelaporanController::getLaporanByNoLaporan');
 });
