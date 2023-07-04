@@ -272,13 +272,14 @@ class PelaporanController extends BaseController
         $kode_brg = $laporan->kode_brg;
         $ruang_id = $laporan->ruang_id;
         $url_detail_brg = base_url() . 'laporan-kerusakan-aset/' . str_replace(".", "-", $kode_brg) . "-" . $ruang_id;
-
+        // var_dump($laporan);
         $data = [
             'laporan' => $laporan,
             'url_detail_brg' => $url_detail_brg,
             'title' => 'Form Ubah Laporan'
         ];
-
+        // var_dump($data);
+        // die;
         return view('pelaporan/editlaporan', $data);
     }
 
