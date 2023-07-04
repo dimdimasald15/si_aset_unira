@@ -268,7 +268,6 @@
         qtymin--;
         $('#qty-input').val(qtymin);
       }
-      //  else qtymin = 0;
     })
 
     $('#cetakpdf').on('click', function(e) {

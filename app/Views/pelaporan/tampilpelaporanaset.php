@@ -141,7 +141,19 @@
                     <div class="col-lg-12">
                       <div class="col-12">
                         <div class="row g-2 mb-1">
-                          <div class="col-md-12">
+                          <div class="col-md-6">
+                            <label for="level2">Level Pelapor</label>
+                            <div class="input-group">
+                              <span class="input-group-text" id="basic-addon1"><i class="bi bi-person-badge-fill"></i></span>
+                              <select name="level2" class="form-select p-2" id="level2">
+                                <option value="" disabled selected>Pilih Level</option>
+                                <option value="Karyawan">Karyawan</option>
+                                <option value="Mahasiswa">Mahasiswa</option>
+                              </select>
+                              <div class="invalid-feedback errlevel"></div>
+                            </div>
+                          </div>
+                          <div class="col-md-6">
                             <div class="row mb-1 oldmember" style="display:none;">
                               <label for="idanggota">Nama Pelapor</label>
                               <div class="row mb-1">
@@ -309,7 +321,6 @@
     $('.btn-cancel1').on('click', function() {
       $('#intro').show(500);
       $('#newmember').hide(500);
-      // $('#formbrgrusak').hide(500);
       clearForm();
       defaulthide();
       clear_is_invalid();
@@ -391,19 +402,12 @@
       }
     })
 
-    $.ajax({
-      type: "get",
-      url: "pelaporan/pilihanggota",
-      dataType: "json",
-      success: function(response) {
-        $('#idanggota').empty();
-        $('#idanggota').append('<option value="">Pilih Pelapor</option>');
-        $.each(response, function(key, value) {
-          $('#idanggota').append('<option value="' + value.id + '">' +
-            value.nama_anggota + ' (' + value.no_anggota + ')' + ' - ' + value.level + '</option>');
-        });
-      }
-    });
+    $('#level2').on('change', function(e) {
+      e.preventDefault();
+      var level2 = $(this).val();
+      console.log(level2);
+      pilihanggota(level2);
+    })
 
     $('#idanggota').on('change', function(e) {
       e.preventDefault();
@@ -655,14 +659,56 @@
     });
   }
 
+  function pilihanggota(level) {
+    var keterangan, length = 10;
+    if (level == "Karyawan") {
+      keterangan = 'Masukkan NIY/NIDN';
+      // length = 5;
+    } else {
+      keterangan = 'Masukkan NIM'
+      // length = 10;
+    };
+    $('#idanggota').select2({
+      placeholder: keterangan,
+      minimumInputLength: length,
+      allowClear: true,
+      width: "70%",
+      ajax: {
+        url: "pelaporan/pilihanggota",
+        dataType: 'json',
+        delay: 250,
+        data: function(params) {
+          return {
+            search: params.term,
+            level: level,
+          }
+        },
+        processResults: function(data, page) {
+          return {
+            results: data
+          };
+        },
+        cache: true
+      },
+      templateResult: formatResult,
+    });
+  }
+
   function formatResult(data) {
     if (!data.id) {
       return data.text;
     }
 
-    var $result = $(
-      `<span><i class="bi bi-circle-square"> </i>${data.text}</span>`
-    );
+    var result;
+    if (data.nama !== undefined) {
+      $result = $(
+        `<span><i class="bi bi-person"> </i>${data.text} - ${data.nama}</span>`
+      );
+    } else {
+      $result = $(
+        `<span><i class="bi bi-circle-square"> </i>${data.text}</span>`
+      );
+    }
 
     return $result;
   }

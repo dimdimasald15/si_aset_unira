@@ -230,9 +230,9 @@
         {
           data: 'jml_barang',
           render: function(data, type, row) {
+            console.log(row);
             return data + ' ' + row.kd_satuan;
           },
-          // orderable: false,
           searchable: false,
         },
         {
@@ -335,7 +335,7 @@
         type: "get",
         url: "<?= $nav ?>/tampilformkembali",
         data: {
-          saveMethod: "update-kembali",
+          saveMethod: "updateKembali",
           nav: "<?= $nav ?>",
           jenis_kat: jenis_kat,
           formname: "Form Kembali"
@@ -475,7 +475,6 @@
           }
         });
       }
-
       return false;
     })
   });

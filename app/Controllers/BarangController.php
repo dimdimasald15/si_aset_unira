@@ -1198,11 +1198,8 @@ class BarangController extends BaseController
                 ];
             } else {
                 $id = array();
-                // $barang_id = array();
-                $ruang_id = array();
                 $satuan_id = array();
                 $jmlmskbaru = array();
-                $jmlkeluarbaru = array();
                 $tglbelibaru = array();
 
                 $jmldata = intval($this->request->getVar('jmldata'));
@@ -1823,12 +1820,10 @@ class BarangController extends BaseController
             for ($i = 0; $i < $jmldata; $i++) {
                 $query[] = $this->stokbarang->find($id[$i]);
                 $idbrg[] = $query[$i]['barang_id'];
+                $this->stokbarang->setSoftDelete($id[$i]);
+                $this->barang->setSoftDelete($idbrg[$i]);
             }
 
-            for ($j = 0; $j < $jmldata; $j++) {
-                $this->stokbarang->setSoftDelete($id[$j]);
-                $this->barang->setSoftDelete($idbrg[$j]);
-            }
             $msg = [
                 'sukses' => "$jmldata data $jenis berhasil dihapus secara temporary",
             ];

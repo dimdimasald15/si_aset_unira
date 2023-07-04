@@ -43,7 +43,7 @@ $routes->post('laporan-kerusakan-aset/update-laporan/(:segment)', 'PelaporanCont
 $routes->group('laporan-kerusakan-aset/pelaporan', function ($routes) {
     $routes->post('simpan-laporan', 'PelaporanController::simpanlaporan');
     $routes->post('update-laporan/(:segment)', 'PelaporanController::updatelaporan/$1');
-    $routes->get('pilihanggota', 'PermintaanController::pilihanggota');
+    $routes->get('pilihanggota', 'PelaporanController::pilihanggota');
     $routes->post('cekanggota', 'PelaporanController::cekanggota');
     $routes->get('pilihunit', 'PermintaanController::pilihunit');
 });
