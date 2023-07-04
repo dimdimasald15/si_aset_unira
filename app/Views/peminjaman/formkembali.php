@@ -21,7 +21,7 @@
             <label for="tglpinjam" class="form-label">Tanggal Peminjaman</label>
             <div class="input-group mb-3">
               <span class="input-group-text"><i class="bi bi-calendar-plus"></i></span>
-              <input type="<?= $saveMethod == "update" ? 'datetime-local' : 'date' ?>" class="form-control" id="tglpinjam" name="tgl_pinjam">
+              <input <?= $saveMethod == "update" ? 'type="datetime-local" readonly' : 'type="date"' ?> class="form-control" id="tglpinjam" name="tgl_pinjam">
               <div class="invalid-feedback errtglpinjam"></div>
             </div>
           </div>
@@ -54,24 +54,7 @@
 <script>
   var saveMethod = "<?= $saveMethod ?>";
   $(document).ready(function() {
-    if (saveMethod == 'update') {
-      $('#tampilformkembali').find('.card-title').html('Ubah Data <?= $title ?>');
-      $('.btnsimpan').html('Perbarui')
-      $('#tabledatabrg').show();
-      var globalId = "<?= $globalId ?>";
-
-      $.ajax({
-        type: "get",
-        url: "<?= $nav ?>/getpeminjamanbyid",
-        data: {
-          id: globalId
-        },
-        dataType: "json",
-        success: function(response) {
-          isiForm(response.data, response.jmldata);
-        }
-      });
-    } else {
+    if (saveMethod == 'updateKembali' && "<?= $globalId ?>" == '') {
       $('#tabledatabrg').hide();
       $.ajax({
         type: "get",
@@ -117,7 +100,6 @@
               if (response.jmldata != 0) {
                 $.each(response.data, function(i, val) {
                   var isChecked = val.status == 1 ? 'checked' : '';
-                  // var isBack = val.tgl_kembali == null ? '' : 'disabled';
                   var checkboxVal = val.status == 1 ? '1' : '0';
                   var bgtext = val.status == 1 ? '<span class="badge bg-primary">Sudah Kembali</span>' : '<span class="badge bg-danger">Belum Kembali</span>'
                   $('#tambahrow').append(`
@@ -202,6 +184,23 @@
           $('#tambahrow').empty();
         }
       })
+    } else {
+      $('#tampilformkembali').find('.card-title').html('Ubah Data <?= $title ?>');
+      $('.btnsimpan').html('Perbarui')
+      $('#tabledatabrg').show();
+      var globalId = "<?= $globalId ?>";
+
+      $.ajax({
+        type: "get",
+        url: "<?= $nav ?>/getpeminjamanbyid",
+        data: {
+          id: globalId
+        },
+        dataType: "json",
+        success: function(response) {
+          isiForm(response.data, response.jmldata);
+        }
+      });
     }
     $('.back-form').on('click', function() {
       $('#tampilsingleform').hide(500);
@@ -299,13 +298,11 @@
     satuan_id,
     kd_satuan
   }, jmldata) {
-
     $('#idanggota').html(`<option value="${anggota_id}">${nama_anggota}</option>`);
     $('#tglpinjam').val(tgl_pinjam);
     if (jmldata != 0) {
       for (let i = 0; i < jmldata; i++) {
         var isChecked = status == 1 ? 'checked' : '';
-        // var isBack = tgl_kembali == null ? '' : 'disabled';
         var checkboxVal = status == 1 ? '1' : '0';
         var bgtext = status == 1 ? '<span class="badge bg-primary">Sudah Kembali</span>' : '<span class="badge bg-danger">Belum Kembali</span>'
         $('#tambahrow').append(`

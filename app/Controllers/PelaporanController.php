@@ -9,13 +9,10 @@ use App\Models\Anggota;
 use App\Models\Kategori;
 use App\Models\Notifikasi;
 use App\Models\StokBarang;
-use CodeIgniter\Files\File;
 use App\Models\RiwayatBarang;
 use App\Models\RiwayatTransaksi;
 use App\Models\Pelaporankerusakan;
-use \Hermawan\DataTables\DataTable;
 use App\Controllers\BaseController;
-use PHPUnit\Framework\Constraint\Count;
 
 class PelaporanController extends BaseController
 {
@@ -65,7 +62,6 @@ class PelaporanController extends BaseController
             $title = 'Detail Barang';
         }
 
-        //Generate nomor laporan
         //Generate no laporan
         $today = date("ymd"); // Mendapatkan tanggal hari ini dalam format Ymd (misal: 230523)
         $randomNumber = rand(111111111, 999999999); // Menghasilkan angka acak antara 1000 dan 9999
@@ -232,9 +228,6 @@ class PelaporanController extends BaseController
 
             $this->db->table('pelaporan_kerusakan')->insert($insertlaporan);
 
-            // var_dump($this->request->getVar());
-
-
             $laporan_id = $this->db->insertID();
 
             $simpannotif = [
@@ -247,7 +240,6 @@ class PelaporanController extends BaseController
             try {
                 $this->db->table('notifikasi')->insert($insertnotif);
             } catch (Exception $e) {
-                // echo "Pembaruan data stok gagal: " . $e->getMessage();
                 $msg = ['error' => "Simpan data notifikasi: " . $e->getMessage()];
             }
 
@@ -351,7 +343,6 @@ class PelaporanController extends BaseController
 
                 $filefoto->move(FCPATH . '/assets/images/foto_kerusakan/', $namaBaru);
             }
-            // file_put_contents(FCPATH . '/assets/images/foto_kerusakan/' . $namaBaru, $filefoto);
 
             $anggota_id = $this->request->getVar('anggota_id');
 
@@ -420,7 +411,9 @@ class PelaporanController extends BaseController
                 ->where('a.deleted_at IS NULL')
                 ->where('p.deleted_at IS NULL');
 
-            $result = $query->orderBy('p.id', 'DESC')->limit(5)
+            $result = $query->orderBy('n.viewed_by_admin', 'ASC')
+                ->orderBy('p.id', 'DESC')
+                ->limit(5)
                 ->get()->getResultArray();
 
             $output = '';
@@ -527,7 +520,7 @@ class PelaporanController extends BaseController
 
             $this->db->table('notifikasi')->where('id', $pelaporan->notif_id)->update($updatenotif);
         } else if ($page) {
-            $pelaporan = $this->pelaporan->paginatePelaporan(10, 'pelaporan');
+            $pelaporan = $this->pelaporan->paginatePelaporan(5, 'pelaporan');
             $pager = $this->pelaporan->pager;
             $notviewed = $this->db->table('notifikasi n')->select('*')->where('viewed_by_admin', 0);
             $belumdibaca = count($notviewed->get()->getResult());
@@ -543,8 +536,8 @@ class PelaporanController extends BaseController
             'nav' => 'notification',
             'pelaporan' => $pelaporan,
             'no_laporan' => $no_laporan,
-            'pager' => $pager ? $pager : null,
-            'belumdibaca' => $belumdibaca ? $belumdibaca : '',
+            'pager' => isset($pager) ? $pager : null,
+            'belumdibaca' => isset($belumdibaca) ? $belumdibaca : '',
             'breadcrumb' => $breadcrumb
         ];
 
@@ -595,17 +588,12 @@ class PelaporanController extends BaseController
         }
 
         $pelaporan = $query->orderBy('p.id', 'DESC')->get()->getResultArray();
-        // $pelaporan = $this->pelaporan->paginatePelaporan2(10, 'pelaporan', $keywords, $isRestored);
 
-        // $pager = $this->pelaporan->pager;
         $notviewed = $this->db->table('notifikasi n')->select('*')->where('viewed_by_admin', 0);
         $belumdibaca = count($notviewed->get()->getResult());
-        // var_dump($belumdibaca);
-        // die;
 
         $data = [
             'pelaporan' => $pelaporan,
-            // 'pager' => $pager ? $pager : null,
             'belumdibaca' => $belumdibaca ? $belumdibaca : '',
         ];
         $msg = [
@@ -652,8 +640,6 @@ class PelaporanController extends BaseController
 
             $this->notifikasi->setSoftDelete($notif->id);
             $softdelete = $this->pelaporan->setSoftDelete();
-            // var_dump($softdelete);
-            // die;
             $this->db->table('pelaporan_kerusakan')->where('id', $id[0])->update($softdelete);
         } else {
             foreach ($id as $laporan_id) {
@@ -768,7 +754,6 @@ class PelaporanController extends BaseController
                 ->where('p.deleted_at IS NULL');
         }
         $pelaporan = $query->orderBy('p.id', 'DESC')->get()->getResultArray();
-        // var_dump($pelaporan);
 
         $data = [
             'pelaporan' => $pelaporan,
@@ -778,5 +763,43 @@ class PelaporanController extends BaseController
         ];
 
         echo json_encode($msg);
+    }
+
+    function pilihanggota()
+    {
+        if (!$this->request->isAJAX()) {
+            $data = $this->errorPage404();
+            return view('errors/mazer/error-404', $data);
+        }
+        $search = $this->request->getGet('search');
+        $level = $this->request->getGet('level');
+        if ($level && !empty($search)) {
+            $dataanggota = $this->db->table('anggota a')
+                ->select('a.*, u.singkatan')
+                ->join('unit u', 'u.id=a.unit_id')
+                ->where('u.deleted_at is null')
+                ->where('a.deleted_at is null')
+                ->where('a.level', $level)
+                ->like('a.no_anggota', $search)
+                ->orderBy('a.level', 'ASC')
+                ->orderBy('a.nama_anggota', 'ASC')->get();
+        }
+
+        if ($dataanggota->getNumRows() > 0) {
+            $list = [];
+            $key = 0;
+            foreach ($dataanggota->getResultArray() as $row) {
+                $list[$key]['id'] = $row['id'];
+                $list[$key]['text'] = $row['no_anggota'];
+                $list[$key]['nama'] = $row['nama_anggota'];
+
+                $key++;
+            }
+        } else {
+            $list = [
+                ['id' => '', 'text' => 'Maaf keyword yang anda cari tidak ditemukan'],
+            ];
+        }
+        echo json_encode($list);
     }
 }

@@ -187,6 +187,7 @@ class PeminjamanController extends BaseController
                 'nav' => $nav,
                 'jenis_kat' => $jenis_kat,
                 'formName' => $formName,
+                'globalId' => '',
             ];
 
             $msg = [
@@ -551,13 +552,16 @@ class PeminjamanController extends BaseController
                         'error' => $errors2
                     ];
                 } else {
-                    $anggota_id = $this->request->getVar('anggota_id');
                     $tgl_pinjam = $this->request->getVar('tgl_pinjam');
                     // update data peminjaman
                     $id = $this->request->getVar('id');
                     $barang_id = $this->request->getVar('barang_id');
                     $jml_barang = $this->request->getVar('jml_barang');
-                    $status = $this->request->getVar("status");
+                    if (array_key_exists('status', $this->request->getVar())) {
+                        $status = $this->request->getVar("status");
+                    } else {
+                        $status = [0];
+                    }
                     $tgl_kembali = array();
                     $kondisi_kembali = array();
                     for ($a = 0; $a < $jmldata; $a++) {
@@ -572,7 +576,7 @@ class PeminjamanController extends BaseController
                             'jml_hari' => $selisih_hari->format('%a'),
                             'kondisi_kembali' => $kondisi_kembali[$i],
                             'tgl_kembali' => $tgl_kembali[$i] ? $tgl_kembali : NULL,
-                            'status' => $status[$i] == NULL ? 0 : $status[$i],
+                            'status' => $status[$i],
                         ];
 
                         $updatedata = $this->peminjaman->setUpdateData($pengembalian);
@@ -620,7 +624,11 @@ class PeminjamanController extends BaseController
                         $msg = ['error' => 'Gagal menyimpan data peminjaman'];
                     } else {
                         // Jika berhasil disimpan
-                        $msg = ['sukses' => "Sukses $jmldata barang berhasil dikembalikan"];
+                        if ($saveMethod !== 'update') {
+                            $msg = ['sukses' => "Sukses $jmldata barang berhasil dikembalikan"];
+                        } else {
+                            $msg = ['sukses' => "Sukses data pengembalian barang berhasil diupdate"];
+                        }
                     }
                 }
             }
@@ -759,7 +767,6 @@ class PeminjamanController extends BaseController
                         'error' => $errors2
                     ];
                 } else {
-                    //  else {
                     $peminjamanall = $this->db->table('peminjaman p')->select('p.*, a.nama_anggota, a.no_anggota')->join('anggota a', 'a.id=p.anggota_id')->get()->getResultArray();
 
                     $this->db->transStart();
@@ -779,9 +786,10 @@ class PeminjamanController extends BaseController
                             'sisa_stok' => $oldval->sisa_stok,
                         ];
                     } elseif ($isUpdated !== null) {
-                        $histori_trx = $this->db->table('riwayat_transaksi rt')->select('rt.old_value,sb.jumlah_keluar, sb.sisa_stok, rt.stokbrg_id')->join('stok_barang sb', 'sb.id=rt.stokbrg_id')
+                        $histori_trx = $this->db->table('riwayat_transaksi rt')->select('rt.new_value,sb.jumlah_keluar, sb.sisa_stok, rt.stokbrg_id')->join('stok_barang sb', 'sb.id=rt.stokbrg_id')
                             ->where('sb.barang_id', $peminjaman['barang_id'])
                             ->where('rt.jenis_transaksi', "Update Peminjaman Barang " . $peminjaman['id'])
+                            ->orWhere('rt.jenis_transaksi', "Update Pengembalian Barang " . $peminjaman['id'])
                             ->orderBy('rt.id', 'DESC')
                             ->get()
                             ->getRowArray();
@@ -793,10 +801,6 @@ class PeminjamanController extends BaseController
                     }
                     $stokbrg = $this->stokbarang->find($histori_trx['stokbrg_id']);
 
-                    $ubahstok1 = [
-                        'jumlah_keluar' => $oldval->jumlah_keluar,
-                        'sisa_stok' => $oldval->sisa_stok,
-                    ];
                     $updatestok1 = $this->stokbarang->setUpdateData($ubahstok1);
                     //periksa perubahan data
                     $data_lama1 = $stokbrg;
@@ -811,13 +815,12 @@ class PeminjamanController extends BaseController
                     try {
                         $this->stokbarang->update($stokbrg['id'], $updatestok1);
                     } catch (Exception $e) {
-                        // echo "Pembaruan data stok gagal: " . $e->getMessage();
                         $msg = ['error' => "Pembaruan data stok gagal: " . $e->getMessage()];
                     }
                     // Periksa apakah query terakhir adalah operasi update
                     $lastQuery = $this->db->getLastQuery();
 
-                    $this->riwayattrx->inserthistori($stokbrg['id'], $stokbrg, $updatestok1, "Update " . "Update Barang Tetap " . $peminjaman['id'], $lastQuery, $field_update1);
+                    $this->riwayattrx->inserthistori($stokbrg['id'], $stokbrg, $updatestok1, "Update Barang Tetap " . $peminjaman['id'], $lastQuery, $field_update1);
 
                     //update table peminjaman
                     $barang_id = array();

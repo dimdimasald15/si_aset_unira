@@ -23,7 +23,6 @@ class Pelaporankerusakan extends Model
 
     public function setInsertData(array $data, $username)
     {
-        // $username = session()->get('username');
         if (!empty($username) && !array_key_exists('created_by', $data)) {
             $data['created_at'] = Time::now('Asia/Jakarta', 'id_ID');
             $data['created_by'] = $username;
@@ -33,7 +32,6 @@ class Pelaporankerusakan extends Model
 
     public function setUpdateData(array $data, $username)
     {
-        // $username = session()->get('username');
         if (!empty($username) && !array_key_exists('updated_by', $data)) {
             $data['updated_at'] = Time::now('Asia/Jakarta', 'id_ID');
             $data['updated_by'] = $username;
@@ -59,12 +57,10 @@ class Pelaporankerusakan extends Model
         $username = session()->get('username');
 
         $username = session()->get('username');
-        // if (!empty($username) && !array_key_exists('updated_by', $data)) {
         $data['updated_at'] = Time::now('Asia/Jakarta', 'id_ID');
         $data['updated_by'] = $username;
         $data['deleted_by'] = null;
         $data['deleted_at'] = null;
-        // }
         return $data;
     }
 
@@ -77,34 +73,8 @@ class Pelaporankerusakan extends Model
             ->where('n.deleted_at IS NULL')
             ->where('a.deleted_at IS NULL')
             ->where('pelaporan_kerusakan.deleted_at IS NULL')
+            ->orderBy('n.viewed_by_admin', 'ASC')
             ->orderBy('pelaporan_kerusakan.id', 'DESC')
             ->paginate($nmPage, $string);
-    }
-    public function paginatePelaporan2(int $nmPage, string $string, $keywords, $isRestored)
-    {
-
-        $pelaporan = $this->select('pelaporan_kerusakan.*, a.nama_anggota, a.no_anggota, a.level, u.singkatan, n.viewed_by_admin')
-            ->join('anggota a', 'a.id=pelaporan_kerusakan.anggota_id')
-            ->join('unit u', 'u.id=a.unit_id')
-            ->join('notifikasi n', 'pelaporan_kerusakan.id=n.laporan_id')
-            ->where('n.deleted_at IS NULL')
-            ->where('a.deleted_at IS NULL')
-            ->where('pelaporan_kerusakan.deleted_at IS NULL');
-        if ($isRestored == 1) {
-            $pelaporan->where('n.deleted_at IS NOT NULL')->where('a.deleted_at IS NOT NULL')
-                ->where('pelaporan_kerusakan.deleted_at IS NOT NULL');
-        } else if ($isRestored == 0) {
-            $pelaporan->where('n.deleted_at IS NULL')->where('a.deleted_at IS NULL')
-                ->where('pelaporan_kerusakan.deleted_at IS NULL');
-        }
-        if ($keywords !== '' && !empty($keywords)) {
-            $pelaporan->like('a.nama_anggota', "%$keywords%")
-                ->orLike('a.no_anggota', "%$keywords%")
-                ->orLike('u.singkatan', "%$keywords%");
-        }
-        $pelaporan->orderBy('pelaporan_kerusakan.id', 'DESC')
-            ->paginate($nmPage, $string);
-
-        return $pelaporan;
     }
 }
