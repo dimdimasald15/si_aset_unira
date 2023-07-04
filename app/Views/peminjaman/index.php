@@ -230,7 +230,6 @@
         {
           data: 'jml_barang',
           render: function(data, type, row) {
-            console.log(row);
             return data + ' ' + row.kd_satuan;
           },
           searchable: false,

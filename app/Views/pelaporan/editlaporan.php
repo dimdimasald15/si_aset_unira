@@ -142,9 +142,10 @@
 <script>
   $(document).ready(function() {
     var namaanggota = "<?= $laporan->nama_anggota ?>";
+    var level = "<?= $laporan->level ?>";
     $.ajax({
       type: "get",
-      url: "<?= site_url('laporan-kerusakan-aset/pelaporan/pilihanggota') ?>",
+      url: "<?= site_url('laporan-kerusakan-aset/pelaporan/pilihpelapor') ?>",
       dataType: "json",
       success: function(response) {
         $('#idanggota').empty();
