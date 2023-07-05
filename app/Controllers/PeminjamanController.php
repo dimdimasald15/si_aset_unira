@@ -88,6 +88,7 @@ class PeminjamanController extends BaseController
                     }
                 })
                 ->postQuery(function ($builder) {
+                    $builder->orderBy('p.status', 'ASC');
                     $builder->orderBy('p.id', 'desc');
                 })
                 ->addNumbering('no')
@@ -772,36 +773,14 @@ class PeminjamanController extends BaseController
                     $this->db->transStart();
                     //Update Table stok barang + riwayat transaksi stok barang
                     $peminjaman = $this->peminjaman->find($id);
-                    $isUpdated = $peminjaman['updated_at'];
-                    if ($isUpdated == null) {
-                        $histori_trx = $this->db->table('riwayat_transaksi rt')->select('rt.old_value,sb.jumlah_keluar, sb.sisa_stok, rt.stokbrg_id')->join('stok_barang sb', 'sb.id=rt.stokbrg_id')
-                            ->where('sb.barang_id', $peminjaman['barang_id'])
-                            ->where('rt.jenis_transaksi', "Peminjaman Barang " . $peminjaman['id'])
-                            ->orderBy('rt.id', 'DESC')
-                            ->get()
-                            ->getRowArray();
-                        $oldval = json_decode($histori_trx['old_value']);
-                        $ubahstok1 = [
-                            'jumlah_keluar' => $oldval->jumlah_keluar,
-                            'sisa_stok' => $oldval->sisa_stok,
-                        ];
-                    } elseif ($isUpdated !== null) {
-                        $histori_trx = $this->db->table('riwayat_transaksi rt')->select('rt.new_value,sb.jumlah_keluar, sb.sisa_stok, rt.stokbrg_id')->join('stok_barang sb', 'sb.id=rt.stokbrg_id')
-                            ->where('sb.barang_id', $peminjaman['barang_id'])
-                            ->where('rt.jenis_transaksi', "Update Peminjaman Barang " . $peminjaman['id'])
-                            ->orWhere('rt.jenis_transaksi', "Update Pengembalian Barang " . $peminjaman['id'])
-                            ->orderBy('rt.id', 'DESC')
-                            ->get()
-                            ->getRowArray();
-                        $oldval = json_decode($histori_trx['new_value']);
-                        $ubahstok1 = [
-                            'jumlah_keluar' => intval($oldval->jumlah_keluar) - intval($oldval->jumlah_keluar),
-                            'sisa_stok' => intval($oldval->sisa_stok) + intval($oldval->jumlah_keluar),
-                        ];
-                    }
-                    $stokbrg = $this->stokbarang->find($histori_trx['stokbrg_id']);
+                    $stokbrg = $this->stokbarang->select('*')->where('barang_id', $peminjaman['barang_id'])->where('ruang_id', 54)->get()->getRowArray();
+                    $ubahstok1 = [
+                        'jumlah_keluar' => intval($stokbrg['jumlah_keluar']) - intval($peminjaman['jml_barang']),
+                        'sisa_stok' => intval($stokbrg['sisa_stok']) + intval($peminjaman['jml_barang']),
+                    ];
 
                     $updatestok1 = $this->stokbarang->setUpdateData($ubahstok1);
+
                     //periksa perubahan data
                     $data_lama1 = $stokbrg;
                     $data_baru1 = $updatestok1;

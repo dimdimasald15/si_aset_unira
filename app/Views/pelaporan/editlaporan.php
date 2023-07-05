@@ -26,6 +26,7 @@
                             <div class="row mb-1">
                               <input type="hidden" name="id" id="id" value="<?= $laporan->id ?>">
                               <input type="hidden" name="stokbrg_id" id="stok_id" value="<?= $laporan->stokbrg_id ?>">
+                              <input type="hidden" name="anggota_id" id="stok_id" value="<?= $laporan->anggota_id ?>">
                               <div class="input-group">
                                 <span class="input-group-text" id="basic-addon1"><i class="bi bi-person"></i></span>
                                 <select name="anggota_id" class="form-select p-2" id="idanggota">
@@ -142,7 +143,6 @@
 <script>
   $(document).ready(function() {
     var namaanggota = "<?= $laporan->nama_anggota ?>";
-    var level = "<?= $laporan->level ?>";
     $.ajax({
       type: "get",
       url: "<?= site_url('laporan-kerusakan-aset/pelaporan/pilihpelapor') ?>",
@@ -158,6 +158,7 @@
             $('#idanggota').append('<option value="' + value.id + '">' +
               value.nama_anggota + ' (' + value.no_anggota + ')' + ' - ' + value.level + '</option>');
           }
+          $('#idanggota').prop('disabled', true);
         });
       }
     });
