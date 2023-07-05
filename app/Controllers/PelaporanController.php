@@ -564,8 +564,10 @@ class PelaporanController extends BaseController
             $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
-        $keywords = $this->request->getGet('keywords');
-        $isRestored = intval($this->request->getGet('isRestored'));
+
+        $keywords = array_key_exists('keywords', $this->request->getGet()) ? $this->request->getGet('keywords') : '';
+
+        $isRestored = array_key_exists('isRestored', $this->request->getGet()) ? intval($this->request->getGet('isRestored')) : '';
 
         $query = $this->db->table('pelaporan_kerusakan p')->select('p.*, a.nama_anggota, a.no_anggota, a.level, u.singkatan, n.viewed_by_admin')
             ->join('anggota a', 'a.id=p.anggota_id')
