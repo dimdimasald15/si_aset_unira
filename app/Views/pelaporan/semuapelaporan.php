@@ -25,7 +25,7 @@
               <img class="rounded-circle" src="<?= base_url('uploads/default.jpg') ?>" alt="Generic placeholder image">
             </div>
           </div>
-          <div class="media-body" onclick="detaillaporan('<?= $row['no_laporan'] ?>', <?= $angka ?>)">
+          <div class="media-body" onclick="detaillaporan('<?= $row['no_laporan'] ?>', <?= $row['viewed_by_admin'] ?>)">
             <div class="user-details">
               <div class="mail-items">
                 <?php if ($row['level'] == 'Mahasiswa') { ?>
@@ -73,13 +73,15 @@
 
   });
 
-  function detaillaporan(string) {
+  function detaillaporan(string, viewed) {
     $('.email-user-list').hide(500);
     $('.email-action').addClass('d-none', true);
-
     $.ajax({
       // type: "post",
       url: "notification/tampildetailpelaporan/" + string,
+      data: {
+        viewed: viewed,
+      },
       dataType: "json",
       success: function(response) {
         $('.pelaporan-detail').empty();

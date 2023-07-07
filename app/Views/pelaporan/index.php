@@ -28,16 +28,19 @@
   </div>
   <section class="section content-area-wrapper bg-dark text-white shadow">
     <div class="sidebar-left bg-dark text-white">
-      <div class="sidebar">
+      <div class="sidebar" id="sidebar2">
         <div class="sidebar-content email-app-sidebar d-flex">
-          <!-- sidebar close icon -->
-          <span class="sidebar-close-icon">
-            <i class="bx bx-x"></i>
-          </span>
-          <!-- sidebar close icon -->
           <div class="email-app-menu bg-dark text-white">
-            <div class="form-group form-group-compose mt-3">
-              <img src="<?= base_url() ?>/assets/images/logo/logouniralandscape.jpg" alt="Logo" style="max-width: 150px;">
+            <div class="sidebar-header my-3">
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="logo" style="padding: 0px 0px 0px 20px;">
+                  <a href="#"><img src="<?= base_url() ?>assets/images/logo/logouniralandscape.jpg" alt="Logo" style="max-height:35px;max-width: 120px;"></a>
+                </div>
+                <div class="toggler" style="padding: 0px 20px;">
+                  <a href="#" class="sidebar2-x fs-2"><i class="bi bi-x bi-middle"></i></a>
+                  <a href="#" class="sidebar2-burger fs-1" hidden><i class="bi bi-justify fs-3"></i></a>
+                </div>
+              </div>
             </div>
             <div class="sidebar-menu-list ps">
               <!-- sidebar menu  -->
@@ -49,8 +52,8 @@
                     </svg>
                     </i>
                   </div>
-                  Inbox
-                  <span class="badge badge-sm badge-notification bg-light-success px-1 text-success" style="margin-left: 20px;"><?= $belumdibaca ?></span>
+                  <span class="sidebar-text">Inbox</span>
+                  <span class="sidebar-text badge badge-sm badge-notification bg-light-success text-success"><?= $belumdibaca ?></span>
                 </a>
                 <a href="#" class="list-group-item" onclick="trashmenu()" id="trash-menu">
                   <div class="fonticon-wrap d-inline me-3">
@@ -58,7 +61,7 @@
                       <use xlink:href="<?= base_url() ?>assets/vendors/bootstrap-icons/bootstrap-icons.svg#trash" />
                     </svg>
                   </div>
-                  Trash
+                  <span class="sidebar-text">Trash</span>
                 </a>
               </div>
               <!-- sidebar menu  end-->
@@ -278,7 +281,7 @@
                                 <img class="rounded-circle" src="<?= base_url('uploads/default.jpg') ?>" alt="Generic placeholder image">
                               </div>
                             </div>
-                            <div class="media-body" onclick="detaillaporan('<?= $row['no_laporan'] ?>')">
+                            <div class="media-body" onclick="detaillaporan('<?= $row['no_laporan'] ?>', <?= $row['viewed_by_admin'] ?>)">
                               <div class="user-details">
                                 <div class="mail-items">
                                   <?php if ($row['level'] == 'Mahasiswa') { ?>
@@ -336,6 +339,25 @@
 <?= $this->section('javascript') ?>
 <script>
   $(document).ready(function() {
+    $('.sidebar2-burger').hide();
+    $('.sidebar2-x').on('click', function(e) {
+      $('.logo').hide();
+      $('.sidebar2-x').hide();
+      $('.sidebar2-burger').removeAttr('hidden').show();
+      $('.sidebar-text').toggle();
+      $('.sidebar-left').css('width', '80px');
+      $('.email-app-menu').css('width', '80px');
+    });
+
+    $('.sidebar2-burger').on('click', function(e) {
+      $('.sidebar2-burger').hide().attr('hidden');
+      $('.logo').show();
+      $('.sidebar-left').css('width', '25%');
+      $('.email-app-menu').css('width', '100%');
+      $('.sidebar2-x').show();
+      $('.sidebar-text').toggle();
+    });
+
     var no_laporan = "<?= $no_laporan ?>";
     $('#checkall').prop('checked', false)
 
@@ -487,11 +509,14 @@
     }
   }
 
-  function detaillaporan(string) {
+  function detaillaporan(string, viewed) {
     $('.email-user-list').hide(500);
     $('.email-action').addClass('d-none', true);
     $.ajax({
       url: "notification/tampildetailpelaporan/" + string,
+      data: {
+        viewed: viewed,
+      },
       dataType: "json",
       success: function(response) {
         $('.pelaporan-detail').empty();

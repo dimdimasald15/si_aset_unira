@@ -141,7 +141,7 @@
                     <div class="col-lg-12">
                       <div class="col-12">
                         <div class="row g-2 mb-1">
-                          <div class="col-md-6">
+                          <div class="col-md-6 level2">
                             <label for="level2">Level Pelapor</label>
                             <div class="input-group">
                               <span class="input-group-text" id="basic-addon1"><i class="bi bi-person-badge-fill"></i></span>
@@ -366,6 +366,7 @@
         $('.oldmember').show();
         $('#idanggota').show();
         $('.btn-cancel1').show();
+        $('.level2').show();
         $('#btn-cancel2').hide();
       }
     });
@@ -405,7 +406,6 @@
     $('#level2').on('change', function(e) {
       e.preventDefault();
       var level2 = $(this).val();
-      console.log(level2);
       pilihanggota(level2);
     })
 
@@ -501,6 +501,7 @@
               $('.btngroup2').show(500);
               $('#btn-cancel2').show();
               $('.btn-cancel1').hide();
+              $('.level2').hide();
             }
           }
         }

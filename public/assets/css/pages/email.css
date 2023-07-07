@@ -122,7 +122,8 @@
   outline: 0;
 }
 .email-application .content-area-wrapper .content-right {
-  width: calc(100% - 260px);
+  /* width: calc(100% - 260px); */
+  width: 100%;
   background-color: #fff;
 }
 .email-application .content-area-wrapper .content-right .content-wrapper {

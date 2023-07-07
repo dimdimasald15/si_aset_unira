@@ -1009,7 +1009,6 @@
             }
           },
           error: function(xhr, ajaxOptions, thrownError) {
-            console.log(xhr);
             Swal.fire(
               'Error!',
               xhr.status + " + " + xhr.responseText + " + " + thrownError,

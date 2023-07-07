@@ -202,7 +202,6 @@
     $('#formTambahStok').submit(function(e) {
       e.preventDefault();
       let url = "";
-      console.log("<?= $saveMethod ?>");
       globalId = $(this).find("input[name='id']").val();
 
       if (saveMethod == "update") {
@@ -210,7 +209,6 @@
       } else if (saveMethod == "add") {
         url = "<?= $nav ?>/simpanstok";
       }
-      console.log(url);
 
       let formdata = new FormData(this); // mengambil data dari form
       formdata.append('jenis_transaksi', "<?= $jenistrx ?>"); // menambahkan data tambahan

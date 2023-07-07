@@ -153,7 +153,6 @@
       e.preventDefault();
       let url = ""
       if (saveMethod == "update") {
-        console.log(globalId);
         url = "<?= $nav ?>/updateanggota/" + globalId;
       } else if (saveMethod == "add") {
         url = "<?= $nav ?>/simpananggota";

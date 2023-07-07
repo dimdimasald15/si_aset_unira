@@ -521,7 +521,6 @@
   }
 
   function hapus(id, namabrg, namaruang, idsarpras) {
-    console.log(idsarpras);
     Swal.fire({
       title: `Apakah kamu yakin ingin menghapus data ${namabrg} di ${namaruang}?`,
       text: `Jika data ${namabrg} di ${namaruang} dihapus secara temporary, maka jumlah barang di kembalikan ke Sarana dan Prasarana.`,
