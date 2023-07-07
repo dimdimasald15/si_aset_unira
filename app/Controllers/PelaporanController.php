@@ -528,14 +528,13 @@ class PelaporanController extends BaseController
             $notviewed = $this->db->table('notifikasi n')->select('*')->where('viewed_by_admin', 0);
             $belumdibaca = count($notviewed->get()->getResult());
         }
-
         $data = [
             'title' => 'Notifikasi Kerusakan Aset',
             'nav' => 'notification',
             'pelaporan' => $pelaporan,
             'no_laporan' => $no_laporan,
             'pager' => isset($pager) ? $pager : null,
-            'belumdibaca' => isset($belumdibaca) ? $belumdibaca : '',
+            'belumdibaca' => isset($belumdibaca) ? "($belumdibaca)" : '',
             'breadcrumb' => $breadcrumb
         ];
 
@@ -548,6 +547,24 @@ class PelaporanController extends BaseController
             $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
+        $viewed = array_key_exists('viewed', $this->request->getGet()) ? $this->request->getGet('viewed') : '';
+
+        if ($viewed == 0) {
+            $query = $this->db->table('notifikasi n')->select('n.*')->join('pelaporan_kerusakan p', 'p.id=n.laporan_id')->where('no_laporan', $no_laporan)->get();
+            $notif = $query->getRow();
+
+            $id = session()->get('id');
+
+            $ubahnotif = [
+                'petugas_id' => $id,
+                'viewed_by_admin' => 1
+            ];
+
+            $updatenotif = $this->notifikasi->setUpdateData($ubahnotif);
+
+            $this->db->table('notifikasi')->where('id', $notif->id)->update($updatenotif);
+        }
+
         $data = [
             'no_laporan' => $no_laporan,
         ];

@@ -440,7 +440,6 @@
   }
 
   function hapus(id, namaanggota, namabrg) {
-    console.log(namabrg);
     Swal.fire({
       title: `Apakah kamu yakin ingin menghapus data permintaan ${namaanggota} atas ${jenis_kat} ${namabrg}?`,
       icon: 'warning',

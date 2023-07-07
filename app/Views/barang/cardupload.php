@@ -1,7 +1,3 @@
-<?php
-$foto = json_decode($fotobrg);
-echo $foto;
-?>
 <div class="card mb-3 shadow" id="cardupload">
   <div class="card-header shadow-sm">
     <h5 class="card-title">Upload Gambar <?= $title; ?></h5>

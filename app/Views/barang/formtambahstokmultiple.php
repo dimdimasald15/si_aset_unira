@@ -158,7 +158,6 @@
 
   function checkBarangDuplikat(row) {
     let idbrg = $(`#idbrg${row}`).val();
-    console.log(idbrg);
 
     if (idbrgSet.has(idbrg)) {
       Swal.fire({

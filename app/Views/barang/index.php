@@ -403,7 +403,7 @@
           data: 'sisa_stok',
           render: function(data, type, row) {
             if (jenis_kat == "Barang Persediaan") {
-              return parseInt(data) <= 3 ? `${data} ${row.kd_satuan}*` : `${data} ${row.kd_satuan}`;
+              return parseInt(data) <= 3 ? `<span class="fw-bold" style="color: red; background-color: rgba(252, 255, 0, 0.5)">${data} ${row.kd_satuan}*</span>` : `${data} ${row.kd_satuan}`;
             } else {
               return `${data} ${row.kd_satuan}`;
             }
@@ -835,7 +835,6 @@
   }
 
   function edit(id) {
-    console.log(id);
     saveMethod = "update";
     globalId = id;
     $('#cardmultipleinsert').hide(500);

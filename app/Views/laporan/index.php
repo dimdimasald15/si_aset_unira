@@ -399,7 +399,6 @@
 
         var baseColor = generateColors(singkatan1[0]);
         var colors = [];
-        // console.log(singkatan1.length + 1);
         for (var i = 0; i < singkatan1[0].length; i++) {
           var bgColor = baseColor[i].replace(')', ', 0.6)').replace('rgb', 'rgba');
           var bdColor = baseColor[i].replace(')', ', 1)').replace('rgb', 'rgba');
@@ -658,7 +657,6 @@
   }
 
   function filterSerialize() {
-    // console.log(`m=${$('#selectbulan').val()}&y=${$('#selecttahun').val()}`);
     return `m=${$('#selectbulan').val()}&y=${$('#selecttahun').val()}`;
   }
 </script>
