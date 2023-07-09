@@ -711,6 +711,7 @@ class LaporanController extends BaseController
             ->groupBy('a.unit_id')
             ->orderBy('bulan_tahun', 'ASC');
         $initialArray = $builder->get()->getResultArray();
+
         //Dapatkan bulan pertama untuk tampilan grafik
         $firstmonth = $initialArray[0]['bulan_tahun'];
         list($bulan1, $tahun1) = explode('/', $firstmonth);
@@ -743,7 +744,6 @@ class LaporanController extends BaseController
                 $resultArray1[format_bulan($m)][] = $newData;
             }
         }
-
         // Perulangan untuk mengelompokkan data berdasarkan bulan
         foreach ($initialArray as $item) {
             $bulanTahun = $item['bulan_tahun'];
@@ -774,8 +774,11 @@ class LaporanController extends BaseController
                 }
             }
             // Mengganti nilai $value dengan array yang telah digabungkan
+            // var_dump($merged);
             $value = array_values($merged);
+            var_dump($value);
         }
+        die;
 
         echo json_encode($resultArray1);
     }

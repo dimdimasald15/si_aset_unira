@@ -136,6 +136,7 @@
     const brgtetap = $('#brgttp h6').html();
     const brgpersediaan = $('#brgsedia h6').html();
 
+
     // Panggil fungsi getCountBarang untuk masing-masing jenis barang
     getCountBarang('getcountbrg', brgtetap, '#brgttp', 'barang-tetap-masuk');
     getCountBarang('getcountbrg', brgpersediaan, '#brgsedia', 'barang-persediaan-masuk');
@@ -156,17 +157,20 @@
       success: function(response) {
         if (response.jenistrx == "Peminjaman") {
           $(targetId).find('h6').after(`
-          <h6 class="font-extrabold">${response.data.pengguna}</h6>
+          <h6 class="count font-extrabold">${response.data.pengguna}</h6>
           <h6 class="text-muted font-semibold">Barang dipinjam</h6>
-          <h6 class="font-extrabold">${response.data.total_brg? `${response.data.total_brg}`:`0`}</h6>
+          <h6 class="count2 font-extrabold">${response.data.total_brg? `${response.data.total_brg}`:`0`}</h6>
         `);
         } else if (response.jenistrx == "Permintaan") {
           $(targetId).find('h6').after(`
-          <h6 class="font-extrabold">${response.data.pengguna}</h6>
+          <h6 class="count font-extrabold">${response.data.pengguna}</h6>
           <h6 class="text-muted font-semibold">Barang yang diminta</h6>
-          <h6 class="font-extrabold">${response.data.total_brg}</h6>
+          <h6 class="count2 font-extrabold">${response.data.total_brg}</h6>
         `);
         }
+
+        counterNumber(`${targetId} .count`, response.data.pengguna, response.data.pengguna);
+        counterNumber(`${targetId} .count2`, response.data.total_brg, response.data.total_brg);
 
         $(targetId).after(`
         <div class="col-md-12 mt-0">
@@ -184,9 +188,9 @@
       dataType: "json",
       success: function(response) {
         $(targetId).find('h6').after(`
-        <h6 class="font-extrabold">${response.result}</h6>
+        <h6 class="count font-extrabold">${response.result}</h6>
       `);
-
+        counterNumber(`${targetId} .count`, response.result, response.result);
         $(targetId).after(`
         <div class="col-md-12 mt-5">
           <p class="text-end m-0"><a href="${hrefLink}">Selengkapnya <i class="fa fa-arrow-circle-right"></i></a></p>
@@ -207,11 +211,15 @@
         let totalval = Number(response.total_valuasi);
         let valuasiFormatted = 'Rp ' + totalval.toLocaleString('id-ID') + ',-';
 
+
         $(targetId).find('h6').after(`
-        <h6 class="font-extrabold">${response.result}</h6>
+        <h6 class="count font-extrabold">${response.result}</h6>
         <h6 class="text-muted font-semibold">Total Valuasi</h6>
-        <h6 class="font-extrabold">${valuasiFormatted}</h6>
+        <h6 class="count2 font-extrabold"></h6>
       `);
+
+        counterNumber(`${targetId} .count`, response.result, response.result);
+        counterNumber(`${targetId} .count2`, totalval, valuasiFormatted);
 
         $(targetId).after(`
         <div class="col-md-12 mt-0">
@@ -220,6 +228,24 @@
       `);
       }
     });
+  }
+
+
+  function counterNumber(targetId, angka, fixvalue) {
+    $(targetId)
+      .prop('Counter', 0)
+      .animate({
+        Counter: angka,
+      }, {
+        duration: 3000,
+        easing: 'swing',
+        step: function(now) {
+          $(this).text(Math.ceil(now));
+        },
+        complete: function() {
+          $(this).text(fixvalue); // Menggantikan teks dengan valuasiFormatted setelah selesai melakukan counter
+        },
+      });
   }
 </script>
 <?= $this->endSection() ?>

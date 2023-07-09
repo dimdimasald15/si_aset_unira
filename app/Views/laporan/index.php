@@ -593,20 +593,23 @@
         if (response.jenistrx == "Peminjaman") {
           $(targetId).find('h6').after(`
           <div class="getpeminjaman">
-          <h6 class="font-extrabold">${response.data.pengguna}</h6>
+          <h6 class="count font-extrabold">${response.data.pengguna}</h6>
           <h6 class="text-muted font-semibold">Barang dipinjam</h6>
-          <h6 class="font-extrabold">${response.data.total_brg? `${response.data.total_brg}`:`0`}</h6>
+          <h6 class="count2 font-extrabold">${response.data.total_brg? `${response.data.total_brg}`:`0`}</h6>
           </div>
         `);
         } else if (response.jenistrx == "Permintaan") {
           $(targetId).find('h6').after(`
           <div class="getpermintaan">
-          <h6 class="font-extrabold">${response.data.pengguna}</h6>
+          <h6 class="count font-extrabold">${response.data.pengguna}</h6>
           <h6 class="text-muted font-semibold">Barang yang diminta</h6>
-          <h6 class="font-extrabold">${response.data.total_brg}</h6>
+          <h6 class="count2 font-extrabold">${response.data.total_brg}</h6>
           </div>
         `);
         }
+
+        counterNumber(`${targetId} .count`, response.data.pengguna, response.data.pengguna);
+        counterNumber(`${targetId} .count2`, response.data.total_brg, response.data.total_brg);
       }
     });
   }
@@ -626,11 +629,13 @@
         $(targetId).find('h6').nextAll().empty();
         $(targetId).find('h6').after(`
         <div class="getbarang">
-        <h6 class="font-extrabold">${response.result}</h6>
+        <h6 class="count font-extrabold">${response.result}</h6>
         <h6 class="text-muted font-semibold">Total Valuasi</h6>
-        <h6 class="font-extrabold">${valuasiFormatted}</h6>
+        <h6 class="count2 font-extrabold">${valuasiFormatted}</h6>
         </div>
       `);
+        counterNumber(`${targetId} .count`, response.result, response.result);
+        counterNumber(`${targetId} .count2`, totalval, valuasiFormatted);
       }
     });
   }
@@ -658,6 +663,24 @@
 
   function filterSerialize() {
     return `m=${$('#selectbulan').val()}&y=${$('#selecttahun').val()}`;
+  }
+
+
+  function counterNumber(targetId, angka, fixvalue) {
+    $(targetId)
+      .prop('Counter', 0)
+      .animate({
+        Counter: angka,
+      }, {
+        duration: 3000,
+        easing: 'swing',
+        step: function(now) {
+          $(this).text(Math.ceil(now));
+        },
+        complete: function() {
+          $(this).text(fixvalue); // Menggantikan teks dengan valuasiFormatted setelah selesai melakukan counter
+        },
+      });
   }
 </script>
 <?= $this->endSection() ?>
