@@ -354,7 +354,6 @@
         data: function(d) {
           d.barang = $('#selectbarang').val()
           d.kategori = $('#selectkategori').val()
-          // d.lokasi = $('#selectlokasi').val()
         },
         dataSrc: function(json) {
           json.data.forEach(function(item) {
