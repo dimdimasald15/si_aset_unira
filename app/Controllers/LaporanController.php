@@ -776,9 +776,7 @@ class LaporanController extends BaseController
             // Mengganti nilai $value dengan array yang telah digabungkan
             // var_dump($merged);
             $value = array_values($merged);
-            var_dump($value);
         }
-        die;
 
         echo json_encode($resultArray1);
     }
