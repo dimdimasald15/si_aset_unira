@@ -107,7 +107,7 @@
     <div class="card-body table-restore" style="display:none;">
       <div class="table-responsive py-4">
         <table class="table table-bordered mb-3" id="table-restore" width="100%">
-          <thead class=" thead-dark">
+          <thead class=" thead-light">
             <tr>
               <th>No.</th>
               <th>Kode Barang</th>
@@ -150,8 +150,8 @@
           </div>
         </div>
         <div class="table-responsive py-4">
-          <table class="table table-bordered" cellspacing="0" id="table-barang" width="100%">
-            <thead class=" thead-dark">
+          <table class="table table-bordered" id="table-barang" width="100%">
+            <thead class=" thead-light">
               <tr>
                 <th><input type="checkbox" id="checkall"></th>
                 <th>No.</th>

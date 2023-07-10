@@ -83,7 +83,7 @@
     </div>
     <div class="card-body table-restore" style="display:none;">
       <div class="table-responsive py-4">
-        <table class="table table-flush" id="table-restore" width="100%">
+        <table class="table table-bordered" id="table-restore" width="100%">
           <thead class=" thead-light">
             <tr>
               <th>No.</th>
@@ -129,7 +129,7 @@
           </div>
         </div>
         <div class="table-responsive py-4">
-          <table class="table table-flush" id="table-minta" width="100%">
+          <table class="table table-bordered" id="table-minta" width="100%">
             <thead class=" thead-light">
               <tr>
                 <th><input type="checkbox" id="checkall"></th>

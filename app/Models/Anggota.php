@@ -23,6 +23,7 @@ class Anggota extends Model
 
     public function setInsertData(array $data)
     {
+
         if (session()->get('username')) {
             $username = session()->get('username');
         } else {
@@ -33,8 +34,8 @@ class Anggota extends Model
             !empty($username) &&
             !array_key_exists('created_by', $data)
         ) {
-            $data['data']['created_at'] = Time::now('Asia/Jakarta', 'id_ID');
-            $data['data']['created_by'] = $username;
+            $data['created_at'] = Time::now('Asia/Jakarta', 'id_ID');
+            $data['created_by'] = $username;
         }
         return $data;
     }
@@ -48,8 +49,8 @@ class Anggota extends Model
         }
 
         if (!empty($username) && !array_key_exists('updated_by', $data)) {
-            $data['data']['updated_at'] = Time::now('Asia/Jakarta', 'id_ID');
-            $data['data']['updated_by'] = $username;
+            $data['updated_at'] = Time::now('Asia/Jakarta', 'id_ID');
+            $data['updated_by'] = $username;
         }
         return $data;
     }

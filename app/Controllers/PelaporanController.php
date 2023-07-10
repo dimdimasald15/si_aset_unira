@@ -168,7 +168,6 @@ class PelaporanController extends BaseController
                 'error' => $errors,
             ];
         } else {
-
             $this->db->transStart();
             // tangkap file foto
             $filefoto = $this->request->getFile('foto_barang');
@@ -208,7 +207,8 @@ class PelaporanController extends BaseController
                 ];
 
                 $insertanggota = $this->anggota->setInsertData($simpananggota);
-                $this->anggota->save($insertanggota);
+
+                $this->db->table('anggota')->insert($insertanggota);
 
                 $anggota_id = $this->anggota->insertID();
 
@@ -221,6 +221,8 @@ class PelaporanController extends BaseController
                     'deskripsi' => $this->request->getVar('deskripsi'),
                     'foto' => $namaBaru,
                 ];
+                var_dump($simpanlaporan);
+                die;
             }
             $data_anggota = $this->anggota->find($anggota_id);
             $namaanggota = $data_anggota['nama_anggota'];

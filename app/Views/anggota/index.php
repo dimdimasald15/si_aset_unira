@@ -81,7 +81,7 @@
               </div>
             </div>
             <div class="table-responsive py-4">
-              <table class="table table-flush" id="table-unit" width="100%">
+              <table class="table table-bordered" id="table-unit" width="100%">
                 <thead class=" thead-light">
                   <tr>
                     <th><input type="checkbox" id="checkAllUnit"></th>
@@ -127,7 +127,7 @@
         </div>
         <div class="card-body table-restoreanggota" style="display:none;">
           <div class="table-responsive py-4">
-            <table class="table table-flush" id="table-restoreanggota" width="100%">
+            <table class="table table-bordered" id="table-restoreanggota" width="100%">
               <thead class=" thead-light">
                 <tr>
                   <th></th>
@@ -154,7 +154,7 @@
               </div>
             </div>
             <div class="table-responsive py-4">
-              <table class="table table-flush" id="table-anggota" width="100%">
+              <table class="table table-bordered" id="table-anggota" width="100%">
                 <thead class=" thead-light">
                   <tr>
                     <th><input type="checkbox" id="checkAllAnggota"></th>
