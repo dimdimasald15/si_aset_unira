@@ -221,8 +221,6 @@ class PelaporanController extends BaseController
                     'deskripsi' => $this->request->getVar('deskripsi'),
                     'foto' => $namaBaru,
                 ];
-                var_dump($simpanlaporan);
-                die;
             }
             $data_anggota = $this->anggota->find($anggota_id);
             $namaanggota = $data_anggota['nama_anggota'];
