@@ -211,7 +211,7 @@ class PelaporanController extends BaseController
                 $this->db->table('anggota')->insert($insertanggota);
 
                 $anggota_id = $this->anggota->insertID();
-jdlfjklsdjfklsdjf
+
                 $simpanlaporan = [
                     'stokbrg_id' => $this->request->getVar('stokbrg_id'),
                     'anggota_id' => $anggota_id,
