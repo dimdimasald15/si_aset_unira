@@ -1,8 +1,5 @@
 <?php
 
-ksdjkajdksjdksjsdk
-aku sama kamu ga jadian
-
 namespace App\Controllers;
 
 use Exception;
