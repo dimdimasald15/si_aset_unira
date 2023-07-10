@@ -247,7 +247,7 @@ class PermintaanController extends BaseController
             $jenistrxExists = array_key_exists('jenistrx', $this->request->getGet());
 
             $query = $this->db->table('anggota a')
-                ->select('a.*, u.singkatan')
+                ->select('a.no_anggota, a.nama_anggota, a.level, u.singkatan')
                 ->join('unit u', 'u.id=a.unit_id')
                 ->where('u.deleted_at is null')
                 ->where('a.deleted_at is null')
@@ -260,7 +260,7 @@ class PermintaanController extends BaseController
 
             $msg = $query->get()->getResultArray();
 
-            echo json_encode($msg);
+            return $this->response->setJSON($msg);
         } else {
             $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);

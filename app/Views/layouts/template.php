@@ -35,7 +35,7 @@ helper('converter_helper');
   <link rel="stylesheet" href="<?= base_url() ?>assets/css/mystyle/custom.css">
   <?= $this->renderSection('styles') ?>
   <link rel="stylesheet" href="<?= base_url() ?>assets/vendors/iconly/bold.css">
-  <link rel="stylesheet" href="<?= base_url() ?>assets/vendors/DataTables/datatables.min.css">
+  <link rel="stylesheet" href="<?= base_url() ?>assets/vendors/DataTables/DataTables-1.13.3/css/dataTables.jqueryui.css">
   <!-- sweetalert2 -->
   <link href="<?= base_url() ?>assets/vendors/sweetalert2/sweetalert2.min.css" rel="stylesheet" type="text/css">
 
