@@ -683,10 +683,10 @@ class LaporanController extends BaseController
 
     public function getdatachartpermintaan()
     {
-        if (!$this->request->isAJAX()) {
-            $data = $this->errorPage404();
-            return view('errors/mazer/error-404', $data);
-        }
+        // if (!$this->request->isAJAX()) {
+        //     $data = $this->errorPage404();
+        //     return view('errors/mazer/error-404', $data);
+        // }
         helper('converter_helper');
         $m = $this->request->getVar('m');
         $y = $this->request->getVar('y');
@@ -719,7 +719,6 @@ class LaporanController extends BaseController
         foreach ($initialArray as $data) {
             $bulanTahun = $data['bulan_tahun'];
             list($bulan, $tahun) = explode('/', $bulanTahun);
-            // $startMonth = intval(date('m', strtotime($bulanTahun)));
             $startMonth = $bulan1;
             $endMonth = "";
             if (empty($y)) {
@@ -744,6 +743,7 @@ class LaporanController extends BaseController
                 $resultArray1[format_bulan($m)][] = $newData;
             }
         }
+
         // Perulangan untuk mengelompokkan data berdasarkan bulan
         foreach ($initialArray as $item) {
             $bulanTahun = $item['bulan_tahun'];
@@ -759,12 +759,15 @@ class LaporanController extends BaseController
         foreach ($resultArray1 as $key => &$value) {
             // Mengambil 'singkatan' dari $resultArray1 sebagai referensi key
             $singkatan1 = array_column($value, 'singkatan');
-            // Mengambil 'singkatan' dan data lainnya dari $resultArray2
-            $singkatan2 = array_column($resultArray2[$key], 'singkatan');
-            $singkatan1 = array_column($value, 'singkatan');
+            // Memastikan $resultArray2[$key] tidak NULL sebelum menggunakan array_column()
+            if ($resultArray2[$key] !== null) {
+                // Mengambil 'singkatan' dan data lainnya dari $resultArray2
+                $singkatan2 = array_column($resultArray2[$key], 'singkatan');
+            }
             $data2 = $resultArray2[$key];
             // Menggabungkan array menggunakan key 'singkatan' sebagai referensi
             $merged = array_combine($singkatan1, $value);
+
             foreach ($singkatan2 as $index => $singkatan) {
                 if (array_key_exists($singkatan, $merged)) { // Mengganti data pada key yang sama
                     $merged[$singkatan] = $data2[$index];
@@ -774,7 +777,6 @@ class LaporanController extends BaseController
                 }
             }
             // Mengganti nilai $value dengan array yang telah digabungkan
-            // var_dump($merged);
             $value = array_values($merged);
         }
 
