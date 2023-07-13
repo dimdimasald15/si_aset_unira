@@ -99,7 +99,8 @@
     </div>
     <div class="card-body">
       <div class="table-responsive py-4">
-        <table class="table table-bordered" id="table-gedung" width="100%">
+        <table class="table table-table-flush
+table-flush" id="table-gedung" width="100%">
           <thead class=" thead-light">
             <tr>
               <!-- <th style="width: 50px;">No.</th> -->

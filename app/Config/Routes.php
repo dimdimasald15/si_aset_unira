@@ -236,7 +236,7 @@ $routes->group('admin/permintaan-barang-persediaan', ['filter' => 'ceklogin'], f
 
     $routes->post('tampilmodalcetak', 'PermintaanController::tampilmodalcetak');
     $routes->get('tampilsingleform', 'PermintaanController::tampilsingleform');
-    $routes->get('pilihanggota', 'PermintaanController::pilihanggota');
+    $routes->get('pilihanggota', 'PermintaanController::carianggota');
     $routes->get('getpermintaanbyid', 'PermintaanController::getpermintaanbyid');
     $routes->get('pilihunit', 'PermintaanController::pilihunit');
     $routes->get('pilihbarang', 'BarangController::pilihbarang');
@@ -263,7 +263,7 @@ $routes->group('admin/peminjaman-barang-tetap', ['filter' => 'ceklogin'], functi
     $routes->get('tampilformkembali', 'PeminjamanController::tampilformkembali');
     $routes->post('tampilmodalcetak', 'PeminjamanController::tampilmodalcetak');
     $routes->get('tampilsingleform', 'PeminjamanController::tampilsingleform');
-    $routes->get('pilihanggota', 'PermintaanController::pilihanggota');
+    $routes->get('pilihanggota', 'PermintaanController::carianggota');
     $routes->get('getpeminjamanbyid', 'PeminjamanController::getpeminjamanbyid');
     $routes->get('pilihunit', 'PermintaanController::pilihunit');
     $routes->get('pilihbarang', 'BarangController::pilihbarang');

@@ -29,7 +29,8 @@
                               <input type="hidden" name="anggota_id" id="stok_id" value="<?= $laporan->anggota_id ?>">
                               <div class="input-group">
                                 <span class="input-group-text" id="basic-addon1"><i class="bi bi-person"></i></span>
-                                <select name="anggota_id" class="form-select p-2" id="idanggota">
+                                <select name="anggota_id" class="form-select p-2" id="idanggota" disabled>
+                                  <option value="<?= $laporan->anggota_id ?>" selected><?= $laporan->no_anggota . " - " . $laporan->nama_anggota . " (" . $laporan->singkatan . ")"   ?></option>
                                 </select>
                                 <div class="invalid-feedback erridanggota"></div>
                               </div>
@@ -143,31 +144,31 @@
 <script>
   $(document).ready(function() {
     var namaanggota = "<?= $laporan->nama_anggota ?>";
-    $.ajax({
-      type: "get",
-      url: "<?= site_url('laporan-kerusakan-aset/pelaporan/pilihpelapor') ?>",
-      dataType: "json",
-      success: function(response) {
-        $('#idanggota').empty();
-        $('#idanggota').append('<option value="">Pilih Pelapor</option>');
-        $.each(response, function(key, value) {
-          if (value.nama_anggota == namaanggota) {
-            $('#idanggota').append('<option value="' + value.id + '" selected>' +
-              value.nama_anggota + ' (' + value.no_anggota + ')' + ' - ' + value.level + '</option>');
-          } else {
-            $('#idanggota').append('<option value="' + value.id + '">' +
-              value.nama_anggota + ' (' + value.no_anggota + ')' + ' - ' + value.level + '</option>');
-          }
-          $('#idanggota').prop('disabled', true);
-        });
-      }
-    });
+    // $.ajax({
+    //   type: "get",
+    //   url: "<?= site_url('laporan-kerusakan-aset/pelaporan/pilihpelapor') ?>",
+    //   dataType: "json",
+    //   success: function(response) {
+    //     $('#idanggota').empty();
+    //     $('#idanggota').append('<option value="">Pilih Pelapor</option>');
+    //     $.each(response, function(key, value) {
+    //       if (value.nama_anggota == namaanggota) {
+    //         $('#idanggota').append('<option value="' + value.id + '" selected>' +
+    //           value.nama_anggota + ' (' + value.no_anggota + ')' + ' - ' + value.level + '</option>');
+    //       } else {
+    //         $('#idanggota').append('<option value="' + value.id + '">' +
+    //           value.nama_anggota + ' (' + value.no_anggota + ')' + ' - ' + value.level + '</option>');
+    //       }
+    //       $('#idanggota').prop('disabled', true);
+    //     });
+    //   }
+    // });
 
-    $('#idanggota').on('change', function(e) {
-      e.preventDefault();
-      $('#idanggota').removeClass('is-invalid');
-      $('.erridanggota').html('');
-    })
+    // $('#idanggota').on('change', function(e) {
+    //   e.preventDefault();
+    //   $('#idanggota').removeClass('is-invalid');
+    //   $('.erridanggota').html('');
+    // })
     $('#fotobrg').change(function() {
       var input = this;
       if (input.files && input.files[0]) {
@@ -189,6 +190,7 @@
       $(this).removeClass('is-invalid');
       $('.errjmlrusak').html('');
     })
+
     $('#fotobrg').on('input', function(e) {
       e.preventDefault();
       $(this).removeClass('is-invalid');

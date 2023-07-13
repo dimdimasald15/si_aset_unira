@@ -10,7 +10,7 @@
       <div class="col-md-12">
         <input type="hidden" name="id" id="id">
         <div class="row g-2 mb-1">
-          <div class="<?= $saveMethod == "update" ? 'col-md-6' : 'col-md-4' ?>">
+          <div class="col-md-6">
             <label for="idanggota" class="form-label">Nama Peminjam</label>
             <div class="input-group mb-3">
               <span class="input-group-text"><i class="bi bi-person"></i></span>
@@ -18,60 +18,12 @@
               <div class="invalid-feedback erridanggota"></div>
             </div>
           </div>
-          <div class="col-md-4 anggotabaru">
-            <label for="namaanggota" class="form-label">Nama Peminjam Baru</label>
-            <div class="input-group mb-3">
-              <input type="text" class="form-control anggotabaru" placeholder="Masukkan Nama Anggota" style="display:none;" id="namaanggota" name="nama_anggota" disabled>
-              <div class="invalid-feedback errnamaanggota"></div>
-            </div>
-          </div>
-          <div class="col-md-4 anggotabaru">
-            <label for="level" class="form-label">Level Peminjam Baru</label>
-            <div class="input-group mb-3">
-              <span class="input-group-text"><i class="bi bi-person-badge-fill"></i></span>
-              <select name="level" class="form-select p-2" id="level" disabled>
-                <option value="" disabled selected>Pilih Level</option>
-                <option value="Karyawan">Karyawan</option>
-                <option value="Mahasiswa">Mahasiswa</option>
-              </select>
-              <div class="invalid-feedback errlevel"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-12 anggotabaru">
-        <div class="row g-2 mb-1">
-          <div class="col-md-6 noanggota" style="display:none;"></div>
-          <div class="col-md-6">
-            <div class="row mb-2">
-              <label for="unit mb-2">Unit Asal Peminjam Baru</label>
-            </div>
-            <div class="row mb-1">
-              <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon1"><i class="bi bi-card-text"></i></span>
-                <select name="unit_id" class="form-select p-2" id="unit" style="width: 400px;" disabled></select>
-                <div class="invalid-feedback errunit"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-12">
-        <div class="row g-2 mb-1">
           <div class="col-md-6">
             <label for="tglpinjam" class="form-label">Tanggal Peminjaman</label>
             <div class="input-group mb-3">
               <span class="input-group-text"><i class="bi bi-calendar-plus"></i></span>
               <input type="datetime-local" class="form-control" id="tglpinjam" name="tgl_pinjam">
               <div class="invalid-feedback errtglpinjam"></div>
-            </div>
-          </div>
-          <div class="col-md-6 anggotabaru">
-            <label for="nohp" class="form-label">No Handpone</label>
-            <div class="input-group mb-3">
-              <span class="input-group-text"><i class="bi bi-telephone-plus"></i></span>
-              <input type="text" class="form-control" placeholder="Masukkan No Handpone" id="nohp" name="no_hp" disabled>
-              <div class="invalid-feedback errnohp"></div>
             </div>
           </div>
         </div>
@@ -172,90 +124,29 @@
       $('.viewform').hide(500)
     });
 
-    $.ajax({
-      type: "get",
-      url: "<?= $nav ?>/pilihanggota",
-      dataType: "json",
-      success: function(response) {
-        $('#idanggota').empty();
-        $('#idanggota').append('<option value="">Pilih Anggota</option>');
-        $.each(response, function(key, val) {
-          $('#idanggota').append(`
-          <option value="${val.id}">${val.nama_anggota} - ${val.level == "Mahasiswa"? `NIM ${val.no_anggota}`:`NIDN/NIY ${val.no_anggota}`} - ${val.singkatan}</option>
-          `);
-        });
-        if (saveMethod !== "update") {
-          $('#idanggota').append('<option value="other">Lainnya</option>');
-        }
-      }
+    $(`#idanggota`).select2({
+      placeholder: 'Piih Nama Anggota',
+      minimumInputLength: 1,
+      allowClear: true,
+      width: "80%",
+      ajax: {
+        url: `<?= $nav ?>/pilihanggota`,
+        dataType: 'json',
+        delay: 250,
+        data: function(params) {
+          return {
+            search: params.term,
+          }
+        },
+        processResults: function(data, page) {
+          return {
+            results: data
+          };
+        },
+        cache: true
+      },
+      templateResult: formatResult,
     });
-
-    $('#idanggota').on('change', function(e) {
-      e.preventDefault();
-      $('#idanggota').removeClass('is-invalid');
-      $('.erroridanggota').html('');
-
-      if ($(this).val() == "") {
-        $('.anggotabaru').hide();
-      } else if ($(this).val() == "other") {
-        $('.anggotabaru').show();
-        removedisabledinput();
-      } else {
-        $('.anggotabaru').hide();
-      }
-    })
-
-    $('#level').on('change', function(e) {
-      e.preventDefault();
-      $('#level').removeClass('is-invalid');
-      $('.errlevel').html('');
-
-      level = $('#level').val();
-      pilihunit(level);
-
-      $('.noanggota').hide().html('');
-      if (level == 'Mahasiswa') {
-        $('.noanggota').show().append(
-          `<label for="noanggota" class="form-label">NIM</label>
-          <div class="input-group mb-3">
-            <span class="input-group-text"><i class="bi bi-person"></i></span>
-            <input type="text" class="form-control" placeholder="Masukkan NIM" id="noanggota" name="no_anggota">
-            <div class="invalid-feedback errnoanggota"></div>
-          </div>`
-        );
-      } else if (level == 'Karyawan') {
-        $('.noanggota').show().append(
-          `<label for="noanggota" class="form-label">Nomor Pegawai</label>
-          <div class="input-group mb-3">
-            <span class="input-group-text"><i class="bi bi-person"></i></span>
-            <input type="text" class="form-control" placeholder="Masukkan Nomor Pegawai" id="noanggota" name="no_anggota">
-            <div class="invalid-feedback errnoanggota"></div>
-          </div>`
-        );
-      } else {
-        $('.noanggota').hide().html('');
-      }
-    })
-
-    pilihunit(level);
-
-    $('#unit').on('change', function(e) {
-      e.preventDefault();
-      $('#unit').removeClass('is-invalid');
-      $('.errorunit').html('');
-    })
-
-    $('#namaanggota').on('input', function(e) {
-      e.preventDefault();
-      $('#namaanggota').removeClass('is-invalid');
-      $('.errornamaanggota').html('');
-    })
-
-    $('#noanggota').on('input', function(e) {
-      e.preventDefault();
-      $('#noanggota').removeClass('is-invalid');
-      $('.errornoanggota').html('');
-    })
 
     $('#tglpinjam').on('input', function(e) {
       e.preventDefault();
@@ -679,9 +570,16 @@
       return data.text;
     }
 
-    var $result = $(
-      `<span><i class="bi bi-layers"> </i>${data.text}</span>`
-    );
+    var result;
+    if (data.no !== undefined) {
+      $result = $(
+        `<span><i class="bi bi-person"> </i>${data.no} - ${data.text} (${data.unit})</span>`
+      );
+    } else {
+      $result = $(
+        `<span><i class="bi bi-circle-square"> </i>${data.text}</span>`
+      );
+    }
 
     return $result;
   }
@@ -699,7 +597,9 @@
     satuan_id,
     kd_satuan
   }, jmldata) {
-    $('#idanggota').val(anggota_id);
+    $('#idanggota').html(`
+        <option value="${anggota_id}">${nama_anggota}</option>
+      `);
     $('#tglpinjam').val(tgl_pinjam);
     $('#keterangan').val(keterangan);
     for (let i = 1; i <= jmldata; i++) {

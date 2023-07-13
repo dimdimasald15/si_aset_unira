@@ -267,6 +267,43 @@ class PermintaanController extends BaseController
         }
     }
 
+    function carianggota()
+    {
+        if (!$this->request->isAJAX()) {
+            $data = $this->errorPage404();
+            return view('errors/mazer/error-404', $data);
+        }
+        $search = $this->request->getGet('search');
+
+        if (!empty($search)) {
+            $dataanggota = $this->db->table('anggota a')
+                ->select('a.id,a.nama_anggota, a.no_anggota, u.singkatan')
+                ->join('unit u', 'u.id=a.unit_id')
+                ->where('u.deleted_at is null')
+                ->where('a.deleted_at is null')
+                ->like('a.nama_anggota', $search)
+                ->orderBy('a.nama_anggota', 'ASC')->get();
+        }
+
+        if ($dataanggota->getNumRows() > 0) {
+            $list = [];
+            $key = 0;
+            foreach ($dataanggota->getResultArray() as $row) {
+                $list[$key]['id'] = $row['id'];
+                $list[$key]['text'] = $row['nama_anggota'];
+                $list[$key]['no'] = $row['no_anggota'];
+                $list[$key]['unit'] = $row['singkatan'];
+
+                $key++;
+            }
+        } else {
+            $list = [
+                ['id' => '', 'text' => 'Maaf keyword yang anda cari tidak ditemukan'],
+            ];
+        }
+        echo json_encode($list);
+    }
+
     public function simpandata()
     {
         if ($this->request->isAJAX()) {

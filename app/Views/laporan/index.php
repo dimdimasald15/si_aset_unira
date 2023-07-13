@@ -152,7 +152,7 @@
     </div>
     <div class="card-body bg-dark text-white table-lokasibrg">
       <div class="table-responsive py-4">
-        <table class="table table-light cell-border mb-3" id="table-lokasibrg" width="100%">
+        <table class="table table-flush cell-border mb-3" id="table-lokasibrg" width="100%">
           <thead class="thead-dark">
             <tr>
               <th class="text-center">Detail</th>
@@ -188,7 +188,7 @@
         </div>
         <div class="card-body bg-dark text-white">
           <div class="table-responsive py-4">
-            <table class="table table-light cell-border mb-3" id="table-permintaan" width="100%">
+            <table class="table table-flush cell-border mb-3" id="table-permintaan" width="100%">
               <thead class="thead-dark">
                 <tr>
                   <th class="text-center">Detail</th>
@@ -543,7 +543,7 @@
     }
 
     return (
-      `<table class="table table-light cell-border" cellpadding="5" cellspacing="0" border="0" style="padding:20px;">
+      `<table class="table table-flush cell-border" cellpadding="5" cellspacing="0" border="0" style="padding:20px;">
         ${(nama_anggota !== '')? `
           <tr>
             <th>Nama Anggota</th>
