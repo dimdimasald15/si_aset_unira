@@ -434,6 +434,11 @@
       $('#unit').removeClass('is-invalid');
       $('.errunit').html('');
     })
+    $('#nohp').on('change', function(e) {
+      e.preventDefault();
+      $('#nohp').removeClass('is-invalid');
+      $('.errnohp').html('');
+    })
 
     var namaanggota = "",
       level = "",
@@ -463,6 +468,7 @@
             var errnoanggota = response.error.no_anggota;
             var errlevel = response.error.level;
             var errunit = response.error.unit_id;
+            var errnohp = response.error.nohp;
             if (errnamaanggota) {
               $('#namaanggota').addClass('is-invalid');
               $('.errnamaanggota').html(errnamaanggota);
@@ -490,6 +496,13 @@
             } else {
               $('#unit').removeClass('is-invalid');
               $('.errunit').html('');
+            }
+            if (errnohp) {
+              $('#nohp').addClass('is-invalid');
+              $('.errnohp').html(errnohp);
+            } else {
+              $('#nohp').removeClass('is-invalid');
+              $('.errnohp').html('');
             }
 
           } else {

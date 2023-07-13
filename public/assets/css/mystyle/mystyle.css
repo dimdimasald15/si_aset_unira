@@ -25,18 +25,42 @@ a:hover {
   color: #1fa164 !important;
 }
 
+table.dataTable thead th,
+table.dataTable thead td,
+table.dataTable tfoot th,
+table.dataTable tfoot td {
+  text-align: center !important;
+}
+
+.dataTables_wrapper .dataTables_length select {
+  border: 1px solid #aaa !important;
+  border-radius: 3px !important;
+  padding: 5px !important;
+  background-color: #fff !important;
+  padding: 4px !important;
+}
+.dataTables_wrapper .dataTables_filter input {
+  border: 1px solid #aaa !important;
+  border-radius: 3px !important;
+  padding: 5px !important;
+  background-color: #fff !important;
+  margin-left: 3px !important;
+}
+
 .table-flush td,
 .table-flush th {
-  border-right: 0;
-  border-left: 0;
+  border-right: 0 !important;
+  border-left: 0 !important;
+  border-top: 1px solid #f0eeee !important;
+  border-bottom: 1px solid #f0eeee !important;
 }
 .table-flush tbody tr:first-child td,
 .table-flush tbody tr:first-child th {
-  border-top: 0;
+  border-top: 0 !important;
 }
 .table-flush tbody tr:last-child td,
 .table-flush tbody tr:last-child th {
-  border-bottom: 0;
+  border-bottom: 0 !important;
 }
 
 /* Menggeser teks input agar tidak tumpang tindih dengan ikon */

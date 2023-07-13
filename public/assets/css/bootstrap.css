@@ -5576,11 +5576,11 @@ fieldset:disabled .btn {
   color: #f9fafb;
 }
 .link-dark {
-  color: #212529;
+  color: #607080;
 }
 .link-dark:focus,
 .link-dark:hover {
-  color: #1a1e21;
+  color: #607080;
 }
 .ratio {
   position: relative;

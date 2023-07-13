@@ -9,7 +9,7 @@
       <?= csrf_field() ?>
       <div class="col-md-12">
         <div class="row g-2 mb-1">
-          <div class="col-md-4">
+          <div class="col-md-8">
             <label for="namaanggota" class="form-label">Nama Peminta</label>
             <div class="input-group mb-3">
               <span class="input-group-text"><i class="bi bi-person"></i></span>
@@ -17,7 +17,7 @@
               <div class="invalid-feedback erridanggota"></div>
             </div>
           </div>
-          <div class="col-md-4 anggotabaru">
+          <!-- <div class="col-md-4 anggotabaru">
             <label for="namaanggota" class="form-label">Nama Peminta Baru</label>
             <div class="input-group mb-3">
               <input type="text" class="form-control anggotabaru" placeholder="Masukkan Nama Anggota" style="display:none;" id="namaanggota" name="nama_anggota" disabled>
@@ -35,10 +35,10 @@
               </select>
               <div class="invalid-feedback errlevel"></div>
             </div>
-          </div>
+          </div> -->
         </div>
       </div>
-      <div class="col-md-12 anggotabaru">
+      <!-- <div class="col-md-12 anggotabaru">
         <div class="row g-2 mb-1">
           <div class="col-md-6 noanggota" style="display:none;"></div>
           <div class="col-md-6">
@@ -54,7 +54,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </div> -->
       <?php $no = 1; ?>
       <div class="table-responsive">
         <table class="table table-borderless">
@@ -139,93 +139,29 @@
       $('.viewform').hide(500)
     });
 
-    $.ajax({
-      type: "get",
-      url: "<?= $nav ?>/pilihanggota",
-      data: {
-        jenistrx: 'permintaan'
+    $(`#idanggota`).select2({
+      placeholder: 'Piih Nama Anggota',
+      minimumInputLength: 1,
+      allowClear: true,
+      width: "80%",
+      ajax: {
+        url: `<?= $nav ?>/pilihanggota`,
+        dataType: 'json',
+        delay: 250,
+        data: function(params) {
+          return {
+            search: params.term,
+          }
+        },
+        processResults: function(data, page) {
+          return {
+            results: data
+          };
+        },
+        cache: true
       },
-      dataType: "json",
-      success: function(response) {
-        $('#idanggota').empty();
-        $('#idanggota').append('<option value="">Pilih Anggota</option>');
-        $.each(response, function(key, val) {
-          $('#idanggota').append(`
-          <option value="${val.id}">${val.nama_anggota} - ${val.level == "Mahasiswa"? `NIM ${val.no_anggota}`:`NIDN/NIY ${val.no_anggota}`} - ${val.singkatan}</option>
-          `);
-        });
-        if ("<?= $saveMethod !== "update" ?>") {
-          $('#idanggota').append('<option value="other">Lainnya</option>');
-        }
-      }
+      templateResult: formatResult,
     });
-
-    $('#idanggota').on('change', function(e) {
-      e.preventDefault();
-      $('#idanggota').removeClass('is-invalid');
-      $('.erridanggota').html('');
-
-      if ($(this).val() == "") {
-        $('.anggotabaru').hide();
-      } else if ($(this).val() == "other") {
-        $('.anggotabaru').show();
-        removedisabledinput();
-      } else {
-        $('.anggotabaru').hide();
-      }
-    })
-
-    $('#level').on('change', function(e) {
-      e.preventDefault();
-      $('#level').removeClass('is-invalid');
-      $('.errlevel').html('');
-
-      level = $('#level').val();
-      pilihunit(level);
-
-      $('.noanggota').hide().html('');
-      if (level == 'Mahasiswa') {
-        $('.noanggota').show().append(
-          `<label for="noanggota" class="form-label">NIM</label>
-          <div class="input-group mb-3">
-            <span class="input-group-text"><i class="bi bi-person"></i></span>
-            <input type="text" class="form-control" placeholder="Masukkan NIM" id="noanggota" name="no_anggota">
-            <div class="invalid-feedback errnoanggota"></div>
-          </div>`
-        );
-      } else if (level == 'Karyawan') {
-        $('.noanggota').show().append(
-          `<label for="noanggota" class="form-label">Nomor Pegawai</label>
-          <div class="input-group mb-3">
-            <span class="input-group-text"><i class="bi bi-person"></i></span>
-            <input type="text" class="form-control" placeholder="Masukkan Nomor Pegawai" id="noanggota" name="no_anggota">
-            <div class="invalid-feedback errnoanggota"></div>
-          </div>`
-        );
-      } else {
-        $('.noanggota').hide().html('');
-      }
-    })
-
-    pilihunit(level);
-
-    $('#unit').on('change', function(e) {
-      e.preventDefault();
-      $('#unit').removeClass('is-invalid');
-      $('.errorunit').html('');
-    })
-
-    $('#namaanggota').on('input', function(e) {
-      e.preventDefault();
-      $('#namaanggota').removeClass('is-invalid');
-      $('.errornamaanggota').html('');
-    })
-
-    $('#noanggota').on('input', function(e) {
-      e.preventDefault();
-      $('#noanggota').removeClass('is-invalid');
-      $('.errornoanggota').html('');
-    })
 
     $('.btntambahrow').on('click', function(e) {
       e.preventDefault();
@@ -629,9 +565,16 @@
       return data.text;
     }
 
-    var $result = $(
-      `<span><i class="bi bi-circle-square"> </i>${data.text}</span>`
-    );
+    var result;
+    if (data.no !== undefined) {
+      $result = $(
+        `<span><i class="bi bi-person"> </i>${data.no} - ${data.text} (${data.unit})</span>`
+      );
+    } else {
+      $result = $(
+        `<span><i class="bi bi-circle-square"> </i>${data.text}</span>`
+      );
+    }
 
     return $result;
   }
@@ -650,7 +593,9 @@
     kd_satuan,
     sisa_stok
   }, jmldata) {
-    $('#idanggota').val(anggota_id);
+    $('#idanggota').html(`
+    <option value="${anggota_id}">${nama_anggota}</option>
+    `);
     for (let i = 1; i <= jmldata; i++) {
       $(`#idbrg${i}`).html(`
         <option value="${barang_id}">${nama_brg}</option>
@@ -665,4 +610,23 @@
       `);
     }
   }
+
+  // function formatResult2(data) {
+  //   if (!data.id) {
+  //     return data.text;
+  //   }
+
+  //   var result;
+  //   if (data.no !== undefined) {
+  //     $result = $(
+  //       `<span><i class="bi bi-person"> </i>${data.no} - ${data.text}</span>`
+  //     );
+  //   } else {
+  //     $result = $(
+  //       `<span><i class="bi bi-circle-square"> </i>${data.text}</span>`
+  //     );
+  //   }
+
+  //   return $result;
+  // }
 </script>

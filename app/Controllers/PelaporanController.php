@@ -79,34 +79,49 @@ class PelaporanController extends BaseController
     public function cekanggota()
     {
         $validation = \Config\Services::validation();
+        $level = $this->request->getVar('level');
+        $namalevel = $level ? $level : "pelapor";
+
         $rules = [
             'nama_anggota' => [
-                'label' => 'Nama anggota',
+                'label' => 'Nama',
                 'rules' => 'required',
                 'errors' => [
-                    'required' => "{field} tidak boleh kosong",
+                    'required' => "{field} " . strtolower($namalevel) . " tidak boleh kosong",
                 ],
             ],
             'no_anggota' => [
-                'label' => 'Nomor anggota',
-                'rules' => 'required|is_unique[anggota.no_anggota]',
+                'label' => 'Nomor',
+                'rules' => 'required|is_unique[anggota.no_anggota]|numeric|min_length[10]',
                 'errors' => [
-                    'required' => "{field} tidak boleh kosong",
-                    'is_unique' => "{field} sudah ada dan tidak boleh sama",
+                    'required' => "{field} " . strtolower($namalevel) . " tidak boleh kosong",
+                    'is_unique' => "{field} " . strtolower($namalevel) . " sudah ada dan tidak boleh sama",
+                    'numeric' => "{field} " . strtolower($namalevel) . " harus berupa angka",
+                    'min_length' => "{field} " . strtolower($namalevel) . " minimal terdiri dari 10 digit",
                 ],
             ],
             'level' => [
                 'label' => 'Level',
                 'rules' => 'required',
                 'errors' => [
-                    'required' => "{field} tidak boleh kosong",
+                    'required' => "{field} " . strtolower($namalevel) . " tidak boleh kosong",
                 ],
             ],
             'unit_id' => [
                 'label' => 'Unit',
                 'rules' => 'required',
                 'errors' => [
-                    'required' => "{field} tidak boleh kosong",
+                    'required' => "{field} " . strtolower($namalevel) . " tidak boleh kosong",
+                ],
+            ],
+            'nohp' => [
+                'label' => 'No Hp',
+                'rules' => 'required|numeric|min_length[10]|max_length[13]',
+                'errors' => [
+                    'required' => "{field} " . strtolower($namalevel) . " tidak boleh kosong",
+                    'numeric' => "{field} " . strtolower($namalevel) . " harus berupa angka",
+                    'min_length' => "{field} " . strtolower($namalevel)  . " harus terdiri dari 11 hingga 13 digit",
+                    'max_length' => "{field} " . strtolower($namalevel)  . " harus terdiri dari 11 hingga 13 digit",
                 ],
             ],
         ];
@@ -221,8 +236,6 @@ class PelaporanController extends BaseController
                     'deskripsi' => $this->request->getVar('deskripsi'),
                     'foto' => $namaBaru,
                 ];
-                var_dump($simpanlaporan);
-                die;
             }
             $data_anggota = $this->anggota->find($anggota_id);
             $namaanggota = $data_anggota['nama_anggota'];
@@ -262,8 +275,9 @@ class PelaporanController extends BaseController
 
     public function tampileditlaporan($no_laporan)
     {
-        $query = $this->db->table('pelaporan_kerusakan p')->select('p.*, a.nama_anggota, a.level, a.no_anggota, b.nama_brg, s.kd_satuan, r.nama_ruang, sb.barang_id, sb.ruang_id, sb.satuan_id, b.kode_brg')
+        $query = $this->db->table('pelaporan_kerusakan p')->select('p.*, a.nama_anggota, a.level, a.no_anggota, b.nama_brg, s.kd_satuan, r.nama_ruang, sb.barang_id, sb.ruang_id, sb.satuan_id, b.kode_brg, u.singkatan')
             ->join('anggota a', 'a.id=p.anggota_id')
+            ->join('unit u', 'u.id=a.unit_id')
             ->join('stok_barang sb', 'sb.id=p.stokbrg_id')
             ->join('barang b', 'b.id=sb.barang_id')
             ->join('ruang r', 'r.id=sb.ruang_id')

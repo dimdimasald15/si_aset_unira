@@ -128,7 +128,7 @@
         </div>
         <div class="card-body">
             <div class="table-responsive py-4">
-                <table class="table table-bordered" id="table-pengguna" width="100%">
+                <table class="table table-flush" id="table-pengguna" width="100%">
                     <thead class=" thead-light">
                         <tr>
                             <th>No.</th>
