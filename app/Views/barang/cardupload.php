@@ -175,7 +175,9 @@
               response.sukses,
               'success'
             ).then((result) => {
-              databarang.ajax.reload();
+              tableBrgTetap.ajax.reload();
+              tableBrgPersediaan.ajax.reload();
+              tableAlokasiBrg.ajax.reload();
             })
           }
         },

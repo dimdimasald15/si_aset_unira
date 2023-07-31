@@ -607,7 +607,6 @@ class PengalokasianController extends BaseController
             $ids = $this->request->getVar('id');
             $jenis = $this->request->getVar('jenis_kat');
             $datastoklama = [];
-            // $databrglama = [];
             $id = explode(",", $ids);
             if (count($id) === 1) {
                 $stoklama = $this->stokbarang->select('*')->where('id', $id)->get()->getRowArray();

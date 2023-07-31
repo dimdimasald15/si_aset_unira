@@ -10,7 +10,7 @@ class RiwayatTransaksi extends Model
 {
     protected $table = "riwayat_transaksi";
     protected $primaryKey = 'id';
-    protected $allowedFields = ['id', 'stokbrg_id',    'jenis_transaksi', 'field', 'old_value', 'new_value', 'created_by', 'created_at', 'updated_by', 'deleted_by', 'deleted_at'];
+    protected $allowedFields = ['id', 'stokbrg_id',    'jenis_transaksi', 'field', 'old_value', 'new_value', 'created_by', 'created_at', 'updated_at', 'updated_by', 'deleted_by', 'deleted_at'];
     protected $useTimestamps = false;
     protected $createdField  = 'created_at';
 
@@ -24,8 +24,8 @@ class RiwayatTransaksi extends Model
             !empty($username) &&
             !array_key_exists('created_by', $data)
         ) {
-            $data['data']['created_at'] = Time::now('Asia/Jakarta', 'id_ID');
-            $data['data']['created_by'] = $username;
+            $data['created_at'] = Time::now('Asia/Jakarta', 'id_ID');
+            $data['created_by'] = $username;
         }
         return $data;
     }
@@ -34,8 +34,8 @@ class RiwayatTransaksi extends Model
     {
         $username = session()->get('username');
         if (!empty($username) && !array_key_exists('updated_by', $data)) {
-            $data['data']['updated_at'] = Time::now('Asia/Jakarta', 'id_ID');
-            $data['data']['updated_by'] = $username;
+            $data['updated_at'] = Time::now('Asia/Jakarta', 'id_ID');
+            $data['updated_by'] = $username;
         }
         return $data;
     }
@@ -53,7 +53,6 @@ class RiwayatTransaksi extends Model
     public function inserthistori($stokbrg_id, $data_lama, $data_baru, $jenistrx, $lastQuery, $field_update)
     {
         $datasimpan = [];
-
         if (strpos($lastQuery, 'INSERT') !== false) {
             $datasimpan = [
                 'stokbrg_id' => $stokbrg_id,

@@ -11,16 +11,26 @@
         <div class="row d-flex justify-content-between">
           <div class="col-lg-12">
             <input type="hidden" name="id" id="id">
-            <div class="row mb-1">
-              <label for="katid">Nama Kategori</label>
-            </div>
-            <div class="row mb-1">
-              <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon1">
-                  <i class="bi bi-layers"></i>
-                </span>
-                <select name="kat_id" class="form-select p-2" id="katid" style="width: 400px;"></select>
-                <div class="invalid-feedback errkatid"></div>
+            <div class="row g-2 mb-1">
+              <div class="col-md-6">
+                <label class="form-label" for="jenis_kat">Jenis Kategori Barang</label>
+                <div class="input-group mb-3">
+                  <span class="input-group-text">
+                    <i class="bi bi-layers"></i>
+                  </span>
+                  <select name="jenis_kat" class="form-select p-2" id="jenis_kat"></select>
+                  <div class="invalid-feedback errjenis_kat"></div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="katid">Nama Kategori</label>
+                <div class="input-group mb-3">
+                  <span class="input-group-text">
+                    <i class="bi bi-layers"></i>
+                  </span>
+                  <select name="kat_id" class="form-select p-2" id="katid"></select>
+                  <div class="invalid-feedback errkatid"></div>
+                </div>
               </div>
             </div>
           </div>
@@ -273,7 +283,7 @@
       placeholder: 'Piih Nama Kategori <?= $title; ?>',
       minimumInputLength: 1,
       allowClear: true,
-      width: "50%",
+      width: "80%",
       initSelection: function(element, callback) {
         callback({
           id: '',
@@ -498,7 +508,6 @@
       }
 
       formdata.append('asal', asal);
-      formdata.append('jenistrx', "<?= $jenistrx ?>");
 
       $.ajax({
         type: "post",
@@ -601,7 +610,9 @@
               response.sukses,
               'success'
             ).then((result) => {
-              databarang.ajax.reload();
+              tableBrgTetap.ajax.reload();
+              tableBrgPersediaan.ajax.reload();
+              tableAlokasiBrg.ajax.reload();
             })
           }
         },
@@ -635,11 +646,12 @@
     ruang_id,
     nama_ruang,
     satuan_id,
-    kd_satuan
-
+    kd_satuan,
+    jenis
   }) {
     if (!$.isEmptyObject(kd_kategori)) {
-      $('#formEditBarang').find("input[name='id']").val(id)
+      $('#formEditBarang').find("input[name='id']").val(id);
+      $('#formEditBarang').find("select[name='jenis_kat']").html(`<option value="${jenis}">${jenis}</option>`);
       $('#formEditBarang').find("select[name*='kat_id']").html('<option value = "' + kat_id + '" selected >' + nama_kategori + '</option>');
       $('#formEditBarang').find("#subkdkategori").val(kd_kategori)
 

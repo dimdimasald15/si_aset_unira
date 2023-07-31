@@ -71,68 +71,63 @@
   $(document).ready(function() {
     var saveMethod = "<?= $saveMethod ?>";
     var globalId;
-    $('#tampilsingleformunit').show(500);
-    $('.back-form').on('click', function() {
-      $('#tampilsingleformunit').hide(500);
-      $('.viewform').hide(500)
+    $("#tampilsingleformunit").show(500);
+    $(".back-form").on("click", function() {
+      $("#tampilsingleformunit").hide(500);
+      $(".viewform").hide(500)
     });
-
     $.ajax({
       type: "get",
       url: "<?= $nav . '/getkategoriunit' ?>",
       dataType: "json",
       success: function(response) {
-        $('#kat_unit').empty();
-        $('#kat_unit').append(`<option value="">Pilih Kategori Unit</option>`);
+        $("#kat_unit").empty();
+        $("#kat_unit").append(`<option value="">Pilih Kategori Unit</option>`);
         $.each(response, function(key, value) {
-          $('#kat_unit').append(`<option value="${value.kategori_unit}">${value.kategori_unit}</option>`);
-        });
+          $("#kat_unit").append(`<option value="${value.kategori_unit}">${value.kategori_unit}</option>`)
+        })
       }
     });
-
     if (saveMethod == "update") {
-      $('#tampilsingleformunit').find('.card-title').html('Ubah Data Unit');
+      $("#tampilsingleformunit").find(".card-title").html("Ubah Data Unit");
       globalId = "<?= $globalId ?>";
       $.ajax({
         type: "post",
         url: "<?= $nav . '/getdataunitbyid' ?>",
         data: {
-          id: globalId,
+          id: globalId
         },
         dataType: "json",
         success: function(response) {
-          $('.formunit').find("input").val("")
-          $('.formunit').find("select").val("")
-          isiForm(response);
+          $(".formunit").find("input").val("");
+          $(".formunit").find("select").val("");
+          isiForm(response)
         }
-      });
+      })
     }
-
-    $('#namaunit').on('input', function(e) {
+    $("#namaunit").on("input", function(e) {
       e.preventDefault();
-      $(this).removeClass('is-invalid');
-      $(`.errnamaunit`).html('');
-    })
-    $('#singkatan').on('input', function(e) {
+      $(this).removeClass("is-invalid");
+      $(`.errnamaunit`).html("")
+    });
+    $("#singkatan").on("input", function(e) {
       e.preventDefault();
-      $(this).removeClass('is-invalid');
-      $(`.errsingkatan`).html('');
-    })
-    $('#kat_unit').on('change', function(e) {
+      $(this).removeClass("is-invalid");
+      $(`.errsingkatan`).html("")
+    });
+    $("#kat_unit").on("change", function(e) {
       e.preventDefault();
-      $(this).removeClass('is-invalid');
-      $(`.errkat_unit`).html('');
-    })
-
-    $('.formunit').submit(function(e) {
+      $(this).removeClass("is-invalid");
+      $(`.errkat_unit`).html("")
+    });
+    $(".formunit").submit(function(e) {
       e.preventDefault();
-      let url = ""
+      let url = "";
       if (saveMethod == "update") {
-        url = "<?= $nav ?>/updateunit/" + globalId;
+        url = "<?= $nav ?>/updateunit/" + globalId
       } else if (saveMethod == "add") {
-        url = "<?= $nav ?>/simpanunit";
+        url = "<?= $nav ?>/simpanunit"
       }
-
       var formdata = new FormData(this);
       $.ajax({
         type: "post",
@@ -147,42 +142,38 @@
             var singkatan = response.error.singkatan;
             var kat_unit = response.error.kategori_unit;
             if (namaunit) {
-              $(`#namaunit`).addClass('is-invalid');
-              $(`.errnamaunit`).html(namaunit);
+              $(`#namaunit`).addClass("is-invalid");
+              $(`.errnamaunit`).html(namaunit)
             } else {
-              $(`#namaunit`).removeClass('is-invalid');
-              $(`.errnamaunit`).html('');
+              $(`#namaunit`).removeClass("is-invalid");
+              $(`.errnamaunit`).html("")
             }
             if (singkatan) {
-              $(`#singkatan`).addClass('is-invalid');
-              $(`.errsingkatan`).html(singkatan);
+              $(`#singkatan`).addClass("is-invalid");
+              $(`.errsingkatan`).html(singkatan)
             } else {
-              $(`#singkatan`).removeClass('is-invalid');
-              $(`.errsingkatan`).html('');
+              $(`#singkatan`).removeClass("is-invalid");
+              $(`.errsingkatan`).html("")
             }
             if (kat_unit) {
-              $(`#kat_unit`).addClass('is-invalid');
-              $(`.errkat_unit`).html(kat_unit);
+              $(`#kat_unit`).addClass("is-invalid");
+              $(`.errkat_unit`).html(kat_unit)
             } else {
-              $(`#kat_unit`).removeClass('is-invalid');
-              $(`.errkat_unit`).html('');
+              $(`#kat_unit`).removeClass("is-invalid");
+              $(`.errkat_unit`).html("")
             }
           } else {
-            $('#tampilsingleformunit').hide(500);
-            Swal.fire(
-              'Berhasil!',
-              response.sukses,
-              'success'
-            ).then((result) => {
-              dataunit.ajax.reload();
+            $("#tampilsingleformunit").hide(500);
+            Swal.fire("Berhasil!", response.sukses, "success").then(result => {
+              dataunit.ajax.reload()
             })
           }
         },
         error: function(xhr, ajaxOptions, thrownError) {
-          alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
+          alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError)
         }
       });
-      return false;
+      return false
     })
   });
 
@@ -197,6 +188,6 @@
     $(`#namaunit`).val(nama_unit);
     $(`#singkatan`).val(singkatan);
     $(`#kat_unit`).val(kategori_unit);
-    $(`#deskripsi`).val(deskripsi);
+    $(`#deskripsi`).val(deskripsi)
   }
 </script>
