@@ -56,7 +56,62 @@
   </div>
   <div id="content">
     <h2 class="text-center">Laporan Aset Universitas Islam Raden Rahmat</h2>
-    <p class="mb-1 mt-3">Tabel 1. Laporan Barang Tetap</p>
+    <p class="mb-1 mt-3">Table 1. Pengkategorian Aset Tetap</p>
+    <table class="tablekategori">
+      <thead class="text-center">
+        <tr>
+          <th>No.</th>
+          <th>Kode Kategori</th>
+          <th>Nama Kategori</th>
+          <th>Deskripsi</th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php foreach ($kat_tetap as $key => $row) : ?>
+          <tr>
+            <td class="text-center"><?= $key + 1 ?></td>
+            <td><?= $row->kd_kategori ?></td>
+            <td><?= $row->nama_kategori ?></td>
+            <td><?= ($row->deskripsi) ? $row->deskripsi : "tidak ada deskripsi" ?></td>
+          </tr>
+        <?php endforeach; ?>
+      </tbody>
+    </table>
+    <p style="page-break-before: always;">Tabel 2. Pengkategorian Barang Persediaan</p>
+    <?php
+    $halfLength = ceil(count($kat_sedia) / 2);
+    $data1 = array_slice($kat_sedia, 0, $halfLength);
+    $data2 = array_slice($kat_sedia, $halfLength);
+    ?>
+    <table class="tblpersediaan">
+      <thead class="text-center">
+        <tr>
+          <th>No.</th>
+          <th>Kode Kategori</th>
+          <th>Nama Kategori</th>
+          <th style="border-color: #ffffff #000000 #ffffff #000000;"></th>
+          <th>No.</th>
+          <th>Kode Kategori</th>
+          <th>Nama Kategori</th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php for ($i = 0; $i < count($data1); $i++) :
+        ?>
+          <tr>
+            <td class="text-center"><?= $i + 1 ?></td>
+            <td><?= $data1[$i]->kd_kategori ?></td>
+            <td><?= $data1[$i]->nama_kategori ?></td>
+            <td class="celah"></td>
+            <td class="text-center"><?= $i + $halfLength + 1 ?></td>
+            <td><?= $data2[$i]->kd_kategori ?></td>
+            <td><?= $data2[$i]->nama_kategori ?></td>
+          </tr>
+        <?php endfor; ?>
+
+      </tbody>
+    </table>
+    <p class="mb-1 mt-3">Tabel 3. Laporan Barang Tetap</p>
     <?php if (count($brgtetap) > 0) { ?>
       <table>
         <thead class="text-center">
@@ -98,7 +153,7 @@
     <?php } else { ?>
       <p class="text-center mt-5" style="font-style: italic bold;">Data Kosong! Barang tidak tersedia</p>
     <?php } ?>
-    <p class="mb-1 mt-3">Tabel 2. Laporan Pembelian Barang Tetap</p>
+    <p class="mb-1 mt-3">Table 4. Laporan Pembelian Barang Tetap</p>
     <?php if (count($belibrgtetap) > 0) { ?>
       <table>
         <?php
@@ -172,7 +227,7 @@
     <?php } else { ?>
       <p class="text-center mt-5" style="font-style: italic bold;">Data Kosong! Tidak ada pembelian barang tetap pada <?= $bulantahun ?></p>
     <?php } ?>
-    <p class="mb-1 mt-3">Tabel 3. Laporan Permintaan Barang Persediaan</p>
+    <p class="mb-1 mt-3">Table 5. Laporan Permintaan Barang Persediaan</p>
     <?php if (count($permintaan) > 0) { ?>
       <table>
         <?php
@@ -244,7 +299,7 @@
     <?php } else { ?>
       <p class="text-center mt-5" style="font-style: italic bold;">Data Kosong! Tidak ada permintaan barang persediaan pada <?= $bulantahun ?></p>
     <?php } ?>
-    <!-- <p class="mb-1 mt-3">the fourth page</p> -->
+    <p class="mb-1 mt-3">the fourth page</p>
   </div>
   <div id="footer">
     <p class="page"></p>

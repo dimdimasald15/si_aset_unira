@@ -36,21 +36,6 @@
             </li>
           </ul>
         </li>
-        <li class="sidebar-item has-sub <?= ($nav == 'ruang' || $nav == 'gedung') ? 'active' : '' ?>">
-          <a href="#" class='sidebar-link'>
-            <i class="bi bi-building"></i>
-            <span>Kelola Ruang</span>
-          </a>
-          <ul class="submenu <?= ($nav == 'ruang' || $nav == 'gedung') ? 'active' : '' ?>">
-            <li class="submenu-item <?= ($nav == 'ruang') ? 'active' : '' ?>">
-              <a href="ruang">Ruang</a>
-            </li>
-            <li class="submenu-item <?= ($nav == 'gedung') ? 'active' : '' ?>">
-              <a href="gedung">Gedung</a>
-            </li>
-          </ul>
-        </li>
-
         <li class="sidebar-item <?= ($nav == 'kategori-tetap' || $nav == 'kategori-persediaan') ? 'active' : '' ?> has-sub">
           <a href="#" class='sidebar-link'>
             <i class="bi bi-layers"></i>
@@ -65,23 +50,22 @@
             </li>
           </ul>
         </li>
+        <li class="sidebar-item <?= ($nav == 'ruang') ? 'active' : '' ?>">
+          <a href="ruang" class='sidebar-link'>
+            <i class="bi bi-building"></i>
+            <span>Ruang</span>
+          </a>
+        </li>
         <li class="sidebar-item <?= ($nav == 'laporan') ? 'active' : '' ?>">
           <a href="laporan" class='sidebar-link'>
             <i class="bi bi-file-earmark-bar-graph"></i>
-            <span>Laporan Inventaris</span>
+            <span>Laporan Aset</span>
           </a>
         </li>
         <li class="sidebar-item <?= ($nav == 'anggota') ? 'active' : '' ?>">
           <a href="anggota" class='sidebar-link'>
             <i class="bi bi-people"></i>
             <span>Anggota & Unit</span>
-          </a>
-        </li>
-        <li class="sidebar-title">Pengaturan</li>
-        <li class="sidebar-item <?= $nav == 'pengguna' ? 'active' : '' ?>">
-          <a href="pengguna" class='sidebar-link'>
-            <i class="bi bi-gear-fill"></i>
-            <span>Pengguna</span>
           </a>
         </li>
       </ul>
