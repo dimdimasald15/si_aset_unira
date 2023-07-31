@@ -34,8 +34,8 @@ class RiwayatBarang extends Model
     {
         $username = session()->get('username');
         if (!empty($username) && !array_key_exists('updated_by', $data)) {
-            $data['data']['updated_at'] = Time::now('Asia/Jakarta', 'id_ID');
-            $data['data']['updated_by'] = $username;
+            $data['updated_at'] = Time::now('Asia/Jakarta', 'id_ID');
+            $data['updated_by'] = $username;
         }
         return $data;
     }

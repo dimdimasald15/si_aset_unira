@@ -11,10 +11,6 @@ use App\Models\RiwayatTransaksi;
 use App\Models\Anggota;
 use App\Models\Permintaan;
 use App\Models\Peminjaman;
-use \Hermawan\DataTables\DataTable;
-use DateTime;
-use CodeIgniter\I18n\Time;
-use CodeIgniter\I18n\IntlFormat;
 use Dompdf\Dompdf;
 use App\Controllers\BaseController;
 

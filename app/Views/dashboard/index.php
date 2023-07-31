@@ -138,8 +138,8 @@
 
 
     // Panggil fungsi getCountBarang untuk masing-masing jenis barang
-    getCountBarang('getcountbrg', brgtetap, '#brgttp', 'barang-tetap-masuk');
-    getCountBarang('getcountbrg', brgpersediaan, '#brgsedia', 'barang-persediaan-masuk');
+    getCountBarang('getcountbrg', brgtetap, '#brgttp', 'kelola-barang#brgtetap');
+    getCountBarang('getcountbrg', brgpersediaan, '#brgsedia', 'kelola-barang#brgpersediaan');
     getCountProp('getcountgedung', '#gedung', 'gedung');
     getCountProp('getcountruang', '#ruang', 'ruang');
     getCountBrgKeluar('Peminjaman', '#peminjaman', 'peminjaman-barang-tetap');

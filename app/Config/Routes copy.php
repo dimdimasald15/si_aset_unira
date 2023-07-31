@@ -117,8 +117,15 @@ $routes->group('admin/kategori-persediaan', ['filter' => 'ceklogin'], function (
     $routes->post('getsubkode2', 'KategoriController::getsubkode2');
 });
 
-$routes->group('admin/kelola-barang', ['filter' => 'ceklogin'], function ($routes) {
+$routes->group('admin/barang-masuk', ['filter' => 'ceklogin'], function ($routes) {
     $routes->get('/', 'BarangController::index');
+    $routes->get('listdatabarang', 'BarangController::listdatabarang');
+    $routes->match(['get', 'post'], 'pilihkategori', 'BarangController::pilihkategori');
+    $routes->match(['get', 'post'], 'pilihbarang', 'BarangController::pilihbarang');
+    $routes->post('simpanbarang', 'BarangController::simpandatabarang');
+});
+$routes->group('admin/barang-tetap-masuk', ['filter' => 'ceklogin'], function ($routes) {
+    $routes->get('/', 'BarangController::indexbarangtetap');
     $routes->get('listdatabarang', 'BarangController::listdatabarang');
     $routes->match(['get', 'post'], 'pilihkategori', 'BarangController::pilihkategori');
     $routes->match(['get', 'post'], 'pilihbarang', 'BarangController::pilihbarang');
@@ -154,6 +161,71 @@ $routes->group('admin/kelola-barang', ['filter' => 'ceklogin'], function ($route
     $routes->post('getbarangbyany', 'BarangController::getbarangbyany');
     $routes->post('getsubkdbarang', 'BarangController::getsubkdbarang');
     $routes->post('updatedatastokmultiple', 'BarangController::updatedatastokmultiple');
+    // $routes->post('simpanstok', 'BarangController::simpanstok');
+});
+
+$routes->group('admin/barang-persediaan-masuk', ['filter' => 'ceklogin'], function ($routes) {
+    $routes->get('/', 'BarangController::indexbarangpersediaan');
+    $routes->get('listdatabarang', 'BarangController::listdatabarang');
+    $routes->match(['get', 'post'], 'pilihkategori', 'BarangController::pilihkategori');
+    $routes->match(['get', 'post'], 'pilihbarang', 'BarangController::pilihbarang');
+    $routes->post('simpanbarang', 'BarangController::simpandatabarang');
+    $routes->post('updatestok/(:any)', 'BarangController::updatedatastok/$1');
+    $routes->post('insertmultiple', 'BarangController::insertmultiplebarang');
+    $routes->post('transferbarang', 'BarangController::transfermultiplebarang');
+    $routes->post('updatebarang/(:any)', 'BarangController::updatedatabarang/$1');
+    $routes->post('hapus/(:any)', 'BarangController::hapusdata/$1');
+    $routes->get('tampildatarestore', 'PengalokasianController::listdataalokasi');
+    $routes->post('restore/(:any)', 'BarangController::restoredata/$1');
+    $routes->match(['get', 'post'], 'restore', 'BarangController::restoredata');
+    $routes->post('hapuspermanen/(:any)', 'BarangController::hapuspermanen/$1');
+    $routes->match(['get', 'post'], 'hapuspermanen', 'BarangController::hapuspermanen');
+    $routes->get('detail-barang/(:any)', 'BarangController::detailbarang/$1');
+    $routes->post('multipledelete', 'BarangController::multipledeletetemporary');
+
+    $routes->post('tampillabelbarang', 'BarangController::tampillabelbarang');
+    $routes->post('tampiltransferform', 'BarangController::tampiltransferform');
+    $routes->post('tampileditform', 'BarangController::tampileditform');
+    $routes->post('tampiltambahbarangmultiple', 'BarangController::tampiltambahbarangmultiple');
+    $routes->post('tampiltambahstokmultiple', 'BarangController::tampiltambahstokmultiple');
+    $routes->post('tampilcardupload', 'BarangController::tampilcardupload');
+    $routes->post('simpanupload', 'BarangController::simpanupload');
+
+    $routes->get('getdatastokbarangbyid', 'BarangController::getdatastokbarangbyid');
+    $routes->get('pilihbarang', 'BarangController::pilihbarang');
+    $routes->get('pilihsatuan', 'BarangController::pilihsatuan');
+    $routes->get('pilihlokasi', 'BarangController::pilihlokasi');
+    $routes->post('cekbrgdanruang', 'BarangController::cekbrgdanruang');
+    $routes->get('pilihwarna', 'BarangController::pilihwarna');
+    $routes->get('getkdbrgbykdkat', 'BarangController::getkdbrgbykdkat');
+    $routes->post('getbarangbyany', 'BarangController::getbarangbyany');
+    $routes->post('getsubkdbarang', 'BarangController::getsubkdbarang');
+    $routes->post('updatedatastokmultiple', 'BarangController::updatedatastokmultiple');
+    // $routes->post('simpanstok', 'BarangController::simpanstok');
+});
+
+$routes->group('admin/alokasi-barang-tetap', ['filter' => 'ceklogin'], function ($routes) {
+    $routes->get('/', 'PengalokasianController::index');
+    $routes->get('listdataalokasi', 'PengalokasianController::listdataalokasi');
+    $routes->match(['get', 'post'], 'pilihkategori', 'PengalokasianController::pilihkategori');
+    $routes->match(['get', 'post'], 'pilihbarang', 'PengalokasianController::pilihbarang');
+    $routes->match(['get', 'post'], 'pilihlokasi', 'PengalokasianController::pilihlokasi');
+    $routes->post('hapus/(:any)', 'PengalokasianController::hapusdata/$1');
+    $routes->post('transferbarang', 'BarangController::transfermultiplebarang');
+    $routes->get('tampildatarestore', 'BarangController::listdatabarang');
+    $routes->post('restore/(:any)', 'PengalokasianController::restoredata/$1');
+    $routes->match(['get', 'post'], 'restore', 'PengalokasianController::restoredata');
+    $routes->post('hapuspermanen/(:any)', 'PengalokasianController::hapuspermanen/$1');
+    $routes->match(['get', 'post'], 'hapuspermanen', 'PengalokasianController::hapuspermanen');
+    $routes->post('multipledelete', 'PengalokasianController::multipledeletetemporary');
+    $routes->post('tampillabelbarang', 'BarangController::tampillabelbarang');
+    $routes->post('tampiltransferform', 'PengalokasianController::tampiltransferform');
+    $routes->get('detail-barang/(:any)', 'BarangController::detailbarang/$1');
+
+    $routes->get('getdatastokbarangbyid', 'BarangController::getdatastokbarangbyid');
+    $routes->get('pilihbarang', 'BarangController::pilihbarang');
+    $routes->get('pilihsatuan', 'BarangController::pilihsatuan');
+    $routes->get('pilihlokasi', 'BarangController::pilihlokasi');
 });
 
 $routes->group('admin/permintaan-barang-persediaan', ['filter' => 'ceklogin'], function ($routes) {

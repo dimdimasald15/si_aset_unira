@@ -21,16 +21,30 @@
                       <h5>Form <?= $no; ?></h5>
                     </div>
                     <div class="col-12">
-                      <div class="row mb-1">
-                        <label for="katid<?= $no ?>">Nama Kategori</label>
-                      </div>
-                      <div class="row mb-1">
-                        <div class="input-group mb-3">
-                          <span class="input-group-text">
-                            <i class="bi bi-layers"></i>
-                          </span>
-                          <select name="kat_id<?= $no; ?>" class="form-select p-2" id="katid<?= $no ?>" style="width: 400px;"></select>
-                          <div class="invalid-feedback errkatid<?= $no; ?>"></div>
+                      <div class="row g-2 mb-1">
+                        <div class="col-md-6">
+                          <label class="form-label" for="jenis_kat<?= $no ?>">Jenis Kategori Barang</label>
+                          <div class="input-group mb-3">
+                            <span class="input-group-text">
+                              <i class="bi bi-layers"></i>
+                            </span>
+                            <select name="jenis_kat[]" class="form-select p-2" id="jenis_kat<?= $no ?>">
+                              <option value="">Pilih Jenis Kategori Barang</option>
+                              <option value="Barang Tetap">Barang Tetap</option>
+                              <option value="Barang Persediaan">Barang Persediaan</option>
+                            </select>
+                            <div class="invalid-feedback errjenis_kat<?= $no ?>"></div>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <label class="form-label" for="katid<?= $no ?>">Nama Kategori</label>
+                          <div class="input-group mb-3">
+                            <span class="input-group-text">
+                              <i class="bi bi-layers"></i>
+                            </span>
+                            <select name="kat_id[]" class="form-select p-2" id="katid<?= $no ?>"></select>
+                            <div class="invalid-feedback errkatid<?= $no; ?>"></div>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -50,7 +64,7 @@
                           <div class="input-group mb-3">
                             <select name="skbrg[]" class="form-select" id="skbarang<?= $no ?>"></select>
                             <input type="text" class="form-control" placeholder="Kode Barang" id="skbarang-other<?= $no ?>" name="skbrg_lain[]" style="display:none;">
-                            <input type="text" class="form-control" id="skbrgfix<?= $no ?>" name="kode_brg<?= $no; ?>" readonly style="display:none;">
+                            <input type="text" class="form-control" id="skbrgfix<?= $no ?>" name="kode_brg[]" readonly style="display:none;">
                             <div class="invalid-feedback errskbarang<?= $no ?>"></div>
                           </div>
                         </div>
@@ -59,10 +73,10 @@
                     <div class="col-12">
                       <div class="row g-2 mb-1">
                         <div class="col-md-4">
-                          <label for="merk<?= $no ?>" class="form-label">Merk</label>
+                          <label class="form-label" for="merk<?= $no ?>">Merk</label>
                           <div class="input-group mb-3">
                             <span class="input-group-text"><i class="bi bi-tags"></i></span>
-                            <input type="text" class="form-control" placeholder="Masukkan Merk" id="merk<?= $no ?>" name="merk<?= $no ?>">
+                            <input type="text" class="form-control" placeholder="Masukkan Merk" id="merk<?= $no ?>" name="merk[]">
                             <div class="invalid-feedback errmerk<?= $no ?>"></div>
                           </div>
                         </div>
@@ -70,7 +84,7 @@
                           <label for="tipe<?= $no ?>" class="form-label">Tipe Barang</label>
                           <div class="input-group mb-3">
                             <span class="input-group-text"><i class="bi bi-tag-fill"></i></span>
-                            <input type="text" class="form-control" placeholder="Masukkan tipe" id="tipe<?= $no ?>" name="tipe<?= $no ?>">
+                            <input type="text" class="form-control" placeholder="Masukkan tipe" id="tipe<?= $no ?>" name="tipe[]">
                             <div class="invalid-feedback errtipe<?= $no ?>"></div>
                           </div>
                         </div>
@@ -78,7 +92,7 @@
                           <label for="warna<?= $no ?>" class="form-label">Warna</label>
                           <div class="input-group mb-3">
                             <span class="input-group-text"><i class="bi bi-palette"></i></span>
-                            <select class="form-select" id="warna<?= $no ?>" name="warna<?= $no ?>"></select>
+                            <select class="form-select" id="warna<?= $no ?>" name="warna[]"></select>
                             <div class="invalid-feedback errwarna<?= $no ?>">
                             </div>
                           </div>
@@ -87,12 +101,12 @@
                     </div>
                     <div class="col-12">
                       <div class="row mb-1">
-                        <label for="namabarang<?= $no ?>">Nama Barang</label>
+                        <label class="form-label" for="namabarang<?= $no ?>">Nama Barang</label>
                       </div>
                       <div class="row mb-1">
                         <div class="input-group mb-3">
                           <span class="input-group-text"><i class="bi bi-card-text"></i></span>
-                          <input type="text" class="form-control" placeholder="Masukkan Nama Barang" id="namabarang<?= $no ?>" name="nama_brg<?= $no; ?>" readonly>
+                          <input type="text" class="form-control" placeholder="Masukkan Nama Barang" id="namabarang<?= $no ?>" name="nama_brg[]" readonly>
                           <div class="invalid-feedback errnamabarang<?= $no ?>"></div>
                         </div>
                       </div>
@@ -102,19 +116,19 @@
                         <div class="col-md-5 mb-3 asalbrg<?= $no ?>">
                           <label class="form-label">Asal <?= $title; ?></label>
                           <div class="form-check">
-                            <input class="form-check-input" type="radio" name="asal_<?= $no ?>" id="belibaru<?= $no ?>" value="Beli baru">
+                            <input class="form-check-input" type="radio" name="asal[]" id="belibaru<?= $no ?>" value="Beli baru">
                             <label class="form-check-label" for="belibaru<?= $no ?>">
                               Beli Baru
                             </label>
                           </div>
                           <div class="form-check">
-                            <input class="form-check-input" type="radio" name="asal_<?= $no ?>" id="belibekas<?= $no ?>" value="Beli bekas">
+                            <input class="form-check-input" type="radio" name="asal[]" id="belibekas<?= $no ?>" value="Beli bekas">
                             <label class="form-check-label" for="belibekas<?= $no ?>">
                               Beli Bekas
                             </label>
                           </div>
                           <div class="form-check">
-                            <input class="form-check-input" type="radio" name="asal_<?= $no ?>" id="hibah<?= $no ?>" value="Hibah">
+                            <input class="form-check-input" type="radio" name="asal[]" id="hibah<?= $no ?>" value="Hibah">
                             <label class="form-check-label" for="hibah<?= $no ?>">
                               Hibah
                             </label>
@@ -141,7 +155,7 @@
                           <label for="toko<?= $no ?>" class="form-label">Nama Toko</label>
                           <div class="input-group mb-3">
                             <span class="input-group-text"><i class="bi bi-shop"></i></span>
-                            <input type="text" class="form-control" placeholder="Masukkan nama toko" id="toko<?= $no ?>" name="toko<?= $no ?>">
+                            <input type="text" class="form-control" placeholder="Masukkan nama toko" id="toko<?= $no ?>" name="toko[]">
                             <div class="invalid-feedback errtoko"></div>
                           </div>
                         </div>
@@ -149,7 +163,7 @@
                           <label for="instansi<?= $no ?>" class="form-label">Nama Instansi</label>
                           <div class="input-group mb-3">
                             <span class="input-group-text"><i class="bi bi-building"></i></span>
-                            <input type="text" class="form-control" placeholder="Masukkan Nama Instansi" id="instansi<?= $no ?>" name="instansi<?= $no ?>">
+                            <input type="text" class="form-control" placeholder="Masukkan Nama Instansi" id="instansi<?= $no ?>" name="instansi[]">
                             <div class="invalid-feedback errinstansi"></div>
                           </div>
                         </div>
@@ -161,7 +175,7 @@
                           <label for="noseri<?= $no ?>" class="form-label">Nomor seri barang</label>
                           <div class="input-group mb-3">
                             <span class="input-group-text"><i class="bi bi-hash"></i></span>
-                            <input type="text" class="form-control" placeholder="Masukkan No Seri" id="noseri<?= $no ?>" name="no_seri<?= $no ?>">
+                            <input type="text" class="form-control" placeholder="Masukkan No Seri" id="noseri<?= $no ?>" name="no_seri[]">
                             <div class="invalid-feedback errnoseri"></div>
                           </div>
                         </div>
@@ -169,7 +183,7 @@
                           <label for="nodokumen<?= $no ?>" class="form-label">Nomor Dokumen</label>
                           <div class="input-group mb-3">
                             <span class="input-group-text"><i class="bi bi-file-earmark-text"></i></span>
-                            <input type="text" class="form-control" placeholder="Masukkan No Dokumen" id="nodokumen<?= $no ?>" name="no_dokumen<?= $no ?>">
+                            <input type="text" class="form-control" placeholder="Masukkan No Dokumen" id="nodokumen<?= $no ?>" name="no_dokumen[]">
                             <div class="invalid-feedback errnodokumen"></div>
                           </div>
                         </div>
@@ -181,7 +195,7 @@
                           <label for="hargabeli<?= $no ?>" class="form-label">Harga Beli Barang</label>
                           <div class="input-group mb-3">
                             <span class="input-group-text">Rp</span>
-                            <input type="number" <?= $jenis_kat == "Barang Persediaan" ? 'step="50" min="100"' : 'step="500" min="5000"' ?> class="form-control" placeholder="Masukkan Harga Beli" id="hargabeli<?= $no ?>" name="harga_beli<?= $no ?>">
+                            <input type="number" class="form-control" placeholder="Masukkan Harga Beli" id="hargabeli<?= $no ?>" name="harga_beli[]">
                             <div class="invalid-feedback errhargabeli<?= $no ?>"></div>
                           </div>
                         </div>
@@ -189,7 +203,7 @@
                           <label for="hargajual<?= $no ?>" class="form-label">Harga Jual Barang</label>
                           <div class="input-group mb-3">
                             <span class="input-group-text">Rp</span>
-                            <input type="number" <?= $jenis_kat == "Barang Persediaan" ? 'step="50" min="100"' : 'step="500" min="5000"' ?> class="form-control" placeholder="Masukkan Harga Jual" id="hargajual<?= $no ?>" name="harga_jual<?= $no ?>">
+                            <input type="number" class="form-control" placeholder="Masukkan Harga Jual" id="hargajual<?= $no ?>" name="harga_jual[]">
                             <div class="invalid-feedback errhargajual<?= $no ?>"></div>
                           </div>
                         </div>
@@ -197,43 +211,39 @@
                     </div>
                     <div class="col-12">
                       <div class="row g-2 mb-1">
-                        <div class="col-md-auto">
-                          <label for="tglbeli<?= $no ?>" class="mb-1">Tanggal Pembelian</label>
+                        <div class="col-md-6">
+                          <label for="tglbeli<?= $no ?>" class="form-label">Tanggal Pembelian</label>
                           <div class="input-group mb-3">
                             <span class="input-group-text"><i class="bi bi-calendar3"></i></span>
-                            <input type="date" class="form-control" placeholder="dd/mm/yyyy" id="tglbeli<?= $no ?>" name="tgl_pembelian<?= $no ?>">
+                            <input type="date" class="form-control" placeholder="dd/mm/yyyy" id="tglbeli<?= $no ?>" name="tgl_pembelian[]">
                             <div class="invalid-feedback errtglbeli<?= $no ?>"></div>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <label class="form-label" for="lokasi<?= $no ?>">Lokasi Penempatan <?= $title ?></label>
+                          <div class="input-group mb-3">
+                            <span class="input-group-text" id="basic-addon1"><i class="bi bi-geo-alt"></i></span>
+                            <select class="form-select" id="lokasi<?= $no ?>" name="ruang_id[]"></select>
+                            <div class="invalid-feedback errlokasi"></div>
                           </div>
                         </div>
                       </div>
                     </div>
                     <div class="col-lg-12">
                       <div class="col-12">
-                        <div class="row mb-1">
-                          <label for="lokasi<?= $no ?>">Lokasi Penempatan <?= $title ?></label>
-                        </div>
-                        <div class="row mb-1">
-                          <div class="input-group mb-3">
-                            <span class="input-group-text" id="basic-addon1"><i class="bi bi-geo-alt"></i></span>
-                            <select class="form-select" id="lokasi<?= $no ?>" name="ruang_id<?= $no ?>"></select>
-                            <div class="invalid-feedback errlokasi"></div>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="col-12">
                         <div class="row g-2 mb-1">
                           <div class="col-md-6">
-                            <label for="jmlmasuk<?= $no ?>" class="mb-1">Jumlah Barang Masuk</label>
+                            <label class="form-label" for="jmlmasuk<?= $no ?>" class="mb-1">Jumlah Barang Masuk</label>
                             <div class="input-group mb-3">
                               <span class="input-group-text" id="basic-addon1"><i class="bi bi-box-seam"></i></span>
-                              <input type="number" min="1" class="form-control " id="jmlmasuk<?= $no ?>" placeholder="Masukkan Jumlah Barang Masuk" name="jumlah_masuk<?= $no ?>">
+                              <input type="number" min="1" class="form-control " id="jmlmasuk<?= $no ?>" placeholder="Masukkan Jumlah Barang Masuk" name="jumlah_masuk[]">
                               <div class="invalid-feedback errjmlmasuk<?= $no ?>"></div>
                             </div>
                           </div>
                           <div class="col-md-6">
-                            <label for="satuan<?= $no ?>" class="mb-1">Satuan <?= $title; ?></label>
+                            <label class="form-label" for="satuan<?= $no ?>" class="mb-1">Satuan <?= $title; ?></label>
                             <div class="input-group mb-3">
-                              <select name="satuan_id<?= $no ?>" class="form-select p-2 " id="satuan<?= $no ?>"></select>
+                              <select name="satuan_id[]" class="form-select p-2 " id="satuan<?= $no ?>"></select>
                               <div class="invalid-feedback errsatuan<?= $no ?>"></div>
                             </div>
                           </div>
@@ -376,31 +386,38 @@
   function looping(row) {
     for (var i = 1; i <= row; i++) {
       $('.formtambahrow tr').find('.btnhapusrow').hide();
-
-      $(`#katid${i}`).select2({
-        placeholder: 'Piih Nama Kategori <?= $title; ?>',
-        minimumInputLength: 1,
-        allowClear: true,
-        width: "50%",
-        ajax: {
-          url: `<?= $nav; ?>/pilihkategori`,
-          dataType: 'json',
-          delay: 250,
-          data: function(params) {
-            return {
-              search: params.term,
-              jenis_kat: '<?= $jenis_kat; ?>',
-            }
-          },
-          processResults: function(data, page) {
-            return {
-              results: data
-            };
-          },
-          cache: true
-        },
-        templateResult: formatResult,
-      });
+      (function(j) {
+        $(`#jenis_kat${j}`).on('change', function(e) {
+          e.preventDefault();
+          var jenis_kat = $(this).val();
+          $(`#katid${j}`).select2({
+            placeholder: 'Piih Nama Kategori <?= $title; ?>',
+            minimumInputLength: 1,
+            allowClear: true,
+            width: "80%",
+            ajax: {
+              url: `<?= $nav; ?>/pilihkategori`,
+              dataType: 'json',
+              delay: 250,
+              data: function(params) {
+                return {
+                  search: params.term,
+                  jenis_kat: jenis_kat,
+                }
+              },
+              processResults: function(data, page) {
+                return {
+                  results: data
+                };
+              },
+              cache: true
+            },
+            templateResult: formatResult,
+          });
+          $(`#jenis_kat${j}`).removeClass('is-invalid');
+          $(`.errjenis_kat${j}`).html('');
+        })
+      })(i);
 
       $(`#warna${i}`).select2({
         placeholder: 'Piih Warna',
@@ -458,7 +475,7 @@
             $(`#namabarang${j}`).val(`${categories} ${merk} ${tipe}`);
           }
           if (categories !== '' && merk !== '' && tipe !== '' && warna !== null) {
-            $(`#namabarang${j}`).val(`${categories} ${merk} ${tipe} - ${warna} `);
+            $(`#namabarang${j}`).val(`${categories} ${merk} ${tipe} - ${warna}`);
           }
         })
 
@@ -653,23 +670,37 @@
             <h5>Form ${index}</h5>
           </div>
           <div class="col-12">
-            <div class="row mb-1">
-              <label for="katid${index}">Nama Kategori</label>
-            </div>
-            <div class="row mb-1">
-              <div class="input-group mb-3">
-                <span class="input-group-text">
-              <i class="bi bi-layers"></i>
-            </span>
-                <select name="kat_id${index}" class="form-select p-2" id="katid${index}" style="width: 400px;"></select>
-                <div class="invalid-feedback errkatid${index}"></div>
+            <div class="row g-2 mb-1">
+              <div class="col-md-6">
+                <label class="form-label" for="jenis_kat${index}">Jenis Kategori Barang</label>
+                <div class="input-group mb-3">
+                  <span class="input-group-text">
+                    <i class="bi bi-layers"></i>
+                  </span>
+                  <select name="jenis_kat[]" class="form-select p-2" id="jenis_kat${index}">
+                    <option value="">Pilih Jenis Kategori Barang</option>
+                    <option value="Barang Tetap">Barang Tetap</option>
+                    <option value="Barang Persediaan">Barang Persediaan</option>
+                  </select>
+                  <div class="invalid-feedback errjenis_kat${index}"></div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label" for="katid${index}">Nama Kategori</label>
+                <div class="input-group mb-3">
+                  <span class="input-group-text">
+                    <i class="bi bi-layers"></i>
+                  </span>
+                  <select name="kat_id${index}" class="form-select p-2" id="katid${index}"></select>
+                  <div class="invalid-feedback errkatid${index}"></div>
+                </div>
               </div>
             </div>
           </div>
           <div class="col-12">
             <div class="row g-2 mb-1">
               <div class="col-md-6">
-                <label for="kodebrg${index}">Kode Barang</label>
+                <label for="subkdkategori${index}">Kode Barang</label>
                 <div class="input-group mb-3">
                   <span class="input-group-text">
                     <i class="bi bi-upc"></i>
@@ -682,7 +713,7 @@
                 <div class="input-group mb-3">
                   <select name="skbrg[]" class="form-select" id="skbarang${index}"></select>
                   <input type="text" class="form-control" placeholder="Kode Barang" id="skbarang-other${index}" name="skbrg_lain[]" style="display:none;">
-                  <input type="text" class="form-control" id="skbrgfix${index}" name="kode_brg${index}" readonly style="display:none;">
+                  <input type="text" class="form-control" id="skbrgfix${index}" name="kode_brg[]" readonly style="display:none;">
                   <div class="invalid-feedback errskbarang${index}"></div>
                 </div>
               </div>
@@ -694,7 +725,7 @@
                 <label for="merk${index}" class="form-label">Merk</label>
                 <div class="input-group mb-3">
                   <span class="input-group-text"><i class="bi bi-tags"></i></span>
-                  <input type="text" class="form-control" placeholder="Masukkan Merk" id="merk${index}" name="merk${index}">
+                  <input type="text" class="form-control" placeholder="Masukkan Merk" id="merk${index}" name="merk[]">
                   <div class="invalid-feedback errmerk${index}"></div>
                 </div>
               </div>              
@@ -702,7 +733,7 @@
                 <label for="tipe${index}" class="form-label">Tipe Barang</label>
                 <div class="input-group mb-3">
                   <span class="input-group-text"><i class="bi bi-tag-fill"></i></span>
-                  <input type="text" class="form-control" placeholder="Masukkan tipe" id="tipe${index}" name="tipe${index}">
+                  <input type="text" class="form-control" placeholder="Masukkan tipe" id="tipe${index}" name="tipe[]">
                   <div class="invalid-feedback errtipe${index}"></div>
                 </div>
               </div>
@@ -710,7 +741,7 @@
                 <label for="warna${index}" class="form-label">Warna</label>
                 <div class="input-group mb-3">
                   <span class="input-group-text"><i class="bi bi-palette"></i></span>
-                  <select class="form-select" id="warna${index}" name="warna${index}"></select>
+                  <select class="form-select" id="warna${index}" name="warna[]"></select>
                   <div class="invalid-feedback errwarna${index}">
                   </div>
                 </div>
@@ -724,7 +755,7 @@
             <div class="row mb-1">
               <div class="input-group mb-3">
                 <span class="input-group-text"><i class="bi bi-card-text"></i></span>
-                <input type="text" class="form-control" placeholder="Masukkan Nama Barang" id="namabarang${index}" name="nama_brg${index}" readonly>
+                <input type="text" class="form-control" placeholder="Masukkan Nama Barang" id="namabarang${index}" name="nama_brg[] readonly>
                 <div class="invalid-feedback errnamabarang${index}"></div>
               </div>
             </div>
@@ -734,19 +765,19 @@
               <div class="col-md-5 mb-3 asalbrg${index}">
                 <label class="form-label">Asal <?= $title; ?></label>
                 <div class="form-check">
-                  <input class="form-check-input" type="radio" name="asal_${index}" id="belibaru${index}" value="Beli baru">
+                  <input class="form-check-input" type="radio" name="asal[]" id="belibaru${index}" value="Beli baru">
                   <label class="form-check-label" for="belibaru${index}">
                     Beli Baru
                   </label>
                 </div>
                 <div class="form-check">
-                  <input class="form-check-input" type="radio" name="asal_${index}" id="belibekas${index}" value="Beli bekas">
+                  <input class="form-check-input" type="radio" name="asal[]" id="belibekas${index}" value="Beli bekas">
                   <label class="form-check-label" for="belibekas${index}">
                     Beli Bekas
                   </label>
                 </div>
                 <div class="form-check">
-                  <input class="form-check-input" type="radio" name="asal_${index}" id="hibah${index}" value="Hibah">
+                  <input class="form-check-input" type="radio" name="asal[]" id="hibah${index}" value="Hibah">
                   <label class="form-check-label" for="hibah${index}">
                     Hibah
                   </label>
@@ -773,7 +804,7 @@
                 <label for="toko${index}" class="form-label">Nama Toko</label>
                 <div class="input-group mb-3">
                   <span class="input-group-text"><i class="bi bi-shop"></i></span>
-                  <input type="text" class="form-control" placeholder="Masukkan nama toko" id="toko${index}" name="toko${index}">
+                  <input type="text" class="form-control" placeholder="Masukkan nama toko" id="toko${index}" name="toko[]">
                   <div class="invalid-feedback errtoko${index}"></div>
                 </div>
               </div>
@@ -781,7 +812,7 @@
                 <label for="instansi${index}" class="form-label">Nama Instansi</label>
                 <div class="input-group mb-3">
                   <span class="input-group-text"><i class="bi bi-building"></i></span>
-                  <input type="text" class="form-control" placeholder="Masukkan Nama Instansi" id="instansi${index}" name="instansi${index}">
+                  <input type="text" class="form-control" placeholder="Masukkan Nama Instansi" id="instansi${index}" name="instansi[]">
                   <div class="invalid-feedback errinstansi${index}"></div>
                 </div>
               </div>
@@ -793,7 +824,7 @@
                 <label for="noseri${index}" class="form-label">Nomor seri barang</label>
                 <div class="input-group mb-3">
                   <span class="input-group-text"><i class="bi bi-hash"></i></span>
-                  <input type="text" class="form-control" placeholder="Masukkan No Seri" id="noseri${index}" name="no_seri${index}">
+                  <input type="text" class="form-control" placeholder="Masukkan No Seri" id="noseri${index}" name="no_seri[]">
                   <div class="invalid-feedback errnoseri"></div>
                 </div>
               </div>
@@ -801,7 +832,7 @@
                 <label for="nodokumen${index}" class="form-label">Nomor Dokumen</label>
                 <div class="input-group mb-3">
                   <span class="input-group-text"><i class="bi bi-file-earmark-text"></i></span>
-                  <input type="text" class="form-control" placeholder="Masukkan No Dokumen" id="nodokumen${index}" name="no_dokumen${index}">
+                  <input type="text" class="form-control" placeholder="Masukkan No Dokumen" id="nodokumen${index}" name="no_dokumen[]">
                   <div class="invalid-feedback errnodokumen"></div>
                 </div>
               </div>
@@ -813,7 +844,7 @@
                 <label for="hargabeli${index}" class="form-label">Harga Beli Barang</label>
                 <div class="input-group mb-3">
                   <span class="input-group-text">Rp</span>
-                  <input type="number" <?= $jenis_kat == "Barang Persediaan" ? 'step="50" min="100"' : 'step="500" min="5000"' ?> class="form-control" placeholder="Masukkan Harga Beli" id="hargabeli${index}" name="harga_beli${index}">
+                  <input type="number" class="form-control" placeholder="Masukkan Harga Beli" id="hargabeli${index}" name="harga_beli[]">
                   <div class="invalid-feedback errhargabeli${index}"></div>
                 </div>
               </div>
@@ -821,7 +852,7 @@
                 <label for="hargajual${index}" class="form-label">Harga Jual Barang</label>
                 <div class="input-group mb-3">
                   <span class="input-group-text">Rp</span>
-                  <input type="number" <?= $jenis_kat == "Barang Persediaan" ? 'step="50" min="100"' : 'step="500" min="5000"' ?> class="form-control" placeholder="Masukkan Harga Jual" id="hargajual${index}" name="harga_jual${index}">
+                  <input type="number"  class="form-control" placeholder="Masukkan Harga Jual" id="hargajual${index}" name="harga_jual[]">
                   <div class="invalid-feedback errhargajual${index}"></div>
                 </div>
               </div>
@@ -833,7 +864,7 @@
                 <label for="tglbeli${index}" class="mb-1">Tanggal Pembelian</label>
                 <div class="input-group mb-3">
                   <span class="input-group-text"><i class="bi bi-calendar3"></i></span>
-                  <input type="date" class="form-control" placeholder="dd/mm/yyyy" id="tglbeli${index}" name="tgl_pembelian${index}">
+                  <input type="date" class="form-control" placeholder="dd/mm/yyyy" id="tglbeli${index}" name="tgl_pembelian[]">
                   <div class="invalid-feedback errtglbeli${index}"></div>
                 </div>
               </div>
@@ -847,7 +878,7 @@
               <div class="row mb-1">
                 <div class="input-group mb-3">
                   <span class="input-group-text" id="basic-addon1"><i class="bi bi-geo-alt"></i></span>
-                  <select class="form-select" id="lokasi${index}" name="ruang_id${index}"></select>
+                  <select class="form-select" id="lokasi${index}" name="ruang_id[]"></select>
                   <div class="invalid-feedback errlokasi"></div>
                 </div>
               </div>
@@ -858,14 +889,14 @@
                   <label for="jmlmasuk${index}" class="mb-1">Jumlah Barang Masuk</label>
                   <div class="input-group mb-3">
                     <span class="input-group-text" id="basic-addon1"><i class="bi bi-box-seam"></i></span>
-                    <input type="number" min="1" class="form-control " id="jmlmasuk${index}" placeholder="Masukkan Jumlah Barang Masuk" name="jumlah_masuk${index}">
+                    <input type="number" min="1" class="form-control " id="jmlmasuk${index}" placeholder="Masukkan Jumlah Barang Masuk" name="jumlah_masuk[]">
                     <div class="invalid-feedback errjmlmasuk${index}"></div>
                   </div>
                 </div>
                 <div class="col-md-6">
                   <label for="satuan${index}" class="mb-1">Satuan <?= $title; ?></label>
                   <div class="input-group mb-3">
-                    <select name="satuan_id${index}" class="form-select p-2 " id="satuan${index}"></select>
+                    <select name="satuan_id[]" class="form-select p-2 " id="satuan${index}"></select>
                     <div class="invalid-feedback errsatuan${index}"></div>
                   </div>
                 </div>
@@ -917,7 +948,6 @@
       let formdatamultiple = new FormData(this);
       // dapatkan jumlah row
       formdatamultiple.append('jmldata', rowCount);
-      formdatamultiple.append('jenistrx', "<?= $jenistrx ?>");
 
       $.ajax({
         type: "post",
@@ -939,7 +969,27 @@
 
           if (response.error) {
             for (var i = 1; i <= jmldata; i++) {
-              var errorkatid = response.error[`kat_id${i}`];
+              var errjenis_kat = response.error[`jenis_kat.${i-1}`];
+              var errorkatid = response.error[`kat_id.${i-1}`];
+              var errorkodebrg = response.error[`kode_brg.${i-1}`];
+              var errornama_brg = response.error[`nama_brg.${i-1}`];
+              var errormerk = response.error[`merk.${i-1}`];
+              var errorwarna = response.error[`warna.${i-1}`];
+              var errorasal = response.error[`asal.${i-1}`];
+              var errorhrgbeli = response.error[`harga_beli.${i-1}`];
+              var errorhrgjual = response.error[`harga_jual.${i-1}`];
+              var errorlokasi = response.error[`ruang_id.${i-1}`];
+              var errorjmlmasuk = response.error[`jumlah_masuk.${i-1}`];
+              var errorsatuan = response.error[`satuan_id.${i-1}`];
+
+              if (errjenis_kat) {
+                $(`#jenis_kat${i}`).addClass('is-invalid');
+                $(`.errjenis_kat${i}`).html(errjenis_kat);
+              } else {
+                $(`#jenis_kat${i}`).removeClass('is-invalid');
+                $(`.errjenis_kat${i}`).html('');
+              }
+
               if (errorkatid) {
                 $(`#katid${i}`).addClass('is-invalid');
                 $(`.errkatid${i}`).html(errorkatid);
@@ -947,7 +997,7 @@
                 $(`#katid${i}`).removeClass('is-invalid');
                 $(`.errkatid${i}`).html('');
               }
-              var errorkodebrg = response.error[`kode_brg${i}`];
+
               if (errorkodebrg) {
                 $(`#skbrgfix${i}`).addClass('is-invalid');
                 $(`.errskbarang${i}`).html(errorkodebrg);
@@ -955,7 +1005,7 @@
                 $(`#skbrgfix${i}`).removeClass('is-invalid');
                 $(`.errskbarang${i}`).html('');
               }
-              var errornama_brg = response.error[`nama_brg${i}`];
+
               if (errornama_brg) {
                 $(`#namabarang${i}`).addClass('is-invalid');
                 $(`.errnamabarang${i}`).html(errornama_brg);
@@ -963,7 +1013,7 @@
                 $(`#namabarang${i}`).removeClass('is-invalid');
                 $(`.errnamabarang${i}`).html('');
               }
-              var errormerk = response.error[`merk${i}`];
+
               if (errormerk) {
                 $(`#merk${i}`).addClass('is-invalid');
                 $(`.errmerk${i}`).html(errormerk);
@@ -971,7 +1021,7 @@
                 $(`#merk${i}`).removeClass('is-invalid');
                 $(`.errmerk${i}`).html('');
               }
-              var errorwarna = response.error[`warna${i}`];
+
               if (errorwarna) {
                 $(`#warna${i}`).addClass('is-invalid');
                 $(`.errwarna${i}`).html(errorwarna);
@@ -979,7 +1029,7 @@
                 $(`#warna${i}`).removeClass('is-invalid');
                 $(`.errwarna${i}`).html('');
               }
-              var errorasal = response.error[`asal_${i}`];
+
               if (errorasal) {
                 $(`.asalbrg${i} .form-check-input`).addClass('is-invalid');
                 $(`.errasalbrg${i}`).html(errorasal);
@@ -987,7 +1037,7 @@
                 $(`.asalbrg${i} .form-check-input`).removeClass('is-invalid');
                 $(`.errasalbrg${i}`).html('');
               }
-              var errorhrgbeli = response.error[`harga_beli${i}`];
+
               if (errorhrgbeli) {
                 $(`#hargabeli${i}`).addClass('is-invalid');
                 $(`.errhargabeli${i}`).html(errorhrgbeli);
@@ -995,7 +1045,7 @@
                 $(`#hargabeli${i}`).removeClass('is-invalid');
                 $(`.errhargabeli${i}`).html('');
               }
-              var errorhrgjual = response.error[`harga_jual${i}`];
+
               if (errorhrgjual) {
                 $(`#hargajual${i}`).addClass('is-invalid');
                 $(`.errhargajual${i}`).html(errorhrgjual);
@@ -1003,7 +1053,7 @@
                 $(`#hargajual${i}`).removeClass('is-invalid');
                 $(`.errhargajual${i}`).html('');
               }
-              var errorlokasi = response.error[`ruang_id${i}`];
+
               if (errorlokasi) {
                 $(`#lokasi${i}`).addClass('is-invalid');
                 $(`.errlokasi${i}`).html(errorlokasi);
@@ -1011,7 +1061,7 @@
                 $(`#lokasi${i}`).removeClass('is-invalid');
                 $(`.errlokasi${i}`).html('');
               }
-              var errorjmlmasuk = response.error[`jumlah_masuk${i}`];
+
               if (errorjmlmasuk) {
                 $(`#jmlmasuk${i}`).addClass('is-invalid');
                 $(`.errjmlmasuk${i}`).html(errorjmlmasuk);
@@ -1019,7 +1069,7 @@
                 $(`#jmlmasuk${i}`).removeClass('is-invalid');
                 $(`.errjmlmasuk${i}`).html('');
               }
-              var errorsatuan = response.error[`satuan_id${i}`];
+
               if (errorsatuan) {
                 $(`#satuan${i}`).addClass('is-invalid');
                 $(`.errsatuan${i}`).html(errorsatuan);
@@ -1035,7 +1085,8 @@
               response.sukses,
               'success'
             ).then((result) => {
-              databarang.ajax.reload();
+              tableBrgTetap.ajax.reload();
+              tableBrgPersediaan.ajax.reload();
             })
           }
         },

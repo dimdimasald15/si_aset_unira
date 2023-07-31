@@ -1,6 +1,6 @@
 <div class="card mb-3" id="cardTambahStokMultiple">
   <div class="card-header shadow-sm">
-    <h5 class="card-title">Form Tambah <?= ucwords($title); ?></h5>
+    <h5 class="card-title">Form Tambah Stok <?= ucwords($title); ?></h5>
   </div>
   <div class="card-content">
     <div class="card-body">
@@ -21,16 +21,30 @@
                       <h5>Form <?= $row; ?></h5>
                     </div>
                     <div class="col-lg-12">
-                      <div class="col-12">
-                        <input type="hidden" name="id_<?= $row; ?>" id="id_<?= $row; ?>">
-                        <div class="row mb-1">
-                          <label for="idbrg<?= $row ?>">Nama Barang</label>
-                        </div>
-                        <div class="row mb-1">
+                      <input type="hidden" name="id[]" id="id<?= $row ?>">
+                      <div class="row g-2 mb-1">
+                        <div class="col-md-6">
+                          <label class="form-label" for="jenis_kat<?= $row ?>">Jenis Kategori Barang</label>
                           <div class="input-group mb-3">
-                            <span class="input-group-text" id="basic-addon1"><i class="bi bi-layers"></i></span>
-                            <select name="barang_id<?= $row; ?>" class="form-select p-2" id="idbrg<?= $row; ?>" style="width: 400px;"></select>
-                            <div class="invalid-feedback erridbrg<?= $row; ?>"></div>
+                            <span class="input-group-text">
+                              <i class="bi bi-layers"></i>
+                            </span>
+                            <select name="jenis_kat[]" class="form-select p-2" id="jenis_kat<?= $row ?>">
+                              <option value="">Pilih Jenis Kategori Barang</option>
+                              <option value="Barang Tetap">Barang Tetap</option>
+                              <option value="Barang Persediaan">Barang Persediaan</option>
+                            </select>
+                            <div class="invalid-feedback errjenis_kat<?= $row ?>"></div>
+                          </div>
+                        </div>
+                        <div class="col-md-6">
+                          <label class="form-label" for="idbrg<?= $row ?>">Nama Barang</label>
+                          <div class="row mb-1">
+                            <div class="input-group mb-3">
+                              <span class="input-group-text" id="basic-addon1"><i class="bi bi-layers"></i></span>
+                              <select name="barang_id[]" class="form-select p-2" id="idbrg<?= $row; ?>"></select>
+                              <div class="invalid-feedback erridbrg<?= $row; ?>"></div>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -41,7 +55,7 @@
                         <div class="row mb-1">
                           <div class="input-group mb-3">
                             <span class="input-group-text" id="basic-addon1"><i class="bi bi-geo-alt"></i></span>
-                            <select class="form-select" id="lokasi<?= $row; ?>" name="ruang_id_<?= $row; ?>"></select>
+                            <select class="form-select" id="lokasi<?= $row; ?>" name="ruang_id[]"></select>
                             <div class="invalid-feedback errlokasi<?= $row; ?>"></div>
                           </div>
                         </div>
@@ -49,23 +63,23 @@
                       <div class="col-12">
                         <div class="row g-2 mb-1">
                           <div class="col-md-5">
-                            <label class="mb-1">Sisa Stok <?= $jenis_kat ?></label>
+                            <label class="mb-1">Sisa Stok</label>
                             <div class="input-group mb-3">
                               <span class="input-group-text" id="basic-addon1"><i class="bi bi-box-seam"></i></span>
-                              <input type="number" min="1" class="form-control" placeholder="Stok Barang Saat ini" name="sisa_stok<?= $row; ?>" readonly>
+                              <input type="number" min="1" class="form-control" placeholder="Stok Barang Saat ini" name="sisa_stok[]" id="sisastok<?= $row ?>" readonly>
                             </div>
                           </div>
                           <div class="col-md-5">
-                            <label for="jmlmasuk<?= $row ?>" class="mb-1">Jumlah Barang Masuk</label>
+                            <label for="jmlmasuk<?= $row ?>" class="mb-1">Jumlah <?= $title ?></label>
                             <div class="input-group mb-3">
-                              <input type="number" min="1" class="form-control" id="jmlmasuk<?= $row; ?>" placeholder="Masukkan Jumlah Barang Masuk" name="jumlah_masuk_<?= $row; ?>">
+                              <input type="number" min="1" class="form-control" id="jmlmasuk<?= $row; ?>" placeholder="Masukkan Jumlah <?= $title ?>" name="jumlah_masuk[]">
                               <div class="invalid-feedback errjmlmasuk<?= $row; ?>"></div>
                             </div>
                           </div>
                           <div class="col-md-2">
                             <label for="satuan<?= $row ?>" class="mb-1">Satuan</label>
                             <div class="input-group mb-3">
-                              <select name="satuan_id_<?= $row; ?>" class="form-select p-2" id="satuan<?= $row; ?>"></select>
+                              <select name="satuan_id[]" class="form-select p-2" id="satuan<?= $row; ?>"></select>
                               <div class="invalid-feedback errsatuan"></div>
                             </div>
                           </div>
@@ -78,14 +92,14 @@
                           <label class="mb-1">Tanggal Pembelian Sebelumnya</label>
                           <div class="input-group mb-3">
                             <span class="input-group-text" id="basic-addon1"><i class="bi bi-calendar3"></i></span>
-                            <input type="date" class="form-control" placeholder="Masukkan Tanggal" name="tgl_belilama<?= $row; ?>" readonly>
+                            <input type="date" class="form-control" placeholder="Masukkan Tanggal" id="tglbelilama<?= $row ?>" name="tgl_belilama[]" readonly>
                           </div>
                         </div>
                         <div class="col-md-5">
                           <label for="tglbeli<?= $row ?>" class="mb-1">Tanggal Pembelian Baru</label>
                           <div class="input-group mb-3">
                             <span class="input-group-text" id="basic-addon1"><i class="bi bi-calendar3"></i></span>
-                            <input type="date" class="form-control" placeholder="Masukkan Tanggal" id="tglbeli<?= $row; ?>" name="tgl_pembelian_<?= $row; ?>">
+                            <input type="date" class="form-control" placeholder="Masukkan Tanggal" id="tglbeli<?= $row; ?>" name="tgl_pembelian[]">
                             <div class="invalid-feedback errtglbeli<?= $row; ?>"></div>
                           </div>
                         </div>
@@ -166,8 +180,8 @@
       }).then((result) => {
         $(`#idbrg${row}`).html('');
         $(`#satuan${row}`).html('');
-        $('#formTambahStokMultiple').find(`input[name='sisa_stok${row}']`).val("")
-        $('#formTambahStokMultiple').find(`input[name='tgl_belilama${row}']`).val("")
+        $(`#sisastok${row}']`).val("")
+        $(`#tglbelilama${row}']`).val("")
       });
     } else {
       idbrgSet.add(idbrg);
@@ -204,27 +218,41 @@
                 <h5>Form ${index}</h5>
               </div>
               <div class="col-lg-12">
-                <div class="col-12">
-                  <input type="hidden" name="id_${index}" id="id_${index}">
-                  <div class="row mb-1">
-                    <label for="idbrg${index}">Nama Barang</label>
+              <input type="hidden" name="id[]" id="id${index}">
+              <div class="row g-2 mb-1">
+                <div class="col-md-6">
+                  <label class="form-label" for="jenis_kat${index}">Jenis Kategori Barang</label>
+                  <div class="input-group mb-3">
+                    <span class="input-group-text">
+                      <i class="bi bi-layers"></i>
+                    </span>
+                    <select name="jenis_kat[]" class="form-select p-2" id="jenis_kat${index}">
+                      <option value="">Pilih Jenis Kategori Barang</option>
+                      <option value="Barang Tetap">Barang Tetap</option>
+                      <option value="Barang Persediaan">Barang Persediaan</option>
+                    </select>
+                    <div class="invalid-feedback errjenis_kat${index}"></div>
                   </div>
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label" for="idbrg${index}">Nama Barang</label>
                   <div class="row mb-1">
                     <div class="input-group mb-3">
                       <span class="input-group-text" id="basic-addon1"><i class="bi bi-layers"></i></span>
-                      <select name="barang_id${index}" class="form-select p-2" id="idbrg${index}" style="width: 400px;"></select>
+                      <select name="barang_id[]" class="form-select p-2" id="idbrg${index}"></select>
                       <div class="invalid-feedback erridbrg${index}"></div>
                     </div>
                   </div>
                 </div>
+              </div>
                 <div class="col-12">
                   <div class="row mb-1">
-                    <label for="lokasi${index}">Lokasi Penempatan <?= ucwords($title) ?></label>
+                    <label for="lokasi${index}">Lokasi Penempatan Stok <?= ucwords($title) ?></label>
                   </div>
                   <div class="row mb-1">
                     <div class="input-group mb-3">
                       <span class="input-group-text" id="basic-addon1"><i class="bi bi-geo-alt"></i></span>
-                      <select class="form-select" id="lokasi${index}" name="ruang_id_${index}"></select>
+                      <select class="form-select" id="lokasi${index}" name="ruang_id[]"></select>
                       <div class="invalid-feedback errlokasi${index}"></div>
                     </div>
                   </div>
@@ -232,23 +260,23 @@
                 <div class="col-12">
                   <div class="row g-2 mb-1">
                     <div class="col-md-5">
-                      <label class="mb-1">Sisa Stok <?= $jenis_kat ?></label>
+                      <label class="mb-1">Sisa Stok</label>
                       <div class="input-group mb-3">
                         <span class="input-group-text" id="basic-addon1"><i class="bi bi-box-seam"></i></span>
-                        <input type="number" min="1" class="form-control" placeholder="Stok Barang Saat ini" name="sisa_stok${index}" readonly>
+                        <input type="number" min="1" class="form-control" placeholder="Stok Barang Saat ini" name="sisa_stok[]" id="sisastok${index}" readonly>
                       </div>
                     </div>
                     <div class="col-md-5">
-                      <label for="jmlmasuk${index}" class="mb-1">Jumlah Barang Masuk</label>
+                      <label for="jmlmasuk${index}" class="mb-1">Jumlah <?= $title ?></label>
                       <div class="input-group mb-3">
-                        <input type="number" min="1" class="form-control" id="jmlmasuk${index}" placeholder="Masukkan Jumlah Barang Masuk" name="jumlah_masuk_${index}">
+                        <input type="number" min="1" class="form-control" id="jmlmasuk${index}" placeholder="Masukkan Jumlah <?= $title ?>" name="jumlah_masuk[]">
                         <div class="invalid-feedback errjmlmasuk${index}"></div>
                       </div>
                     </div>
                     <div class="col-md-2">
                       <label for="satuan${index}" class="mb-1">Satuan</label>
                       <div class="input-group mb-3">
-                        <select name="satuan_id_${index}" class="form-select p-2" id="satuan${index}"></select>
+                        <select name="satuan_id[]class="form-select p-2" id="satuan${index}"></select>
                         <div class="invalid-feedback errsatuan"></div>
                       </div>
                     </div>
@@ -261,14 +289,14 @@
                     <label  class="mb-1">Tanggal Pembelian Sebelumnya</label>
                     <div class="input-group mb-3">
                       <span class="input-group-text" id="basic-addon1"><i class="bi bi-calendar3"></i></span>
-                      <input type="date" class="form-control" placeholder="Masukkan Tanggal" name="tgl_belilama${index}" readonly>
+                      <input type="date" class="form-control" placeholder="Masukkan Tanggal" id="tglbelilama${index}" name="tgl_belilama[]" readonly>
                     </div>
                   </div>
                   <div class="col-md-5">
                     <label for="tglbeli${index}" class="mb-1">Tanggal Pembelian Baru</label>
                     <div class="input-group mb-3">
                       <span class="input-group-text" id="basic-addon1"><i class="bi bi-calendar3"></i></span>
-                      <input type="date" class="form-control" placeholder="Masukkan Tanggal" id="tglbeli${index}" name="tgl_pembelian_${index}">
+                      <input type="date" class="form-control" placeholder="Masukkan Tanggal" id="tglbeli${index}" name="tgl_pembelian[]">
                       <div class="invalid-feedback errtglbeli${index}"></div>
                     </div>
                   </div>
@@ -311,17 +339,10 @@
 
     $('#formTambahStokMultiple').submit(function(e) {
       e.preventDefault();
-      let url = "";
-
-      if (saveMethod == "update") {
-        url = "<?= $nav ?>/updatedatastokmultiple";
-      } else if (saveMethod == "add") {
-        url = "<?= $nav ?>/simpanstok";
-      }
+      var url = "<?= $nav ?>/updatedatastokmultiple";
 
       let formdatamultiple = new FormData(this); // mengambil data dari form
       formdatamultiple.append('jmldata', rowCountstok);
-      formdatamultiple.append('jenistrx', "<?= $jenistrx ?>"); // menambahkan data tambahan
 
       $.ajax({
         type: "post",
@@ -342,7 +363,19 @@
           var jmldata = parseInt(response.jmldata);
           if (response.error) {
             for (var i = 1; i <= jmldata; i++) {
-              var erridbrg = response.error[`barang_id${i}`];
+              var errjenis_kat = response.error[`jenis_kat.${i-1}`];
+              var erridbrg = response.error[`barang_id.${i-1}`];
+              var errjmlmasuk = response.error[`jumlah_masuk.${i-1}`];
+              var errtglbeli = response.error[`tgl_pembelian.${i-1}`];
+
+              if (errjenis_kat) {
+                $(`#jenis_kat${i}`).addClass('is-invalid');
+                $(`.errjenis_kat${i}`).html(errjenis_kat);
+              } else {
+                $(`#jenis_kat${i}`).removeClass('is-invalid');
+                $(`.errjenis_kat${i}`).html('');
+              }
+
               if (erridbrg) {
                 $(`#idbrg${i}`).addClass('is-invalid');
                 $(`.erridbrg${i}`).html(erridbrg);
@@ -350,7 +383,7 @@
                 $(`#idbrg${i}`).removeClass('is-invalid');
                 $(`.erridbrg${i}`).html();
               }
-              var errjmlmasuk = response.error[`jumlah_masuk_${i}`];
+
               if (errjmlmasuk) {
                 $(`#jmlmasuk${i}`).addClass('is-invalid');
                 $(`.errjmlmasuk${i}`).html(errjmlmasuk);
@@ -358,7 +391,7 @@
                 $(`#jmlmasuk${i}`).removeClass('is-invalid');
                 $(`.errjmlmasuk${i}`).html();
               }
-              var errtglbeli = response.error[`tgl_pembelian_${i}`];
+
               if (errtglbeli) {
                 $(`#tglbeli${i}`).addClass('is-invalid');
                 $(`.errtglbeli${i}`).html(errtglbeli);
@@ -374,7 +407,8 @@
               response.sukses,
               'success'
             ).then((result) => {
-              databarang.ajax.reload();
+              tableBrgTetap.ajax.reload();
+              tableBrgPersediaan.ajax.reload();
             })
           }
         },
@@ -395,10 +429,15 @@
     if (!data.id) {
       return data.text;
     }
+    if (data.asal) {
+      var $result = $(
+        `<span><i class="bi bi-box"> </i>${data.text} (${data.asal})</span>`);
+    } else {
+      var $result = $(
+        `<span><i class="bi bi-layers"> </i>${data.text}</span>`);
+    }
 
-    var $result = $(
-      `<span><i class="bi bi-layers"> </i>${data.text}</span>`
-    );
+
 
     return $result;
   }
@@ -408,31 +447,39 @@
       $('.formtambahrow tr').find('.btnhapusrowstok').hide();
 
       (function(j) {
-        $(`#idbrg${j}`).select2({
-          placeholder: 'Piih Nama <?= $title ?>',
-          minimumInputLength: 1,
-          allowClear: true,
-          width: "50%",
-          ajax: {
-            url: `<?= $nav ?>/pilihbarang`,
-            dataType: 'json',
-            delay: 250,
-            data: function(params) {
-              return {
-                search: params.term,
-                jenis_kat: "<?= $jenis_kat ?>",
-              }
+        $(`#jenis_kat${j}`).on('change', function(e) {
+          e.preventDefault();
+          var jenis_kat = $(this).val();
+          $(`#idbrg${j}`).select2({
+            placeholder: 'Piih Nama Barang',
+            minimumInputLength: 1,
+            allowClear: true,
+            width: "80%",
+            ajax: {
+              url: `<?= $nav ?>/pilihbarang`,
+              dataType: 'json',
+              delay: 250,
+              data: function(params) {
+                return {
+                  search: params.term,
+                  jenis_kat: jenis_kat,
+                }
+              },
+              processResults: function(data, page) {
+                return {
+                  results: data
+                };
+              },
+              cache: true
             },
-            processResults: function(data, page) {
-              return {
-                results: data
-              };
-            },
-            cache: true
-          },
-          templateResult: formatResult,
-        });
+            templateResult: formatResult,
+          });
+          $(`#jenis_kat${j}`).removeClass('is-invalid');
+          $(`.errjenis_kat${j}`).html('');
+        })
+      })(i);
 
+      (function(j) {
         $(`#satuan${j}`).select2({
           placeholder: 'Piih Satuan',
           minimumInputLength: 1,
@@ -472,6 +519,11 @@
           $(`#jmlmasuk${j}`).removeClass('is-invalid');
           $(`.errorjmlmasuk${j}`).html('');
         })
+        $(`#tglbeli${j}`).on('input', function(e) {
+          e.preventDefault();
+          $(`#tglbeli${j}`).removeClass('is-invalid');
+          $(`.errtglbeli${j}`).html();
+        })
 
         $(`#idbrg${j}`).on('change', function(e) {
           e.preventDefault();
@@ -481,7 +533,7 @@
           checkBarangDuplikat(j);
 
           var b_id = $(`#idbrg${j}`).val();
-          var r_id = $(`#formTambahStokMultiple`).find(`select[name="ruang_id_${j}"]`).val();
+          var r_id = $(`#lokasi${j}`).val();
 
           if (b_id != null && r_id != null) {
             $.ajax({
@@ -494,18 +546,20 @@
               dataType: "json",
               success: function(response) {
                 if (response) {
-                  $('#formTambahStokMultiple').find(`input[name='id_${j}']`).val(response.id);
-                  $('#formTambahStokMultiple').find(`input[name='sisa_stok${j}']`).val(response.sisa_stok);
-                  $('#formTambahStokMultiple').find(`input[name='tgl_belilama${j}']`).val(response.tgl_beli);
+                  $(`#id${j}`).val(response.id);
+                  $(`#sisastok${j}`).val(response.sisa_stok);
+                  $(`#tglbelilama${j}`).val(response.tgl_beli);
                   $(`#satuan${j}`).prop('disabled', true);
-                  $('#formTambahStokMultiple').find(`select[name*='satuan_id_${j}']`).html('<option value = "' + response.satuan_id + '" selected >' + response.kd_satuan + '</option>');
+                  $(`#satuan${j}`).html('<option value = "' + response.satuan_id + '" selected >' + response.kd_satuan + '</option>');
                 }
               }
             });
           } else {
             $(`#id_${j}`).val('');
             $(`#satuan${j}`).prop('disabled', false);
-            $('#formTambahStokMultiple').find(`select[name*='satuan_id_${j}']`).html('');
+            $(`#satuan${j}`).html('');
+            $(`#sisastok${j}`).html('');
+            $(`#tglbelilama${j}`).html('');
           }
         });
 
