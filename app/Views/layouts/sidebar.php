@@ -19,36 +19,29 @@
             <span>Dashboard</span>
           </a>
         </li>
-        <li class="sidebar-item <?= ($nav == 'kelola-barang') || $nav == 'permintaan-barang-persediaan' || $nav == 'peminjaman-barang-tetap' ? 'active' : '' ?> has-sub">
-          <a href="#" class='sidebar-link'>
-            <i class="bi bi-bounding-box"></i>
-            <span>Kelola Transaksi Barang</span>
+        <li class="sidebar-item <?= ($nav == 'kelola-barang') ? 'active' : '' ?>">
+          <a href="kelola-barang" class='sidebar-link'>
+            <i class="bi bi-box"></i>
+            <span>Kelola Barang</span>
           </a>
-          <ul class="submenu <?= ($nav == 'kelola-barang') || $nav == 'permintaan-barang-persediaan' || $nav == 'peminjaman-barang-tetap' ? 'active' : '' ?>">
-            <li class="submenu-item <?= ($nav == 'kelola-barang') ? 'active' : '' ?>">
-              <a href="kelola-barang">Kelola Barang</a>
-            </li>
-            <li class="submenu-item  <?= ($nav == 'permintaan-barang-persediaan') ? 'active' : '' ?>">
-              <a href="permintaan-barang-persediaan">Permintaan Barang Persediaan</a>
-            </li>
-            <li class="submenu-item <?= ($nav == 'peminjaman-barang-tetap') ? 'active' : '' ?>">
-              <a href="peminjaman-barang-tetap">Peminjaman Barang Tetap</a>
-            </li>
-          </ul>
         </li>
-        <li class="sidebar-item <?= ($nav == 'kategori-tetap' || $nav == 'kategori-persediaan') ? 'active' : '' ?> has-sub">
-          <a href="#" class='sidebar-link'>
-            <i class="bi bi-layers"></i>
-            <span>Kelola Kategori</span>
+        <li class="sidebar-item <?= ($nav == 'peminjaman-barang') ? 'active' : '' ?>">
+          <a href="peminjaman-barang" class='sidebar-link'>
+            <i class="bi bi-calendar-event"></i>
+            <span>Peminjaman Barang</span>
           </a>
-          <ul class="submenu <?= ($nav == 'kategori-tetap' || $nav == 'kategori-persediaan') ? 'active' : '' ?>">
-            <li class="submenu-item <?= ($nav == 'kategori-tetap') ? 'active' : '' ?>">
-              <a href="kategori-tetap">Kategori Tetap</a>
-            </li>
-            <li class="submenu-item <?= ($nav == 'kategori-persediaan') ? 'active' : '' ?>">
-              <a href="kategori-persediaan">Kategori Persediaan</a>
-            </li>
-          </ul>
+        </li>
+        <li class="sidebar-item <?= ($nav == 'permintaan-barang') ? 'active' : '' ?>">
+          <a href="permintaan-barang" class='sidebar-link'>
+            <i class="bi bi-clipboard-check"></i>
+            <span>Permintaan Barang</span>
+          </a>
+        </li>
+        <li class="sidebar-item <?= ($nav == 'kategori') ? 'active' : '' ?>">
+          <a href="kategori" class='sidebar-link'>
+            <i class="bi bi-layers"></i>
+            <span>Kategori</span>
+          </a>
         </li>
         <li class="sidebar-item <?= ($nav == 'ruang') ? 'active' : '' ?>">
           <a href="ruang" class='sidebar-link'>

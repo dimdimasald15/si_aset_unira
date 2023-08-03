@@ -1748,29 +1748,55 @@ class BarangController extends BaseController
 
     public function multipledeletetemporary()
     {
-        if ($this->request->isAJAX()) {
-            $id = $this->request->getVar('id');
-            $jenis = strtolower($this->request->getVar('jenis_kat'));
-            $jmldata = count($id);
-
-            $query = array();
-            $idbrg = array();
-            for ($i = 0; $i < $jmldata; $i++) {
-                $query[] = $this->stokbarang->find($id[$i]);
-                $idbrg[] = $query[$i]['barang_id'];
-                $this->stokbarang->setSoftDelete($id[$i]);
-                $this->barang->setSoftDelete($idbrg[$i]);
-            }
-
-            $msg = [
-                'sukses' => "$jmldata data $jenis berhasil dihapus secara temporary",
-            ];
-
-            echo json_encode($msg);
-        } else {
+        if (!$this->request->isAJAX()) {
             $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
+
+        $id = $this->request->getVar('id');
+        $jenis_kat = $this->request->getVar('jenis_kat');
+        $jmldata = count($id);
+        $idsarpras = 54;
+        $this->db->transStart();
+        foreach ($id as $key => $id) {
+            $query = $this->stokbarang->find($id);
+            $ruang_id = $query['ruang_id'];
+            $barang_id = $query['barang_id'];
+            if ($ruang_id == $idsarpras) {
+                $stokbrgall = $this->stokbarang->select('*')
+                    ->where('barang_id', $barang_id)
+                    ->where('deleted_at IS NULL')->get()->getResultArray();
+                foreach ($stokbrgall as $row) {
+                    if (intval($row['ruang_id']) !== $idsarpras) {
+                        $this->hapusTemporaryRuangLain($row['id'], $barang_id, $idsarpras);
+                    } else {
+                        $this->stokbarang->setSoftDelete($row['id']);
+                    }
+                }
+                $this->barang->setSoftDelete($barang_id);
+            } else {
+                $this->hapusTemporaryRuangLain($id, $barang_id, $idsarpras);
+            }
+        }
+
+        $this->db->transComplete();
+        if ($this->db->transStatus() === false) {
+            // Jika terjadi kesalahan pada transaction
+            $msg = [
+                'error' =>
+                [
+                    'transStatus' => 'Gagal menyimpan data stok barang',
+                ]
+            ];
+        } else {
+            $p1 = ($jenis_kat == "Alokasi Barang Tetap") ? ' dan dikembalikan ke Sarana dan Prasarana' : '';
+            // Jika berhasil disimpan
+            $msg = [
+                'sukses' => "$jmldata data $jenis_kat berhasil dihapus secara temporary$p1",
+            ];
+        }
+
+        echo json_encode($msg);
     }
 
     public function restoredata($id = [])
@@ -1823,7 +1849,6 @@ class BarangController extends BaseController
                     'sisa_stok' => $sisa_stok1,
                 ];
 
-
                 $data1 = array_merge($updatedata1, $restoredata);
                 $ubahdata1 = $this->stokbarang->setUpdateData($data1);
                 $jenistransaksi = 'pemulihan data stok barang ' . $ruang_id[$key];
@@ -1850,12 +1875,11 @@ class BarangController extends BaseController
             }
         }
 
-
         $this->db->transComplete();
 
         if ($this->db->transStatus() === false) {
             // Jika terjadi kesalahan pada transaction
-            $msg = ['error' => 'Gagal menyimpan data stok barang'];
+            $msg = ['error' => 'Gagal memulihkan data stok barang'];
         } else {
             // Jika berhasil disimpan
             $msg = count($id) > 1 ? ['sukses' => "Sukses " . count($id) . " data stok barang berhasil dipulihkan"] : ['sukses' => "Sukses memulihkan data stok barang $nama_brg di $nama_ruang"];
@@ -1872,48 +1896,39 @@ class BarangController extends BaseController
             $nama_ruang = $this->request->getVar('nama_ruang');
             $idruang = $this->request->getVar('ruangId');
             $idsarpras = 54;
-            $ids = $this->request->getVar('id');
             $idbrg = $this->request->getVar('barangId');
             $id = explode(",", $ids);
             $barang_id = explode(",", $idbrg);
             $ruang_id = explode(",", $idruang);
-            $this->db->transStart();
-            foreach ($id as $key => $stokId) {
-                if ($ruang_id[$key] == $idsarpras) {
-                    $stoklama = $this->stokbarang->select('*')->where('id', $stokId)->get()->getRowArray();
-                    $baranglama = $this->barang->select('*')->where('id', $stoklama['barang_id'])->get()->getRowArray();
 
-                    $this->stokbarang->delete($stokId, true);
-                    $this->riwayattrx->deletehistorimultiple([$stokId], $stoklama, "penghapusan permanen");
+            // $this->db->transStart();
+            try {
+                $this->db->transException(true)->transStart();
+                foreach ($id as $key => $stokId) {
+                    $stoklama[] = $this->stokbarang->select('*')->where('id', $stokId)->get()->getRowArray();
 
-                    $this->barang->delete($stoklama['barang_id'], true);
+                    if ($ruang_id[$key] == $idsarpras) {
+                        $baranglama = $this->barang->select('*')->where('id', $barang_id[$key])->get()->getRowArray();
 
-                    if ($baranglama['foto_barang'] != NULL) {
-                        unlink(FCPATH . 'assets/images/foto_barang/' . $baranglama['foto_barang']);
+                        $this->riwayattrx->deletehistorimultiple([$stokId], $stoklama, "penghapusan permanen");
+
+                        $this->barang->delete($stoklama['barang_id'], true);
+
+                        if ($baranglama['foto_barang'] != NULL) {
+                            unlink(FCPATH . 'assets/images/foto_barang/' . $baranglama['foto_barang']);
+                        }
                     }
 
-                    $this->riwayatbarang->deletehistorimultiple([$stoklama['barang_id']], $baranglama);
-                } else {
-                    $stoklama = $this->stokbarang->select('*')->where('id', $stokId)->get()->getRowArray();
-
                     $this->stokbarang->delete($stokId, true);
-
-                    $this->riwayattrx->deletehistorimultiple([$stokId], $stoklama, "penghapusan permanen stok ");
+                    $this->riwayattrx->deletehistorimultiple([$stokId], $stoklama, "penghapusan permanen stok");
                 }
+
+                $this->db->transComplete();
+                $msg = count($id) > 1 ? ['sukses' => "Sukses " . count($id) . " data stok barang berhasil dihapus secara permanen"] : ['sukses' => "Sukses menghapus secara permanen data stok barang $nama_brg di $nama_ruang"];
+            } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
+                // Automatically rolled back already.
+                $msg = ['error' => "Terjadi kesalahan saat menghapus data stok barang. Pastikan tidak ada ketergantungan data sebelum menghapus"];
             }
-
-            // Commit transaction
-            $this->db->transComplete();
-
-            if ($this->db->transStatus() === false) {
-                // Jika terjadi kesalahan pada transaction
-                $msg = ['error' => 'Gagal menyimpan data barang'];
-            } else {
-                // Jika berhasil disimpan
-                $msg = count($id) > 1 ? ['sukses' => "Sukses " . count($id) . " data stok barang berhasil dipulihkan"] : ['sukses' => "Sukses memulihkan data stok barang $nama_brg di $nama_ruang"];
-            }
-
-
             return json_encode($msg);
         } else {
             $data = $this->errorPage404();

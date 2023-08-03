@@ -148,6 +148,12 @@
       templateResult: formatResult,
     });
 
+    $('#idanggota').on('change', function(e) {
+      e.preventDefault();
+      $(this).removeClass('is-invalid');
+      $('.erridanggota').html('');
+    })
+
     $('#tglpinjam').on('input', function(e) {
       e.preventDefault();
       $('#tglpinjam').removeClass('is-invalid');

@@ -602,8 +602,10 @@ class PelaporanController extends BaseController
 
         $isRestored = array_key_exists('isRestored', $this->request->getGet()) ? intval($this->request->getGet('isRestored')) : '';
 
-        $query = $this->db->table('pelaporan_kerusakan p')->select('p.*, a.nama_anggota, a.no_anggota, a.level, u.singkatan, n.viewed_by_admin')
+        $query = $this->db->table('pelaporan_kerusakan p')->select('p.*, b.nama_brg, a.nama_anggota, a.no_anggota, a.level, u.singkatan, n.viewed_by_admin')
             ->join('anggota a', 'a.id=p.anggota_id')
+            ->join('stok_barang sb', 'sb.id=p.stokbrg_id')
+            ->join('barang b', 'b.id=sb.barang_id')
             ->join('unit u', 'u.id=a.unit_id')
             ->join('notifikasi n', 'p.id=n.laporan_id');
         if ($isRestored == 1) {
@@ -617,7 +619,8 @@ class PelaporanController extends BaseController
         if ($keywords !== '' && !empty($keywords)) {
             $query->like('a.nama_anggota', "%$keywords%")
                 ->orLike('a.no_anggota', "%$keywords%")
-                ->orLike('u.singkatan', "%$keywords%");
+                ->orLike('u.singkatan', "%$keywords%")
+                ->orLike('b.nama_brg', "%$keywords%");
         }
 
         $pelaporan = $query->orderBy('p.id', 'DESC')->get()->getResultArray();

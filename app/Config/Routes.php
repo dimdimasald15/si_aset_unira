@@ -69,19 +69,21 @@ $routes->group('admin/ruang', ['filter' => 'ceklogin'], function ($routes) {
     $routes->post('hapuspermanen/(:any)', 'RuangController::hapuspermanen/$1');
     $routes->match(['get', 'post'], 'hapuspermanen', 'RuangController::hapuspermanen');
 });
-$routes->group('admin/gedung', ['filter' => 'ceklogin'], function ($routes) {
-    $routes->get('/', 'GedungController::index');
-    $routes->get('listdatagedung', 'GedungController::listdatagedung');
-    $routes->get('getgedungbyid', 'GedungController::getgedungbyid');
-    $routes->post('simpan', 'GedungController::simpandata');
-    $routes->match(['get', 'post'], 'pilihkategori', 'GedungController::pilihkategori');
-    $routes->post('update/(:any)', 'GedungController::updatedata/$1');
-    $routes->post('hapus/(:any)', 'GedungController::hapusdata/$1');
-});
 
-$routes->group('admin/kategori-tetap', ['filter' => 'ceklogin'], function ($routes) {
-    $routes->get('/', 'KategoriController::indexkategoritetap');
+// $routes->group('admin/gedung', ['filter' => 'ceklogin'], function ($routes) {
+//     $routes->get('/', 'GedungController::index');
+//     $routes->get('listdatagedung', 'GedungController::listdatagedung');
+//     $routes->get('getgedungbyid', 'GedungController::getgedungbyid');
+//     $routes->post('simpan', 'GedungController::simpandata');
+//     $routes->match(['get', 'post'], 'pilihkategori', 'GedungController::pilihkategori');
+//     $routes->post('update/(:any)', 'GedungController::updatedata/$1');
+//     $routes->post('hapus/(:any)', 'GedungController::hapusdata/$1');
+// });
+
+$routes->group('admin/kategori', ['filter' => 'ceklogin'], function ($routes) {
+    $routes->get('/', 'KategoriController::index');
     $routes->get('listdatakategori', 'KategoriController::listdatakategori');
+    $routes->post('tampilformtambah', 'KategoriController::tampilformtambah');
     $routes->post('getnamakategori', 'KategoriController::getnamakategori');
     $routes->post('simpan', 'KategoriController::simpandata');
     $routes->post('update/(:any)', 'KategoriController::updatedata/$1');
@@ -97,24 +99,6 @@ $routes->group('admin/kategori-tetap', ['filter' => 'ceklogin'], function ($rout
     $routes->post('getsubkode2', 'KategoriController::getsubkode2');
     $routes->post('getsubkode3', 'KategoriController::getsubkode3');
     $routes->post('getsubkode4', 'KategoriController::getsubkode4');
-});
-
-$routes->group('admin/kategori-persediaan', ['filter' => 'ceklogin'], function ($routes) {
-    $routes->get('/', 'KategoriController::indexkategoripersediaan');
-    $routes->get('listdatakategori', 'KategoriController::listdataKategori');
-    $routes->post('getnamakategori', 'KategoriController::getnamakategori');
-    $routes->post('simpan', 'KategoriController::simpandata');
-    $routes->post('update/(:any)', 'KategoriController::updatedata/$1');
-    $routes->post('hapus/(:any)', 'KategoriController::hapusdata/$1');
-    $routes->get('tampildatarestore', 'KategoriController::listdatakategori');
-    $routes->post('restore/(:any)', 'KategoriController::restoredata/$1');
-    $routes->match(['get', 'post'], 'restore', 'KategoriController::restoredata');
-    $routes->post('hapuspermanen/(:any)', 'KategoriController::hapuspermanen/$1');
-    $routes->match(['get', 'post'], 'hapuspermanen', 'KategoriController::hapuspermanen');
-
-    $routes->post('getkategoribyid', 'KategoriController::getkategoribyid');
-    $routes->post('getsubkode1', 'KategoriController::getsubkode1');
-    $routes->post('getsubkode2', 'KategoriController::getsubkode2');
 });
 
 $routes->group('admin/kelola-barang', ['filter' => 'ceklogin'], function ($routes) {
@@ -156,7 +140,7 @@ $routes->group('admin/kelola-barang', ['filter' => 'ceklogin'], function ($route
     $routes->post('updatedatastokmultiple', 'BarangController::updatedatastokmultiple');
 });
 
-$routes->group('admin/permintaan-barang-persediaan', ['filter' => 'ceklogin'], function ($routes) {
+$routes->group('admin/permintaan-barang', ['filter' => 'ceklogin'], function ($routes) {
     $routes->get('/', 'PermintaanController::index');
     $routes->get('listdatapermintaan', 'PermintaanController::listdatapermintaan');
     $routes->post('simpan', 'PermintaanController::simpandata');
@@ -180,7 +164,7 @@ $routes->group('admin/permintaan-barang-persediaan', ['filter' => 'ceklogin'], f
     $routes->post('cetak', 'LaporanController::cetaklaporanpdf');
 });
 
-$routes->group('admin/peminjaman-barang-tetap', ['filter' => 'ceklogin'], function ($routes) {
+$routes->group('admin/peminjaman-barang', ['filter' => 'ceklogin'], function ($routes) {
     $routes->get('/', 'PeminjamanController::index');
     $routes->get('listdatapeminjaman', 'PeminjamanController::listdatapeminjaman');
     $routes->post('simpan', 'PeminjamanController::simpandata');

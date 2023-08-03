@@ -101,6 +101,7 @@ class RiwayatTransaksi extends Model
             $data_lama_filtered = array_filter($data_lama, function ($data) use ($stokbrg_id) {
                 return $data['id'] == $stokbrg_id;
             });
+
             $datasimpan = [
                 'stokbrg_id' => $stokbrg_id,
                 'jenis_transaksi' => $jenistrx,

@@ -73,7 +73,6 @@
       </form>
     </div>
   </div>
-
   <div class="col-lg-12">
     <div class="row mb-0">
       <div class="col-6 col-lg-3 col-md-6">
