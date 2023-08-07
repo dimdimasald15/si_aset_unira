@@ -116,12 +116,12 @@
                     <td>
                       <div class="input-group mb-3">
                         <span class="input-group-text"><i class="bi bi-calendar-check"></i></span>
-                        <input type="datetime-local" class="form-control" id="tglkembali${i}" name="tgl_kembali${i}" value="${val.tgl_kembali? `${val.tgl_kembali}`:"mm/dd/yyyy --:-- --"}">
+                        <input type="datetime-local" class="form-control" id="tglkembali${i}" name="tgl_kembali[]" value="${val.tgl_kembali? `${val.tgl_kembali}`:"mm/dd/yyyy --:-- --"}">
                         <div class="invalid-feedback errtglkembali${i}"></div>
                       </div>
                     </td>   
                     <td>
-                    <select class="form-select" name="kondisi_kembali${i}" id="kondisi${i}">
+                    <select class="form-select" name="kondisi_kembali[]" id="kondisi${i}">
                       <option value="" selected disabled>Pilih kondisi</option>
                       <option value="Baik">Baik</option>
                       <option value="Rusak ringan">Rusak ringan</option>
@@ -251,8 +251,8 @@
             }
             jmldata = response.jmldata;
             for (i = 0; i < jmldata; i++) {
-              var errkondisi = response.error[`kondisi_kembali${i}`];
-              var errtglkembali = response.error[`tgl_kembali${i}`];
+              var errkondisi = response.error[`kondisi_kembali.${i}`];
+              var errtglkembali = response.error[`tgl_kembali.${i}`];
               if (errkondisi) {
                 $(`#kondisi${i}`).addClass('is-invalid')
                 $(`.errkondisi${i}`).html(errkondisi);

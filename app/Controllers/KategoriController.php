@@ -15,8 +15,7 @@ class KategoriController extends BaseController
         $this->kategori = new Kategori();
         $this->uri = service('uri');
     }
-
-    public function indexkategoritetap()
+    public function index()
     {
         $segments = $this->uri->getSegments();
         $breadcrumb = [];
@@ -29,41 +28,14 @@ class KategoriController extends BaseController
         }
 
         $data = [
-            'nav' => 'kategori-tetap',
-            'title' => 'Kategori Tetap',
-            'menu' => 'Kategori Barang Tetap',
-            'jenis' => 'Barang Tetap',
+            'nav' => 'kategori',
+            'title' => 'Kategori',
             'breadcrumb' => $breadcrumb
         ];
 
-        return view('kategori/kategoribarangtetap', $data);
+        return view('kategori/index', $data);
     }
 
-    // Menu kategori barang persediaan
-    public function indexkategoripersediaan()
-    {
-        $segments = $this->uri->getSegments();
-        $breadcrumb = [];
-        $link = '';
-
-        foreach ($segments as $segment) {
-            $link .= '/' . $segment;
-            $name = ucwords(str_replace('-', ' ', $segment));
-            $breadcrumb[] = ['name' => $name, 'link' => $link];
-        }
-
-        $data = [
-            'nav' => 'kategori-persediaan',
-            'title' => 'Kategori Persediaan',
-            'menu' => 'Kategori Barang Persediaan',
-            'jenis' => 'Barang Persediaan',
-            'breadcrumb' => $breadcrumb
-        ];
-
-        return view('kategori/kategoribarangpersediaan', $data);
-    }
-
-    // public function listdataKategori($jenis, $isRestore)
     public function listdatakategori()
     {
         if ($this->request->isAJAX()) {
@@ -76,7 +48,6 @@ class KategoriController extends BaseController
                 ->filter(function ($builder) use ($jenis, $isRestore) { // tambahkan parameter $jenis dan $isRestore pada closure 
                     if ($isRestore) {
                         $builder->where('deleted_at IS NOT NULL');
-                        $builder->where('jenis', $jenis);
                     } else {
                         $builder->where('deleted_at', null);
                         $builder->where('jenis', $jenis);
@@ -85,7 +56,7 @@ class KategoriController extends BaseController
                 ->postQuery(function ($builder) {
                     $builder->orderBy('created_at', 'desc');
                 })
-                ->add('action', function ($row) use ($isRestore) {
+                ->add('action', function ($row) use ($isRestore, $jenis) {
                     if ($isRestore) {
                         return '
                     <div class="btn-group mb-1">
@@ -101,7 +72,7 @@ class KategoriController extends BaseController
                     </div>
                     ';
                     } else {
-                        return '<button type="button" class="btn btn-warning btn-sm btn-editgedung" onclick="edit(' . $row->id . ')"> <i class="fa fa-pencil-square-o"></i></button>
+                        return '<button type="button" class="btn btn-warning btn-sm btn-editgedung" onclick="tampilform(\'' . "update" . '\',\'' . $jenis . '\',' . $row->id . ')"> <i class="fa fa-pencil-square-o"></i></button>
                     <button type="button" class="btn btn-danger btn-sm" onclick="hapus(' . $row->id . ', \'' . htmlspecialchars($row->nama_kategori) . '\')"><i class="fa fa-trash-o"></i></button>';
                     }
                 })
@@ -112,6 +83,33 @@ class KategoriController extends BaseController
         }
     }
 
+    public function tampilformtambah()
+    {
+        if (!$this->request->isAJAX()) {
+            exit("Maaf tidak dapat diproses");
+        }
+
+        $title = $this->request->getVar('title');
+        $nav = $this->request->getVar('nav');
+        $jenis = $this->request->getVar('jenis');
+        $saveMethod = $this->request->getVar('saveMethod');
+        $globalId = $this->request->getVar('globalId');
+
+        $data = [
+            'title' => $title,
+            'nav' => $nav,
+            'jenis' => $jenis,
+            'saveMethod' => $saveMethod,
+            'globalId' => $globalId,
+        ];
+
+        $msg = [
+            'data' => view('kategori/cardform', $data),
+        ];
+
+        echo json_encode($msg);
+    }
+
     public function restoredata($id = null)
     {
         if ($this->request->isAJAX()) {
@@ -119,14 +117,13 @@ class KategoriController extends BaseController
                 'deleted_by' => null,
                 'deleted_at' => null,
             ];
-            $jenis = $this->request->getVar('jenis');
 
             if ($id != null) {
                 $nama_kategori = $this->request->getVar('nama_kategori');
                 $this->kategori->update($id, $restoredata);
 
                 $msg = [
-                    'sukses' => "Data kategori $jenis : " . $nama_kategori . '  berhasil dipulihkan',
+                    'sukses' => "Data kategori: " . $nama_kategori . '  berhasil dipulihkan',
                 ];
             } else {
                 $this->db->table('kategori')
@@ -137,7 +134,7 @@ class KategoriController extends BaseController
 
                 if ($jmldata > 0) {
                     $msg = [
-                        'sukses' => "$jmldata data kategori $jenis berhasil dipulihkan semuanya",
+                        'sukses' => "$jmldata data kategori berhasil dipulihkan semuanya",
                     ];
                 } else {
                     $msg = [

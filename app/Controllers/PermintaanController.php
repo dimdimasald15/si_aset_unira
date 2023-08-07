@@ -51,8 +51,8 @@ class PermintaanController extends BaseController
             $breadcrumb[] = ['name' => $name, 'link' => $link];
         }
         $data = [
-            'title' => 'Permintaan Barang Persediaan',
-            'nav' => 'permintaan-barang-persediaan',
+            'title' => 'Permintaan Barang',
+            'nav' => 'permintaan-barang',
             'jenis_kat' => 'Barang Persediaan',
             'breadcrumb' => $breadcrumb
         ];

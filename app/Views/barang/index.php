@@ -62,20 +62,21 @@
 </div>
 <section class="section">
   <div class="col-12 col-md-12 viewtambahmultiple" style="display:none;"></div>
-  <div class="card mb-3 text-white bg-dark shadow">
+  <div class="col-12 col-md-12 viewdata" style="display:none;"></div>
+  <div class="card shadow mb-3 text-white bg-dark shadow">
     <div class="card-header text-white bg-dark shadow-sm">
       <h4 class="card-title">Custom Filter</h4>
     </div>
     <div class=" card-body">
       <div class="row mt-3">
         <div class="col-sm-6 d-flex justify-content-start">
-          <label class="col-sm-4 col-form-label" for="selectbarang">Barang :</label>
+          <label class="col-sm-4 col-form-label" for="selectbarang">Barang</label>
           <div class="col-sm-8">
             <select id="selectbarang" class="form-select"></select>
           </div>
         </div>
         <div class="col-sm-6 d-flex justify-content-start">
-          <label class="col-sm-4 col-form-label" for="selectkategori">Kategori :</label>
+          <label class="col-sm-4 col-form-label" for="selectkategori">Kategori</label>
           <div class="col-sm-8">
             <select id="selectkategori" class="form-select"></select>
           </div>
@@ -83,7 +84,7 @@
       </div>
     </div>
   </div>
-  <div class="col-12 col-md-12 viewdata" style="display:none;"></div>
+
   <div class="card mb-3 text-white bg-dark shadow datalist-barang">
     <div class="card-header text-white bg-dark shadow-sm">
       <div class="row justify-content-between align-items-center">
@@ -106,16 +107,18 @@
     <div class="card-body table-restore" style="display:none;">
       <div class="table-responsive py-4">
         <table class="table table-flush mb-3" id="table-restore" width="100%">
-          <thead class=" thead-light">
+          <thead class="thead-light">
             <tr>
+              <th><input type="checkbox" id="checkall4"></th>
               <th>No.</th>
+              <th>QR Code</th>
               <th>Kode Barang</th>
               <th>Nama Barang</th>
+              <th>Asal Pembelian</th>
               <th>Warna</th>
               <th>Jumlah Keluar</th>
               <th>Sisa Stok</th>
               <th>Lokasi</th>
-              <th>Deleted By</th>
               <th>Deleted At</th>
               <th>Action</th>
             </tr>
@@ -148,92 +151,92 @@
             </button>
           </div>
         </div>
+        <ul class="nav nav-tabs mt-3" id="myTab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="brgtetap-tab" data-bs-toggle="tab" href="#brgtetap" role="tab" aria-controls="brgtetap" aria-selected="true">Barang Tetap</a>
+          </li>
+          <li class="nav-item" role="presentation">
+            <a class="nav-link" id="alokasibrg-tab" data-bs-toggle="tab" href="#alokasibrg" role="tab" aria-controls="alokasibrg" aria-selected="false">Pengalokasian Barang Tetap</a>
+          </li>
+          <li class="nav-item" role="presentation">
+            <a class="nav-link" id="brgpersediaan-tab" data-bs-toggle="tab" href="#brgpersediaan" role="tab" aria-controls="brgpersediaan" aria-selected="false">Barang Persediaan</a>
+          </li>
+        </ul>
+        <div class="tab-content" id="myTabContent">
+          <div class="tab-pane fade  show active" id="brgtetap" role="tabpanel" aria-labelledby="brgtetap-tab">
+            <div class="table-responsive py-4">
+              <table class="table table-flush" id="table-brgtetap" data-tab-id="brgtetap" width="100%">
+                <thead class=" thead-light">
+                  <tr>
+                    <th><input type="checkbox" id="checkall1"></th>
+                    <th>No.</th>
+                    <th>QR Code</th>
+                    <th>Kode Barang</th>
+                    <th>Nama Barang</th>
+                    <th>Asal Pembelian</th>
+                    <th>Warna</th>
+                    <th>Jumlah Keluar</th>
+                    <th>Sisa Stok</th>
+                    <th>Lokasi</th>
+                    <th>Keterangan</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="alokasibrg" role="tabpanel" aria-labelledby="alokasibrg-tab">
+            <div class="table-responsive py-4">
+              <table class="table table-flush" data-tab-id="alokasibrg" id="table-alokasibrg" width="100%">
+                <thead class=" thead-light">
+                  <tr>
+                    <th><input type="checkbox" id="checkall2"></th>
+                    <th>No.</th>
+                    <th>QR Code</th>
+                    <th>Kode Barang</th>
+                    <th>Nama Barang</th>
+                    <th>Asal Pembelian</th>
+                    <th>Warna</th>
+                    <th>Jumlah Keluar</th>
+                    <th>Sisa Stok</th>
+                    <th>Lokasi</th>
+                    <th>Keterangan</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="tab-pane fade" id="brgpersediaan" role="tabpanel" aria-labelledby="brgpersediaan-tab">
+            <div class="table-responsive py-4">
+              <table class="table table-flush" id="table-brgpersediaan" data-tab-id="brgpersediaan" width="100%">
+                <thead class=" thead-light">
+                  <tr>
+                    <th><input type="checkbox" id="checkall3"></th>
+                    <th>No.</th>
+                    <th>QR Code</th>
+                    <th>Kode Barang</th>
+                    <th>Nama Barang</th>
+                    <th>Asal Pembelian</th>
+                    <th>Warna</th>
+                    <th>Jumlah Keluar</th>
+                    <th>Sisa Stok</th>
+                    <th>Lokasi</th>
+                    <th>Keterangan</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </form>
-      <ul class="nav nav-tabs mt-3" id="myTab" role="tablist">
-        <li class="nav-item" role="presentation">
-          <a class="nav-link active" id="brgtetap-tab" data-bs-toggle="tab" href="#brgtetap" role="tab" aria-controls="brgtetap" aria-selected="true">Barang Tetap</a>
-        </li>
-        <li class="nav-item" role="presentation">
-          <a class="nav-link" id="alokasibrg-tab" data-bs-toggle="tab" href="#alokasibrg" role="tab" aria-controls="alokasibrg" aria-selected="false">Pengalokasian Barang Tetap</a>
-        </li>
-        <li class="nav-item" role="presentation">
-          <a class="nav-link" id="brgpersediaan-tab" data-bs-toggle="tab" href="#brgpersediaan" role="tab" aria-controls="brgpersediaan" aria-selected="false">Barang Persediaan</a>
-        </li>
-      </ul>
-      <div class="tab-content" id="myTabContent">
-        <div class="tab-pane fade  show active" id="brgtetap" role="tabpanel" aria-labelledby="brgtetap-tab">
-          <div class="table-responsive py-4">
-            <table class="table table-flush" id="table-brgtetap" data-tab-id="brgtetap" width="100%">
-              <thead class=" thead-light">
-                <tr>
-                  <th><input type="checkbox" id="checkall1"></th>
-                  <th>No.</th>
-                  <th>QR Code</th>
-                  <th>Kode Barang</th>
-                  <th>Nama Barang</th>
-                  <th>Asal Pembelian</th>
-                  <th>Warna</th>
-                  <th>Jumlah Keluar</th>
-                  <th>Sisa Stok</th>
-                  <th>Lokasi</th>
-                  <th>Created At</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-              </tbody>
-            </table>
-          </div>
-        </div>
-        <div class="tab-pane fade" id="alokasibrg" role="tabpanel" aria-labelledby="alokasibrg-tab">
-          <div class="table-responsive py-4">
-            <table class="table table-flush" data-tab-id="alokasibrg" id="table-alokasibrg" width="100%">
-              <thead class=" thead-light">
-                <tr>
-                  <th><input type="checkbox" id="checkall2"></th>
-                  <th>No.</th>
-                  <th>QR Code</th>
-                  <th>Kode Barang</th>
-                  <th>Nama Barang</th>
-                  <th>Asal Pembelian</th>
-                  <th>Warna</th>
-                  <th>Jumlah Keluar</th>
-                  <th>Sisa Stok</th>
-                  <th>Lokasi</th>
-                  <th>Created At</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-              </tbody>
-            </table>
-          </div>
-        </div>
-        <div class="tab-pane fade" id="brgpersediaan" role="tabpanel" aria-labelledby="brgpersediaan-tab">
-          <div class="table-responsive py-4">
-            <table class="table table-flush" id="table-brgpersediaan" data-tab-id="brgpersediaan" width="100%">
-              <thead class=" thead-light">
-                <tr>
-                  <th><input type="checkbox" id="checkall3"></th>
-                  <th>No.</th>
-                  <th>QR Code</th>
-                  <th>Kode Barang</th>
-                  <th>Nama Barang</th>
-                  <th>Asal Pembelian</th>
-                  <th>Warna</th>
-                  <th>Jumlah Keluar</th>
-                  <th>Sisa Stok</th>
-                  <th>Lokasi</th>
-                  <th>Created At</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
     </div>
     <div class="row m-2 btn-datarestorebarang" style="display:none;">
       <a href="<?= $nav ?>">&laquo; Kembali ke data <?= strtolower($title) ?></a>
@@ -327,6 +330,7 @@
 
   function listdatabarang(tableId, ajaxUrl) {
     var jenis_kat = tableId == "table-brgpersediaan" ? "Barang Persediaan" : "Barang Tetap";
+    var isRestore = tableId == "table-restore" ? 1 : 0;
 
     return $('#' + tableId).DataTable({
       processing: true,
@@ -354,7 +358,8 @@
       order: [],
       columns: [{
           data: 'checkrow',
-          orderable: false
+          orderable: false,
+          visible: isRestore ? false : true, // menghilangkan tanda kutip di sini
         },
         {
           data: 'no',
@@ -365,7 +370,7 @@
           render: function(data, type, row) {
             return '<div id="qrcode-' + row.id + '"></div>';
           },
-          visible: jenis_kat == "Barang Persediaan" ? false : true, // menghilangkan tanda kutip di sini
+          visible: jenis_kat == "Barang Persediaan" || isRestore ? false : true, // menghilangkan tanda kutip di sini
           orderable: false,
           searchable: false,
         },
@@ -409,7 +414,7 @@
         },
 
         {
-          data: 'created_at',
+          data: (!isRestore) ? 'created_at' : 'deleted_at',
           render: function(data, type, full, meta) {
             var dateParts = data.split(/[- :]/);
             var year = parseInt(dateParts[0]);
@@ -425,7 +430,7 @@
               day: 'numeric'
             };
             var formattedDate = new Date(year, month, day, hours, minutes, seconds).toLocaleDateString('id-ID', options);
-            return formattedDate;
+            return `${!isRestore? `Dibuat oleh ${full.created_by}`:`Dihapus oleh ${full.deleted_by}`} pada ${formattedDate}`;
           }
         },
         {
@@ -584,93 +589,32 @@
       $('.table-barang').hide();
       $('.table-restore').show();
       $('.datalist-barang h4').html('Restore Data <?= $title; ?>');
-      $('#tampilformtambahbarang').hide();
       $('.btn-databarang').hide();
       $('.btn-datarestorebarang').show();
 
-      // datarestore = listdatabarang('table-restore', '<?= $nav ?>/listdatabarang?isRestore=1');
-      datarestore = $('#table-restore').DataTable({
-        processing: true,
-        serverSide: true,
-        ajax: {
-          url: `<?= $nav ?>/listdatabarang?isRestore=1`,
-          data: function(d) {
-            d.barang = $('#selectbarang').val()
-            d.kategori = $('#selectkategori').val()
-          },
-        },
-        order: [],
-        columns: [{
-            data: 'no',
-            orderable: false
-          },
-          {
-            data: 'kode_brg'
-          },
-          {
-            data: 'nama_brg'
-          },
-          {
-            data: 'warna',
-            render: function(data) {
-              return capitalize(data);
-            }
-          },
-          {
-            data: 'jumlah_keluar',
-            render: function(data, type, row) {
-              return `${data} ${row.kd_satuan}`;
-            }
-          },
-          {
-            data: 'sisa_stok',
-            render: function(data, type, row) {
-              return `${data} ${row.kd_satuan}`;
-            }
-          },
-          {
-            data: 'nama_ruang'
-          },
-          {
-            data: 'deleted_by'
-          },
-          {
-            data: 'deleted_at',
-            render: function(data, type, full, meta) {
-              var dateParts = data.split(/[- :]/);
-              var year = parseInt(dateParts[0]);
-              var month = parseInt(dateParts[1]) - 1;
-              var day = parseInt(dateParts[2]);
-              var hours = parseInt(dateParts[3]);
-              var minutes = parseInt(dateParts[4]);
-              var seconds = parseInt(dateParts[5]);
-              var options = {
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-              };
-              var formattedDate = new Date(year, month, day, hours, minutes, seconds).toLocaleDateString('id-ID', options);
-              return formattedDate;
-            }
-          },
-          {
-            data: 'action',
-            orderable: false
-          },
-        ],
-      });
+      datarestore = listdatabarang('table-restore', '<?= $nav ?>/listdatabarang?isRestore=1');
     });
 
     //Temporary multiple delete
     $('.formmultipledelete').submit(function(e) {
       e.preventDefault();
-
-      let jmldata = $('.checkrow:checked');
+      let selectedRows = $('td input[type="checkbox"]:checked');
+      var keterangan;
+      if (selectedRows.attr('class') == "checkrow-brgpersediaan") {
+        keterangan = "Barang Persediaan";
+      } else if (selectedRows.attr('class') == "checkrow-brgtetap") {
+        keterangan = "Barang Tetap";
+      } else if (selectedRows.attr('class') == "checkrow-alokasibrg") {
+        keterangan = "Alokasi Barang Tetap";
+      }
+      var selectedIds = $('td:nth-child(1) input[type="checkbox"]:checked').map(function() {
+        return $(this).val();
+      }).get();
+      var jmldata = selectedIds.length;
       var formdata = new FormData(this);
-      formdata.append('jenis_kat', jenis_kat);
+      formdata.append('jenis_kat', keterangan);
 
-      if (jmldata.length === 0) {
+      if (jmldata === 0) {
         Swal.fire({
           icon: 'warning',
           title: 'Perhatian',
@@ -679,7 +623,7 @@
       } else {
         Swal.fire({
           title: 'Multiple Delete',
-          text: `Apakah kamu yakin ingin menghapus ${jmldata.length} data <?= strtolower($title) ?> secara temporary?`,
+          text: `Apakah kamu yakin ingin menghapus ${jmldata} data ${keterangan.toLowerCase()} secara temporary?`,
           icon: 'warning',
           showCancelButton: true,
           confirmButtonColor: '#3085d6',
@@ -1040,7 +984,6 @@
   }
 
   function formtambahbaru() {
-    console.log(jenistrx);
     $('.viewdata').hide(500);
     $.ajax({
       type: "post",

@@ -13,6 +13,7 @@ use App\Models\RiwayatBarang;
 use App\Models\RiwayatTransaksi;
 use \Hermawan\DataTables\DataTable;
 use App\Controllers\BaseController;
+use CodeIgniter\Database\Exceptions\DatabaseException;
 
 class PeminjamanController extends BaseController
 {
@@ -50,8 +51,8 @@ class PeminjamanController extends BaseController
             $breadcrumb[] = ['name' => $name, 'link' => $link];
         }
         $data = [
-            'title' => 'Peminjaman Barang Tetap',
-            'nav' => 'peminjaman-barang-tetap',
+            'title' => 'Peminjaman Barang',
+            'nav' => 'peminjaman-barang',
             'jenis_kat' => 'Barang Tetap',
             'breadcrumb' => $breadcrumb
         ];
@@ -526,14 +527,14 @@ class PeminjamanController extends BaseController
                 if ($saveMethod !== "update") {
                     for ($a = 0; $a < $jmldata; $a++) {
                         $rules2 = [
-                            'kondisi_kembali' . $a => [
+                            "kondisi_kembali.${a}" => [
                                 'label' => 'Kondisi kembali',
                                 'rules' => 'required',
                                 'errors' => [
                                     'required' => "{field} barang " . ($a + 1) . " tidak boleh kosong",
                                 ]
                             ],
-                            'tgl_kembali' . $a => [
+                            "tgl_kembali.${a}" => [
                                 'label' => 'Tanggal kembali',
                                 'rules' => 'required',
                                 'errors' => [
@@ -563,73 +564,74 @@ class PeminjamanController extends BaseController
                     } else {
                         $status = [0];
                     }
-                    $tgl_kembali = array();
-                    $kondisi_kembali = array();
-                    for ($a = 0; $a < $jmldata; $a++) {
-                        array_push($tgl_kembali, $this->request->getVar("tgl_kembali$a"));
-                        array_push($kondisi_kembali, $this->request->getVar("kondisi_kembali$a"));
-                    }
+                    $tgl_kembali = $this->request->getVar("tgl_kembali");
+                    $kondisi_kembali = $this->request->getVar("kondisi_kembali");
 
-                    $this->db->transStart();
-                    for ($i = 0; $i < $jmldata; $i++) {
-                        $selisih_hari = date_diff(date_create($tgl_pinjam), date_create($tgl_kembali[$i]));
-                        $pengembalian = [
-                            'jml_hari' => $selisih_hari->format('%a'),
-                            'kondisi_kembali' => $kondisi_kembali[$i],
-                            'tgl_kembali' => $tgl_kembali[$i] ? $tgl_kembali : NULL,
-                            'status' => $status[$i],
-                        ];
+                    try {
+                        $this->db->transException(true)->transStart();
+                        for ($i = 0; $i < $jmldata; $i++) {
 
-                        $updatedata = $this->peminjaman->setUpdateData($pengembalian);
-                        $this->peminjaman->update($id[$i],  $updatedata);
-                        // update stok barang
-                        $stokbrg = $this->db->table('stok_barang')->select('*')->where('barang_id', $barang_id[$i])->get()->getRowArray();
-                        $namaTransaksi = "";
-                        if ($saveMethod !== 'update') {
-                            $ubahstok = [
-                                'jumlah_keluar' => (intval($stokbrg['jumlah_keluar']) - intval($jml_barang[$i])),
-                                'sisa_stok' => (intval($stokbrg['sisa_stok']) + intval($jml_barang[$i])),
+                            $selisih_hari = $tgl_kembali !== NULL ? date_diff(date_create($tgl_pinjam), date_create($tgl_kembali[$i])) : NULL;
+                            $pengembalian = [
+                                'jml_hari' => $tgl_kembali !== NULL ? $selisih_hari->format('%a') : NULL,
+                                'kondisi_kembali' => $kondisi_kembali !== NULL ? $kondisi_kembali[$i] : NULL,
+                                'tgl_kembali' => $tgl_kembali !== NULL ? $tgl_kembali[$i] : NULL,
+                                'status' => $status[$i],
                             ];
-                            $namaTransaksi = $jenistrx . " " . $id[$i];
-                        } else {
-                            $ubahstok = [
-                                'jumlah_keluar' => (intval($stokbrg['jumlah_keluar']) + intval($jml_barang[$i])),
-                                'sisa_stok' => (intval($stokbrg['sisa_stok']) - intval($jml_barang[$i])),
-                            ];
-                            $namaTransaksi = "Update " . $jenistrx . " " . $id[$i];
-                        }
-                        $updatestok = $this->stokbarang->setUpdateData($ubahstok);
 
-                        //periksa perubahan data
-                        $data_lama = $stokbrg;
-                        $data_baru = $updatestok;
-                        $field_update = [];
-                        foreach ($data_baru as $key => $value) {
-                            if (isset($data_lama[$key]) && $data_lama[$key] !== $value) {
-                                $field_update[] = $key;
+                            $updatedata = $this->peminjaman->setUpdateData($pengembalian);
+                            $this->peminjaman->update($id[$i],  $updatedata);
+
+                            // update stok barang
+                            $stokbrg = $this->db->table('stok_barang')->select('*')->where('barang_id', $barang_id[$i])->get()->getRowArray();
+
+                            $namaTransaksi = "";
+
+                            if ($saveMethod !== 'update') {
+                                $ubahstok = [
+                                    'jumlah_keluar' => (intval($stokbrg['jumlah_keluar']) - intval($jml_barang[$i])),
+                                    'sisa_stok' => (intval($stokbrg['sisa_stok']) + intval($jml_barang[$i])),
+                                ];
+                                $namaTransaksi = $jenistrx . " " . $id[$i];
+                            } else {
+                                $ubahstok = [
+                                    'jumlah_keluar' => (intval($stokbrg['jumlah_keluar']) + intval($jml_barang[$i])),
+                                    'sisa_stok' => (intval($stokbrg['sisa_stok']) - intval($jml_barang[$i])),
+                                ];
+                                $namaTransaksi = "Update " . $jenistrx . " " . $id[$i];
                             }
+
+                            $updatestok = $this->stokbarang->setUpdateData($ubahstok);
+                            //periksa perubahan data
+                            $data_lama = $stokbrg;
+                            $data_baru = $updatestok;
+                            $field_update = [];
+                            foreach ($data_baru as $key => $value) {
+                                if (isset($data_lama[$key]) && $data_lama[$key] !== $value) {
+                                    $field_update[] = $key;
+                                }
+                            }
+                            // update data ke database
+                            $this->stokbarang->update($stokbrg['id'], $updatestok);
+
+                            // Periksa apakah query terakhir adalah operasi update
+                            $lastQuery = $this->db->getLastQuery();
+                            // var_dump($lastQuery);
+
+                            $this->riwayattrx->inserthistori($stokbrg['id'], $stokbrg, $updatestok, $namaTransaksi, $lastQuery, $field_update);
                         }
-                        // update data ke database
-                        $this->stokbarang->update($stokbrg['id'], $updatestok);
 
-                        // Periksa apakah query terakhir adalah operasi update
-                        $lastQuery = $this->db->getLastQuery();
-                        // var_dump($lastQuery);
+                        $this->db->transComplete();
 
-                        $this->riwayattrx->inserthistori($stokbrg['id'], $stokbrg, $updatestok, $namaTransaksi, $lastQuery, $field_update);
-                    }
-
-                    $this->db->transComplete();
-                    if ($this->db->transStatus() === false) {
-                        // Jika terjadi kesalahan pada transaction
-                        $msg = ['error' => 'Gagal menyimpan data peminjaman'];
-                    } else {
-                        // Jika berhasil disimpan
                         if ($saveMethod !== 'update') {
                             $msg = ['sukses' => "Sukses $jmldata barang berhasil dikembalikan"];
                         } else {
                             $msg = ['sukses' => "Sukses data pengembalian barang berhasil diupdate"];
                         }
+                    } catch (DatabaseException $e) {
+                        // Automatically rolled back already.
+                        var_dump($e);
+                        $msg = ['error' => "Terjadi kesalahan saat menyimpan data pengembalian barang. Pastikan tidak ada ketergantungan data sebelum menyimpan"];
                     }
                 }
             }
@@ -815,20 +817,25 @@ class PeminjamanController extends BaseController
                     for ($i = 0; $i < $jmldata; $i++) {
                         $data_ditemukan = false;
                         $isDeleted = false;
+
                         for ($j = 0; $j < count($peminjamanall); $j++) {
                             if ($barang_id[$i] == $peminjamanall[$j]['barang_id'] && $this->request->getVar('anggota_id') == $peminjamanall[$j]['anggota_id'] && $peminjamanall[$j] && $peminjaman['created_at'] == $peminjamanall[$j]['created_at'] && ['deleted_at'] == null) {
                                 $data_ditemukan = true;
                                 $isDeleted = false;
                                 array_push($oldPeminjamanAll, $peminjamanall[$j]);
                             } elseif ($barang_id[$i] == $peminjamanall[$j]['barang_id'] && $this->request->getVar('anggota_id') == $peminjamanall[$j]['anggota_id'] && $peminjamanall[$j]['deleted_at'] !== null) {
+
                                 $data_ditemukan = true;
                                 $isDeleted = true;
                             }
+                            var_dump($barang_id[$i] == $peminjamanall[$j]['barang_id'] && $this->request->getVar('anggota_id') == $peminjamanall[$j]['anggota_id'] && $peminjamanall[$j]['deleted_at'] !== null);
                         }
-
+                        echo "data ditemukan $data_ditemukan\n";
+                        echo "data dihapus $isDeleted\n";
                         $oldpeminjaman = end($oldPeminjamanAll);
 
                         if (!$data_ditemukan) {
+                            echo "1111";
                             $ubahpinjam = [
                                 'barang_id' => $barang_id[$i],
                                 'jml_barang' => $jml_barang[$i],
@@ -838,6 +845,8 @@ class PeminjamanController extends BaseController
 
                             $this->peminjaman->update($id, $updatepinjam);
                         } elseif ($data_ditemukan && !$isDeleted) {
+                            echo "2222";
+
                             $ubahpinjam = array();
                             if ($oldpeminjaman['id'] !== $id) {
                                 $this->peminjaman->delete($id, true);
@@ -854,6 +863,8 @@ class PeminjamanController extends BaseController
 
                             $this->peminjaman->update($oldpeminjaman['id'], $updatepinjam);
                         } elseif ($data_ditemukan && $isDeleted) {
+                            echo "3333";
+                            var_dump($oldpeminjaman);
                             $ubahpinjam = [
                                 'jml_barang' => intval($oldpeminjaman['jml_barang']) + intval($jml_barang[$i]),
                                 'tgl_pinjam' => $this->request->getVar("tgl_pinjam"),

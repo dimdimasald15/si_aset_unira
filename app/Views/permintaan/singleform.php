@@ -163,6 +163,12 @@
       templateResult: formatResult,
     });
 
+    $('#idanggota').on('change', function(e) {
+      e.preventDefault();
+      $(this).removeClass('is-invalid');
+      $('.erridanggota').html('');
+    })
+
     $('.btntambahrow').on('click', function(e) {
       e.preventDefault();
       var index = currIndex++;

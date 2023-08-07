@@ -189,7 +189,6 @@
   }
 
   $(document).ready(function() {
-    var saveMethod = "<?= $saveMethod ?>";
     rowCountstok = $('.formtambahrow tr').length;
     loopingstok(rowCountstok);
     loadLokasistok(rowCountstok);

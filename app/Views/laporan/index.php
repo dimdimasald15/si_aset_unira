@@ -24,7 +24,7 @@
   <div class="page-title">
     <div class="row">
       <div class="col-12 col-md-8 order-md-1 order-last">
-        <h3><?= $title ?> Inventaris Barang</h3>
+        <h3><?= $title ?> Aset</h3>
         <p class="text-subtitle text-muted">Sistem Informasi Manajemen Aset Universitas Islam Raden Rahmat Malang</p>
       </div>
       <div class="col-12 col-md-4 order-md-2 order-first">
@@ -73,7 +73,6 @@
       </form>
     </div>
   </div>
-
   <div class="col-lg-12">
     <div class="row mb-0">
       <div class="col-6 col-lg-3 col-md-6">
