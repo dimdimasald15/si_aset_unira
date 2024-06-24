@@ -71,7 +71,7 @@ class PermintaanController extends BaseController
                 ->join('barang b', 'b.id=p.barang_id')
                 ->join('kategori k', 'k.id=b.kat_id')
                 ->join('stok_barang sb', 'b.id=sb.barang_id')
-                ->join('satuan s', 's.id=sb.satuan_id')
+                ->join('satuan s', 's.id=b.satuan_id')
                 ->join('ruang r', 'r.id=sb.ruang_id')
                 ->where('r.id', 54)
                 ->where('k.jenis', $jenis);
@@ -495,7 +495,7 @@ class PermintaanController extends BaseController
     {
         if ($this->request->isAJAX()) {
             $id = $this->request->getGet('id');
-            $builder = $this->db->table('permintaan p')->select('a.nama_anggota, a.no_anggota, a.unit_id, a.level, u.singkatan, p.id, p.barang_id, p.jml_barang, p.anggota_id, b.nama_brg, sb.satuan_id, s.kd_satuan, sb.sisa_stok')
+            $builder = $this->db->table('permintaan p')->select('a.nama_anggota, a.no_anggota, a.unit_id, a.level, u.singkatan, p.id, p.barang_id, p.jml_barang, p.anggota_id, b.nama_brg, b.satuan_id, s.kd_satuan, sb.sisa_stok')
                 ->join('anggota a', 'a.id=p.anggota_id')
                 ->join('unit u', 'u.id=a.unit_id')
                 ->join('barang b', 'b.id=p.barang_id')

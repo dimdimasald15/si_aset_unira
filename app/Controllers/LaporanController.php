@@ -71,7 +71,7 @@ class LaporanController extends BaseController
                 ->join('barang b', 'b.id=sb.barang_id')
                 ->join('kategori k', 'k.id=b.kat_id ')
                 ->join('ruang r', 'sb.ruang_id = r.id')
-                ->join('satuan s', 'sb.satuan_id = s.id')
+                ->join('satuan s', 'b.satuan_id = s.id')
                 ->where('sb.deleted_at', null)
                 ->where('b.deleted_at', null)
                 ->where('k.jenis', "Barang Tetap")
@@ -96,7 +96,7 @@ class LaporanController extends BaseController
             ->select('sb.barang_id AS b_id, b.kode_brg, b.nama_brg, b.warna,  b.harga_jual, SUM(sb.sisa_stok) AS stok_terbaru, b.harga_jual * SUM(sb.sisa_stok) AS total_val, s.kd_satuan')
             ->join('barang b', 'b.id = sb.barang_id')
             ->join('kategori k', 'k.id = b.kat_id')
-            ->join('satuan s', 'sb.satuan_id = s.id')
+            ->join('satuan s', 'b.satuan_id = s.id')
             ->where('k.jenis', 'Barang Tetap');
         if (empty($y)) {
             $builder->where('YEAR(sb.created_at)', date('Y'));
@@ -166,7 +166,7 @@ class LaporanController extends BaseController
             ->join('barang b', 'b.id = rb.barang_id')
             ->join('kategori k', 'k.id = b.kat_id')
             ->join('stok_barang sb', 'b.id=sb.barang_id')
-            ->join('satuan s', 's.id=sb.satuan_id')
+            ->join('satuan s', 's.id=b.satuan_id')
             ->join('permintaan p', 'p.barang_id = b.id')
             ->join('anggota a', 'a.id = p.anggota_id')
             ->join('unit u', 'u.id = a.unit_id')
@@ -237,7 +237,7 @@ class LaporanController extends BaseController
             ELSE CAST(REPLACE(JSON_EXTRACT(rt.new_value, \'$.jumlah_masuk\'),\'"\',\'\') AS UNSIGNED)
             END AS jml_msk, s.kd_satuan, rt.created_at')
             ->join('stok_barang sb', 'sb.id=rt.stokbrg_id')
-            ->join('satuan s', 's.id=sb.satuan_id')
+            ->join('satuan s', 's.id=b.satuan_id')
             ->join('barang b', 'b.id=sb.barang_id')
             ->join('riwayat_barang rb', 'b.id=rb.barang_id')
             ->join('kategori k', 'k.id=b.kat_id')
@@ -364,7 +364,7 @@ class LaporanController extends BaseController
             ->join('kategori k', 'k.id=b.kat_id')
             ->join('unit u', 'u.id = a.unit_id')
             ->join('stok_barang sb', 'b.id=sb.barang_id')
-            ->join('satuan s', 's.id=sb.satuan_id')
+            ->join('satuan s', 's.id=b.satuan_id')
             ->where('k.jenis', $jenis);
 
         if (empty($tgl_peminjaman)) {
@@ -418,7 +418,7 @@ class LaporanController extends BaseController
             ->join('kategori k', 'k.id=b.kat_id')
             ->join('unit u', 'u.id = a.unit_id')
             ->join('stok_barang sb', 'b.id=sb.barang_id')
-            ->join('satuan s', 's.id=sb.satuan_id')
+            ->join('satuan s', 's.id=b.satuan_id')
             ->where('k.jenis', $jenis);
 
         if (empty($y)) {
@@ -494,7 +494,7 @@ class LaporanController extends BaseController
             ->join('barang b', 'b.id = rb.barang_id')
             ->join('kategori k', 'k.id = b.kat_id')
             ->join('stok_barang sb', 'b.id=sb.barang_id')
-            ->join('satuan s', 's.id=sb.satuan_id')
+            ->join('satuan s', 's.id=b.satuan_id')
             ->join('permintaan p', 'p.barang_id = b.id')
             ->join('anggota a', 'a.id = p.anggota_id')
             ->join('unit u', 'u.id = a.unit_id')
@@ -693,7 +693,7 @@ class LaporanController extends BaseController
             ->join('unit u', 'a.unit_id = u.id')
             ->join('barang b', 'b.id=p.barang_id')
             ->join('stok_barang sb', 'b.id=sb.barang_id')
-            ->join('satuan s', 'sb.satuan_id = s.id');
+            ->join('satuan s', 'b.satuan_id = s.id');
         if (empty($y)) {
             $builder->where('YEAR(p.created_at)', date('Y'));
         } else if (!empty($m) && !empty($y)) {
@@ -793,7 +793,7 @@ class LaporanController extends BaseController
                 ->join('unit u', 'a.unit_id = u.id')
                 ->join('barang b', 'b.id=p.barang_id')
                 ->join('stok_barang sb', 'b.id=sb.barang_id')
-                ->join('satuan s', 'sb.satuan_id = s.id');
+                ->join('satuan s', 'b.satuan_id = s.id');
             if (empty($y)) {
                 $builder->where('YEAR(p.created_at)', date('Y'));
             } else if (!empty($m) && !empty($y)) {

@@ -18,6 +18,10 @@ class Barang extends Migration
                 'type' => 'int',
                 'constraint' => 11,
             ],
+            'satuan_id' => [
+                'type' => 'int',
+                'constraint' => 11,
+            ],
             'kode_brg' => [
                 'type' => 'varchar',
                 'constraint' => 20,
@@ -47,13 +51,13 @@ class Barang extends Migration
                 'null' => TRUE,
             ],
             'harga_beli' => [
-                'type' => 'decimal',
-                'constraint' => 14.2,
+                'type' => 'decimal(14,2)',
+                // 'constraint' => 14.2,
                 'null' => TRUE,
             ],
             'harga_jual' => [
-                'type' => 'decimal',
-                'constraint' => 14.2,
+                'type' => 'decimal(14,2)',
+                // 'constraint' => 14.2,
                 'null' => TRUE,
             ],
             'toko' => [
@@ -115,6 +119,7 @@ class Barang extends Migration
         ]);
         $this->forge->addPrimaryKey('id');
         $this->forge->addForeignKey('kat_id', 'kategori', 'id', 'CASCADE', 'CASCADE');
+        $this->forge->addForeignKey('satuan_id', 'satuan', 'id');
         $this->forge->createTable('barang');
     }
 

@@ -18,10 +18,6 @@ class Stokbarang extends Migration
                 'type' => 'int',
                 'constraint' => 11,
             ],
-            'satuan_id' => [
-                'type' => 'int',
-                'constraint' => 11,
-            ],
             'ruang_id' => [
                 'type' => 'int',
                 'constraint' => 11,
@@ -76,7 +72,6 @@ class Stokbarang extends Migration
         $this->forge->addPrimaryKey('id');
         $this->forge->addForeignKey('barang_id', 'barang', 'id', 'CASCADE', 'CASCADE');
         $this->forge->addForeignKey('ruang_id', 'ruang', 'id', 'CASCADE', 'CASCADE');
-        $this->forge->addForeignKey('satuan_id', 'satuan', 'id');
         $this->forge->createTable('stok_barang');
 
         // Menambahkan trigger untuk menghitung nilai sisa_stok

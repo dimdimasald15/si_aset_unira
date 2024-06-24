@@ -45,27 +45,31 @@ for (var i = 0; i < sidebarItems.length; i++) {
     slideToggle(submenu, 300);
   });
 }
+const sidebar = document.getElementById('sidebar');
+const navbar = document.querySelector('.navbar-fixed');
 
 window.addEventListener('DOMContentLoaded', (event) => {
   var w = window.innerWidth;
   if (w < 1200) {
-    document.getElementById('sidebar').classList.remove('active');
+    sidebar.classList.remove('active');
   }
 });
 window.addEventListener('resize', (event) => {
   var w = window.innerWidth;
   if (w < 1200) {
-    document.getElementById('sidebar').classList.remove('active');
+    sidebar.classList.remove('active');
   } else {
-    document.getElementById('sidebar').classList.add('active');
+    sidebar.classList.add('active');
   }
 });
 
 document.querySelector('.burger-btn').addEventListener('click', () => {
-  document.getElementById('sidebar').classList.toggle('active');
+  sidebar.classList.toggle('active');
+  navbar.classList.toggle('sidebar-active');
 });
 document.querySelector('.sidebar-hide').addEventListener('click', () => {
-  document.getElementById('sidebar').classList.toggle('active');
+  sidebar.classList.toggle('active');
+  navbar.classList.toggle('sidebar-active');
 });
 
 // Perfect Scrollbar Init

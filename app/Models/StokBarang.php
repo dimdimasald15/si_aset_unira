@@ -10,7 +10,7 @@ class StokBarang extends Model
 {
     protected $table = "stok_barang";
     protected $primaryKey = 'id';
-    protected $allowedFields = ['id', 'barang_id', 'satuan_id', 'ruang_id', 'jumlah_masuk', 'jumlah_keluar', 'sisa_stok', 'tgl_beli', 'created_at', 'created_by', 'updated_by', 'updated_at', 'deleted_by', 'deleted_at'];
+    protected $allowedFields = ['id', 'barang_id', 'ruang_id', 'jumlah_masuk', 'jumlah_keluar', 'sisa_stok', 'tgl_beli', 'created_at', 'created_by', 'updated_by', 'updated_at', 'deleted_by', 'deleted_at'];
     protected $useSoftDeletes   = true;
     protected $useTimestamps = false;
     protected $createdField  = 'created_at';

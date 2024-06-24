@@ -72,7 +72,7 @@ class PeminjamanController extends BaseController
                 ->join('kategori k', 'k.id=b.kat_id')
                 ->join('unit u', 'u.id = a.unit_id')
                 ->join('stok_barang sb', 'b.id=sb.barang_id')
-                ->join('satuan s', 's.id=sb.satuan_id')
+                ->join('satuan s', 's.id=b.satuan_id')
                 ->where('k.jenis', $jenis);
 
             return DataTable::of($builder)
@@ -457,7 +457,7 @@ class PeminjamanController extends BaseController
                 ->join('anggota a', 'a.id=p.anggota_id')
                 ->join('barang b', 'b.id=p.barang_id')
                 ->join('stok_barang sb', 'b.id=sb.barang_id')
-                ->join('satuan s', 's.id=sb.satuan_id')
+                ->join('satuan s', 's.id=b.satuan_id')
                 ->where('p.anggota_id', $anggota_id)
                 ->like('p.tgl_pinjam', "$tgl_pinjam%")
                 ->where('p.status', 0)
@@ -647,12 +647,12 @@ class PeminjamanController extends BaseController
     {
         if ($this->request->isAJAX()) {
             $id = $this->request->getGet('id');
-            $builder = $this->db->table('peminjaman p')->select('a.nama_anggota, a.no_anggota, a.unit_id, a.level, u.singkatan, p.*, b.nama_brg, sb.satuan_id, sb.sisa_stok, s.kd_satuan')
+            $builder = $this->db->table('peminjaman p')->select('a.nama_anggota, a.no_anggota, a.unit_id, a.level, u.singkatan, p.*, b.nama_brg, b.satuan_id, sb.sisa_stok, s.kd_satuan')
                 ->join('anggota a', 'a.id=p.anggota_id')
                 ->join('unit u', 'u.id=a.unit_id')
                 ->join('barang b', 'b.id=p.barang_id')
                 ->join('stok_barang sb', 'b.id=sb.barang_id')
-                ->join('satuan s', 's.id=sb.satuan_id')
+                ->join('satuan s', 's.id=b.satuan_id')
                 ->where('p.id', $id)
                 ->get();
             $data = $builder->getRow();

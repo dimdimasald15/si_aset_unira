@@ -246,7 +246,7 @@
       </div>
       <div class="row">
         <div class="col-12 d-flex justify-content-end">
-          <button type="button" class="btn btn-white my-4 batal-form">&laquo; batal</button>
+          <button type="button" class="btn btn-white my-4" onClick="util.closeBtn('#tampilformeditbarang')">&laquo; batal</button>
           <button type="submit" class="btn btn-success my-4 btnsimpan">Perbarui</button>
         </div>
       </div>
@@ -259,13 +259,8 @@
     let asalbrg2 = $('#belibekas').val();
     let asalbrg3 = $('#hibah').val();
     let saveMethod = "<?= $saveMethod; ?>"
+    let globalId = "<?= $id ?>";
     kd_brg = '';
-
-    $('.batal-form').click(function(e) {
-      e.preventDefault();
-      // clear_is_invalid();
-      $('#tampilformeditbarang').hide(500);
-    });
 
     $.ajax({
       type: "post",
@@ -284,12 +279,12 @@
       minimumInputLength: 1,
       allowClear: true,
       width: "80%",
-      initSelection: function(element, callback) {
-        callback({
-          id: '',
-          text: ''
-        });
-      },
+      // initSelection: function(element, callback) {
+      //   callback({
+      //     id: '',
+      //     text: ''
+      //   });
+      // },
       ajax: {
         url: `<?= $nav ?>/pilihkategori`,
         dataType: 'json',
@@ -525,84 +520,9 @@
         },
         success: function(result) {
           var response = JSON.parse(result);
+          const fields = ['katid','kodebrg','namabarang','merk','warna','asalbrg','lokasi','hargabeli','jmlmasuk','satuan'];
           if (response.error) {
-            if (response.error.katid) {
-              $('#katid').addClass('is-invalid');
-              $('.errkatid').html(response.error.katid);
-            } else {
-              $('#katid').removeClass('is-invalid');
-              $('.errkatid').html('');
-            }
-            if (response.error.kodebrg) {
-              $('#kodebrg').addClass('is-invalid');
-              $('.errkodebrg').html(response.error.kodebrg);
-            } else {
-              $('#kodebrg').removeClass('is-invalid');
-              $('.errkodebrg').html('');
-            }
-            if (response.error.namabarang) {
-              $('#namabarang').addClass('is-invalid');
-              $('.errnamabarang').html(response.error.namabarang);
-            } else {
-              $('#namabarang').removeClass('is-invalid');
-              $('.errnamabarang').html('');
-            }
-            if (response.error.merk) {
-              $('#merk').addClass('is-invalid');
-              $('.errmerk').html(response.error.merk);
-            } else {
-              $('#merk').removeClass('is-invalid');
-              $('.errmerk').html('');
-            }
-            if (response.error.warna) {
-              $('#warna').addClass('is-invalid');
-              $('.errwarna').html(response.error.warna);
-            } else {
-              $('#warna').removeClass('is-invalid');
-              $('.errwarna').html('');
-            }
-            if (response.error.asal) {
-              $(".asalbrg .form-check-input").addClass("is-invalid");
-              $(".errasalbrg").html(response.error.asal);
-            } else {
-              $(".asalbrg .form-check-input").removeClass("is-invalid");
-              $(".errasalbrg").html('');
-            }
-            if (response.error.lokasi) {
-              $(`#lokasi`).addClass('is-invalid');
-              $(`.errlokasi`).html(response.error.lokasi);
-            } else {
-              $(`#lokasi`).removeClass('is-invalid');
-              $(`.errlokasi`).html('');
-            }
-            if (response.error.hargabeli) {
-              $(`#hargabeli`).addClass('is-invalid');
-              $(`.errhargabeli`).html(response.error.hargabeli);
-            } else {
-              $(`#hargabeli`).removeClass('is-invalid');
-              $(`.errhargabeli`).html('');
-            }
-            if (response.error.hargajual) {
-              $(`#hargajual`).addClass('is-invalid');
-              $(`.errhargajual`).html(response.error.hargajual);
-            } else {
-              $(`#hargajual`).removeClass('is-invalid');
-              $(`.errhargajual`).html('');
-            }
-            if (response.error.jmlmasuk) {
-              $(`#jmlmasuk`).addClass('is-invalid');
-              $(`.errjmlmasuk`).html(response.error.jmlmasuk);
-            } else {
-              $(`#jmlmasuk`).removeClass('is-invalid');
-              $(`.errjmlmasuk`).html('');
-            }
-            if (response.error.satuan) {
-              $(`#satuan`).addClass('is-invalid');
-              $(`.errsatuan`).html(response.error.satuan);
-            } else {
-              $(`#satuan`).removeClass('is-invalid');
-              $(`.errsatuan`).html('');
-            }
+            util.handleValidationErrors (fields, response.error);
           } else {
             $('#tampilformeditbarang').hide(500);
             Swal.fire(

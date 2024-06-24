@@ -70,16 +70,6 @@ $routes->group('admin/ruang', ['filter' => 'ceklogin'], function ($routes) {
     $routes->match(['get', 'post'], 'hapuspermanen', 'RuangController::hapuspermanen');
 });
 
-// $routes->group('admin/gedung', ['filter' => 'ceklogin'], function ($routes) {
-//     $routes->get('/', 'GedungController::index');
-//     $routes->get('listdatagedung', 'GedungController::listdatagedung');
-//     $routes->get('getgedungbyid', 'GedungController::getgedungbyid');
-//     $routes->post('simpan', 'GedungController::simpandata');
-//     $routes->match(['get', 'post'], 'pilihkategori', 'GedungController::pilihkategori');
-//     $routes->post('update/(:any)', 'GedungController::updatedata/$1');
-//     $routes->post('hapus/(:any)', 'GedungController::hapusdata/$1');
-// });
-
 $routes->group('admin/kategori', ['filter' => 'ceklogin'], function ($routes) {
     $routes->get('/', 'KategoriController::index');
     $routes->get('listdatakategori', 'KategoriController::listdatakategori');
@@ -106,8 +96,6 @@ $routes->group('admin/kelola-barang', ['filter' => 'ceklogin'], function ($route
     $routes->get('listdatabarang', 'BarangController::listdatabarang');
     $routes->match(['get', 'post'], 'pilihkategori', 'BarangController::pilihkategori');
     $routes->match(['get', 'post'], 'pilihbarang', 'BarangController::pilihbarang');
-    $routes->post('simpanbarang', 'BarangController::simpandatabarang');
-    $routes->post('updatestok/(:any)', 'BarangController::updatedatastok/$1');
     $routes->post('insertmultiple', 'BarangController::insertmultiplebarang');
     $routes->post('transferbarang', 'BarangController::transfermultiplebarang');
     $routes->post('updatebarang/(:any)', 'BarangController::updatedatabarang/$1');
@@ -115,16 +103,19 @@ $routes->group('admin/kelola-barang', ['filter' => 'ceklogin'], function ($route
     $routes->get('tampildatarestore', 'BarangController::listdatabarang');
     $routes->post('restore/(:any)', 'BarangController::restoredata/$1');
     $routes->match(['get', 'post'], 'restore', 'BarangController::restoredata');
-    $routes->post('hapuspermanen/(:any)', 'BarangController::hapuspermanen/$1');
-    $routes->match(['get', 'post'], 'hapuspermanen', 'BarangController::hapuspermanen');
+    $routes->post('hapuspermanen', 'BarangController::hapuspermanen');
     $routes->get('detail-barang/(:any)', 'BarangController::detailbarang/$1');
     $routes->post('multipledelete', 'BarangController::multipledeletetemporary');
 
+    $routes->post('tampilexportexcel', 'BarangController::tampilexportexcel');
+    $routes->post('tampilimportexcel', 'BarangController::tampilimportexcel');
+    $routes->post('simpandataexcel', 'BarangController::simpandataexcel');
+    $routes->match(['get','post'],'downloadtemplate', 'BarangController::templateinputbarang');
     $routes->post('tampillabelbarang', 'BarangController::tampillabelbarang');
     $routes->post('tampiltransferform', 'BarangController::tampiltransferform');
     $routes->post('tampileditform', 'BarangController::tampileditform');
-    $routes->post('tampiltambahbarangmultiple', 'BarangController::tampiltambahbarangmultiple');
-    $routes->post('tampiltambahstokmultiple', 'BarangController::tampiltambahstokmultiple');
+    $routes->post('tampiltambahbarang', 'BarangController::tampiltambahbarang');
+    $routes->post('tampiltambahstok', 'BarangController::tampiltambahstok');
     $routes->post('tampilcardupload', 'BarangController::tampilcardupload');
     $routes->post('simpanupload', 'BarangController::simpanupload');
 
@@ -153,7 +144,6 @@ $routes->group('admin/permintaan-barang', ['filter' => 'ceklogin'], function ($r
     $routes->match(['get', 'post'], 'hapuspermanen', 'PermintaanController::hapuspermanen');
 
     $routes->post('tampilmodalcetak', 'PermintaanController::tampilmodalcetak');
-    $routes->get('tampilsingleform', 'PermintaanController::tampilsingleform');
     $routes->get('pilihanggota', 'PermintaanController::carianggota');
     $routes->get('getpermintaanbyid', 'PermintaanController::getpermintaanbyid');
     $routes->get('pilihunit', 'PermintaanController::pilihunit');

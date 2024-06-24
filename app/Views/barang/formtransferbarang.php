@@ -135,7 +135,7 @@
       formdatamultiple.append('jmldata', rowCount);
       $.ajax({
         type: "post",
-        url: "<?= $nav ?>/transferbarang",
+        url: `${nav}/transferbarang`,
         data: formdatamultiple,
         contentType: false,
         processData: false,
@@ -228,7 +228,7 @@
           allowClear: true,
           width: "50%",
           ajax: {
-            url: `<?= $nav ?>/pilihbarang`,
+            url: `${nav}/pilihbarang`,
             dataType: 'json',
             delay: 250,
             data: function(params) {
@@ -243,7 +243,7 @@
             },
             cache: true
           },
-          templateResult: formatResult,
+          templateResult: util.formatResult,
         });
 
         $(`#satuan${j}`).select2({
@@ -252,7 +252,7 @@
           allowClear: true,
           width: "100%",
           ajax: {
-            url: "<?= $nav ?>/pilihsatuan",
+            url: `${nav}/pilihsatuan`,
             dataType: 'json',
             delay: 250,
             data: function(params) {
@@ -267,7 +267,7 @@
             },
             cache: true
           },
-          templateResult: formatResult,
+          templateResult: util.formatResult,
         });
 
         $(`#lokasi${j}`).select2({
@@ -276,7 +276,7 @@
           allowClear: true,
           width: "50%",
           ajax: {
-            url: "<?= $nav ?>/pilihlokasi",
+            url: `${nav}/pilihlokasi`,
             dataType: 'json',
             delay: 250,
             data: function(params) {
@@ -291,7 +291,7 @@
             },
             cache: true
           },
-          templateResult: formatResult,
+          templateResult: util.formatResult,
         });
 
         $(`#lokasi${j}`).on('change', function(e) {
@@ -328,17 +328,5 @@
         })
       })(i);
     }
-  }
-
-  function formatResult(data) {
-    if (!data.id) {
-      return data.text;
-    }
-
-    var $result = $(
-      `<span><i class="bi bi-layers"> </i>${data.text}</span>`
-    );
-
-    return $result;
   }
 </script>

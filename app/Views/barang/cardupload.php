@@ -28,7 +28,7 @@
         </div>
         <div class="row">
           <div class="col-12 d-flex justify-content-end">
-            <button type="button" class="btn btn-white my-2 batal-form">Batal</button>
+            <button type="button" class="btn btn-white my-2" onClick="util.closeBtn('#cardupload')">Batal</button>
             <button type="submit" class="btn btn-success my-2 btnupload">Upload Foto</button>
           </div>
         </div>
@@ -66,20 +66,7 @@
 
 
 <script>
-  function clear_is_invalid() {
-    if ($('#tampilformtambahbarang').find('input').hasClass('is-invalid') || $('#tampilformtambahbarang').find('select').hasClass('is-invalid')) {
-      $('#tampilformtambahbarang').find('input').removeClass('is-invalid');
-      $('#tampilformtambahbarang').find('select').removeClass('is-invalid');
-    }
-  }
-
   $(document).ready(function() {
-    $('.batal-form').click(function(e) {
-      e.preventDefault();
-      clear_is_invalid();
-      $('#cardupload').hide(500);
-    });
-
     var $modal = $('#modal_crop');
     var crop_image = document.getElementById('sample_image');
     var cropper;

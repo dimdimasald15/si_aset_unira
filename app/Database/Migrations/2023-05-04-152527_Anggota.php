@@ -8,6 +8,9 @@ class Anggota extends Migration
 {
     public function up()
     {
+        // Membuat tipe data ENUM untuk PostgreSQL
+        $this->db->query("CREATE TYPE level_enum AS ENUM ('Karyawan', 'Mahasiswa')");
+
         $this->forge->addField([
             'id' => [
                 'type' => 'int',
@@ -27,8 +30,7 @@ class Anggota extends Migration
                 'constraint' => '20',
             ],
             'level' => [
-                'type' => 'ENUM',
-                'constraint' => ['Karyawan', 'Mahasiswa'],
+                'type' => 'level_enum',
                 'null' => false
             ],
             'unit_id' => [
@@ -71,5 +73,8 @@ class Anggota extends Migration
     public function down()
     {
         $this->forge->dropTable('anggota');
+
+         // Menghapus tipe data ENUM setelah tabel dihapus
+         $this->db->query("DROP TYPE level_enum");
     }
 }

@@ -8,6 +8,9 @@ class Petugas extends Migration
 {
     public function up()
     {
+        // Membuat tipe data ENUM untuk PostgreSQL
+        $this->db->query("CREATE TYPE role_enum AS ENUM ('Administrator', 'Petugas')");
+
         $this->forge->addField([
             'id' => [
                 'type' => 'int',
@@ -32,8 +35,9 @@ class Petugas extends Migration
                 'constraint' => '100',
             ],
             'role' => [
-                'type' => 'enum',
-                'constraint' => ['Administrator', 'Petugas'],
+                'type' => 'role_enum',
+                // 'constraint' => ['Administrator', 'Petugas'],
+                'null'=> false
             ],
             'foto' => [
                 'type' => 'varchar',
@@ -75,5 +79,8 @@ class Petugas extends Migration
     public function down()
     {
         $this->forge->dropTable('petugas');
+
+         // Menghapus tipe data ENUM setelah tabel dihapus
+         $this->db->query("DROP TYPE role_enum");
     }
 }

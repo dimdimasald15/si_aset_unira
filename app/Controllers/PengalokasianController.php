@@ -64,7 +64,7 @@ class PengalokasianController extends BaseController
                 ->join('barang b', 'sb.barang_id = b.id')
                 ->join('kategori k', 'b.kat_id = k.id')
                 ->join('ruang r', 'sb.ruang_id = r.id')
-                ->join('satuan s', 'sb.satuan_id = s.id')
+                ->join('satuan s', 'b.satuan_id = s.id')
                 ->where('r.id !=', 54)
                 ->where('k.jenis', $jenis);
 
@@ -297,7 +297,7 @@ class PengalokasianController extends BaseController
             ->join('barang b', 'sb.barang_id = b.id')
             ->join('kategori k', 'b.kat_id = k.id')
             ->join('ruang r', 'sb.ruang_id = r.id')
-            ->join('satuan s', 'sb.satuan_id = s.id')
+            ->join('satuan s', 'b.satuan_id = s.id')
             ->where('b.kode_brg', $kode_brg)
             ->where('sb.ruang_id', $ruang_id)
             ->groupBy('b.id')
@@ -661,7 +661,7 @@ class PengalokasianController extends BaseController
                 $query = $this->db->table('stok_barang sb')->select('sb.*, b.nama_brg, r.nama_ruang, s.kd_satuan')
                     ->join('barang b', 'b.id=sb.barang_id')
                     ->join('ruang r', 'r.id=sb.ruang_id')
-                    ->join('satuan s', 's.id=sb.satuan_id')
+                    ->join('satuan s', 's.id=b.satuan_id')
                     ->where('sb.id', $idstokbrg)
                     ->get()
                     ->getRowArray();

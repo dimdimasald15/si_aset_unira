@@ -45,11 +45,11 @@ class PelaporanController extends BaseController
         $kode_brg = str_replace('-', '.', $kdbrg);
         $ruang_id = substr($url, strrpos($url, "-") + 1); // mendapatkan string "6"
 
-        $query = $this->db->table('stok_barang sb')->select('sb.*, k.nama_kategori, b.nama_brg, b.kode_brg, b.foto_barang, b.harga_beli, b.harga_jual, b.asal, b.toko, b.instansi, b.no_seri, b.no_dokumen, b.merk, b.tgl_pembelian, b.warna, sb.ruang_id, r.nama_ruang, sb.satuan_id, s.kd_satuan, b.created_at, b.created_by, b.deleted_at')
+        $query = $this->db->table('stok_barang sb')->select('sb.*, k.nama_kategori, b.nama_brg, b.kode_brg, b.foto_barang, b.harga_beli, b.harga_jual, b.asal, b.toko, b.instansi, b.no_seri, b.no_dokumen, b.merk, b.tgl_pembelian, b.warna, sb.ruang_id, r.nama_ruang, b.satuan_id, s.kd_satuan, b.created_at, b.created_by, b.deleted_at')
             ->join('barang b', 'sb.barang_id = b.id')
             ->join('kategori k', 'b.kat_id = k.id')
             ->join('ruang r', 'sb.ruang_id = r.id')
-            ->join('satuan s', 'sb.satuan_id = s.id')
+            ->join('satuan s', 'b.satuan_id = s.id')
             ->where('b.kode_brg', $kode_brg)
             ->where('sb.ruang_id', $ruang_id)
             ->groupBy('b.id')
@@ -275,13 +275,13 @@ class PelaporanController extends BaseController
 
     public function tampileditlaporan($no_laporan)
     {
-        $query = $this->db->table('pelaporan_kerusakan p')->select('p.*, a.nama_anggota, a.level, a.no_anggota, b.nama_brg, s.kd_satuan, r.nama_ruang, sb.barang_id, sb.ruang_id, sb.satuan_id, b.kode_brg, u.singkatan')
+        $query = $this->db->table('pelaporan_kerusakan p')->select('p.*, a.nama_anggota, a.level, a.no_anggota, b.nama_brg, s.kd_satuan, r.nama_ruang, sb.barang_id, sb.ruang_id, b.satuan_id, b.kode_brg, u.singkatan')
             ->join('anggota a', 'a.id=p.anggota_id')
             ->join('unit u', 'u.id=a.unit_id')
             ->join('stok_barang sb', 'sb.id=p.stokbrg_id')
             ->join('barang b', 'b.id=sb.barang_id')
             ->join('ruang r', 'r.id=sb.ruang_id')
-            ->join('satuan s', 's.id=sb.satuan_id')
+            ->join('satuan s', 's.id=b.satuan_id')
             ->where('p.no_laporan', $no_laporan);
 
         $laporan = $query->get()->getRow();
@@ -392,7 +392,7 @@ class PelaporanController extends BaseController
             ->join('stok_barang sb', 'sb.id=p.stokbrg_id')
             ->join('barang b', 'b.id=sb.barang_id')
             ->join('ruang r', 'r.id=sb.ruang_id')
-            ->join('satuan s', 's.id=sb.satuan_id')
+            ->join('satuan s', 's.id=b.satuan_id')
             ->orderBy('p.id', 'DESC')
             ->limit(5);
 
@@ -518,7 +518,7 @@ class PelaporanController extends BaseController
                 ->join('unit u', 'u.id=a.unit_id')
                 ->join('stok_barang sb', 'sb.id=p.stokbrg_id')
                 ->join('barang b', 'b.id=sb.barang_id')
-                ->join('satuan s', 's.id=sb.satuan_id')
+                ->join('satuan s', 's.id=b.satuan_id')
                 ->join('notifikasi n', 'p.id=n.laporan_id')
                 ->where('p.no_laporan', $no_laporan);
             $pelaporan = $query->get()->getRow();
@@ -651,7 +651,7 @@ class PelaporanController extends BaseController
             ->join('unit u', 'u.id=a.unit_id')
             ->join('stok_barang sb', 'sb.id=p.stokbrg_id')
             ->join('barang b', 'b.id=sb.barang_id')
-            ->join('satuan s', 's.id=sb.satuan_id')
+            ->join('satuan s', 's.id=b.satuan_id')
             ->join('notifikasi n', 'p.id=n.laporan_id')
             ->where('p.no_laporan', $no_laporan);
 

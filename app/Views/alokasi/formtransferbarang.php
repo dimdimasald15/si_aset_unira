@@ -121,6 +121,7 @@
   }
 
   $(document).ready(function() {
+    console.log(nav);
     $('.closeformtrf').click(function(e) {
       e.preventDefault();
       $('#cardtransferbarang').hide(500);
@@ -138,7 +139,7 @@
       formdatamultiple.append('jenistrx', "transfer <?= strtolower($jenis_kat) ?>"); // menambahkan data tambahan
       $.ajax({
         type: "post",
-        url: "<?= $nav ?>/transferbarang",
+        url: `${nav}/transferbarang`,
         data: formdatamultiple,
         contentType: false,
         processData: false,
@@ -232,7 +233,7 @@
           allowClear: true,
           width: "50%",
           ajax: {
-            url: `<?= $nav ?>/pilihbarang`,
+            url: `${nav}/pilihbarang`,
             dataType: 'json',
             delay: 250,
             data: function(params) {
@@ -257,7 +258,7 @@
           allowClear: true,
           width: "100%",
           ajax: {
-            url: "<?= $nav ?>/pilihsatuan",
+            url: `${nav}/pilihsatuan`,
             dataType: 'json',
             delay: 250,
             data: function(params) {
@@ -281,7 +282,7 @@
           allowClear: true,
           width: "50%",
           ajax: {
-            url: "<?= $nav . '/pilihlokasi' ?>",
+            url: `${nav}/pilihlokasi`,
             dataType: 'json',
             delay: 250,
             data: function(params) {

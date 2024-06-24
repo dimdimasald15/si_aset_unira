@@ -66,4 +66,15 @@ abstract class BaseController extends Controller
         ];
         return $data;
     }
+
+    public function uploadFile($path, $file) {
+    	if (!is_dir($path)) 
+			mkdir($path, 0777, TRUE);
+		if ($file->isValid() && ! $file->hasMoved()) {
+			$newName = $file->getRandomName();
+			$file->move($path, $newName);
+			return $path.$newName;
+		}
+		return "";
+	}
 }

@@ -8,6 +8,9 @@ class Kategori extends Migration
 {
     public function up()
     {
+        // Membuat tipe data ENUM untuk PostgreSQL
+        $this->db->query("CREATE TYPE jenis_enum AS ENUM ('Barang Tetap', 'Barang Persediaan')");
+
         $this->forge->addField([
             'id' => [
                 'type' => 'int',
@@ -27,8 +30,7 @@ class Kategori extends Migration
                 'null' => true,
             ],
             'jenis' => [
-                'type' => 'ENUM',
-                'constraint' => ['Barang Tetap', 'Barang Persediaan'],
+                'type' => "jenis_enum",
                 'null' => false
             ],
             'created_by' => [
@@ -66,5 +68,8 @@ class Kategori extends Migration
     public function down()
     {
         $this->forge->dropTable('kategori');
+
+         // Menghapus tipe data ENUM setelah tabel dihapus
+         $this->db->query("DROP TYPE jenis_enum");
     }
 }
