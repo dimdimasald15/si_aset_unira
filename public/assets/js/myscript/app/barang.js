@@ -1,11 +1,13 @@
 import { util } from "./util.js";
+import { crud } from "./crud.js";
 
 const barang = (() => {
-    const listDataBarang = (tableId, ajaxUrl) => {
-        var jenis_kat = tableId == "table-brgpersediaan" ? "Barang Persediaan" : "Barang Tetap";
-        var isRestore = tableId == "table-restore" ? 1 : 0;
+    let tableRestore;
+    const listData = (selector, ajaxUrl) => {
+        var jenis_kat = selector == "table-brgpersediaan" ? "Barang Persediaan" : "Barang Tetap";
+        var isRestore = selector == "table-restore" ? 1 : 0;
 
-        return $('#' + tableId).DataTable({
+        return $('#' + selector).DataTable({
             processing: true,
             serverSide: true,
             ajax: {
@@ -58,7 +60,6 @@ const barang = (() => {
                 data: 'asal',
                 render: function (data, type, row) {
                     var place = row.toko ? `di ${row.toko}` : `dari ${row.instansi}`;
-                    console.log(place);
                     return `${data} ${place}`;
                 }
             },
@@ -92,24 +93,7 @@ const barang = (() => {
 
             {
                 data: (!isRestore) ? 'created_at' : 'deleted_at',
-                render: function (data, type, full, meta) {
-                    var dateParts = data.split(/[- :]/);
-                    var year = parseInt(dateParts[0]);
-                    var month = parseInt(dateParts[1]) - 1;
-                    var day = parseInt(dateParts[2]);
-                    var hours = parseInt(dateParts[3]);
-                    var minutes = parseInt(dateParts[4]);
-                    var seconds = parseInt(dateParts[5]);
-                    var options = {
-                        weekday: 'long',
-                        year: 'numeric',
-                        month: 'long',
-                        day: 'numeric'
-                    };
-                    var formattedDate = new Date(year, month, day, hours, minutes, seconds)
-                        .toLocaleDateString('id-ID', options);
-                    return `${!isRestore ? `Dibuat oleh ${full.created_by}` : `Dihapus oleh ${full.deleted_by}`} pada ${formattedDate}`;
-                }
+                render: renderFormatTime
             },
             {
                 data: 'action',
@@ -159,11 +143,12 @@ const barang = (() => {
             url: `${nav}/tampillabelbarang`,
             view: "modal",
             modalId: "modallabel",
+            method: "POST",
             data: {
                 id, nav
             },
         }
-        util.getCardOrModal(datas);
+        crud.getForm(datas);
     }
 
     const downloadLabelImg = () => {
@@ -258,118 +243,97 @@ const barang = (() => {
 
         const datas = {
             url: `${nav}/tampiltambahbarang`,
+            method: "POST",
             data: {
                 title, nav, saveMethod
             }
         }
 
-        util.getCardOrModal(datas);
+        crud.getForm(datas);
     }
 
     const formTambahStok = () => {
         const datas = {
+            method: "POST",
             url: `${nav}/tampiltambahstok`,
             data: {
                 title, nav
             }
         }
 
-        util.getCardOrModal(datas);
+        crud.getForm(datas);
     }
 
     const edit = (id) => {
         const saveMethod = "update";
         const datas = {
+            method: "POST",
             url: `${nav}/tampileditform`,
             data: {
                 id, title, nav, saveMethod
             }
         }
 
-        util.getCardOrModal(datas);
+        crud.getForm(datas);
     }
 
     const upload = (id, nama_brg, foto_barang) => {
         const datas = {
+            method: "POST",
             url: `${nav}/tampilcardupload`,
             data: {
                 id, nama_brg, nav, foto_barang
             }
         }
-        util.getCardOrModal(datas);
+        crud.getForm(datas);
     }
 
-    const swalHapus = (datas) => {
-        Swal.fire({
-            title: datas.title,
-            icon: 'warning',
-            text: datas.text,
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Ya, Hapus saja!',
-            cancelButtonText: 'Batalkan',
-        }).then((result) => {
-            if (result.isConfirmed) {
-                $.ajax({
-                    type: "post",
-                    url: datas.url,
-                    data: datas.data,
-                    dataType: 'json',
-                    success: function (response) {
-                        if (response.sukses) {
-                            Swal.fire(
-                                'Berhasil', response.sukses, 'success'
-                            ).then((result) => {
-                                if (datas.jenisHapus === "temporary") {
-                                    tableBrgTetap.ajax.reload();
-                                    tableBrgPersediaan.ajax.reload();
-                                    tableAlokasiBrg.ajax.reload();
-                                } else {
-                                    datarestore.ajax.reload();
-
-                                }
-                            })
-                        } else if (response.error) {
-                            Swal.fire(
-                                'Gagal!',
-                                response.error,
-                                'error'
-                            );
-                        }
-                    },
-                    error: function (xhr, ajaxOptions, thrownError) {
-                        alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
-                    }
-                });
-            }
-        });
+    const hapus = (id, jenis_kat, nama_brg, namaruang) => {
+        const tables = [tableBrgTetap, tableBrgPersediaan, tableAlokasiBrg];
+        let data = JSON.stringify({ id, jenis_kat });
+        let titleText = `Apakah kamu yakin ingin menghapus data ${nama_brg} di ${namaruang}?`;
+        crud.handleDelete(`${nav}/hapus`, data, titleText, tables, "temporary");
     }
 
-    const hapus = (id, ruang_id, barang_id, nama_brg, namaruang) => {
-        const datas = {
-            data: {
-                ruang_id, barang_id, nama_brg
-            },
-            jenisHapus: 'temporary',
-            url: `${nav}/hapus/` + id,
-            title: `Apakah kamu yakin ingin menghapus data ${nama_brg} di ${namaruang}?`,
-            text: ''
+    const hapusMultiple = (form, event) => {
+        let selectedRows = $('td input[type="checkbox"]:checked');
+        const className = selectedRows.attr('class');
+        var keterangan;
+        if (className == "checkrow-brgpersediaan") {
+            keterangan = "Barang Persediaan";
+        } else if (className == "checkrow-brgtetap") {
+            keterangan = "Barang Tetap";
+        } else if (className == "checkrow-alokasibrg") {
+            keterangan = "Alokasi Barang Tetap";
         }
-        swalHapus(datas);
+        const tables = [tableBrgTetap, tableBrgPersediaan, tableAlokasiBrg];
+        crud.handleMultipleDelete(form, event, tables, `.${className}`, '', keterangan);
     }
 
     const hapusPermanen = (id, ruangId, barangId, namabrg, namaruang) => {
-        const datas = {
-            data: {
-                id, ruangId, barangId, namabrg, namaruang,
-            },
-            jenisHapus: 'permanent',
-            url: `${nav}/hapuspermanen`,
-            title: `Menghapus data ${namabrg} di ${namaruang} secara permanen?`,
-            text: 'Data akan terhapus selamanya dan tidak dapat dipulihkan lagi!',
-        }
-        swalHapus(datas);
+        let data = JSON.stringify({ id, ruangId, barangId });
+        let text = 'Data akan terhapus selamanya dan tidak dapat dipulihkan lagi!';
+        let url = `${nav}/hapuspermanen`;
+        crud.handleDelete(url, data, `Apakah kamu yakin ingin menghapus data ${namabrg} di ${namaruang} secara permanen?`, tableRestore, "permanent", text);
+    }
+
+    const hapusPermanenAll = () => {
+        var api = tableRestore.rows();
+        var id = api.data().toArray().map(function (d) {
+            return d.id;
+        });
+        var ruang_id = api.data().toArray().map(function (d) {
+            return d.ruang_id;
+        })
+        var barang_id = api.data().toArray().map(function (d) {
+            return d.barang_id;
+        })
+        let data = JSON.stringify({
+            id: id.join(","),
+            barangId: barang_id.join(","),
+            ruangId: ruang_id.join(","),
+        });
+        crud.handleDeleteAll(tableRestore, '', '', data)
     }
 
     const transferBarang = () => {
@@ -380,13 +344,16 @@ const barang = (() => {
             }).get();
             let jmldata = selectedIds.length;
             const datas = {
+                method: "POST",
                 url: `${nav}/tampiltransferform`,
+                view: "modal",
+                modalId: "modaltransfer",
                 data: {
                     ids: selectedIds.join(","),
                     jmldata: jmldata,
                 }
             }
-            util.getCardOrModal(datas);
+            crud.getForm(datas);
         } else {
             var text = selectedRows.attr('class') == "checkrow-brgpersediaan" ? 'Tidak dapat melakukan transfer barang' :
                 'Tidak ada data yang dipilih';
@@ -401,13 +368,13 @@ const barang = (() => {
     const tampilExportExcel = () => {
         let title = "Download Template Excel";
         const datas = {
+            method: "POST",
             url: `${nav}/tampilexportexcel`,
             data: {
                 title, nav
             }
         }
-
-        util.getCardOrModal(datas);
+        crud.getForm(datas);
     }
 
     const tampilImportExcel = () => {
@@ -415,13 +382,13 @@ const barang = (() => {
         const datas = {
             url: `${nav}/tampilimportexcel`,
             view: "modal",
+            method: "POST",
             modalId: "modalimportexcel",
             data: {
                 title, nav
             }
         }
-
-        util.getCardOrModal(datas);
+        crud.getForm(datas);
     }
 
     const uploadExcel = (form, event) => {
@@ -451,7 +418,8 @@ const barang = (() => {
                 if (response.error) {
                     util.handleValidationErrors(fields, response.error);
                 } else {
-                    const tables = [$('#tableBrgTetap').DataTable(), $('#tableBrgPersediaan').DataTable()];
+                    $(`#modalimportexcel`).modal('hide');
+                    const tables = [tableBrgTetap, tableBrgPersediaan];
                     util.handleSubmitSuccess(response.success, tables);
                 }
             },
@@ -461,7 +429,7 @@ const barang = (() => {
         });
     }
 
-    function handleSubmitError(errors, rowCount) {
+    const handleSubmitError = (errors, rowCount) => {
         let errorasal = [];
         for (let key in errors) {
             if (errors.hasOwnProperty(key) && key.startsWith('asal')) {
@@ -485,23 +453,125 @@ const barang = (() => {
         }
     }
 
+    const viewTableRestore = () => {
+        function callback() {
+            tableRestore = listData('table-restore', `${nav}/listdatabarang?isRestore=1`);
+        }
+        crud.handleViewRestore(title.toLowerCase(), callback)
+    }
+
+    const restore = (id, ruangId, barangId, nama_brg, nama_ruang) => {
+        let data = JSON.stringify({ id, nama_brg, nama_ruang, ruangId, barangId });
+        let title = `Memulihkan data ${nama_brg} di ${nama_ruang}?`
+        crud.handleRestore(data, title, tableRestore, "restore");
+    }
+
+    const restoreAll = () => crud.handleRestoreAll(tableRestore, true)
+
+    const selectItem = () => {
+        util.selectReload();
+    }
+
+    const selectCategory = () => {
+        util.selectReload();
+    }
+
+    const navLink = () => {
+        // Hide all tab content
+        $('.tab-pane').removeClass('show active');
+        // Show the corresponding tab content based on the clicked tab
+        var targetTab = $(this).attr('href');
+        $(targetTab).addClass('show active');
+        // Redraw the DataTable for the current tab to load the data from the server
+        util.checkrowDef(tabId);
+        if (targetTab === '#brgtetap') {
+            tableBrgTetap.ajax.reload();
+            util.filteringData('Barang Tetap');
+        } else if (targetTab === '#alokasibrg') {
+            tableAlokasiBrg.ajax.reload();
+            util.filteringData('Barang Tetap');
+        } else if (targetTab === '#brgpersediaan') {
+            tableBrgPersediaan.ajax.reload();
+            util.filteringData('Barang Persediaan');
+        }
+    }
+
+    const insertMultiple = (form, event) => {
+        event.preventDefault();
+        let formdata = new FormData(form);
+        formdata.append('jmldata', rowCount);
+        const callback = (response) => {
+            if (response.error) {
+                handleSubmitError(response.error, rowCount);
+            } else {
+                const tables = [tableBrgTetap, tableBrgPersediaan];
+                util.handleSubmitSuccess(response.success, tables);
+            }
+        };
+        const datas = {
+            type: "post",
+            url: `${nav}/insertmultiple`,
+            data: formdata,
+        }
+        crud.submitAjax(datas, callback);
+        return false;
+    }
+
+    const isDuplicate = (idbrg, fieldsToReset, row) => {
+        if (idbrgSet.has(idbrg)) {
+            Swal.fire({
+                icon: 'info',
+                text: 'Nama barang sudah dimasukkan sebelumnya! Sistem akan mengosongkan input barang.',
+            }).then((result) => {
+                fieldsToReset.forEach((val) => {
+                    if (val == "idbrg" || val == "barang_id") {
+                        $(`#${val}${row}`).html('');
+                    }
+                    $(`#${val}${row}`).val("")
+                })
+            });
+        } else {
+            idbrgSet.add(idbrg);
+        }
+    }
+
+    const checkRuangBrg = (data, successCallback) => {
+        $.ajax({
+            type: "post",
+            url: `${nav}/cekbrgdanruang`,
+            data,
+            dataType: "json",
+            success: successCallback
+        });
+    }
+
     return {
+        checkRuangBrg,
+        isDuplicate,
         edit,
+        hapus,
         detail,
         upload,
-        hapus,
+        restore,
+        navLink,
+        listData,
         cetakLabel,
+        selectItem,
+        restoreAll,
         uploadExcel,
+        hapusMultiple,
         hapusPermanen,
         formTambahBaru,
+        insertMultiple,
+        selectCategory,
         formTambahStok,
         transferBarang,
-        listDataBarang,
+        viewTableRestore,
+        hapusPermanenAll,
         downloadLabelImg,
         downloadLabelPdf,
-        handleSubmitError,
         tampilExportExcel,
-        tampilImportExcel
+        tampilImportExcel,
     }
 })();
 

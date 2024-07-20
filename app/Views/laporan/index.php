@@ -20,30 +20,6 @@
 </style>
 <?= $this->endSection() ?>
 <?= $this->section('content') ?>
-<div class="page-heading">
-  <div class="page-title">
-    <div class="row">
-      <div class="col-12 col-md-8 order-md-1 order-last">
-        <h3><?= $title ?> Aset</h3>
-        <p class="text-subtitle text-muted">Sistem Informasi Manajemen Aset Universitas Islam Raden Rahmat Malang</p>
-      </div>
-      <div class="col-12 col-md-4 order-md-2 order-first">
-        <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
-          <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
-            <li class="breadcrumb-item"><a href="dashboard"><i class="fa fa-home"></i></a></li>
-            <?php foreach ($breadcrumb as $crumb) : ?>
-              <?php if (end($breadcrumb) == $crumb) : ?>
-                <li class="breadcrumb-item"><?= $crumb['name'] ?></li>
-              <?php else : ?>
-                <li class="breadcrumb-item active" aria-current="page"><a href="#"><?= $crumb['name'] ?></a></li>
-              <?php endif ?>
-            <?php endforeach ?>
-          </ol>
-        </nav>
-      </div>
-    </div>
-  </div>
-</div>
 <section class="section">
   <div class="card mb-3 bg-dark text-white shadow">
     <div class="card-header bg-dark text-white shadow-sm">
@@ -346,7 +322,7 @@
 
         getCountBarang('getcountbrg', brgtetap, '#brgttp', 'barang-tetap-masuk', bulan, tahun);
         getCountBarang('getcountbrg', brgpersediaan, '#brgsedia', 'barang-persediaan-masuk', bulan, tahun);
-        getCountBrgKeluar('Peminjaman', '#peminjaman', 'peminjaman-barang-tetap', bulan, tahun);
+        getCountBrgKeluar('Peminjaman', '#peminjaman', 'peminjaman-barang', bulan, tahun);
         getCountBrgKeluar('Permintaan', '#permintaan', 'permintaan-barang-persediaan', bulan, tahun);
         refresh_all_chart(bulan, tahun)
 
@@ -356,7 +332,7 @@
 
         getCountBarang('getcountbrg', brgtetap, '#brgttp', 'barang-tetap-masuk', bulan, tahun);
         getCountBarang('getcountbrg', brgpersediaan, '#brgsedia', 'barang-persediaan-masuk', bulan, tahun);
-        getCountBrgKeluar('Peminjaman', '#peminjaman', 'peminjaman-barang-tetap', bulan, tahun);
+        getCountBrgKeluar('Peminjaman', '#peminjaman', 'peminjaman-barang', bulan, tahun);
         getCountBrgKeluar('Permintaan', '#permintaan', 'permintaan-barang-persediaan', bulan, tahun);
         refresh_all_chart(bulan, tahun)
 
@@ -573,7 +549,7 @@
   function getLaporanDefault(brgtetap, brgpersediaan) {
     getCountBarang('getcountbrg', brgtetap, '#brgttp', 'barang-tetap-masuk');
     getCountBarang('getcountbrg', brgpersediaan, '#brgsedia', 'barang-persediaan-masuk');
-    getCountBrgKeluar('Peminjaman', '#peminjaman', 'peminjaman-barang-tetap');
+    getCountBrgKeluar('Peminjaman', '#peminjaman', 'peminjaman-barang');
     getCountBrgKeluar('Permintaan', '#permintaan', 'permintaan-barang-persediaan');
   }
 

@@ -197,7 +197,7 @@ class PermintaanController extends BaseController
     {
         if ($this->request->isAJAX()) {
             $search = $this->request->getGet('search');
-            $level = $this->request->getGet('level');
+            $level = $this->request->getGet('jenis_kat');
             if ($level && !empty($search)) {
                 if ($level == "Mahasiswa") {
                     $dataunit = $this->db->table('unit')
@@ -277,7 +277,7 @@ class PermintaanController extends BaseController
 
         if (!empty($search)) {
             $dataanggota = $this->db->table('anggota a')
-                ->select('a.id,a.nama_anggota, a.no_anggota, u.singkatan')
+                ->select('a.id,a.nama_anggota, a.no_anggota, a.level, u.singkatan')
                 ->join('unit u', 'u.id=a.unit_id')
                 ->where('u.deleted_at is null')
                 ->where('a.deleted_at is null')
@@ -291,6 +291,7 @@ class PermintaanController extends BaseController
             foreach ($dataanggota->getResultArray() as $row) {
                 $list[$key]['id'] = $row['id'];
                 $list[$key]['text'] = $row['nama_anggota'];
+                $list[$key]['level'] = $row['level'];
                 $list[$key]['no'] = $row['no_anggota'];
                 $list[$key]['unit'] = $row['singkatan'];
 

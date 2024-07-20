@@ -25,9 +25,6 @@
               <div class="col-md-6">
                 <label class="form-label" for="katid">Nama Kategori</label>
                 <div class="input-group mb-3">
-                  <span class="input-group-text">
-                    <i class="bi bi-layers"></i>
-                  </span>
                   <select name="kat_id" class="form-select p-2" id="katid"></select>
                   <div class="invalid-feedback errkatid"></div>
                 </div>
@@ -77,7 +74,6 @@
               <div class="col-md-4">
                 <label for="warna" class="form-label">Warna</label>
                 <div class="input-group mb-3">
-                  <span class="input-group-text"><i class="bi bi-palette"></i></span>
                   <select class="form-select" id="warna" name="warna"></select>
                   <div class="invalid-feedback errwarna">
                   </div>
@@ -92,12 +88,11 @@
             <div class="row mb-1">
               <div class="input-group mb-3">
                 <span class="input-group-text"><i class="bi bi-card-text"></i></span>
-                <input type="text" class="form-control" placeholder="Masukkan Nama Barang" id="namabarang" name="nama_brg" readonly>
+                <input type="text" class="form-control" placeholder="Masukkan Nama Barang" id="namabarang" name="nama_brg">
                 <div class="invalid-feedback errnamabarang"></div>
               </div>
             </div>
           </div>
-
           <div class="col-lg-12">
             <div class="row g-2 mb-1">
               <div class="col-md-5 mb-3 asalbrg">
@@ -190,7 +185,7 @@
                 <label for="hargajual" class="form-label">Harga jual/satuan</label>
                 <div class="input-group mb-3">
                   <span class="input-group-text" id="basic-addon1">Rp</span>
-                  <input type="number" <?= $title == "Barang Persediaan" ? 'step="50" min="100"' : 'step="500" min="5000"' ?> class="form-control" placeholder="Masukkan Harga Jual" id="hargajual" name="harga_jual">
+                  <input type="number" <?= $title == "Barang Persediaan" ? 'step="50" min="0"' : 'step="500" min="0"' ?> class="form-control" placeholder="Masukkan Harga Jual" id="hargajual" name="harga_jual">
                   <div class="invalid-feedback errhargajual"></div>
                 </div>
               </div>
@@ -274,36 +269,7 @@
       }
     });
 
-    $('#katid').select2({
-      placeholder: 'Piih Nama Kategori <?= $title; ?>',
-      minimumInputLength: 1,
-      allowClear: true,
-      width: "80%",
-      // initSelection: function(element, callback) {
-      //   callback({
-      //     id: '',
-      //     text: ''
-      //   });
-      // },
-      ajax: {
-        url: `<?= $nav ?>/pilihkategori`,
-        dataType: 'json',
-        delay: 250,
-        data: function(params) {
-          return {
-            search: params.term,
-            jenis_kat: '<?= $title; ?>',
-          }
-        },
-        processResults: function(data, page) {
-          return {
-            results: data
-          };
-        },
-        cache: true
-      },
-      templateResult: formatResult,
-    });
+    selectOption.category("katid");
 
     $('#katid').on('change', function(e) {
       e.preventDefault();
@@ -312,12 +278,11 @@
         $('#kodebrg').val('');
         clearForm();
       } else {
-        getsubkdotherbarang(katid);
-        getsubkdbarang(katid);
+        kodebrg.getSubKdOtherBrg(katid);
+        kodebrg.getSubKodeBrg(katid);
       }
-      $('#katid').removeClass('is-invalid');
-      $('.errkdkatid').html('');
-      hideskbrgother()
+      util.rmIsInvalid("katid");
+      $('#skbarang-other').hide();
     })
 
     $(document).on('change', `#katid, #merk, #warna, #tipe`, function(e) {
@@ -345,7 +310,7 @@
       e.preventDefault();
       if ($(this).val() == '') {
         clearformwithtrigger();
-        hideskbrgother();
+        $('#skbarang-other').hide();
         $('#kodebrg').val('');
       } else if ($('#skbarang').val() == 'otherbrg') {
         clearformwithtrigger();
@@ -358,30 +323,7 @@
       $('#kodebrg').removeClass('is-invalid');
       $('.errkodebrg').html('');
     })
-
-    $(`#warna`).select2({
-      placeholder: 'Piih Warna',
-      minimumInputLength: 1,
-      allowClear: true,
-      width: "70%",
-      ajax: {
-        url: `<?= $nav ?>/pilihwarna`,
-        dataType: 'json',
-        delay: 250,
-        data: function(params) {
-          return {
-            search: params.term,
-          }
-        },
-        processResults: function(data, page) {
-          return {
-            results: data
-          };
-        },
-        cache: true
-      },
-      templateResult: formatResult2,
-    });
+    selectOption.warna("warna");
 
     $('input[type="radio"]').click(function() {
       if ($(this).attr('id') == 'belibaru') {
@@ -423,51 +365,9 @@
       $(".asalbrg .form-check-input").removeClass("is-invalid");
       $(".errasalbrg").html('');
     });
-
-    $('#namabarang').on('input', function(e) {
-      e.preventDefault();
-      $('#namabarang').removeClass('is-invalid');
-      $('.errornamabarang').html('');
-    })
-    $('#merk').on('input', function(e) {
-      e.preventDefault();
-      $('#merk').removeClass('is-invalid');
-      $('.errormerk').html('');
-    })
-    $('#hargabeli').on('input', function(e) {
-      e.preventDefault();
-      $('#hargabeli').removeClass('is-invalid');
-      $('.errorhargabeli').html('');
-    })
-    $('#hargajual').on('input', function(e) {
-      e.preventDefault();
-      $('#hargajual').removeClass('is-invalid');
-      $('.errorhargajual').html('');
-    })
-
-    $('#satuan').select2({
-      placeholder: 'Piih Satuan',
-      minimumInputLength: 1,
-      allowClear: true,
-      width: "100%",
-      ajax: {
-        url: "<?= $nav ?>/pilihsatuan",
-        dataType: 'json',
-        delay: 250,
-        data: function(params) {
-          return {
-            search: params.term,
-          }
-        },
-        processResults: function(data, page) {
-          return {
-            results: data
-          };
-        },
-        cache: true
-      },
-      templateResult: formatResult,
-    });
+    const inputId = ["namabarang","merk","hargabeli","satuan","jmlmasuk"];
+    util.initializeValidationHandlers(inputId);
+    selectOption.satuan("satuan");
 
     $('#lokasi').on('change', function(e) {
       e.preventDefault();
@@ -579,12 +479,12 @@
 
       var kode_brg_split = kode_brg.split(kd_kategori + "."); // split kode_brg berdasarkan kd_kategori
       var last_kode_brg = kode_brg_split[kode_brg_split.length - 1]; // ambil array index terakhir
-      var last_3_digit = last_kode_brg.substring(last_kode_brg.length - 3); // ambil 3 angka paling belakang
+      var last_4_digit = last_kode_brg.substring(last_kode_brg.length - 4); // ambil 4 angka paling belakang
 
-      getsubkdotherbarang(kat_id);
-      getsubkdbarang(kat_id, last_3_digit);
+      kodebrg.getSubKdOtherBrg(kat_id);
+      kodebrg.getSubKodeBrg(kat_id, '', last_4_digit);
       $('#kodebrg').val(kode_brg);
-      hideskbrgother()
+      $('#skbarang-other').hide();
     }
 
     $('#formEditBarang').find("input[name='nama_brg']").val(nama_brg)
@@ -640,10 +540,6 @@
     $('#formEditBarang').find("select[name*='satuan_id']").html('<option value = "' + satuan_id + '" selected >' + kd_satuan + '</option>');
   }
 
-  function hideskbrgother() {
-    $('#skbarang-other').hide();
-  }
-
   function clearForm() {
     $('#tampilformeditbarang').find("#warna").val('');
     $('#tampilformeditbarang').find("input").val("")
@@ -652,72 +548,13 @@
     $('.hibah').hide();
     $('.belibaru').hide();
     $('.radiobelibekas').hide();
-    hideskbrgother()
-  }
+    $('#skbarang-other').hide();
 
-  function clear_is_invalid() {
-    if ($('#tampilformeditbarang').find('input').hasClass('is-invalid') || $('#tampilformeditbarang').find('select').hasClass('is-invalid')) {
-      $('#tampilformeditbarang').find('input').removeClass('is-invalid');
-      $('#tampilformeditbarang').find('select').removeClass('is-invalid');
-    }
   }
 
   function defaultform() {
     $('#tampilformeditbarang').find('.card-title').html('Tambah <?= $title; ?>');
     $('#tampilformeditbarang').find("button[type='submit']").html('Simpan');
-  }
-
-  function getsubkdbarang(idkategori, kode1) {
-    $.ajax({
-      url: "<?= $nav . '/getsubkdbarang' ?>",
-      type: "POST",
-      data: {
-        katid: idkategori,
-      },
-      dataType: "json",
-      success: function(response) {
-        $('#skbarang').empty();
-        $('#skbarang').append('<option value="">Sub-Kode Barang</option>');
-        if (response.subkdbarang == undefined) {
-          $('#subkdkategori').val(response[0].kd_kategori);
-        }
-        if (response[0].subkdbarang !== undefined) {
-          $('#subkdkategori').val(response[0].kd_kategori);
-          $.each(response, function(key, value) {
-            $('#skbarang').append('<option value="' + value.subkdbarang + '">' + value.subkdbarang + '</option>');
-          });
-        }
-
-        $('#skbarang').append('<option value="otherbrg">Lainnya</option>');
-        if (kode1 !== undefined) {
-          $('#skbarang').attr('disabled', 'disabled');
-          $("#skbarang option").each(function() {
-            if ($(this).val() === kode1) {
-              $(this).attr("selected", "selected");
-            }
-          });
-        }
-      },
-      error: function(xhr, ajaxOptions, thrownError) {
-        alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
-      }
-    })
-  }
-
-  function getsubkdotherbarang(idkategori) {
-    if (idkategori !== null) {
-      $.ajax({
-        type: "get",
-        url: "<?= $nav ?>/getkdbrgbykdkat",
-        data: {
-          katid: idkategori,
-        },
-        dataType: "json",
-        success: function(response) {
-          kdbrgother = response.subkdbrgother;
-        }
-      });
-    }
   }
 
   function clearformwithtrigger() {

@@ -39,19 +39,10 @@ class BarangController extends BaseController
 
     public function index()
     {
-        $segments = $this->uri->getSegments();
-        $breadcrumb = [];
-        $link = '';
-
-        foreach ($segments as $segment) {
-            $link .= '/' . $segment;
-            $name = ucwords(str_replace('-', ' ', $segment));
-            $breadcrumb[] = ['name' => $name, 'link' => $link];
-        }
-        
-        $tabId = ['brgtetap','alokasibrg','brgpersediaan'];
-        $tabName = ['Barang Tetap','Pengalokasian Barang Tetap','Barang Persediaan'];
-        $checkall = ['checkall1','checkall2','checkall3'];
+        $breadcrumb = $this->getBreadcrumb();
+        $tabId = ['brgtetap', 'alokasibrg', 'brgpersediaan'];
+        $tabName = ['Barang Tetap', 'Pengalokasian Barang Tetap', 'Barang Persediaan'];
+        $checkall = ['checkall1', 'checkall2', 'checkall3'];
 
         $data = [
             'title' => 'Barang',
@@ -123,7 +114,7 @@ class BarangController extends BaseController
                         Action
                     </button>
                     <ul class="dropdown-menu shadow-lg">
-                        <li><a class="dropdown-item" onclick="restore(' . $row->id . ',' . $row->ruang_id . ',' . $row->barang_id . ',  \'' . htmlspecialchars($row->nama_brg) . '\', \'' . htmlspecialchars($row->nama_ruang) . '\')"><i class="fa fa-undo"></i> Pulihkan</a>
+                        <li><a class="dropdown-item" onclick="barang.restore(' . $row->id . ', ' . $row->ruang_id . ',' . $row->barang_id . ',  \'' . htmlspecialchars($row->nama_brg) . '\', \'' . htmlspecialchars($row->nama_ruang) . '\')"><i class="fa fa-undo"></i> Pulihkan</a>
                         </li>
                         <li><a class="dropdown-item" onclick="barang.hapusPermanen(' . $row->id . ',' . $row->ruang_id . ',' . $row->barang_id . ', \'' . htmlspecialchars($row->nama_brg) . '\', \'' . htmlspecialchars($row->nama_ruang) . '\')"><i class="fa fa-trash-o"></i> Hapus Permanen</a>
                         </li>
@@ -149,7 +140,7 @@ class BarangController extends BaseController
                             </li>';
                         }
 
-                        $action .= '<li><a class="dropdown-item" onclick="barang.hapus(' . $row->id . ',' . $row->ruang_id . ',' . $row->barang_id . ', \'' . htmlspecialchars($row->nama_brg) . '\', \'' . htmlspecialchars($row->nama_ruang) . '\')"><i class="fa fa-trash-o"></i> Hapus Barang</a>
+                        $action .= '<li><a class="dropdown-item" onclick="barang.hapus(' . $row->id . ', \'' . $jenis . '\',\'' . htmlspecialchars($row->nama_brg) . '\', \'' . htmlspecialchars($row->nama_ruang) . '\')"><i class="fa fa-trash-o"></i> Hapus Barang</a>
                         </li>
                     </ul>
                 </div>';
@@ -264,7 +255,8 @@ class BarangController extends BaseController
         }
     }
 
-    public function tampilimportexcel(){
+    public function tampilimportexcel()
+    {
         if ($this->request->isAJAX()) {
             $nav = $this->request->getVar('nav');
             $title = $this->request->getVar('title');
@@ -284,13 +276,14 @@ class BarangController extends BaseController
         }
     }
 
-    public function templateinputbarang(){
+    public function templateinputbarang()
+    {
         $jenis_kat = $this->request->getPost('jenis_kat');
         $katid = $this->request->getPost('kat_id');
         $kategori = $this->kategori->select('id, kd_kategori, nama_kategori')->whereIn('id', $katid)->findAll();
         $units = [];
         foreach ($kategori as $item) {
-            if($jenis_kat === "Barang Tetap"){
+            if ($jenis_kat === "Barang Tetap") {
                 if (strpos(strtolower($item['nama_kategori']), 'meja') !== false || strpos(strtolower($item['nama_kategori']), 'kursi') !== false) {
                     $item['satuan'] = 'buah';
                 } else {
@@ -337,7 +330,7 @@ class BarangController extends BaseController
             'O1' => 'Jumlah masuk',
             'P1' => 'Unit satuan'
         ];
-        
+
         foreach ($headers as $cell => $value) {
             $sheet->setCellValue($cell, $value);
         }
@@ -363,7 +356,7 @@ class BarangController extends BaseController
                 ],
             ],
         ];
-        
+
         $sheet->getStyle('A1:P1')->applyFromArray($headerStyle);
 
         // Rentang sel dari A2 hingga A6
@@ -396,7 +389,8 @@ class BarangController extends BaseController
         exit();
     }
 
-    public function simpandataexcel(){
+    public function simpandataexcel()
+    {
         if ($this->request->isAJAX()) {
             $validation = \Config\Services::validation();
 
@@ -418,7 +412,7 @@ class BarangController extends BaseController
                         'file' => $validation->getError('file'),
                     ]
                 ];
-            } else {  
+            } else {
                 $file = $this->request->getFile('file');
                 // Mengambil nama worksheet pertama
                 $path = FCPATH . '/assets/file/data_barang/';
@@ -433,8 +427,8 @@ class BarangController extends BaseController
                     $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xls();
                 }
 
-                $spreadsheet 	= $reader->load($file_name);
-		        $sheet_data 	= $spreadsheet->getActiveSheet()->toArray();
+                $spreadsheet     = $reader->load($file_name);
+                $sheet_data     = $spreadsheet->getActiveSheet()->toArray();
                 $worksheetNames = $spreadsheet->getSheetNames();
                 $jenis_kat = $worksheetNames[0];
                 $sheetcount = count($sheet_data);
@@ -443,11 +437,11 @@ class BarangController extends BaseController
                     $this->db->transStart();
                     for ($i = 1; $i < $sheetcount; $i++) {
                         $katid = $sheet_data[$i][0];
-                        if($katid){
+                        $namaKategori = $sheet_data[$i][2];
+                        if ($katid && $namaKategori) {
                             $getNewkdbrg = $this->queryGetkdbrgbykdkat($katid);
                             $kdKategori = $sheet_data[$i][1];
                             $subKdBarang = $getNewkdbrg["subkdbrgother"];
-                            $namaKategori = $sheet_data[$i][2];
                             $merk = $sheet_data[$i][3];
                             $warna = $sheet_data[$i][4];
                             $tipe = $sheet_data[$i][5];
@@ -476,10 +470,10 @@ class BarangController extends BaseController
                             ];
                             // Panggil fungsi setInsertData dari model sebelum data disimpan
                             $insertbrg = $this->barang->setInsertData($simpanbarang);
-                            
+
                             // Simpan data ke database
                             $this->barang->save($insertbrg);
-                            
+
                             $barang_id = $this->barang->insertID();
                             // Simpan ke dalam tabel riwayat_barang
                             $data_riwayat1['barang_id'] = $barang_id;
@@ -488,7 +482,7 @@ class BarangController extends BaseController
                             $data_riwayat1['new_value'] = json_encode($insertbrg);
                             $setdatariwayat1 = $this->riwayatbarang->setInsertData($data_riwayat1);
                             $this->riwayatbarang->save($setdatariwayat1);
-                            
+
                             $jml_masuk = $sheet_data[$i][14];
                             // Insert stok barang
                             $simpanstok = [
@@ -517,7 +511,7 @@ class BarangController extends BaseController
                         }
                     }
                 }
-                
+
                 $this->db->transComplete();
                 if ($this->db->transStatus() === false) {
                     // Jika terjadi kesalahan pada transaction
@@ -727,7 +721,7 @@ class BarangController extends BaseController
             } else {
                 $datalokasi = $this->db->table('ruang')->where('deleted_at', null)->orderBy('nama_ruang', 'ASC')->get();
             }
-            
+
             if ($datalokasi->getNumRows() > 0) {
                 $list = [];
                 $key = 0;
@@ -965,9 +959,10 @@ class BarangController extends BaseController
             $barang_id = $this->request->getVar('barang_id');
             $ruang_id = $this->request->getVar('ruang_id');
 
-            $stokbarang = $this->db->table('stok_barang sb')->select('sb.id, sb.sisa_stok, sb.tgl_beli, b.nama_brg,r.nama_ruang, b.satuan_id')
+            $stokbarang = $this->db->table('stok_barang sb')->select('sb.id, sb.sisa_stok, sb.tgl_beli, b.nama_brg,r.nama_ruang, b.satuan_id, s.kd_satuan')
                 ->join('ruang r', 'r.id = sb.ruang_id')
                 ->join('barang b', 'b.id = sb.barang_id')
+                ->join('satuan s', 's.id = b.satuan_id')
                 ->where('sb.barang_id', $barang_id)
                 ->where('sb.ruang_id', $ruang_id)
                 ->get()->getRow();
@@ -1006,14 +1001,15 @@ class BarangController extends BaseController
         }
     }
 
-    public function queryGetkdbrgbykdkat($id){
+    public function queryGetkdbrgbykdkat($id)
+    {
         $getkdbarang = $this->db->table('barang b')
-                    ->select('SUBSTR(b.kode_brg, -4) AS subkdbarang, k.kd_kategori')
-                    ->join('kategori k', 'b.kat_id = k.id')
-                    ->where('b.kat_id', $id)
-                    ->orderBy('b.id', 'DESC')
-                    ->get()
-                    ->getRow();
+            ->select('SUBSTR(b.kode_brg, -4) AS subkdbarang, k.kd_kategori')
+            ->join('kategori k', 'b.kat_id = k.id')
+            ->where('b.kat_id', $id)
+            ->orderBy('b.id', 'DESC')
+            ->get()
+            ->getRow();
         if (empty($getkdbarang)) {
             $kd_kat = $this->kategori->find($id);
 
@@ -1217,7 +1213,7 @@ class BarangController extends BaseController
                     $msg = ['error' => 'Gagal menyimpan data stok barang'];
                 } else {
                     // Jika berhasil disimpan
-                    $msg = ['sukses' => "Sukses $jmldata data stok barang berhasil di update"];
+                    $msg = ['success' => "Sukses $jmldata data stok barang berhasil di update"];
                 }
             }
             echo json_encode($msg);
@@ -1401,7 +1397,7 @@ class BarangController extends BaseController
                         ];
                     } else {
                         // Jika berhasil disimpan
-                        $msg = ['sukses' => "Sukses $jmldata data stok barang berhasil di pindahkan dari ruangan sebelumnya"];
+                        $msg = ['success' => "Sukses $jmldata data stok barang berhasil di pindahkan dari ruangan sebelumnya"];
                     }
                 }
             }
@@ -1540,13 +1536,13 @@ class BarangController extends BaseController
 
                 //update stok barang
                 $stokbrglama = $this->db->table('stok_barang sb')
-                                    ->select('sb.*, b.nama_brg, r.nama_ruang')
-                                    ->join('barang b', 'b.id = sb.barang_id')
-                                    ->join('ruang r', 'r.id=sb.ruang_id')
-                                    ->where('sb.barang_id', $id)
-                                    ->where('sb.ruang_id', $ruang_id)
-                                    ->get()
-                                    ->getRowArray();
+                    ->select('sb.*, b.nama_brg, r.nama_ruang')
+                    ->join('barang b', 'b.id = sb.barang_id')
+                    ->join('ruang r', 'r.id=sb.ruang_id')
+                    ->where('sb.barang_id', $id)
+                    ->where('sb.ruang_id', $ruang_id)
+                    ->get()
+                    ->getRowArray();
                 $sb_id = $stokbrglama['id'];
                 $nama_ruang = $stokbrglama['nama_ruang'];
                 $barang_id = $id;
@@ -1582,7 +1578,7 @@ class BarangController extends BaseController
 
                 $this->riwayattrx->inserthistori($sb_id, $stokbrglama, $updatestok, $jenistrx, $lastQuery, $field_update);
 
-                $msg = ['sukses' => "Data barang: $namabrg di $nama_ruang berhasil terupdate"];
+                $msg = ['success' => "Data barang: $namabrg di $nama_ruang berhasil terupdate"];
             }
             echo json_encode($msg);
         } else {
@@ -1661,7 +1657,7 @@ class BarangController extends BaseController
                 $this->riwayatbarang->inserthistori($id, $cekdata, $updatefoto, $lastQuery, $field_update);
 
                 $msg = [
-                    'sukses' => 'File foto berhasil diupload'
+                    'success' => 'File foto berhasil diupload'
                 ];
             }
 
@@ -1707,51 +1703,16 @@ class BarangController extends BaseController
         $this->stokbarang->setSoftDelete($id);
     }
 
-    public function hapusdata($id)
-    {
-        if ($this->request->isAJAX()) {
-            $nama_brg = $this->request->getVar('nama_brg');
-            $ruang_id = $this->request->getVar('ruang_id');
-            $barang_id = $this->request->getVar('barang_id');
-
-            $idsarpras = 54;
-            if ($ruang_id == $idsarpras) {
-                $stokbrgall = $this->stokbarang->select('*')
-                    ->where('barang_id', $barang_id)
-                    ->where('deleted_at IS NULL')->get()->getResultArray();
-                foreach ($stokbrgall as $row) {
-                    if (intval($row['ruang_id']) !== $idsarpras) {
-                        $this->hapusTemporaryRuangLain($row['id'], $barang_id, $idsarpras);
-                    } else {
-                        $this->stokbarang->setSoftDelete($row['id']);
-                    }
-                }
-                $this->barang->setSoftDelete($barang_id);
-                $msg = count($stokbrgall) > 1 ? ['sukses' => "Data stok barang : $nama_brg sejumlah " . count($stokbrgall) . " data di ruang sarpras beserta ruangan yang lain berhasil dihapus"] : [
-                    'sukses' => "Data stok barang : $nama_brg berhasil dihapus"
-                ];
-            } else {
-                $this->hapusTemporaryRuangLain($id, $barang_id, $idsarpras);
-                $msg = [
-                    'sukses' => "Data barang : $nama_brg berhasil dihapus dan dikembalikan ke Sarana dan Prasarana",
-                ];
-            }
-            echo json_encode($msg);
-        } else {
-            $data = $this->errorPage404();
-            return view('errors/mazer/error-404', $data);
-        }
-    }
-
-    public function multipledeletetemporary()
+    public function deletetemporary($id = [])
     {
         if (!$this->request->isAJAX()) {
             $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
-
-        $id = $this->request->getVar('id');
-        $jenis_kat = $this->request->getVar('jenis_kat');
+        $inputData = json_decode($this->request->getBody(), true);
+        $ids = $inputData ? $inputData["id"] : $this->request->getVar('id');
+        $id = $inputData ? explode(",", $ids) : $ids;
+        $jenis_kat = $inputData ? $inputData["jenis_kat"] : $this->request->getVar('jenis_kat');
         $jmldata = count($id);
         $idsarpras = 54;
         $this->db->transStart();
@@ -1780,16 +1741,13 @@ class BarangController extends BaseController
         if ($this->db->transStatus() === false) {
             // Jika terjadi kesalahan pada transaction
             $msg = [
-                'error' =>
-                [
-                    'transStatus' => 'Gagal menyimpan data stok barang',
-                ]
+                'error' => ['transStatus' => 'Gagal menyimpan data stok barang',]
             ];
         } else {
-            $p1 = ($jenis_kat == "Alokasi Barang Tetap") ? ' dan dikembalikan ke Sarana dan Prasarana' : '';
             // Jika berhasil disimpan
+            $p1 = ($jenis_kat == "Alokasi Barang Tetap") ? ' dan dikembalikan ke Sarana dan Prasarana' : '';
             $msg = [
-                'sukses' => "$jmldata data $jenis_kat berhasil dihapus secara temporary$p1",
+                'success' => "$jmldata data " . strtolower($jenis_kat) . " berhasil dihapus secara temporary$p1",
             ];
         }
 
@@ -1875,30 +1833,29 @@ class BarangController extends BaseController
         $this->db->transComplete();
 
         if ($this->db->transStatus() === false) {
-            // Jika terjadi kesalahan pada transaction
             $msg = ['error' => 'Gagal memulihkan data stok barang'];
         } else {
             // Jika berhasil disimpan
-            $msg = count($id) > 1 ? ['sukses' => "Sukses " . count($id) . " data stok barang berhasil dipulihkan"] : ['sukses' => "Sukses memulihkan data stok barang $nama_brg di $nama_ruang"];
+            $msg = ['success' => "Sukses memulihkan data stok barang."];
         }
 
         return json_encode($msg);
     }
 
-    public function hapuspermanen($id=[])
+    public function hapuspermanen($id = [])
     {
         if ($this->request->isAJAX()) {
-            $ids = $this->request->getVar('id');
+            $inputData = json_decode($this->request->getBody(), true);
+            $ids = $inputData ? $inputData["id"] : $this->request->getVar('id');
             $nama_brg = $this->request->getVar('nama_brg');
             $nama_ruang = $this->request->getVar('nama_ruang');
-            $idruang = $this->request->getVar('ruangId');
+            $idruang = $inputData ? $inputData["ruangId"] : $this->request->getVar('ruangId');
             $idsarpras = 54;
-            $idbrg = $this->request->getVar('barangId');
+            $idbrg = $inputData ? $inputData["barangId"] :  $this->request->getVar('barangId');
             $id = explode(",", $ids);
             $barang_id = explode(",", $idbrg);
             $ruang_id = explode(",", $idruang);
 
-            // $this->db->transStart();
             try {
                 $this->db->transException(true)->transStart();
                 foreach ($id as $key => $stokId) {
@@ -1920,7 +1877,7 @@ class BarangController extends BaseController
                 }
 
                 $this->db->transComplete();
-                $msg = count($id) > 1 ? ['sukses' => "Sukses " . count($id) . " data stok barang berhasil dihapus secara permanen"] : ['sukses' => "Sukses menghapus secara permanen data stok barang $nama_brg di $nama_ruang"];
+                $msg = count($id) > 1 ? ['success' => "Sukses " . count($id) . " data stok barang berhasil dihapus secara permanen"] : ['success' => "Sukses menghapus secara permanen data stok barang $nama_brg di $nama_ruang"];
             } catch (\CodeIgniter\Database\Exceptions\DatabaseException $e) {
                 // Automatically rolled back already.
                 $msg = ['error' => "Terjadi kesalahan saat menghapus data stok barang. Pastikan tidak ada ketergantungan data sebelum menghapus"];
@@ -2162,7 +2119,6 @@ class BarangController extends BaseController
                 'stoklama' => json_encode($stoklama),
                 'title' => $title,
                 'jmldata' => $jmldata,
-                // 'nav' => $nav,
             ];
 
             $msg = [
@@ -2231,6 +2187,9 @@ class BarangController extends BaseController
             'notification' => $output,
             'unseen_notification' => count($result),
         ];
+
+        $pusher = $this->handleNotification();
+        $pusher->trigger('notifications-channel', 'supplyItems-event', $data);
 
         echo json_encode($data);
     }

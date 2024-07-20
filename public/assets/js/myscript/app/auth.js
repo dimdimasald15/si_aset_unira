@@ -26,7 +26,7 @@ export const auth = (() => {
             },
             complete: function () {
                 $('.btnlogin').removeAttr('disable');
-                $('.btnlogin').html('Simpan');
+                $('.btnlogin').html('Login');
             },
             success: function (response) {
                 const fields = ['email', 'password'];

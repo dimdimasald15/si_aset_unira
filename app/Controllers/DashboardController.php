@@ -56,7 +56,6 @@ class DashboardController extends BaseController
         $data = [
             'title' => 'Dashboard',
             'nav' => 'dashboard',
-            // 'jenis_kat' => 'Barang Tetap',
             'breadcrumb' => $breadcrumb
         ];
 

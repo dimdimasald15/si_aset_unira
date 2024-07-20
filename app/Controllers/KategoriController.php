@@ -8,31 +8,25 @@ use App\Controllers\BaseController;
 
 class KategoriController extends BaseController
 {
-    protected $kategori;
-    protected $uri;
+    protected $kategori, $uri, $title;
     public function __construct()
     {
         $this->kategori = new Kategori();
         $this->uri = service('uri');
+        $this->title = "Kategori";
     }
     public function index()
     {
-        $segments = $this->uri->getSegments();
-        $breadcrumb = [];
-        $link = '';
-
-        foreach ($segments as $segment) {
-            $link .= '/' . $segment;
-            $name = ucwords(str_replace('-', ' ', $segment));
-            $breadcrumb[] = ['name' => $name, 'link' => $link];
-        }
-
+        $breadcrumb = $this->getBreadcrumb();
+        $tabId = ['ktetap', 'kpersediaan'];
+        $categoryName = ['Barang Tetap', 'Barang Persediaan'];
         $data = [
             'nav' => 'kategori',
-            'title' => 'Kategori',
-            'breadcrumb' => $breadcrumb
+            'title' => $this->title,
+            'breadcrumb' => $breadcrumb,
+            'tabId' => $tabId,
+            'categoryName' => $categoryName,
         ];
-
         return view('kategori/index', $data);
     }
 
@@ -64,16 +58,26 @@ class KategoriController extends BaseController
                         Action
                     </button>
                     <ul class="dropdown-menu shadow-lg">
-                        <li><a class="dropdown-item" onclick="restore(' . $row->id . ', \'' . htmlspecialchars($row->nama_kategori) . '\')"><i class="fa fa-undo"></i> Pulihkan</a>
+                        <li><a class="dropdown-item" onclick="kategori.restore(' . $row->id . ', \'' . htmlspecialchars($row->nama_kategori) . '\')"><i class="fa fa-undo"></i> Pulihkan</a>
                         </li>
-                        <li><a class="dropdown-item" onclick="hapuspermanen(' . $row->id . ', \'' . htmlspecialchars($row->nama_kategori) . '\')"><i class="fa fa-trash-o"></i> Hapus Permanen</a>
+                        <li><a class="dropdown-item" onclick="kategori.hapusPermanen(' . $row->id . ', \'' . htmlspecialchars($row->nama_kategori) . '\')"><i class="fa fa-trash-o"></i> Hapus Permanen</a>
                         </li>
                     </ul>
                     </div>
                     ';
                     } else {
-                        return '<button type="button" class="btn btn-warning btn-sm btn-editgedung" onclick="tampilform(\'' . "update" . '\',\'' . $jenis . '\',' . $row->id . ')"> <i class="fa fa-pencil-square-o"></i></button>
-                    <button type="button" class="btn btn-danger btn-sm" onclick="hapus(' . $row->id . ', \'' . htmlspecialchars($row->nama_kategori) . '\')"><i class="fa fa-trash-o"></i></button>';
+                        return '
+                        <div class="btn-group mb-1">
+                    <button type="button" class="btn btn-success btn-sm dropdown-toggle me-1" data-bs-toggle="dropdown" aria-expanded="false">
+                        Action
+                    </button>
+                    <ul class="dropdown-menu shadow-lg">
+                        <li><a class="dropdown-item" onclick="kategori.getForm(\'' . "update" . '\',\'' . $jenis . '\',' . $row->id . ')"> <i class="fa fa-pencil-square-o"></i> Edit</a>
+                        </li>
+                        <li><a class="dropdown-item" onclick="kategori.hapus(' . $row->id . ', \'' . htmlspecialchars($row->nama_kategori) . '\')"><i class="fa fa-trash-o"></i> Hapus</a>
+                        </li>
+                    </ul>
+                    </div>';
                     }
                 })
                 ->toJson(true);
@@ -83,64 +87,62 @@ class KategoriController extends BaseController
         }
     }
 
-    public function tampilformtambah()
+    public function tampilform()
     {
         if (!$this->request->isAJAX()) {
             exit("Maaf tidak dapat diproses");
         }
-
-        $title = $this->request->getVar('title');
-        $nav = $this->request->getVar('nav');
         $jenis = $this->request->getVar('jenis');
         $saveMethod = $this->request->getVar('saveMethod');
-        $globalId = $this->request->getVar('globalId');
-
+        $id = $this->request->getVar('id');
+        $kategori = '';
+        if ($id) {
+            $kategori = $this->getkategoribyid($id);
+        }
         $data = [
-            'title' => $title,
-            'nav' => $nav,
+            'title' => $this->title,
             'jenis' => $jenis,
             'saveMethod' => $saveMethod,
-            'globalId' => $globalId,
+            'id' => $id,
+            'kategori' => $kategori,
         ];
-
         $msg = [
-            'data' => view('kategori/cardform', $data),
+            'data' => view('kategori/form', $data),
         ];
 
         echo json_encode($msg);
     }
 
-    public function restoredata($id = null)
+    public function getkategoribyid($id)
+    {
+        $row = $this->kategori->find($id);
+        return json_encode($row);
+    }
+
+    public function restoredata($id = [])
     {
         if ($this->request->isAJAX()) {
+            $ids = $this->request->getVar('id');
+            $nama_kategori = $this->request->getVar('nama_kategori');
+            $id = explode(",", $ids);
             $restoredata = [
                 'deleted_by' => null,
                 'deleted_at' => null,
             ];
 
-            if ($id != null) {
-                $nama_kategori = $this->request->getVar('nama_kategori');
-                $this->kategori->update($id, $restoredata);
-
-                $msg = [
-                    'sukses' => "Data kategori: " . $nama_kategori . '  berhasil dipulihkan',
-                ];
-            } else {
-                $this->db->table('kategori')
-                    ->set($restoredata)
-                    ->where('deleted_at is NOT NULL', NULL, FALSE)
-                    ->update();
-                $jmldata = $this->db->affectedRows();
-
-                if ($jmldata > 0) {
-                    $msg = [
-                        'sukses' => "$jmldata data kategori berhasil dipulihkan semuanya",
-                    ];
-                } else {
-                    $msg = [
-                        'error' => 'Tidak ada data kategori tetap yang bisa dipulihkan'
-                    ];
+            $this->db->transStart();
+            foreach ($id as $key => $kategoriId) {
+                $kategori = $this->db->table('kategori')->select('*')->where('id', $kategoriId)->get()->getRowArray();
+                if ($kategori['deleted_at'] !== NULL) {
+                    $this->kategori->update($kategoriId, $restoredata);
                 }
+            }
+            $this->db->transComplete();
+
+            if ($this->db->transStatus() === false) {
+                $msg = ['error' => 'Gagal memulihkan data kategori'];
+            } else {
+                $msg = ['success' => "Sukses memulihkan data kategori."];
             }
 
             return json_encode($msg);
@@ -156,13 +158,13 @@ class KategoriController extends BaseController
                 $this->kategori->delete($id, true);
 
                 $msg = [
-                    'sukses' => "Data kategori: $nama_kategori berhasil dihapus secara permanen",
+                    'success' => "Data kategori: $nama_kategori berhasil dihapus secara permanen",
                 ];
             } else {
                 $this->kategori->purgeDeleted();
                 $jmlhapus = $this->kategori->db->affectedRows();
                 $msg = [
-                    'sukses' => "$jmlhapus data kategori berhasil dihapus secara permanen",
+                    'success' => "$jmlhapus data kategori berhasil dihapus secara permanen",
                 ];
             }
 
@@ -279,7 +281,12 @@ class KategoriController extends BaseController
                 ->where('jenis', $jenis)
                 ->get();
             $result = $query->getRow();
-            echo json_encode($result);
+            $kategori = [
+                "kd_kategori" => $result->kd_kategori,
+                "nama_kategori" => $result->nama_kategori,
+                "deskripsi" => $result->deskripsi,
+            ];
+            echo json_encode($kategori);
         } else {
             $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
@@ -288,16 +295,26 @@ class KategoriController extends BaseController
 
     public function simpandata()
     {
-        if ($this->request->isAJAX()) {
-            $validation =  \Config\Services::validation();
+        return $this->processData();
+    }
 
-            $valid = $this->validate([
+    public function updatedata($id)
+    {
+        return $this->processData($id);
+    }
+
+    private function processData($id = null)
+    {
+        if ($this->request->isAJAX()) {
+            $validation = \Config\Services::validation();
+
+            $rules = [
                 'kd_kategori' => [
                     'label' => 'Kode Kategori',
-                    'rules' => 'required|is_unique[kategori.kd_kategori]',
+                    'rules' => $id ? 'required' : 'required|is_unique[kategori.kd_kategori]',
                     'errors' => [
                         'required' => '{field} tidak boleh kosong',
-                        'is_unique' => '{field} sudah ada dan tidak boleh sama',
+                        'is_unique' => $id ? '' : '{field} sudah ada dan tidak boleh sama',
                     ],
                 ],
                 'nama_kategori' => [
@@ -305,32 +322,40 @@ class KategoriController extends BaseController
                     'rules' => 'required',
                     'errors' => [
                         'required' => '{field} tidak boleh kosong',
-                    ]
+                    ],
                 ],
-            ]);
+            ];
 
-            if (!$valid) {
+            if (!$this->validate($rules)) {
                 $msg = [
                     'error' => [
-                        'kdkat' => $validation->getError('kd_kategori'),
+                        'kd_kategori' => $validation->getError('kd_kategori'),
                         'nama_kategori' => $validation->getError('nama_kategori'),
                     ],
                 ];
             } else {
-                $simpandata = [
+                $data = [
                     'kd_kategori' => $this->request->getVar('kd_kategori'),
                     'nama_kategori' => $this->request->getVar('nama_kategori'),
                     'deskripsi' => $this->request->getVar('deskripsi'),
                     'jenis' => $this->request->getVar('jenis'),
                 ];
 
-                // Panggil fungsi setInsertData dari model sebelum data disimpan
-                $insertdata = $this->kategori->setInsertData($simpandata);
-                // Simpan data ke database
-                $this->kategori->save($insertdata);
-
-                $msg = ['sukses' => 'Data kategori berhasil tersimpan'];
+                if ($id === null) {
+                    // Panggil fungsi setInsertData dari model sebelum data disimpan
+                    $insertdata = $this->kategori->setInsertData($data);
+                    // Simpan data ke database
+                    $this->kategori->save($insertdata);
+                    $msg = ['success' => 'Data kategori berhasil tersimpan'];
+                } else {
+                    // Panggil fungsi setUpdateData dari model sebelum data diperbarui
+                    $updatedata = $this->kategori->setUpdateData($data);
+                    // Perbarui data di database
+                    $this->kategori->update($id, $updatedata);
+                    $msg = ['success' => 'Data kategori: ' . $data['nama_kategori'] . ' berhasil terupdate'];
+                }
             }
+
             echo json_encode($msg);
         } else {
             $data = $this->errorPage404();
@@ -338,88 +363,17 @@ class KategoriController extends BaseController
         }
     }
 
-    public function getkategoribyid()
-    {
-        if ($this->request->isAJAX()) {
-            $id = $this->request->getVar('id');
-            $builder =  $this->db->table('kategori')
-                ->select('*')
-                ->where('id', $id)
-                ->get();
-
-            $row = $builder->getRow();
-
-            echo json_encode($row);
-        } else {
-            $data = $this->errorPage404();
-            return view('errors/mazer/error-404', $data);
-        }
-    }
-
-    public function updatedata($id)
-    {
-        if ($this->request->isAJAX()) {
-            if ($this->request->isAJAX()) {
-                $validation =  \Config\Services::validation();
-
-                $valid = $this->validate([
-                    'kd_kategori' => [
-                        'label' => 'Kode Kategori',
-                        'rules' => 'required',
-                        'errors' => [
-                            'required' => '{field} tidak boleh kosong',
-                        ],
-                    ],
-                    'nama_kategori' => [
-                        'label' => 'Nama Kategori',
-                        'rules' => 'required',
-                        'errors' => [
-                            'required' => '{field} tidak boleh kosong',
-                        ]
-                    ],
-                ]);
-
-                if (!$valid) {
-                    $msg = [
-                        'error' => [
-                            'kdkat' => $validation->getError('kd_kategori'),
-                            'nama_kategori' => $validation->getError('nama_kategori'),
-                        ],
-                    ];
-                } else {
-                    $updatedata = [
-                        'kd_kategori' => $this->request->getVar('kd_kategori'),
-                        'nama_kategori' => $this->request->getVar('nama_kategori'),
-                        'deskripsi' => $this->request->getVar('deskripsi'),
-                        'jenis' => $this->request->getVar('jenis'),
-                    ];
-
-                    // Panggil fungsi setInsertData dari model sebelum data diupdate
-                    $ubahdata = $this->kategori->setUpdateData($updatedata);
-                    // update data ke database
-                    $this->kategori->update($id, $ubahdata);
-
-                    $msg = ['sukses' => 'Data kategori: ' . $updatedata['nama_kategori'] . ' berhasil terupdate'];
-                }
-                echo json_encode($msg);
-            } else {
-                $data = [
-                    'message' => 'Maaf tidak dapat diproses',
-                ];
-                return view('errors/html/error_404', $data);
-            }
-        }
-    }
 
     public function hapusdata($id)
     {
         if ($this->request->isAJAX()) {
-            $nama_kategori = $this->request->getVar('nama_kategori');
+            $inputData = json_decode($this->request->getBody(), true);
+            $nama_kategori = $inputData["nama_kategori"];
             try {
                 $this->kategori->setSoftDelete($id);
 
                 $msg = [
-                    'sukses' => "Data kategori : $nama_kategori berhasil dihapus",
+                    'success' => "Data kategori : $nama_kategori berhasil dihapus",
                 ];
                 echo json_encode($msg);
             } catch (\Exception $e) {

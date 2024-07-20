@@ -8,26 +8,18 @@ use \Hermawan\DataTables\DataTable;
 
 class RuangController extends BaseController
 {
-    protected $ruang;
-    protected $uri;
+    protected $ruang, $uri, $title;
 
     public function __construct()
     {
         $this->ruang = new Ruang();
         $this->uri = service('uri');
+        $this->title = "Ruang";
     }
 
     public function index()
     {
-        $segments = $this->uri->getSegments();
-        $breadcrumb = [];
-        $link = '';
-
-        foreach ($segments as $segment) {
-            $link .= '/' . $segment;
-            $breadcrumb[] = ['name' => ucfirst($segment), 'link' => $link];
-        }
-
+        $breadcrumb = $this->getBreadcrumb();
         $data = [
             'title' => 'Ruang',
             'nav' => 'ruang',
@@ -60,20 +52,25 @@ class RuangController extends BaseController
                 ->addNumbering('no')
                 ->add('action', function ($row) use ($isRestore) {
                     if ($isRestore) {
-                        return '
-                    <div class="btn-group mb-1">
+                        return '<div class="btn-group mb-1">
                     <button type="button" class="btn btn-success  btn-sm dropdown-toggle me-1" data-bs-toggle="dropdown" aria-expanded="false">
                         Action
                     </button>
                     <ul class="dropdown-menu shadow-lg">
-                        <li><a class="dropdown-item" onclick="restore(' . $row->id . ', \'' . htmlspecialchars($row->nama_ruang) . '\')"><i class="fa fa-undo"></i> Pulihkan</a></li>
-                        <li><a class="dropdown-item" onclick="hapuspermanen(' . $row->id . ', \'' . htmlspecialchars($row->nama_ruang) . '\')"><i class="fa fa-trash-o"></i> Hapus Permanen</a></li>
+                        <li><a class="dropdown-item" onclick="ruang.restore(' . $row->id . ', \'' . htmlspecialchars($row->nama_ruang) . '\')"><i class="fa fa-undo"></i> Pulihkan</a></li>
+                        <li><a class="dropdown-item" onclick="ruang.hapusPermanen(' . $row->id . ', \'' . htmlspecialchars($row->nama_ruang) . '\')"><i class="fa fa-trash-o"></i> Hapus Permanen</a></li>
                     </ul>
-                    </div>
-                    ';
+                    </div>';
                     } else {
-                        return '<button type="button" class="btn btn-warning btn-sm btn-editruang" onclick="edit(' . $row->id . ')"> <i class="fa fa-pencil-square-o"></i></button>
-                    <button type="button" class="btn btn-danger btn-sm" onclick="hapus(' . $row->id . ', \'' . htmlspecialchars($row->nama_ruang) . '\')"><i class="fa fa-trash-o"></i></button>';
+                        return '<div class="btn-group btn-group-sm mb-1">
+                    <button type="button" class="btn btn-success dropdown-toggle me-1" data-bs-toggle="dropdown" aria-expanded="false">
+                        Action
+                    </button>
+                        <ul class="dropdown-menu shadow-lg">
+                            <li><a class="dropdown-item" onclick="util.getForm(\'' . htmlspecialchars("update") . '\',' . $row->id . ')"> <i class="fa fa-pencil-square-o"></i> Edit</a></li>
+                            <li><a class="dropdown-item" onclick="ruang.hapus(' . $row->id . ', \'' . htmlspecialchars($row->nama_ruang) . '\')"><i class="fa fa-trash-o"></i> Hapus</a></li>
+                        </ul>
+                    </div>';
                     }
                 })
                 ->toJson(true);
@@ -83,44 +80,36 @@ class RuangController extends BaseController
         }
     }
 
-    public function restoredata($id = null)
+    public function restoredata($id = [])
     {
-        if ($this->request->isAJAX()) {
-            $restoredata = [
-                'deleted_by' => null,
-                'deleted_at' => null,
-            ];
-
-            if ($id != null) {
-                $nama_ruang = $this->request->getVar('nama_ruang');
-                $this->ruang->update($id, $restoredata);
-
-                $msg = [
-                    'sukses' => 'Data ruangan: ' . $nama_ruang . '  berhasil dipulihkan',
-                ];
-            } else {
-                $this->db->table('ruang')
-                    ->set($restoredata)
-                    ->where('deleted_at is NOT NULL', NULL, FALSE)
-                    ->update();
-                $jmldata = $this->db->affectedRows();
-
-                if ($jmldata > 0) {
-                    $msg = [
-                        'sukses' => "$jmldata data ruangan berhasil dipulihkan semuanya",
-                    ];
-                } else {
-                    $msg = [
-                        'error' => 'Tidak ada data ruangan yang bisa dipulihkan'
-                    ];
-                }
-            }
-
-            return json_encode($msg);
-        } else {
+        if (!$this->request->isAJAX()) {
             $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
+        $ids = $this->request->getVar('id');
+        $nama_ruang = $this->request->getVar('nama_ruang');
+        $id = explode(",", $ids);
+        $restoredata = [
+            'deleted_by' => null,
+            'deleted_at' => null,
+        ];
+
+        $this->db->transStart();
+        foreach ($id as $key => $ruangId) {
+            $ruang = $this->db->table('ruang')->select('*')->where('id', $ruangId)->get()->getRowArray();
+            if ($ruang['deleted_at'] !== NULL) {
+                $this->ruang->update($ruangId, $restoredata);
+            }
+        }
+        $this->db->transComplete();
+
+        if ($this->db->transStatus() === false) {
+            $msg = ['error' => 'Gagal memulihkan data ruangan'];
+        } else {
+            $msg = ['success' => "Sukses memulihkan data ruang."];
+        }
+
+        return json_encode($msg);
     }
 
     public function hapuspermanen($id = null)
@@ -132,13 +121,13 @@ class RuangController extends BaseController
                 $this->ruang->delete($id, true);
 
                 $msg = [
-                    'sukses' => "Data ruangan $nama_ruang berhasil dihapus secara permanen",
+                    'success' => "Data ruangan $nama_ruang berhasil dihapus secara permanen",
                 ];
             } else {
                 $this->ruang->purgeDeleted();
                 $jmlhapus = $this->ruang->db->affectedRows();
                 $msg = [
-                    'sukses' => "$jmlhapus data ruangan berhasil dihapus secara permanen",
+                    'success' => "$jmlhapus data ruangan berhasil dihapus secara permanen",
                 ];
             }
 
@@ -149,159 +138,134 @@ class RuangController extends BaseController
         }
     }
 
-    // public function ceknamaruang()
-    // {
-    //     $nama_ruang = $this->request->getPost("nama_ruang");
-    //     $isNamaruangtersedia = $this->modelruang->ceknamaruang($nama_ruang);
-    //     if ($isNamaruangtersedia) {
-    //         $response = [
-    //             'status' => 'success',
-    //             'msg' => 'nama ruang belum ada',
-    //         ];
-    //     } else {
-    //         $response = [
-    //             'status' => 'error',
-    //             'msg' => "nama ruang sudah ada",
-    //         ];
-    //     }
-    //     return $this->response->setJSON($response);
-    // }
-
-    public function simpandata()
+    public function getgedung()
     {
-        if ($this->request->isAJAX()) {
-            $validation =  \Config\Services::validation();
+        $builder = $this->db->table('gedung g')
+            ->select('g.id, g.nama_gedung, g.prefix')
+            ->get();
+        $row = $builder->getResult();
 
-            $valid = $this->validate([
-                'nama_ruang' => [
-                    'label' => 'Nama Ruang',
-                    'rules' => 'required',
-                    'errors' => [
-                        'required' => '{field} tidak boleh kosong',
-                    ],
-                ],
-                'nama_lantai' => [
-                    'label' => 'Nama Lantai',
-                    'rules' => 'required',
-                    'errors' => [
-                        'required' => '{field} tidak boleh kosong',
-                    ]
-                ],
-                'gedung_id' => [
-                    'label' => 'Nama Gedung',
-                    'rules' => 'required',
-                    'errors' => [
-                        'required' => '{field} tidak boleh kosong',
-                    ]
-                ],
-            ]);
+        return json_encode($row);
+    }
 
-            if (!$valid) {
-                $msg = [
-                    'error' => [
-                        'namaruang' => $validation->getError('nama_ruang'),
-                        'namalantai' => $validation->getError('nama_lantai'),
-                        'gedungid' => $validation->getError('gedung_id'),
-                    ],
-                ];
-            } else {
-                $simpandata = [
-                    'nama_ruang' => $this->request->getVar('nama_ruang'),
-                    'nama_lantai' => $this->request->getVar('nama_lantai'),
-                    'gedung_id' => $this->request->getVar('gedung_id'),
-                ];
-
-                // Panggil fungsi setInsertData dari model sebelum data disimpan
-                $insertdata = $this->ruang->setInsertData($simpandata);
-                // Simpan data ke database
-                $this->ruang->save($insertdata);
-
-                $msg = ['sukses' => 'Data Ruang berhasil tersimpan'];
-            }
-            echo json_encode($msg);
-        } else {
+    public function getForm()
+    {
+        if (!$this->request->isAJAX()) {
             $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
+        $saveMethod = $this->request->getGet('saveMethod');
+        $id = $this->request->getGet('id');
+        $gedung = $this->getgedung();
+        $ruang = '';
+        if ($id) {
+            $ruang = $this->getruangbyid($id);
+        }
+        $data = [
+            'id' => $id,
+            'title' => $this->title,
+            'saveMethod' => $saveMethod,
+            'gedung' => $gedung,
+            'ruang' => $ruang,
+        ];
+
+        $msg = [
+            'data' => view('ruang/form', $data),
+        ];
+
+        echo json_encode($msg);
     }
 
-    public function getruangbyid()
+    private function getruangbyid($id)
     {
-        if ($this->request->isAJAX()) {
-            $id = $this->request->getGet('id');
-            $row = $this->ruang->find($id);
-            echo json_encode($row);
-        } else exit('Maaf tidak dapat diproses');
+        $row = $this->ruang->find($id);
+        return json_encode($row);
+    }
+
+    public function simpandata()
+    {
+        return $this->processData();
     }
 
     public function updatedata($id)
     {
-        if ($this->request->isAJAX()) {
-            $validation =  \Config\Services::validation();
+        return $this->processData($id);
+    }
 
-            $valid = $this->validate([
-                'nama_ruang' => [
-                    'label' => 'Nama Ruang',
-                    'rules' => 'required',
-                    'errors' => [
-                        'required' => '{field} tidak boleh kosong',
-                    ],
-                ],
-                'nama_lantai' => [
-                    'label' => 'Nama Lantai',
-                    'rules' => 'required',
-                    'errors' => [
-                        'required' => '{field} tidak boleh kosong',
-                    ]
-                ],
-                'gedung_id' => [
-                    'label' => 'Nama Gedung',
-                    'rules' => 'required',
-                    'errors' => [
-                        'required' => '{field} tidak boleh kosong',
-                    ]
-                ],
-            ]);
-
-            if (!$valid) {
-                $msg = [
-                    'error' => [
-                        'namaruang' => $validation->getError('nama_ruang'),
-                        'namalantai' => $validation->getError('nama_lantai'),
-                        'gedungid' => $validation->getError('gedung_id'),
-                    ],
-                ];
-            } else {
-                $updatedata = [
-                    'nama_ruang' => $this->request->getVar('nama_ruang'),
-                    'nama_lantai' => $this->request->getVar('nama_lantai'),
-                    'gedung_id' => $this->request->getVar('gedung_id'),
-                ];
-
-                $ubahdata = $this->ruang->setUpdateData($updatedata);
-
-                $this->ruang->update($id, $ubahdata);
-
-                $msg = [
-                    'sukses' => 'Data ruangan: ' . $updatedata['nama_ruang'] . '  berhasil terupdate',
-                ];
-            }
-            echo json_encode($msg);
-        } else {
+    private function processData($id = null)
+    {
+        if (!$this->request->isAJAX()) {
             $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
+        $validation = \Config\Services::validation();
+        $rules = [
+            'nama_ruang' => [
+                'label' => 'Nama Ruang',
+                'rules' => 'required',
+                'errors' => [
+                    'required' => '{field} tidak boleh kosong',
+                ],
+            ],
+            'nama_lantai' => [
+                'label' => 'Nama Lantai',
+                'rules' => 'required',
+                'errors' => [
+                    'required' => '{field} tidak boleh kosong',
+                ],
+            ],
+            'gedung_id' => [
+                'label' => 'Nama Gedung',
+                'rules' => 'required',
+                'errors' => [
+                    'required' => '{field} tidak boleh kosong',
+                ],
+            ],
+        ];
+        if (!$this->validate($rules)) {
+            $msg = [
+                'error' => [
+                    'namaruang' => $validation->getError('nama_ruang'),
+                    'namalantai' => $validation->getError('nama_lantai'),
+                    'namagedung' => $validation->getError('gedung_id'),
+                ],
+            ];
+        } else {
+            $data = [
+                'nama_ruang' => $this->request->getVar('nama_ruang'),
+                'nama_lantai' => $this->request->getVar('nama_lantai'),
+                'gedung_id' => $this->request->getVar('gedung_id'),
+            ];
+
+            if ($id === null) {
+                // Panggil fungsi setInsertData dari model sebelum data disimpan
+                $insertdata = $this->ruang->setInsertData($data);
+                // Simpan data ke database
+                $this->ruang->save($insertdata);
+                $msg = ['success' => 'Data Ruang berhasil tersimpan'];
+            } else {
+                // Panggil fungsi setUpdateData dari model sebelum data diperbarui
+                $updatedata = $this->ruang->setUpdateData($data);
+                // Perbarui data di database
+                $this->ruang->update($id, $updatedata);
+                $msg = ['success' => 'Data ruangan: ' . $data['nama_ruang'] . ' berhasil terupdate'];
+            }
+        }
+
+        echo json_encode($msg);
     }
+
 
     public function hapusdata($id)
     {
         if ($this->request->isAJAX()) {
-            $nama_ruang = $this->request->getVar('nama_ruang');
+            $inputData = json_decode($this->request->getBody(), true);
+            $nama_ruang = $inputData["nama_ruang"];
             try {
                 $this->ruang->setSoftDelete($id);
 
                 $msg = [
-                    'sukses' => "Data ruangan $nama_ruang berhasil dihapus",
+                    'success' => "Data ruang $nama_ruang berhasil dihapus",
                 ];
                 echo json_encode($msg);
             } catch (\Exception $e) {

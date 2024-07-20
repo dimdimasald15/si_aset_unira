@@ -41,20 +41,12 @@ class PeminjamanController extends BaseController
 
     public function index()
     {
-        $segments = $this->uri->getSegments();
-        $breadcrumb = [];
-        $link = '';
-
-        foreach ($segments as $segment) {
-            $link .= '/' . $segment;
-            $name = ucwords(str_replace('-', ' ', $segment));
-            $breadcrumb[] = ['name' => $name, 'link' => $link];
-        }
+        $breadcrumb = $this->getBreadcrumb();
         $data = [
             'title' => 'Peminjaman Barang',
             'nav' => 'peminjaman-barang',
             'jenis_kat' => 'Barang Tetap',
-            'breadcrumb' => $breadcrumb
+            'breadcrumb' => $breadcrumb,
         ];
 
         return view('peminjaman/index', $data);
@@ -62,348 +54,284 @@ class PeminjamanController extends BaseController
 
     public function listdatapeminjaman()
     {
-        if ($this->request->isAJAX()) {
-            $jenis = $this->request->getVar('jenis_kat');
-            $isRestore = filter_var($this->request->getGet('isRestore'), FILTER_VALIDATE_BOOLEAN);
-            $status = $this->request->getVar('status');
-            $builder = $this->db->table('peminjaman p')->select('p.id, p.anggota_id, p.barang_id, p.jml_barang,p.keterangan, p.kondisi_pinjam, p.kondisi_kembali, p.jml_hari, p.tgl_pinjam, p.tgl_kembali, p.status, p.created_at, p.created_by, p.deleted_at, p.deleted_by, a.unit_id, a.nama_anggota, k.nama_kategori, b.nama_brg, u.singkatan, s.kd_satuan')
-                ->join('anggota a', 'a.id = p.anggota_id')
-                ->join('barang b', 'b.id=p.barang_id')
-                ->join('kategori k', 'k.id=b.kat_id')
-                ->join('unit u', 'u.id = a.unit_id')
-                ->join('stok_barang sb', 'b.id=sb.barang_id')
-                ->join('satuan s', 's.id=b.satuan_id')
-                ->where('k.jenis', $jenis);
+        if (!$this->request->isAJAX()) {
+            $data = $this->errorPage404();
+            return view('errors/mazer/error-404', $data);
+        }
+        $jenis = $this->request->getVar('jenis_kat');
+        $isRestore = filter_var($this->request->getGet('isRestore'), FILTER_VALIDATE_BOOLEAN);
+        $status = $this->request->getVar('status');
+        $builder = $this->db->table('peminjaman p')->select('p.id, p.anggota_id, p.barang_id, p.jml_barang,p.keterangan, p.kondisi_pinjam, p.kondisi_kembali, p.jml_hari, p.tgl_pinjam, p.tgl_kembali, p.status, p.created_at, p.created_by, p.deleted_at, p.deleted_by, a.unit_id, a.nama_anggota, k.nama_kategori, b.nama_brg, u.singkatan, s.kd_satuan')
+            ->join('anggota a', 'a.id = p.anggota_id')
+            ->join('barang b', 'b.id=p.barang_id')
+            ->join('kategori k', 'k.id=b.kat_id')
+            ->join('unit u', 'u.id = a.unit_id')
+            ->join('stok_barang sb', 'b.id=sb.barang_id')
+            ->join('satuan s', 's.id=b.satuan_id')
+            ->where('k.jenis', $jenis);
 
-            return DataTable::of($builder)
-                ->filter(function ($builder) use ($jenis, $isRestore, $status) {
-                    if ($isRestore && $status == 0) {
-                        $builder->where('p.deleted_at IS NOT NULL');
-                        $builder->where('k.jenis', $jenis);
-                    } elseif ($isRestore == 0 && $status == 0) {
-                        $builder->where('p.deleted_at', null);
-                        $builder->where('b.deleted_at', null);
-                        $builder->where('a.deleted_at', null);
-                        $builder->where('u.deleted_at', null);
-                        $builder->where('k.jenis', $jenis);
+        return DataTable::of($builder)
+            ->filter(function ($builder) use ($jenis, $isRestore, $status) {
+                if ($isRestore && $status == 0) {
+                    $builder->where('p.deleted_at IS NOT NULL');
+                    $builder->where('k.jenis', $jenis);
+                } elseif ($isRestore == 0 && $status == 0) {
+                    $builder->where('p.deleted_at', null);
+                    $builder->where('b.deleted_at', null);
+                    $builder->where('a.deleted_at', null);
+                    $builder->where('u.deleted_at', null);
+                    $builder->where('k.jenis', $jenis);
+                }
+            })
+            ->postQuery(function ($builder) {
+                $builder->orderBy('p.status', 'ASC');
+                $builder->orderBy('p.id', 'desc');
+            })
+            ->addNumbering('no')
+            ->add('checkrow', function ($row) use ($isRestore) {
+                if (!$isRestore) {
+                    $checkbox = '';
+                    if ($row->status == 0) {
+                        $checkbox .= '<input type="checkbox" name="id[]" class="checkrow" value="' . $row->id . '">';
                     }
-                })
-                ->postQuery(function ($builder) {
-                    $builder->orderBy('p.status', 'ASC');
-                    $builder->orderBy('p.id', 'desc');
-                })
-                ->addNumbering('no')
-                ->add('checkrow', function ($row) use ($isRestore) {
-                    if (!$isRestore) {
-                        $checkbox = '';
-                        if ($row->status == 0) {
-                            $checkbox .= '<input type="checkbox" name="id[]" class="checkrow" value="' . $row->id . '">';
-                        }
-                        return $checkbox;
-                    }
-                })
-                ->add('action', function ($row) use ($isRestore) {
-                    if ($isRestore) {
-                        return '
+                    return $checkbox;
+                }
+            })
+            ->add('action', function ($row) use ($isRestore) {
+                if ($isRestore) {
+                    return '
                     <div class="btn-group mb-1">
                     <button type="button" class="btn btn-success btn-sm dropdown-toggle me-1" data-bs-toggle="dropdown" aria-expanded="false">
                         Action
                     </button>
                     <ul class="dropdown-menu shadow-lg">
-                        <li><a class="dropdown-item" onclick="restore(' . $row->id . ', ' . $row->barang_id . ',\'' . htmlspecialchars($row->nama_brg) . '\', \'' . htmlspecialchars($row->nama_anggota) . '\')"><i class="fa fa-undo"></i> Pulihkan</a>
+                        <li><a class="dropdown-item" onclick="pinjam.restore(' . $row->id . ', ' . $row->barang_id . ',\'' . htmlspecialchars($row->nama_brg) . '\', \'' . htmlspecialchars($row->nama_anggota) . '\')"><i class="fa fa-undo"></i> Pulihkan</a>
                         </li>
-                        <li><a class="dropdown-item" onclick="hapuspermanen(' . $row->id . ', \'' . htmlspecialchars($row->nama_brg) . '\', \'' . htmlspecialchars($row->nama_anggota) . '\', \'54\')"><i class="fa fa-trash-o"></i> Hapus Permanen</a>
+                        <li><a class="dropdown-item" onclick="pinjam.hapusPermanen(' . $row->id . ', \'' . htmlspecialchars($row->nama_brg) . '\', \'' . htmlspecialchars($row->nama_anggota) . '\')"><i class="fa fa-trash-o"></i> Hapus Permanen</a>
                         </li>
                     </ul>
                     </div>
                     ';
-                    } else {
-                        $action = '<div class="btn-group btn-group-sm mb-1">
+                } else {
+                    $action = '<div class="btn-group btn-group-sm mb-1">
                             <button type="button" class="btn btn-success dropdown-toggle me-1" data-bs-toggle="dropdown" aria-expanded="false">
                                 Action
                             </button>
                             <ul class="dropdown-menu shadow-lg">
-                            <li><a class="dropdown-item" onclick="edit(' . $row->id . ',' . $row->status . ')"><i class="fa fa-pencil-square-o"></i> Update Peminjaman</a>
+                            <li><a class="dropdown-item" onclick="pinjam.getForm(\'' . htmlspecialchars("update") . '\',' . $row->id . ',' . $row->status . ')"><i class="fa fa-pencil-square-o"></i> Update</a>
                                 </li>';
-                        if ($row->status == 0) {
-                            $action .= '<li><a class="dropdown-item" onclick="hapus(' . $row->id . ', \'' . htmlspecialchars($row->nama_anggota) . '\', \'' . htmlspecialchars($row->nama_brg) . '\', \'' . htmlspecialchars($row->jml_barang) . '\', \'' . htmlspecialchars($row->kd_satuan) . '\')"><i class="fa fa-trash-o"></i> Hapus Peminjaman</a>
+                    if ($row->status == 0) {
+                        $action .= '<li><a class="dropdown-item" onclick="pinjam.hapus(' . $row->id . ', \'' . htmlspecialchars($row->nama_anggota) . '\', \'' . htmlspecialchars($row->nama_brg) . '\', \'' . htmlspecialchars($row->jml_barang) . '\', \'' . htmlspecialchars($row->kd_satuan) . '\')"><i class="fa fa-trash-o"></i> Hapus</a>
                                 </li>';
-                        }
-                        $action .= ' </ul>
-                        </div>';
-                        return $action;
                     }
-                })
-                ->toJson(true);
-        } else {
-            $data = $this->errorPage404();
-            return view('errors/mazer/error-404', $data);
-        }
+                    $action .= ' </ul>
+                        </div>';
+                    return $action;
+                }
+            })
+            ->toJson(true);
     }
 
-    public function tampilsingleform()
+    public function tampilform()
     {
         if (!$this->request->isAJAX()) {
             $data = $this->errorPage404('tampilsingleform');
             return view('errors/mazer/error-404', $data);
         }
-
         $saveMethod = $this->request->getGet('saveMethod');
-        $globalId = $this->request->getGet('globalId');
-        $nav = $this->request->getGet('nav');
+        $id = $this->request->getGet('id');
         $jenis_kat = $this->request->getGet('jenis_kat');
         $status = $this->request->getGet('status');
-
+        $pinjam = '';
+        if ($id) {
+            $pinjam = $this->getpeminjamanbyid($id);
+        }
         $data = [
-            'globalId' => $globalId ? $globalId : '',
+            'id' => $id,
             'saveMethod' => $saveMethod,
             'title' => 'Peminjaman Barang',
-            'nav' => $nav,
             'jenis_kat' => $jenis_kat,
+            'pinjam' => $pinjam,
         ];
-
         if ($status == 1) {
             $view = view('peminjaman/formkembali', $data);
         } else {
             $view = view('peminjaman/singleform', $data);
         }
-
         $msg = [
             'data' => $view,
         ];
-
         echo json_encode($msg);
+    }
+
+    private function getpeminjamanbyid($id)
+    {
+        $builder = $this->db->table('peminjaman p')->select('a.nama_anggota, a.no_anggota, a.unit_id, a.level, u.singkatan, p.*, b.nama_brg, b.satuan_id, sb.sisa_stok, s.kd_satuan')
+            ->join('anggota a', 'a.id=p.anggota_id')
+            ->join('unit u', 'u.id=a.unit_id')
+            ->join('barang b', 'b.id=p.barang_id')
+            ->join('stok_barang sb', 'b.id=sb.barang_id')
+            ->join('satuan s', 's.id=b.satuan_id')
+            ->where('p.id', $id)
+            ->get();
+        $data = $builder->getRow();
+        if (!empty($data)) {
+            $jmldata = 1;
+        } else {
+            $jmldata = 0;
+        }
+        $msg = [
+            'data' => $data,
+            'jmldata' => $jmldata,
+        ];
+        return json_encode($msg);
     }
 
     public function tampilformkembali()
     {
-        if ($this->request->isAJAX()) {
-            $saveMethod = $this->request->getGet('saveMethod');
-            $nav = $this->request->getGet('nav');
-            $jenis_kat = $this->request->getGet('jenis_kat');
-            $formName = $this->request->getGet('formname');
-
-            $data = [
-                'saveMethod' => $saveMethod,
-                'title' => 'Pengembalian Barang',
-                'nav' => $nav,
-                'jenis_kat' => $jenis_kat,
-                'formName' => $formName,
-                'globalId' => '',
-            ];
-
-            $msg = [
-                'data' => view('peminjaman/formkembali', $data),
-            ];
-
-            echo json_encode($msg);
-        } else {
+        if (!$this->request->isAJAX()) {
             $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
+        $saveMethod = $this->request->getGet('saveMethod');
+        $jenis_kat = $this->request->getGet('jenis_kat');
+        $formName = $this->request->getGet('formname');
+        $data = [
+            'saveMethod' => $saveMethod,
+            'title' => 'Pengembalian Barang',
+            'jenis_kat' => $jenis_kat,
+            'formName' => $formName,
+            'id' => '',
+            'pinjam' => '',
+        ];
+        $msg = ['data' => view('peminjaman/formkembali', $data)];
+        echo json_encode($msg);
     }
 
-    public function simpandata()
+    private function validateGeneralFields()
     {
-        if ($this->request->isAJAX()) {
-            $jmldata = $this->request->getVar('jmlbrg');
-
-            $validation = \Config\Services::validation();
-            $rules1 = array();
-            $errors1 = array();
-            if (array_key_exists('nama_anggota', $this->request->getVar())) {
-                // melakukan sesuatu jika nama_anggota ada dalam $_POST
-                $rules1 = [
-                    'nama_anggota' => [
-                        'label' => 'Nama peminjam baru',
-                        'rules' => 'required',
-                        'errors' => [
-                            'required' => '{field} tidak boleh kosong',
-                        ],
-                    ],
-                    'level' => [
-                        'label' => 'Level peminjam baru',
-                        'rules' => 'required',
-                        'errors' => [
-                            'required' => '{field} tidak boleh kosong',
-                        ],
-                    ],
-                    'no_anggota' => [
-                        'label' => 'Nomor ID peminjam baru',
-                        'rules' => 'required|is_unique[anggota.no_anggota]',
-                        'errors' => [
-                            'required' => '{field} tidak boleh kosong',
-                            'is_unique' => '{field} sudah ada dan tidak boleh sama',
-                        ],
-                    ],
-                    'unit_id' => [
-                        'label' => 'Unit peminjam baru',
-                        'rules' => 'required',
-                        'errors' => [
-                            'required' => '{field} tidak boleh kosong',
-                        ],
-                    ],
-                ];
-            } else {
-                // melakukan sesuatu jika nama_anggota tidak ada dalam $_POST
-                $rules1 = [
-                    'anggota_id' => [
-                        'label' => 'Nama peminjam',
-                        'rules' => 'required',
-                        'errors' => [
-                            'required' => '{field} tidak boleh kosong',
-                        ],
-                    ],
-                ];
-            }
-
-            $rules1['tgl_pinjam'] = [
+        $validation = \Config\Services::validation();
+        $rules = [
+            'anggota_id' => [
+                'label' => 'Nama peminjam',
+                'rules' => 'required',
+                'errors' => [
+                    'required' => '{field} tidak boleh kosong',
+                ],
+            ],
+            'tgl_pinjam' => [
                 'label' => 'Tanggal pinjam',
                 'rules' => 'required',
                 'errors' => [
                     'required' => '{field} tidak boleh kosong',
                 ],
-            ];
-            $rules1['keterangan'] = [
-                'label' => 'Keterangan',
-                'rules' => 'required',
-                'errors' => [
-                    'required' => '{field} tidak boleh kosong',
+            ],
+        ];
+        if (!$this->validate($rules)) {
+            return $validation->getErrors();
+        }
+        return [];
+    }
+
+    private function validateItemFields($jmldata)
+    {
+        $validation = \Config\Services::validation();
+        $errors = [];
+        for ($a = 1; $a <= $jmldata; $a++) {
+            $rules = [
+                'barang_id' . $a => [
+                    'label' => 'Nama barang',
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => "{field} form $a tidak boleh kosong",
+                    ]
+                ],
+                'jml_barang' . $a => [
+                    'label' => 'Jumlah permintaan',
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => "{field} form $a tidak boleh kosong",
+                    ]
                 ],
             ];
-
-            if (!$this->validate($rules1)) {
-                $errors1 = $validation->getErrors();
+            if (!$this->validate($rules)) {
+                $errors = array_merge($errors, $validation->getErrors());
             }
-            // check for errors
-            if (!empty($errors1)) {
-                $msg = [
-                    'jmldata' => $jmldata,
-                    'error' => $errors1,
-                ];
-            } else {
-                $jenistrx = $this->request->getVar('jenistrx');
+        }
+        return $errors;
+    }
 
-                $validation =  \Config\Services::validation();
-                $errors2 = array();
-                for ($a = 1; $a <= $jmldata; $a++) {
-                    $rules2 = [
-                        'barang_id' . $a => [
-                            'label' => 'Nama barang',
-                            'rules' => 'required',
-                            'errors' => [
-                                'required' => "{field} form $a tidak boleh kosong",
-                            ]
-                        ],
-                        'jml_barang' . $a => [
-                            'label' => 'Jumlah peminjaman',
-                            'rules' => 'required',
-                            'errors' => [
-                                'required' => "{field} form $a tidak boleh kosong",
-                            ]
-                        ],
-                    ];
-                    if (!$this->validate($rules2)) {
-                        $errors2 = $validation->getErrors();
-                    }
-                }
-                // check for errors
-                if (!empty($errors2)) {
-                    $msg = [
-                        'jmldata' => $jmldata,
-                        'error' => $errors2
-                    ];
-                } else {
-                    $this->db->transStart();
-                    $agg_id = '';
-                    if (array_key_exists('nama_anggota', $_POST)) {
-                        // melakukan sesuatu jika nama_anggota ada dalam $_POST
-                        $nama_anggota = $this->request->getVar('nama_anggota');
-                        $level = $this->request->getVar('level');
-                        $no_anggota = $this->request->getVar('no_anggota');
-                        $unit_id = $this->request->getVar('unit_id');
-
-                        $simpananggota = [
-                            'nama_anggota' => $nama_anggota,
-                            'no_anggota' => $no_anggota,
-                            'level' => $level,
-                            'unit_id' => $unit_id,
-                        ];
-                        $insert1 = $this->anggota->setInsertData($simpananggota);
-                        $this->anggota->save($insert1);
-
-                        $agg_id = $this->anggota->insertID();
-                    } else {
-                        $agg_id = $this->request->getVar('anggota_id');
-                    }
-
-                    $barang_id = array();
-                    $jml_barang = array();
-                    for ($b = 1; $b <= $jmldata; $b++) {
-                        array_push($barang_id, $this->request->getVar("barang_id$b"));
-                        array_push($jml_barang, $this->request->getVar("jml_barang$b"));
-                    }
-
-                    for ($i = 0; $i < $jmldata; $i++) {
-                        $simpanpeminjaman = [
-                            'anggota_id' => $agg_id,
-                            'barang_id' => $barang_id[$i],
-                            'jml_barang' => $jml_barang[$i],
-                            'tgl_pinjam' => $this->request->getVar('tgl_pinjam'),
-                            'keterangan' => $this->request->getVar('keterangan'),
-                            'status' => 0,
-                            'kondisi_pinjam' => 'Baik',
-                        ];
-
-                        $insert2 = $this->peminjaman->setInsertData($simpanpeminjaman);
-
-                        $this->peminjaman->save($insert2);
-
-                        $peminjaman_id = $this->peminjaman->insertID();
-
-                        $stokbrg = $this->db->table('stok_barang')->select('*')->where('barang_id', $barang_id[$i])->get()->getRowArray();
-
-                        $ubahstok = [
-                            'jumlah_keluar' => (intval($stokbrg['jumlah_keluar']) + intval($jml_barang[$i])),
-                            'sisa_stok' => (intval($stokbrg['sisa_stok']) - intval($jml_barang[$i])),
-                        ];
-
-                        $updatestok = $this->stokbarang->setUpdateData($ubahstok);
-
-                        //periksa perubahan data
-                        $data_lama = $stokbrg;
-                        $data_baru = $updatestok;
-                        $field_update = [];
-                        foreach ($data_baru as $key => $value) {
-                            if (isset($data_lama[$key]) && $data_lama[$key] !== $value) {
-                                $field_update[] = $key;
-                            }
-                        }
-                        // update data ke database
-                        $this->stokbarang->update($stokbrg['id'], $updatestok);
-
-                        // Periksa apakah query terakhir adalah operasi update
-                        $lastQuery = $this->db->getLastQuery();
-
-                        $this->riwayattrx->inserthistori($stokbrg['id'], $stokbrg, $updatestok, $jenistrx . " " . $peminjaman_id, $lastQuery, $field_update);
-                    }
-
-                    $this->db->transComplete();
-                    if ($this->db->transStatus() === false) {
-                        // Jika terjadi kesalahan pada transaction
-                        $msg = ['error' => 'Gagal menyimpan data peminjaman'];
-                    } else {
-                        // Jika berhasil disimpan
-                        $msg = ['sukses' => "Sukses $jmldata data peminjaman berhasil tersimpan"];
-                    }
-                }
-            }
-
-            echo json_encode($msg);
-        } else {
+    public function simpandata()
+    {
+        if (!$this->request->isAJAX()) {
             $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
+        $jmldata = $this->request->getVar('jmlbrg');
+        $errors1 = $this->validateGeneralFields();
+        if (!empty($errors1)) {
+            $msg = [
+                'jmldata' => $jmldata,
+                'error' => $errors1,
+            ];
+        } else {
+            $jenistrx = $this->request->getVar('jenistrx');
+            $errors2 = $this->validateItemFields($jmldata);
+            if (!empty($errors2)) {
+                $msg = [
+                    'jmldata' => $jmldata,
+                    'error' => $errors2
+                ];
+            } else {
+                $this->db->transStart();
+                $agg_id = $this->request->getVar('anggota_id');
+                $barang_id = array();
+                $jml_barang = array();
+                for ($b = 1; $b <= $jmldata; $b++) {
+                    array_push($barang_id, $this->request->getVar("barang_id$b"));
+                    array_push($jml_barang, $this->request->getVar("jml_barang$b"));
+                }
+                for ($i = 0; $i < $jmldata; $i++) {
+                    $simpanpeminjaman = [
+                        'anggota_id' => $agg_id,
+                        'barang_id' => $barang_id[$i],
+                        'jml_barang' => $jml_barang[$i],
+                        'tgl_pinjam' => $this->request->getVar('tgl_pinjam'),
+                        'keterangan' => $this->request->getVar('keterangan'),
+                        'status' => 0,
+                        'kondisi_pinjam' => 'Baik',
+                    ];
+                    $insert1 = $this->peminjaman->setInsertData($simpanpeminjaman);
+                    $this->peminjaman->save($insert1);
+                    $peminjaman_id = $this->peminjaman->insertID();
+                    $data_lama_stok = $this->db->table('stok_barang')->select('*')->where('barang_id', $barang_id[$i])->get()->getRowArray();
+                    $ubahstok = [
+                        'jumlah_keluar' => (intval($data_lama_stok['jumlah_keluar']) + intval($jml_barang[$i])),
+                        'sisa_stok' => (intval($data_lama_stok['sisa_stok']) - intval($jml_barang[$i])),
+                    ];
+                    $data_baru_stok = $this->stokbarang->setUpdateData($ubahstok);
+                    $field_update = [];
+                    foreach ($data_baru_stok as $key => $value) {
+                        if (isset($data_lama_stok[$key]) && $data_lama_stok[$key] !== $value) {
+                            $field_update[] = $key;
+                        }
+                    }
+                    // update data ke database
+                    $this->stokbarang->update($data_lama_stok['id'], $data_baru_stok);
+                    // Periksa apakah query terakhir adalah operasi update
+                    $lastQuery = $this->db->getLastQuery();
+                    $this->riwayattrx->inserthistori($data_lama_stok['id'], $data_lama_stok, $data_baru_stok, $jenistrx . " " . $peminjaman_id, $lastQuery, $field_update);
+                    $this->riwayattrx->insertID();
+                }
+                $this->db->transComplete();
+                if ($this->db->transStatus() === false) {
+                    $msg = ['error' => 'Gagal menyimpan data peminjaman'];
+                } else {
+                    $msg = ['success' => "Sukses $jmldata data peminjaman berhasil tersimpan"];
+                }
+            }
+        }
+        echo json_encode($msg);
     }
 
     public function tampilmodalcetak()
@@ -439,7 +367,6 @@ class PeminjamanController extends BaseController
                 ->where('p.deleted_at is null')->groupBy('a.id')
                 ->get();
             $msg = $query->getResultArray();
-
             echo json_encode($msg);
         } else {
             $data = $this->errorPage404();
@@ -451,8 +378,7 @@ class PeminjamanController extends BaseController
     {
         if ($this->request->isAJAX()) {
             $anggota_id = $this->request->getGet('anggota_id');
-            $tgl_pinjam = $this->request->getGet('tglpinjam');
-
+            $tgl_pinjam = $this->request->getGet('tgl_pinjam');
             $data = $this->db->table('peminjaman p')->select('a.nama_anggota, p.*, b.nama_brg, s.kd_satuan')
                 ->join('anggota a', 'a.id=p.anggota_id')
                 ->join('barang b', 'b.id=p.barang_id')
@@ -493,36 +419,14 @@ class PeminjamanController extends BaseController
             $jenistrx = $this->request->getVar('jenistrx');
             $jmldata = $this->request->getVar('jmldata');
             $saveMethod = $this->request->getVar('saveMethod');
-
-            $validation =  \Config\Services::validation();
-            $errors1 = [];
-            $rules1 = [
-                'anggota_id' => [
-                    'label' => 'Nama peminjam',
-                    'rules' => 'required',
-                    'errors' => [
-                        'required' => '{field} tidak boleh kosong',
-                    ],
-                ],
-                'tgl_pinjam' => [
-                    'label' => 'Tanggal peminjaman',
-                    'rules' => 'required',
-                    'errors' => [
-                        'required' => '{field} tidak boleh kosong',
-                    ],
-                ],
-            ];
-
-            if (!$this->validate($rules1)) {
-                $errors1 = $validation->getErrors();
-            }
-            // check for errors
+            $errors1 = $this->validateGeneralFields();
             if (!empty($errors1)) {
                 $msg = [
                     'jmldata' => $jmldata,
                     'error' => $errors1,
                 ];
             } else {
+                $validation = \Config\Services::validation();
                 $errors2 = array();
                 if ($saveMethod !== "update") {
                     for ($a = 0; $a < $jmldata; $a++) {
@@ -543,7 +447,12 @@ class PeminjamanController extends BaseController
                             ],
                         ];
                         if (!$this->validate($rules2)) {
-                            $errors2 = $validation->getErrors();
+                            $validationErrors = $validation->getErrors();
+                            foreach ($validationErrors as $key => $value) {
+                                // Replace dots with empty string
+                                $newKey = str_replace('.', '', $key);
+                                $errors2[$newKey] = $value;
+                            }
                         }
                     }
                 }
@@ -624,9 +533,9 @@ class PeminjamanController extends BaseController
                         $this->db->transComplete();
 
                         if ($saveMethod !== 'update') {
-                            $msg = ['sukses' => "Sukses $jmldata barang berhasil dikembalikan"];
+                            $msg = ['success' => "Sukses $jmldata barang berhasil dikembalikan"];
                         } else {
-                            $msg = ['sukses' => "Sukses data pengembalian barang berhasil diupdate"];
+                            $msg = ['success' => "Sukses data pengembalian barang berhasil diupdate"];
                         }
                     } catch (DatabaseException $e) {
                         // Automatically rolled back already.
@@ -643,284 +552,168 @@ class PeminjamanController extends BaseController
         }
     }
 
-    public function getpeminjamanbyid()
+    public function updatedata($id)
     {
-        if ($this->request->isAJAX()) {
-            $id = $this->request->getGet('id');
-            $builder = $this->db->table('peminjaman p')->select('a.nama_anggota, a.no_anggota, a.unit_id, a.level, u.singkatan, p.*, b.nama_brg, b.satuan_id, sb.sisa_stok, s.kd_satuan')
-                ->join('anggota a', 'a.id=p.anggota_id')
-                ->join('unit u', 'u.id=a.unit_id')
-                ->join('barang b', 'b.id=p.barang_id')
-                ->join('stok_barang sb', 'b.id=sb.barang_id')
-                ->join('satuan s', 's.id=b.satuan_id')
-                ->where('p.id', $id)
-                ->get();
-            $data = $builder->getRow();
-            if (!empty($data)) {
-                $jmldata = 1;
-            } else {
-                $jmldata = 0;
-            }
-
-            $msg = [
-                'data' => $data,
-                'jmldata' => $jmldata,
-            ];
-
-            echo json_encode($msg);
-        } else {
+        if (!$this->request->isAJAX()) {
             $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
-    }
-    public function updatedata($id)
-    {
-        if ($this->request->isAJAX()) {
-            $jmldata = $this->request->getVar('jmlbrg');
-
-            $validation = \Config\Services::validation();
-            $rules1 = array();
-            $errors1 = array();
-            if (array_key_exists('nama_anggota', $this->request->getVar())) {
-                // melakukan sesuatu jika nama_anggota ada dalam $_POST
-                $rules1 = [
-                    'nama_anggota' => [
-                        'label' => 'Nama peminta baru',
-                        'rules' => 'required',
-                        'errors' => [
-                            'required' => '{field} tidak boleh kosong',
-                        ],
-                    ],
-                    'level' => [
-                        'label' => 'Level peminta baru',
-                        'rules' => 'required',
-                        'errors' => [
-                            'required' => '{field} tidak boleh kosong',
-                        ],
-                    ],
-                    'no_anggota' => [
-                        'label' => 'Nomor ID peminta baru',
-                        'rules' => 'required|is_unique[anggota.no_anggota]',
-                        'errors' => [
-                            'required' => '{field} tidak boleh kosong',
-                            'is_unique' => '{field} sudah ada dan tidak boleh sama',
-                        ],
-                    ],
-                    'unit_id' => [
-                        'label' => 'Unit peminta baru',
-                        'rules' => 'required',
-                        'errors' => [
-                            'required' => '{field} tidak boleh kosong',
-                        ],
-                    ],
-                ];
-            } else {
-                // melakukan sesuatu jika nama_anggota tidak ada dalam $_POST
-                $rules1 = [
-                    'anggota_id' => [
-                        'label' => 'Nama peminta',
-                        'rules' => 'required',
-                        'errors' => [
-                            'required' => '{field} tidak boleh kosong',
-                        ],
-                    ],
-                ];
-            }
-
-            if (!$this->validate($rules1)) {
-                $errors1 = $validation->getErrors();
-            }
-            // check for errors
-            if (!empty($errors1)) {
+        $jmldata = $this->request->getVar('jmlbrg');
+        $errors1 = $this->validateGeneralFields();
+        if (!empty($errors1)) {
+            $msg = [
+                'jmldata' => $jmldata,
+                'error' => $errors1,
+            ];
+        } else {
+            $jenistrx = $this->request->getVar('jenistrx');
+            $errors2 = $this->validateItemFields($jmldata);
+            if (!empty($errors2)) {
                 $msg = [
                     'jmldata' => $jmldata,
-                    'error' => $errors1
+                    'error' => $errors2
                 ];
             } else {
-                $jenistrx = $this->request->getVar('jenistrx');
+                $this->db->transStart();
+                $peminjamanall = $this->db->table('peminjaman p')->select('p.*, a.nama_anggota, a.no_anggota')->join('anggota a', 'a.id=p.anggota_id')->get()->getResultArray();
+                $peminjaman = $this->peminjaman->find($id);
+                $stokbrg = $this->stokbarang->select('*')->where('barang_id', $peminjaman['barang_id'])->where('ruang_id', 54)->get()->getRowArray();
+                $ubahstok1 = [
+                    'jumlah_keluar' => intval($stokbrg['jumlah_keluar']) - intval($peminjaman['jml_barang']),
+                    'sisa_stok' => intval($stokbrg['sisa_stok']) + intval($peminjaman['jml_barang']),
+                ];
 
-                $validation =  \Config\Services::validation();
-                $errors2 = array();
-                for ($a = 1; $a <= $jmldata; $a++) {
-                    $rules2 = [
-                        'barang_id' . $a => [
-                            'label' => 'Nama barang',
-                            'rules' => 'required',
-                            'errors' => [
-                                'required' => "{field} form $a tidak boleh kosong",
-                            ]
-                        ],
-                        'jml_barang' . $a => [
-                            'label' => 'Jumlah permintaan',
-                            'rules' => 'required',
-                            'errors' => [
-                                'required' => "{field} form $a tidak boleh kosong",
-                            ]
-                        ],
-                    ];
-                    if (!$this->validate($rules2)) {
-                        $errors2 = $validation->getErrors();
+                $updatestok1 = $this->stokbarang->setUpdateData($ubahstok1);
+
+                //periksa perubahan data
+                $data_lama1 = $stokbrg;
+                $data_baru1 = $updatestok1;
+                $field_update1 = [];
+                foreach ($data_baru1 as $key => $value) {
+                    if (isset($data_lama1[$key]) && $data_lama1[$key] !== $value) {
+                        $field_update1[] = $key;
                     }
                 }
+                // update data ke database
+                try {
+                    $this->stokbarang->update($stokbrg['id'], $updatestok1);
+                } catch (Exception $e) {
+                    $msg = ['error' => "Pembaruan data stok gagal: " . $e->getMessage()];
+                }
+                // Periksa apakah query terakhir adalah operasi update
+                $lastQuery = $this->db->getLastQuery();
 
-                // check for errors
-                if (!empty($errors2)) {
-                    $msg = [
-                        'jmldata' => $jmldata,
-                        'error' => $errors2
+                $this->riwayattrx->inserthistori($stokbrg['id'], $stokbrg, $updatestok1, "Update Barang Tetap " . $peminjaman['id'], $lastQuery, $field_update1);
+
+                //update table peminjaman
+                $barang_id = array();
+                $jml_barang = array();
+                for ($b = 1; $b <= $jmldata; $b++) {
+                    array_push($barang_id, $this->request->getVar("barang_id$b"));
+                    array_push($jml_barang, $this->request->getVar("jml_barang$b"));
+                }
+                //deklarasi variabel yang akan menampung peminjaman dengan barang yang sudah ada.
+                $oldPeminjamanAll = array();
+                for ($i = 0; $i < $jmldata; $i++) {
+                    $data_ditemukan = false;
+                    $isDeleted = false;
+                    for ($j = 0; $j < count($peminjamanall); $j++) {
+                        if ($barang_id[$i] == $peminjamanall[$j]['barang_id'] && $this->request->getVar('anggota_id') == $peminjamanall[$j]['anggota_id'] && $peminjamanall[$j] && $peminjaman['created_at'] == $peminjamanall[$j]['created_at'] && ['deleted_at'] == null) {
+                            $data_ditemukan = true;
+                            $isDeleted = false;
+                            array_push($oldPeminjamanAll, $peminjamanall[$j]);
+                        } elseif ($barang_id[$i] == $peminjamanall[$j]['barang_id'] && $this->request->getVar('anggota_id') == $peminjamanall[$j]['anggota_id'] && $peminjamanall[$j]['deleted_at'] !== null) {
+                            $data_ditemukan = true;
+                            $isDeleted = true;
+                        }
+                        // var_dump($barang_id[$i] == $peminjamanall[$j]['barang_id'] && $this->request->getVar('anggota_id') == $peminjamanall[$j]['anggota_id'] && $peminjamanall[$j]['deleted_at'] !== null);
+                    }
+                    // echo "data ditemukan $data_ditemukan\n";
+                    // echo "data dihapus $isDeleted\n";
+                    $oldpeminjaman = end($oldPeminjamanAll);
+
+                    if (!$data_ditemukan) {
+                        // echo "1111";
+                        $ubahpinjam = [
+                            'barang_id' => $barang_id[$i],
+                            'jml_barang' => $jml_barang[$i],
+                            'tgl_pinjam' => $this->request->getVar("tgl_pinjam"),
+                        ];
+                        $updatepinjam = $this->peminjaman->setUpdateData($ubahpinjam);
+
+                        $this->peminjaman->update($id, $updatepinjam);
+                    } elseif ($data_ditemukan && !$isDeleted) {
+                        // echo "2222";
+                        $ubahpinjam = array();
+                        if ($oldpeminjaman['id'] !== $id) {
+                            $this->peminjaman->delete($id, true);
+                            $ubahpinjam = [
+                                'jml_barang' => intval($oldpeminjaman['jml_barang']) + intval($jml_barang[$i]),
+                            ];
+                        } else {
+                            $ubahpinjam = [
+                                'jml_barang' => $jml_barang[$i],
+                            ];
+                        }
+                        $ubahpinjam['tgl_pinjam'] = $this->request->getVar("tgl_pinjam");
+                        $updatepinjam = $this->peminjaman->setUpdateData($ubahpinjam);
+
+                        $this->peminjaman->update($oldpeminjaman['id'], $updatepinjam);
+                    } elseif ($data_ditemukan && $isDeleted) {
+                        // echo "3333";
+                        // var_dump($oldpeminjaman);
+                        $ubahpinjam = [
+                            'jml_barang' => intval($oldpeminjaman['jml_barang']) + intval($jml_barang[$i]),
+                            'tgl_pinjam' => $this->request->getVar("tgl_pinjam"),
+                            'deleted_by' => null,
+                            'deleted_at' => null,
+                        ];
+                        $updatepinjam = $this->peminjaman->setUpdateData($ubahpinjam);
+
+                        $this->peminjaman->update($oldpeminjaman['id'], $updatepinjam);
+                    }
+                    // update table stok barang lagi
+                    $newstokbrg = $this->db->table('stok_barang')->select('*')->where('barang_id', $barang_id[$i])->get()->getRowArray();
+
+                    $ubahstok2 = [
+                        'jumlah_keluar' => (intval($newstokbrg['jumlah_keluar']) + intval($jml_barang[$i])),
+                        'sisa_stok' => (intval($newstokbrg['sisa_stok']) - intval($jml_barang[$i])),
                     ];
-                } else {
-                    $peminjamanall = $this->db->table('peminjaman p')->select('p.*, a.nama_anggota, a.no_anggota')->join('anggota a', 'a.id=p.anggota_id')->get()->getResultArray();
 
-                    $this->db->transStart();
-                    //Update Table stok barang + riwayat transaksi stok barang
-                    $peminjaman = $this->peminjaman->find($id);
-                    $stokbrg = $this->stokbarang->select('*')->where('barang_id', $peminjaman['barang_id'])->where('ruang_id', 54)->get()->getRowArray();
-                    $ubahstok1 = [
-                        'jumlah_keluar' => intval($stokbrg['jumlah_keluar']) - intval($peminjaman['jml_barang']),
-                        'sisa_stok' => intval($stokbrg['sisa_stok']) + intval($peminjaman['jml_barang']),
-                    ];
-
-                    $updatestok1 = $this->stokbarang->setUpdateData($ubahstok1);
-
+                    $updatestok2 = $this->stokbarang->setUpdateData($ubahstok2);
                     //periksa perubahan data
-                    $data_lama1 = $stokbrg;
-                    $data_baru1 = $updatestok1;
-                    $field_update1 = [];
-                    foreach ($data_baru1 as $key => $value) {
-                        if (isset($data_lama1[$key]) && $data_lama1[$key] !== $value) {
-                            $field_update1[] = $key;
+                    $data_lama2 = $newstokbrg;
+                    $data_baru2 = $updatestok2;
+                    $field_update2 = [];
+                    foreach ($data_baru2 as $key => $value) {
+                        if (isset($data_lama2[$key]) && $data_lama2[$key] !== $value) {
+                            $field_update2[] = $key;
                         }
                     }
                     // update data ke database
-                    try {
-                        $this->stokbarang->update($stokbrg['id'], $updatestok1);
-                    } catch (Exception $e) {
-                        $msg = ['error' => "Pembaruan data stok gagal: " . $e->getMessage()];
-                    }
+                    $this->stokbarang->update($newstokbrg['id'], $updatestok2);
                     // Periksa apakah query terakhir adalah operasi update
                     $lastQuery = $this->db->getLastQuery();
 
-                    $this->riwayattrx->inserthistori($stokbrg['id'], $stokbrg, $updatestok1, "Update Barang Tetap " . $peminjaman['id'], $lastQuery, $field_update1);
-
-                    //update table peminjaman
-                    $barang_id = array();
-                    $jml_barang = array();
-                    for ($b = 1; $b <= $jmldata; $b++) {
-
-                        array_push($barang_id, $this->request->getVar("barang_id$b"));
-                        array_push($jml_barang, $this->request->getVar("jml_barang$b"));
-                    }
-
-                    //deklarasi variabel yang akan menampung peminjaman dengan barang yang sudah ada.
-                    $oldPeminjamanAll = array();
-                    for ($i = 0; $i < $jmldata; $i++) {
-                        $data_ditemukan = false;
-                        $isDeleted = false;
-
-                        for ($j = 0; $j < count($peminjamanall); $j++) {
-                            if ($barang_id[$i] == $peminjamanall[$j]['barang_id'] && $this->request->getVar('anggota_id') == $peminjamanall[$j]['anggota_id'] && $peminjamanall[$j] && $peminjaman['created_at'] == $peminjamanall[$j]['created_at'] && ['deleted_at'] == null) {
-                                $data_ditemukan = true;
-                                $isDeleted = false;
-                                array_push($oldPeminjamanAll, $peminjamanall[$j]);
-                            } elseif ($barang_id[$i] == $peminjamanall[$j]['barang_id'] && $this->request->getVar('anggota_id') == $peminjamanall[$j]['anggota_id'] && $peminjamanall[$j]['deleted_at'] !== null) {
-
-                                $data_ditemukan = true;
-                                $isDeleted = true;
-                            }
-                            var_dump($barang_id[$i] == $peminjamanall[$j]['barang_id'] && $this->request->getVar('anggota_id') == $peminjamanall[$j]['anggota_id'] && $peminjamanall[$j]['deleted_at'] !== null);
-                        }
-                        echo "data ditemukan $data_ditemukan\n";
-                        echo "data dihapus $isDeleted\n";
-                        $oldpeminjaman = end($oldPeminjamanAll);
-
-                        if (!$data_ditemukan) {
-                            echo "1111";
-                            $ubahpinjam = [
-                                'barang_id' => $barang_id[$i],
-                                'jml_barang' => $jml_barang[$i],
-                                'tgl_pinjam' => $this->request->getVar("tgl_pinjam"),
-                            ];
-                            $updatepinjam = $this->peminjaman->setUpdateData($ubahpinjam);
-
-                            $this->peminjaman->update($id, $updatepinjam);
-                        } elseif ($data_ditemukan && !$isDeleted) {
-                            echo "2222";
-
-                            $ubahpinjam = array();
-                            if ($oldpeminjaman['id'] !== $id) {
-                                $this->peminjaman->delete($id, true);
-                                $ubahpinjam = [
-                                    'jml_barang' => intval($oldpeminjaman['jml_barang']) + intval($jml_barang[$i]),
-                                ];
-                            } else {
-                                $ubahpinjam = [
-                                    'jml_barang' => $jml_barang[$i],
-                                ];
-                            }
-                            $ubahpinjam['tgl_pinjam'] = $this->request->getVar("tgl_pinjam");
-                            $updatepinjam = $this->peminjaman->setUpdateData($ubahpinjam);
-
-                            $this->peminjaman->update($oldpeminjaman['id'], $updatepinjam);
-                        } elseif ($data_ditemukan && $isDeleted) {
-                            echo "3333";
-                            var_dump($oldpeminjaman);
-                            $ubahpinjam = [
-                                'jml_barang' => intval($oldpeminjaman['jml_barang']) + intval($jml_barang[$i]),
-                                'tgl_pinjam' => $this->request->getVar("tgl_pinjam"),
-                                'deleted_by' => null,
-                                'deleted_at' => null,
-                            ];
-                            $updatepinjam = $this->peminjaman->setUpdateData($ubahpinjam);
-
-                            $this->peminjaman->update($oldpeminjaman['id'], $updatepinjam);
-                        }
-                        // update table stok barang lagi
-                        $newstokbrg = $this->db->table('stok_barang')->select('*')->where('barang_id', $barang_id[$i])->get()->getRowArray();
-
-                        $ubahstok2 = [
-                            'jumlah_keluar' => (intval($newstokbrg['jumlah_keluar']) + intval($jml_barang[$i])),
-                            'sisa_stok' => (intval($newstokbrg['sisa_stok']) - intval($jml_barang[$i])),
-                        ];
-
-                        $updatestok2 = $this->stokbarang->setUpdateData($ubahstok2);
-                        //periksa perubahan data
-                        $data_lama2 = $newstokbrg;
-                        $data_baru2 = $updatestok2;
-                        $field_update2 = [];
-                        foreach ($data_baru2 as $key => $value) {
-                            if (isset($data_lama2[$key]) && $data_lama2[$key] !== $value) {
-                                $field_update2[] = $key;
-                            }
-                        }
-                        // update data ke database
-                        $this->stokbarang->update($newstokbrg['id'], $updatestok2);
-                        // Periksa apakah query terakhir adalah operasi update
-                        $lastQuery = $this->db->getLastQuery();
-
-                        if (!$data_ditemukan) {
-                            $this->riwayattrx->inserthistori($newstokbrg['id'], $newstokbrg, $updatestok2, "Update " . $jenistrx . " " . $peminjaman['id'], $lastQuery, $field_update2);
-                        } else {
-                            $this->riwayattrx->inserthistori($newstokbrg['id'], $newstokbrg, $updatestok2, "Update " . $jenistrx . " " . $oldpeminjaman['id'], $lastQuery, $field_update2);
-                        }
-                    }
-
-                    $this->db->transComplete();
-                    if ($this->db->transStatus() === false) {
-                        // Jika terjadi kesalahan pada transaction
-                        $msg = ['error' => 'Gagal mengubah data peminjaman'];
+                    if (!$data_ditemukan) {
+                        $this->riwayattrx->inserthistori($newstokbrg['id'], $newstokbrg, $updatestok2, "Update " . $jenistrx . " " . $peminjaman['id'], $lastQuery, $field_update2);
                     } else {
-                        // Jika berhasil disimpan
-                        $msg = ['sukses' => "Sukses $jmldata data peminjaman berhasil terupdate"];
+                        $this->riwayattrx->inserthistori($newstokbrg['id'], $newstokbrg, $updatestok2, "Update " . $jenistrx . " " . $oldpeminjaman['id'], $lastQuery, $field_update2);
                     }
                 }
-            }
 
-            echo json_encode($msg);
-        } else {
-            $data = $this->errorPage404();
-            return view('errors/mazer/error-404', $data);
+                $this->db->transComplete();
+                if ($this->db->transStatus() === false) {
+                    // Jika terjadi kesalahan pada transaction
+                    $msg = ['error' => 'Gagal mengubah data peminjaman'];
+                } else {
+                    // Jika berhasil disimpan
+                    $msg = ['success' => "Sukses $jmldata data peminjaman berhasil terupdate"];
+                }
+            }
         }
+
+        echo json_encode($msg);
     }
 
     public function hapusdata($id)
@@ -961,7 +754,7 @@ class PeminjamanController extends BaseController
                 $this->peminjaman->update($id, $ubahhapus);
                 $this->peminjaman->setSoftDelete($id);
                 $msg = [
-                    'sukses' => "Data peminjaman $nama_anggota dengan barang $nama_brg berhasil dihapus",
+                    'success' => "Data peminjaman $nama_anggota dengan barang $nama_brg berhasil dihapus",
                 ];
                 echo json_encode($msg);
             } catch (\Exception $e) {
@@ -1022,7 +815,7 @@ class PeminjamanController extends BaseController
                 $this->peminjaman->setSoftDelete($id[$i]);
             }
             $msg = [
-                'sukses' => "$jmldata data $jenis berhasil dihapus secara temporary",
+                'success' => "$jmldata data $jenis berhasil dihapus secara temporary",
             ];
 
             echo json_encode($msg);
@@ -1037,7 +830,7 @@ class PeminjamanController extends BaseController
         if ($this->request->isAJAX()) {
             $jenis = $this->request->getVar('jenis_kat');
             $ids = $this->request->getVar('id');
-            $idbrg = $this->request->getVar('barang_id');
+            $idbrg = $this->request->getVar('barangId');
             $id = explode(",", $ids);
             $barang_id = explode(",", $idbrg);
             $restoredata = [
@@ -1093,7 +886,7 @@ class PeminjamanController extends BaseController
                     $this->riwayattrx->inserthistori($stoksarpras['id'], $stoksarpras, $datastok, "pemulihan data peminjaman " . $idpinjam, $lastQuery2, $field_update2);
 
                     $msg = [
-                        'sukses' => "Data peminjaman $jenis: $nama_brg berhasil dipulihkan",
+                        'success' => "Data peminjaman $jenis: $nama_brg berhasil dipulihkan",
                     ];
                 }
             } else {
@@ -1144,7 +937,7 @@ class PeminjamanController extends BaseController
 
                 if (count($id) > 0) {
                     $msg = [
-                        'sukses' => count($id) . " data peminjaman " . strtolower($jenis) . " berhasil dipulihkan semuanya",
+                        'success' => count($id) . " data peminjaman " . strtolower($jenis) . " berhasil dipulihkan semuanya",
                     ];
                 } else {
                     $msg = [
@@ -1159,35 +952,22 @@ class PeminjamanController extends BaseController
         }
     }
 
-    public function hapuspermanen($id = [])
+    public function hapuspermanen($id = null)
     {
         if ($this->request->isAJAX()) {
-            $ids = $this->request->getVar('id');
-            $jenis = $this->request->getVar('jenis_kat');
             $datapeminjaman = [];
-            $id = explode(",", $ids);
-            if (count($id) === 1) {
-                $peminjamanlama = $this->peminjaman->select('*')->where('id', $id)->get()->getRowArray();
-                array_push($datapeminjaman, $peminjamanlama);
-
+            if ($id != null) {
+                $jenis = $this->request->getVar('jenis_kat');
                 $nama_brg = $this->request->getVar('nama_brg');
-
                 $this->peminjaman->delete($id, true);
-
                 $msg = [
-                    'sukses' => "Data peminjaman $jenis: $nama_brg berhasil dihapus secara permanen",
+                    'success' => "Data peminjaman $jenis: $nama_brg berhasil dihapus secara permanen",
                 ];
             } else {
-                $datapeminjaman = [];
-                foreach ($id as $idpinjam) {
-                    $stoklama = $this->peminjaman->select('*')->where('id', $idpinjam)->get()->getRowArray();
-                    array_push($datapeminjaman, $stoklama);
-
-                    $this->peminjaman->delete($idpinjam, true);
-                }
-
+                $this->peminjaman->purgeDeleted();
+                $jmlhapus = $this->peminjaman->db->affectedRows();
                 $msg = [
-                    'sukses' => count($id) . " data $jenis berhasil dihapus secara permanen",
+                    'success' => $jmlhapus . " data peminjaman berhasil dihapus secara permanen",
                 ];
             }
 

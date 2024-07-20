@@ -1,102 +1,105 @@
-<div class="card mb-3 shadow" id="cardtransferbarang">
-  <div class="card-header shadow-sm">
-    <h5 class="card-title">Form Transfer <?= $title ?></h5>
-  </div>
-  <div class="card-content">
-    <div class="card-body">
+<div class="modal fade" id="modaltransfer" aria-labelledby="labelBarangModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered">
+    <div class="modal-content ">
+      <div class="modal-header bg-success">
+        <h5 class="modal-title text-white" id="title"><?= $title ?></h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
       <form class="form form-vertical py-2" id="formtrfbarang">
-        <?= csrf_field() ?>
-        <table class="table table-responsive-lg">
-          <thead>
-            <th>Form Transfer Barang Multiple</th>
-          </thead>
-          <tbody class="formtambahrow">
-            <?php $row = intval($jmldata);
-            for ($i = 1; $i <= $row; $i++) {
-            ?>
-              <tr>
-                <td>
-                  <div class="form-body">
-                    <div class="row d-flex justify-content-between">
-                      <div class="col-12">
-                        <h5>Form <?= $i; ?></h5>
-                      </div>
-                      <div class="col-lg-12">
-                        <div class="col-12">
-                          <input type="hidden" name="id[]" id="id<?= $i; ?>">
-                          <div class="row mb-1">
-                            <label for="idbrg<?= $i ?>">Nama Barang</label>
+        <div class="modal-body modal-body-label">
+          <div class="container">
+            <?= csrf_field() ?>
+            <table class="table table-responsive-lg">
+              <thead>
+                <th>Form Transfer Barang Multiple</th>
+              </thead>
+              <tbody class="formtambahrow">
+                <?php $row = intval($jmldata);
+                for ($i = 1; $i <= $row; $i++) {
+                ?>
+                  <tr>
+                    <td>
+                      <div class="form-body">
+                        <div class="row d-flex justify-content-between">
+                          <div class="col-12">
+                            <h5>Form <?= $i; ?></h5>
                           </div>
-                          <div class="row mb-1">
-                            <div class="input-group mb-3">
-                              <span class="input-group-text" id="basic-addon1"><i class="bi bi-layers"></i></span>
-                              <select name="barang_id[]" class="form-select p-2" id="idbrg<?= $i; ?>"></select>
-                              <div class="invalid-feedback erridbrg<?= $i; ?>"></div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-12">
-                          <div class="row mb-1">
-                            <label for="lokasi<?= $i ?>">Lokasi Penempatan Barang</label>
-                          </div>
-                          <div class="row mb-1">
-                            <div class="input-group mb-3">
-                              <span class="input-group-text" id="basic-addon1"><i class="bi bi-geo-alt"></i></span>
-                              <select class="form-select" id="lokasi<?= $i; ?>" name="ruang_id[]"></select>
-                              <div class="invalid-feedback errlokasi<?= $i; ?>"></div>
-                            </div>
-                          </div>
-                        </div>
-                        <div class="col-12">
-                          <div class="row g-2 mb-1">
-                            <div class="col-md-5">
-                              <label for="sisastok<?= $i ?>" class="mb-1">Sisa Stok</label>
-                              <div class="input-group mb-3">
-                                <span class="input-group-text" id="basic-addon1"><i class="bi bi-box-seam"></i></span>
-                                <input type="number" min="1" class="form-control" placeholder="Stok Barang Saat ini" name="sisa_stok[]" id="sisastok<?= $i; ?>" readonly>
-                                <div class="invalid-feedback errsisastok<?= $i; ?>"></div>
+                          <div class="col-lg-12">
+                            <div class="col-12">
+                              <input type="hidden" name="id[]" id="id<?= $i; ?>">
+                              <div class="row mb-1">
+                                <label for="idbrg<?= $i ?>">Nama Barang</label>
+                              </div>
+                              <div class="row mb-1">
+                                <div class="input-group mb-3">
+                                  <span class="input-group-text" id="basic-addon1"><i class="bi bi-layers"></i></span>
+                                  <select name="barang_id[]" class="form-select p-2" id="idbrg<?= $i; ?>"></select>
+                                  <div class="invalid-feedback erridbrg<?= $i; ?>"></div>
+                                </div>
                               </div>
                             </div>
-                            <div class="col-md-5">
-                              <label for="jmlkeluar<?= $i ?>" class="mb-1">Jumlah Barang Pindah</label>
-                              <div class="input-group mb-3">
-                                <input type="number" min="1" class="form-control" id="jmlkeluar<?= $i; ?>" placeholder="Masukkan Jumlah Barang keluar" name="jumlah_keluar[]">
-                                <div class="invalid-feedback errjmlkeluar<?= $i; ?>"></div>
+                            <div class="col-12">
+                              <div class="row mb-1">
+                                <label for="lokasi<?= $i ?>">Lokasi Penempatan Barang</label>
+                              </div>
+                              <div class="row mb-1">
+                                <div class="input-group mb-3">
+                                  <span class="input-group-text" id="basic-addon1"><i class="bi bi-geo-alt"></i></span>
+                                  <select class="form-select" id="lokasi<?= $i; ?>" name="ruang_id[]"></select>
+                                  <div class="invalid-feedback errlokasi<?= $i; ?>"></div>
+                                </div>
                               </div>
                             </div>
-                            <div class="col-md-2">
-                              <label for="satuan<?= $i ?>" class="mb-1">Satuan</label>
-                              <div class="input-group mb-3">
-                                <select name="satuan_id[]" class="form-select p-2" id="satuan<?= $i; ?>"></select>
-                                <div class="invalid-feedback errsatuan"></div>
+                            <div class="col-12">
+                              <div class="row g-2 mb-1">
+                                <div class="col-md-5">
+                                  <label for="sisastok<?= $i ?>" class="mb-1">Sisa Stok</label>
+                                  <div class="input-group mb-3">
+                                    <span class="input-group-text" id="basic-addon1"><i class="bi bi-box-seam"></i></span>
+                                    <input type="number" min="1" class="form-control" placeholder="Stok Barang Saat ini" name="sisa_stok[]" id="sisastok<?= $i; ?>" readonly>
+                                    <div class="invalid-feedback errsisastok<?= $i; ?>"></div>
+                                  </div>
+                                </div>
+                                <div class="col-md-5">
+                                  <label for="jmlkeluar<?= $i ?>" class="mb-1">Jumlah Barang Pindah</label>
+                                  <div class="input-group mb-3">
+                                    <input type="number" min="1" class="form-control" id="jmlkeluar<?= $i; ?>" placeholder="Masukkan Jumlah Barang keluar" name="jumlah_keluar[]">
+                                    <div class="invalid-feedback errjmlkeluar<?= $i; ?>"></div>
+                                  </div>
+                                </div>
+                                <div class="col-md-2">
+                                  <label for="satuan<?= $i ?>" class="mb-1">Satuan</label>
+                                  <div class="input-group mb-3">
+                                    <select name="satuan_id[]" class="form-select p-2" id="satuan<?= $i; ?>"></select>
+                                    <div class="invalid-feedback errsatuan"></div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-12">
+                            <div class="row g-2 mb-1">
+                              <div class="col-md-5">
+                                <label class="mb-1">Tanggal Pembelian Sebelumnya</label>
+                                <div class="input-group mb-3">
+                                  <span class="input-group-text" id="basic-addon1"><i class="bi bi-calendar3"></i></span>
+                                  <input type="date" class="form-control" placeholder="Masukkan Tanggal" id="tglbelilama<?= $i ?>" name="tgl_belilama[]" readonly>
+                                </div>
                               </div>
                             </div>
                           </div>
                         </div>
                       </div>
-                      <div class="col-12">
-                        <div class="row g-2 mb-1">
-                          <div class="col-md-5">
-                            <label class="mb-1">Tanggal Pembelian Sebelumnya</label>
-                            <div class="input-group mb-3">
-                              <span class="input-group-text" id="basic-addon1"><i class="bi bi-calendar3"></i></span>
-                              <input type="date" class="form-control" placeholder="Masukkan Tanggal" id="tglbelilama<?= $i ?>" name="tgl_belilama[]" readonly>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-            <?php } ?>
-          </tbody>
-        </table>
-        <div class="row">
-          <div class="col-12 d-flex justify-content-end">
-            <button type="button" class="btn btn-white my-4 closeformtrf">Batal</button>
-            <button type="submit" class="btn btn-success my-4 btnsimpantrf">Simpan</button>
+                    </td>
+                  </tr>
+                <?php } ?>
+              </tbody>
+            </table>
           </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+          <button type="submit" class="btn btn-success btnsimpan">Simpan</button>
         </div>
       </form>
     </div>
@@ -131,21 +134,21 @@
     $('#formtrfbarang').submit(function(e) {
       e.preventDefault();
 
-      let formdatamultiple = new FormData(this); // mengambil data dari form
-      formdatamultiple.append('jmldata', rowCount);
+      let formdata = new FormData(this); // mengambil data dari form
+      formdata.append('jmldata', rowCount);
       $.ajax({
         type: "post",
         url: `${nav}/transferbarang`,
-        data: formdatamultiple,
+        data: formdata,
         contentType: false,
         processData: false,
         beforeSend: function() {
-          $('.btnsimpanmultiple').attr('disable', 'disabled');
-          $('.btnsimpanmultiple').html('<i class="fa fa-spin fa-spinner"></i>');
+          $('.btnsimpan').attr('disable', 'disabled');
+          $('.btnsimpan').html('<i class="fa fa-spin fa-spinner"></i>');
         },
         complete: function() {
-          $('.btnsimpanmultiple').removeAttr('disable');
-          $('.btnsimpanmultiple').html('Simpan');
+          $('.btnsimpan').removeAttr('disable');
+          $('.btnsimpan').html('Simpan');
         },
         success: function(result) {
           var response = JSON.parse(result);
@@ -182,10 +185,10 @@
               }
             }
           } else {
-            $('#cardtransferbarang').hide(500);
+            $(`#modaltransfer`).modal('hide');
             Swal.fire(
               'Berhasil!',
-              response.sukses,
+              response.success,
               'success'
             ).then((result) => {
               $('#checkall').prop('checked', false)

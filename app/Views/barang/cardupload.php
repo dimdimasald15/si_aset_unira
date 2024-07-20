@@ -86,12 +86,6 @@
       }
     });
     $modal.on('shown.bs.modal', function() {
-      // var aspectRatio = '';
-      // if (jenis_kat === 'Barang Tetap') {
-      //   aspectRatio = 2;
-      // } else if (jenis_kat === 'Barang Persediaan') {
-      //   aspectRatio = 1;
-      // }
       cropper = new Cropper(crop_image, {
         aspectRatio: 1,
         viewMode: 3,
@@ -113,8 +107,6 @@
         reader.onloadend = function() {
           var base64data = reader.result;
           $('.previewresult').show(500);
-          // $('#fotobrg').hide();
-          // $('#cropped_image').show();
           $('#cropped_image').val(base64data);
           $('.preview').html('<label for="fotobrg" class="mb-1">Preview Gambar Barang</label><img src="' + base64data + '" class="img-thumbnail rounded mx-auto d-block" style="width: 400px; height: 400px;">'); // tampilkan gambar preview
           $('.previewresult').html('<label for="fotobrg" class="mb-1">Preview Gambar Barang <?= $nama_brg ?></label><img src="' + base64data + '" class="img-thumbnail rounded mx-auto d-block" style="width: 400px; height: auto;">'); // tampilkan gambar preview
@@ -131,7 +123,7 @@
       let data = new FormData(formupload);
       $.ajax({
         type: "post",
-        url: "<?= $nav ?>/simpanupload",
+        url: `${nav}/simpanupload`,
         data: data,
         enctype: 'multipart/form-data',
         processData: false,
@@ -147,15 +139,10 @@
           $('.btnupload').html('Update');
         },
         success: function(response) {
+          const fields = ["fotobrg"];
           if (response.error) {
-            if (response.error.fotobrg) {
-              $('#fotobrg').addClass('is-invalid');
-              $('.errfotobrg').html(response.error.fotobrg);
-            } else {
-              $('#fotobrg').removeClass('is-invalid');
-              $('.errfotobrg').html('');
-            }
-          } else {
+              util.handleValidationErrors(fields, response.error);
+          }  else {
             $('#cardupload').hide(500);
             Swal.fire(
               'Berhasil!',
