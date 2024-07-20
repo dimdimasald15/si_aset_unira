@@ -411,54 +411,21 @@
       $('#tambahrow tr').find('.btnhapusrow').hide();
 
       (function(j) {
-        $(`#idbrg${j}`).select2({
-          placeholder: 'Piih Nama Barang',
-          minimumInputLength: 1,
-          allowClear: true,
-          width: "100%",
-          ajax: {
-            url: `<?= $nav ?>/pilihbarang`,
-            dataType: 'json',
-            delay: 250,
-            data: function(params) {
-              return {
-                search: params.term,
-                jenis_kat: "<?= $jenis_kat ?>",
-              }
-            },
-            processResults: function(data, page) {
-              return {
-                results: data
-              };
-            },
-            cache: true
-          },
-          templateResult: formatResult,
-        });
+        selectOption.barang(`#idbrg${j}`,"<?= $jenis_kat ?>");
 
         $(`#idbrg${j}`).on('change', function(e) {
           e.preventDefault();
-          $(`#idbrg${j}`).removeClass('is-invalid');
-          $(`.erroridbrg${j}`).html('');
-          $(`#satuan${j}`).removeClass('is-invalid');
-          $(`.errorsatuan${j}`).html('');
-
-          checkBarangDuplikat(j);
+          util.rmIsInvalid(`idbrg${j}`);
+          util.rmIsInvalid(`satuan${j}`);
+          const inputId = ["idbrg","satuan","jumlah"];
+          barang.isDuplicate(inputId, j);
 
           var b_id = $(`#idbrg${j}`).val();
           var r_id = 54;
 
           if (b_id != null && r_id != null) {
-            $.ajax({
-              type: "post",
-              url: "<?= $nav ?>/cekbrgdanruang",
-              data: {
-                barang_id: b_id,
-                ruang_id: r_id,
-              },
-              dataType: "json",
-              success: function(response) {
-                if (response) {
+            function handleCheckResponse(response){
+                if(response){
                   $(`#satuan${j}`).prop('disabled', true);
                   $(`#satuan${j}`).html('<option value = "' + response.satuan_id + '" selected >' + response.kd_satuan + '</option>');
                   $(`#sisastok${j}`).val(response.sisa_stok);
@@ -468,48 +435,22 @@
                   }
                   sisa_stok_lama.push(response.sisa_stok);
                 }
-              }
-            });
+            }
+            const datas = { barang_id: b_id, ruang_id: r_id }
+            barang.checkRuangBrg(datas, handleCheckResponse);
           } else {
             $(`#jumlah${j}`).html('');
             $(`#satuan${j}`).prop('disabled', false);
             $(`#satuan${j}`).html('');
           }
         });
+        selectOption.satuan(`satuan${j}`);
+        crud.rmValidationError(`#satuan${j}`);
 
-        $(`#satuan${j}`).select2({
-          placeholder: 'Piih Satuan',
-          minimumInputLength: 1,
-          allowClear: true,
-          width: "100%",
-          ajax: {
-            url: "<?= $nav ?>/pilihsatuan",
-            dataType: 'json',
-            delay: 250,
-            data: function(params) {
-              return {
-                search: params.term,
-              }
-            },
-            processResults: function(data, page) {
-              return {
-                results: data
-              };
-            },
-            cache: true
-          },
-          templateResult: formatResult,
-        });
-
-        $(`#satuan${j}`).on('change', function(e) {
-          e.preventDefault();
-          $(`#satuan${j}`).removeClass('is-invalid');
-          $(`.errorsatuan${j}`).html('');
-        })
         $(`#jumlah${j}`).on('input', function(e) {
           e.preventDefault();
-          $(`#jumlah${j}`).removeClass('is-invalid');
-          $(`.errorjumlah${j}`).html('');
+          util.rmIsInvalid(`jumlah${j}`);
+          
           if ($(this).val() == '') {
             if ("<?= $saveMethod == "update" ?>") {
               var sisa_stok_update = parseInt(sisa_stok_lama[j - 1]) + parseInt(jumlah_lama[j - 1]);
@@ -534,12 +475,9 @@
             $(`.errjumlah${j}`).html('input tidak boleh lebih dari ' + sisa_stok_lama[j - 1]);
           } else {
             $(`#sisastok${j}`).val(sisa_stok_baru)
-            $(`#sisastok${j}`).removeClass('is-invalid');
-            $(`.errsisastok${j}`).html('');
-            $(`#jmlkeluar${j}`).removeClass('is-invalid');
-            $(`.errjmlkeluar${j}`).html('');
+            util.rmIsInvalid(`sisastok${j}`);
+            util.rmIsInvalid(`jmlkeluar${j}`);
           }
-
         })
       })(i)
 
@@ -548,23 +486,6 @@
 
   //check duplikat barang
   idbrgSet = new Set();
-
-  function checkBarangDuplikat(row) {
-    let idbrg = $(`#idbrg${row}`).val();
-
-    if (idbrgSet.has(idbrg)) {
-      Swal.fire({
-        icon: 'info',
-        text: 'Nama barang sudah dimasukkan sebelumnya! Sistem akan mengosongkan input barang.',
-      }).then((result) => {
-        $(`#idbrg${row}`).html('');
-        $(`#satuan${row}`).html('');
-        $(`#jumlah${row}`).val("");
-      });
-    } else {
-      idbrgSet.add(idbrg);
-    }
-  }
 
   function formatResult(data) {
     if (!data.id) {

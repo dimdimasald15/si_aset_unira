@@ -1,43 +1,54 @@
 export const kodebrg = (() => {
-    const getSubKodeBrg = (katid, row) => {
+    const fetchData = (url, katid, method, callback) => {
         $.ajax({
-            url: `${nav}/getsubkdbarang`,
-            type: "POST",
+            url,
+            type: method,
             data: { katid },
             dataType: "json",
-            success: function (response) {
-                $(`#skbarang${row}`).empty();
-                $(`#skbarang${row}`).append('<option value="">Sub-Kode Barang</option>');
-                if (response.subkdbarang == undefined) {
-                    $(`#subkdkategori${row}`).val(response[0].kd_kategori);
-                }
-                if (response[0].subkdbarang !== undefined) {
-                    $(`#subkdkategori${row}`).val(response[0].kd_kategori);
-                    $.each(response, function (key, value) {
-                        $(`#skbarang${row}`).append('<option value="' + value.subkdbarang + '">' + value
-                            .subkdbarang + '</option>');
-                    });
-                }
-
-                $(`#skbarang${row}`).append('<option value="otherbrg' +
-                    row + '">Lainnya</option>');
-            },
+            success: callback,
             error: function (xhr, ajaxOptions, thrownError) {
                 alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
             }
-        })
+        });
+    }
+
+    const getSubKodeBrg = (katid, row, kode1) => {
+        const url = `${nav}/getsubkdbarang`;
+        function callback(response) {
+            $(`#skbarang${row}`).empty();
+            $(`#skbarang${row}`).append('<option value="">Sub-Kode Barang</option>');
+            if (response.subkdbarang == undefined) {
+                $(`#subkdkategori${row}`).val(response[0].kd_kategori);
+            }
+            if (response[0].subkdbarang !== undefined) {
+                $(`#subkdkategori${row}`).val(response[0].kd_kategori);
+                $.each(response, function (key, value) {
+                    $(`#skbarang${row}`).append('<option value="' + value.subkdbarang + '">' + value
+                        .subkdbarang + '</option>');
+                });
+            }
+            $(`#skbarang${row}`).append('<option value="otherbrg' +
+                row + '">Lainnya</option>');
+            if (kode1 !== undefined) {
+                $('#skbarang').attr('disabled', 'disabled');
+                $("#skbarang option").each(function () {
+                    if ($(this).val() === kode1) {
+                        $(this).attr("selected", "selected");
+                    }
+                });
+            }
+        }
+
+        fetchData(url, katid, "POST", callback)
     }
 
     const getSubKdOtherBrg = (katid) => {
         if (katid !== null) {
-            $.ajax({
-                url: `${nav}/getkdbrgbykdkat`,
-                data: { katid },
-                dataType: "json",
-                success: function (response) {
-                    kdbrgother = response.subkdbrgother;
-                }
-            });
+            const url = `${nav}/getkdbrgbykdkat`;
+            function callback(response) {
+                kdbrgother = response.subkdbrgother;
+            }
+            fetchData(url, katid, "GET", callback)
         }
     }
 

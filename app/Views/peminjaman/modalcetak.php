@@ -21,7 +21,7 @@
         <h5 class="modal-title text-white" id="title"><?= $title ?></h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <form action="peminjaman-barang-tetap/cetak" method="post">
+      <form action="peminjaman-barang/cetak" method="post">
         <div class="modal-body modal-body-label">
           <div class="container">
             <?= csrf_field(); ?>
@@ -88,29 +88,4 @@
     set_tahun();
     set_bulan();
   });
-
-  function set_tahun() {
-    var skrg = new Date(Date.now());
-    var end = skrg.getFullYear()
-    var html = `<option value="">Semua Tahun</option>`
-    for (let i = end; i >= 1990; i--) {
-      html += `<option value="${i}">${i}</option>`
-    }
-
-    $("#selecttahun").html(html)
-  }
-
-  function set_bulan() {
-    var namaBulan = [
-      "Januari", "Februari", "Maret", "April", "Mei", "Juni",
-      "Juli", "Agustus", "September", "Oktober", "November", "Desember"
-    ];
-    var html = `<option value="">Semua Bulan</option>`;
-
-    for (let i = 0; i < namaBulan.length; i++) {
-      html += `<option value="${i + 1}">${namaBulan[i]}</option>`;
-    }
-
-    $("#selectbulan").html(html);
-  }
 </script>

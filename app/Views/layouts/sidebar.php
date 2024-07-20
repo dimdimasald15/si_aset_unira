@@ -49,6 +49,12 @@
             <span>Ruang</span>
           </a>
         </li>
+        <li class="sidebar-item <?= ($nav == 'gedung') ? 'active' : '' ?>">
+          <a href="gedung" class='sidebar-link'>
+            <i class="bi bi-building"></i>
+            <span>Gedung</span>
+          </a>
+        </li>
         <li class="sidebar-item <?= ($nav == 'laporan') ? 'active' : '' ?>">
           <a href="laporan" class='sidebar-link'>
             <i class="bi bi-file-earmark-bar-graph"></i>

@@ -36,15 +36,37 @@
     var cardheaders = document.querySelectorAll('.card-header');
     var cardbodies = document.querySelectorAll('.card-body');
     var headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+    var navbar = document.querySelectorAll('.navbar');
 
-    for (var i = 0; i < tables.length; i++) {
-      // add table-dark class to each table
-      tables[i].classList.add('table-dark', 'text-white');
-      cards[i].classList.add('bg-dark', 'text-white');
-      cardheaders[i].classList.add('bg-dark', 'text-white');
-      cardbodies[i].classList.add('bg-dark', 'text-white');
-      headings[i].classList.add('text-white');
-    }
+    // Add classes to tables
+    tables.forEach((table) => {
+      table.classList.add('table-dark', 'text-white');
+    });
+
+    // Add classes to navbar
+    navbar.forEach((nav) => {
+      nav.classList.add('bg-dark', 'text-white');
+    });
+
+    // Add classes to cards
+    cards.forEach((card) => {
+      card.classList.add('bg-dark', 'text-white');
+    });
+
+    // Add classes to card headers
+    cardheaders.forEach((header) => {
+      header.classList.add('bg-dark', 'text-white');
+    });
+
+    // Add classes to card bodies
+    cardbodies.forEach((body) => {
+      body.classList.add('bg-dark', 'text-white');
+    });
+
+    // Add classes to headings
+    headings.forEach((heading) => {
+      heading.classList.add('text-white');
+    });
 
     // set light switch input to true
     if (!lightSwitch.checked) {

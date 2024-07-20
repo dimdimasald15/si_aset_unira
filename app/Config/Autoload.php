@@ -49,6 +49,7 @@ class Autoload extends AutoloadConfig
         'PHPSQLParser'          => APPPATH . 'ThirdParty/php-sql-parser/src/PHPSQLParser', // <-- namespace for php-sql-parser
         'Hermawan\DataTables'   => APPPATH . 'ThirdParty/codeigniter4-datatables/src', // <-- namespace for this library
         'DOMPDF' => APPPATH . 'ThirdParty/dompdf/dompdf',
+        'MPDF' => APPPATH . 'ThirdParty/mpdf/mpdf',
     ];
     /**
      * -------------------------------------------------------------------

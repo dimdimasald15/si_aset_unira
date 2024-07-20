@@ -18,6 +18,7 @@ body {
     background-color: #ffffff;
   }
 }
+
 .h1,
 .h2,
 .h3,
@@ -40,9 +41,14 @@ h6 {
 @page {
   margin: 180px 50px;
 }
+
 @page {
   header: header;
   footer: footer;
+}
+
+table {
+  page-break-after: always;
 }
 
 #header {
@@ -72,7 +78,7 @@ h6 {
 /* Mengatur margin top pada content untuk memberikan ruang kosong untuk header pada halaman pertama */
 #content {
   padding: 0px 0px 0px 0px;
-  margin: -40px -10px -100px -20px;
+  margin: -3rem -1rem -6rem -1rem;
   color: #000000;
   /* background-color: orange; */
 }
@@ -82,43 +88,52 @@ div.absolute {
   padding: 0.5em;
   vertical-align: middle;
 }
+
 .logo {
   top: 40px;
   left: 0px;
 }
+
 .logo img {
   max-width: 80px;
   border: 2px solid white;
 }
+
 .txt1 {
   top: 40px;
   left: 48px;
   right: 65px;
 }
+
 .txt1 h4 {
   font-family: helvetica;
   letter-spacing: -1px;
   font-weight: 400;
 }
+
 .txt2 {
   top: 62px;
   left: 90px;
   right: 10px;
 }
+
 .txt2 h2 {
   font-family: times;
   letter-spacing: 1px;
   font-weight: 500;
 }
+
 .txt3 {
   top: 90px;
   left: 41px;
   right: 68px;
 }
+
 .txt3 h3 {
   font-family: times;
   font-weight: 400;
 }
+
 div .line {
   width: 280px;
   height: 0;
@@ -126,10 +141,12 @@ div .line {
   margin-top: 18px;
   margin-left: 68px;
 }
+
 .txt4 {
-  top: 97px !important;
+  top: 85px !important;
   right: 25px !important;
 }
+
 .txt4 p {
   font-family: 'Caveat', cursive;
   font-weight: '400';
@@ -157,6 +174,7 @@ td {
 .tablekategori {
   font-size: 14px;
 }
+
 .tablekategori th,
 td {
   padding: 2px 2px;
@@ -166,14 +184,6 @@ td {
   display: block;
   width: 100%;
 }
-
-/* Create two equal columns that floats next to each other */
-/* .column {
-  float: left;
-  margin-left: -10%;
-  margin-right: -20%;
-  margin-bottom: 0%;
-} */
 
 /* Clear floats after the columns */
 .row:after {

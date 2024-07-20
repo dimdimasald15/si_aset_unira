@@ -11,6 +11,7 @@ use CodeIgniter\HTTP\IncomingRequest;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
 use Psr\Log\LoggerInterface;
+use Pusher\Pusher;
 
 /**
  * Class BaseController
@@ -67,14 +68,46 @@ abstract class BaseController extends Controller
         return $data;
     }
 
-    public function uploadFile($path, $file) {
-    	if (!is_dir($path)) 
-			mkdir($path, 0777, TRUE);
-		if ($file->isValid() && ! $file->hasMoved()) {
-			$newName = $file->getRandomName();
-			$file->move($path, $newName);
-			return $path.$newName;
-		}
-		return "";
-	}
+    public function uploadFile($path, $file)
+    {
+        if (!is_dir($path))
+            mkdir($path, 0777, TRUE);
+        if ($file->isValid() && !$file->hasMoved()) {
+            $newName = $file->getRandomName();
+            $file->move($path, $newName);
+            return $path . $newName;
+        }
+        return "";
+    }
+
+    public function handleNotification()
+    {
+        $options = array(
+            'cluster' => getenv('PUSHER_CLUSTER'),
+            'useTLS' => true
+        );
+        $pusher = new Pusher(
+            getenv('PUSHER_KEY'),
+            getenv('PUSHER_SECRET'),
+            getenv('PUSHER_APP_ID'),
+            $options
+        );
+
+        return $pusher;
+    }
+
+    public function getBreadcrumb()
+    {
+        $segments = $this->uri->getSegments();
+        $breadcrumb = [];
+        $link = '';
+
+        foreach ($segments as $segment) {
+            $link .= '/' . $segment;
+            $name = ucwords(str_replace('-', ' ', $segment));
+            $breadcrumb[] = ['name' => $name, 'link' => $link];
+        }
+
+        return $breadcrumb;
+    }
 }

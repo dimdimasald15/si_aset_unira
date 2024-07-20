@@ -56,24 +56,32 @@ $routes->group('admin/dashboard', ['filter' => 'ceklogin'], function ($routes) {
     $routes->get('getcountbrg', 'DashboardController::getcountbrg');
 });
 
+$routes->group('admin/gedung', ['filter' => 'ceklogin'], function ($routes) {
+    $routes->get('/', 'GedungController::index');
+    $routes->get('listdatagedung', 'GedungController::listdatagedung');
+    $routes->get('tampilform', 'GedungController::getForm');
+    $routes->post('simpan', 'GedungController::simpandata');
+    $routes->match(['get', 'post'], 'pilihkategori', 'GedungController::pilihkategori');
+    $routes->post('update/(:any)', 'GedungController::updatedata/$1');
+    $routes->post('hapus/(:any)', 'GedungController::hapusdata/$1');
+});
+
 $routes->group('admin/ruang', ['filter' => 'ceklogin'], function ($routes) {
     $routes->get('/', 'RuangController::index');
-    $routes->get('getruangbyid', 'RuangController::getruangbyid');
-    $routes->get('tampildataruang', 'RuangController::listdataruang');
-    $routes->get('tampildatarestore', 'RuangController::listdataruang');
+    $routes->get('tampilform', 'RuangController::getForm');
+    $routes->get('listdata', 'RuangController::listdataruang');
     $routes->post('simpan', 'RuangController::simpandata');
     $routes->post('update/(:any)', 'RuangController::updatedata/$1');
     $routes->post('hapus/(:any)', 'RuangController::hapusdata/$1');
-    $routes->post('restore/(:any)', 'RuangController::restoredata/$1');
-    $routes->match(['get', 'post'], 'restore', 'RuangController::restoredata');
+    $routes->post('restore', 'RuangController::restoredata');
     $routes->post('hapuspermanen/(:any)', 'RuangController::hapuspermanen/$1');
     $routes->match(['get', 'post'], 'hapuspermanen', 'RuangController::hapuspermanen');
 });
 
 $routes->group('admin/kategori', ['filter' => 'ceklogin'], function ($routes) {
     $routes->get('/', 'KategoriController::index');
-    $routes->get('listdatakategori', 'KategoriController::listdatakategori');
-    $routes->post('tampilformtambah', 'KategoriController::tampilformtambah');
+    $routes->get('listdata', 'KategoriController::listdatakategori');
+    $routes->post('tampilform', 'KategoriController::tampilform');
     $routes->post('getnamakategori', 'KategoriController::getnamakategori');
     $routes->post('simpan', 'KategoriController::simpandata');
     $routes->post('update/(:any)', 'KategoriController::updatedata/$1');
@@ -99,18 +107,18 @@ $routes->group('admin/kelola-barang', ['filter' => 'ceklogin'], function ($route
     $routes->post('insertmultiple', 'BarangController::insertmultiplebarang');
     $routes->post('transferbarang', 'BarangController::transfermultiplebarang');
     $routes->post('updatebarang/(:any)', 'BarangController::updatedatabarang/$1');
-    $routes->post('hapus/(:any)', 'BarangController::hapusdata/$1');
+    $routes->post('hapus', 'BarangController::deletetemporary');
     $routes->get('tampildatarestore', 'BarangController::listdatabarang');
     $routes->post('restore/(:any)', 'BarangController::restoredata/$1');
     $routes->match(['get', 'post'], 'restore', 'BarangController::restoredata');
     $routes->post('hapuspermanen', 'BarangController::hapuspermanen');
     $routes->get('detail-barang/(:any)', 'BarangController::detailbarang/$1');
-    $routes->post('multipledelete', 'BarangController::multipledeletetemporary');
+    $routes->post('multipledelete', 'BarangController::deletetemporary');
 
     $routes->post('tampilexportexcel', 'BarangController::tampilexportexcel');
     $routes->post('tampilimportexcel', 'BarangController::tampilimportexcel');
     $routes->post('simpandataexcel', 'BarangController::simpandataexcel');
-    $routes->match(['get','post'],'downloadtemplate', 'BarangController::templateinputbarang');
+    $routes->match(['get', 'post'], 'downloadtemplate', 'BarangController::templateinputbarang');
     $routes->post('tampillabelbarang', 'BarangController::tampillabelbarang');
     $routes->post('tampiltransferform', 'BarangController::tampiltransferform');
     $routes->post('tampileditform', 'BarangController::tampileditform');
@@ -120,7 +128,7 @@ $routes->group('admin/kelola-barang', ['filter' => 'ceklogin'], function ($route
     $routes->post('simpanupload', 'BarangController::simpanupload');
 
     $routes->get('getdatastokbarangbyid', 'BarangController::getdatastokbarangbyid');
-    $routes->get('pilihbarang', 'BarangController::pilihbarang');
+    // $routes->get('pilihbarang', 'BarangController::pilihbarang');
     $routes->get('pilihsatuan', 'BarangController::pilihsatuan');
     $routes->get('pilihlokasi', 'BarangController::pilihlokasi');
     $routes->post('cekbrgdanruang', 'BarangController::cekbrgdanruang');
@@ -170,7 +178,7 @@ $routes->group('admin/peminjaman-barang', ['filter' => 'ceklogin'], function ($r
 
     $routes->get('tampilformkembali', 'PeminjamanController::tampilformkembali');
     $routes->post('tampilmodalcetak', 'PeminjamanController::tampilmodalcetak');
-    $routes->get('tampilsingleform', 'PeminjamanController::tampilsingleform');
+    $routes->get('tampilformpinjam', 'PeminjamanController::tampilform');
     $routes->get('pilihanggota', 'PermintaanController::carianggota');
     $routes->get('getpeminjamanbyid', 'PeminjamanController::getpeminjamanbyid');
     $routes->get('pilihunit', 'PermintaanController::pilihunit');
@@ -196,28 +204,26 @@ $routes->group('admin/laporan', ['filter' => 'ceklogin'], function ($routes) {
 
 $routes->group('admin/anggota', ['filter' => 'ceklogin'], function ($routes) {
     $routes->get('/', 'AnggotaController::index');
-    $routes->get('listdataanggota', 'AnggotaController::listdataanggota');
-    $routes->get('listdataunit', 'AnggotaController::listdataunit');
-    $routes->post('simpanunit', 'AnggotaController::simpandataunit');
-    $routes->post('updateunit/(:any)', 'AnggotaController::updatedataunit/$1');
-    $routes->post('hapusunit/(:any)', 'AnggotaController::hapusdataunit/$1');
-    $routes->match(['get', 'post'], 'restoreunit', 'AnggotaController::restoredataunit');
-    $routes->post('simpananggota', 'AnggotaController::simpandataanggota');
-    $routes->post('updateanggota/(:any)', 'AnggotaController::updatedataanggota/$1');
-    $routes->post('hapusanggota/(:any)', 'AnggotaController::hapusdataanggota/$1');
-    $routes->match(['get', 'post'], 'restoreanggota', 'AnggotaController::restoredataanggota');
-    $routes->post('multipledeleteunit', 'AnggotaController::multipledeleteunittemporary');
-    $routes->post('multipledeleteanggota', 'AnggotaController::multipledeleteanggotatemporary');
-    $routes->post('hapuspermanenunit/(:any)', 'AnggotaController::hapuspermanenunit/$1');
-    $routes->match(['get', 'post'], 'hapuspermanenunit', 'AnggotaController::hapuspermanenunit');
-    $routes->post('hapuspermanenanggota/(:any)', 'AnggotaController::hapuspermanenanggota/$1');
-    $routes->match(['get', 'post'], 'hapuspermanenanggota', 'AnggotaController::hapuspermanenanggota');
+    $routes->get('listdataanggota', 'AnggotaController::listdata');
+    $routes->get('tampilformanggota', 'AnggotaController::tampilform');
+    $routes->post('simpananggota', 'AnggotaController::simpandata');
+    $routes->post('updateanggota/(:any)', 'AnggotaController::updatedata/$1');
+    $routes->post('hapusanggota/(:any)', 'AnggotaController::hapusdata/$1');
+    $routes->match(['get', 'post'], 'restoreanggota', 'AnggotaController::restoredata');
+    $routes->post('multipledeleteunit', 'UnitController::multipledelete');
+    $routes->post('multipledeleteanggota', 'AnggotaController::multipledelete');
+    $routes->post('hapuspermanenanggota/(:any)', 'AnggotaController::hapuspermanen/$1');
+    $routes->match(['get', 'post'], 'hapuspermanenanggota', 'AnggotaController::hapuspermanen');
 
-    $routes->get('singleformunit', 'AnggotaController::singleformunit');
-    $routes->get('singleformanggota', 'AnggotaController::singleformanggota');
-    $routes->get('getkategoriunit', 'AnggotaController::getkategoriunit');
-    $routes->post('getdataunitbyid', 'AnggotaController::getdataunitbyid');
-    $routes->post('getdataanggotabyid', 'AnggotaController::getdataanggotabyid');
+    $routes->get('listdataunit', 'UnitController::listdata');
+    $routes->post('simpanunit', 'UnitController::simpandata');
+    $routes->post('updateunit/(:any)', 'UnitController::updatedata/$1');
+    $routes->post('hapusunit/(:any)', 'UnitController::hapusdata/$1');
+    $routes->post('hapuspermanenunit/(:any)', 'UnitController::hapuspermanen/$1');
+    $routes->match(['get', 'post'], 'hapuspermanenunit', 'UnitController::hapuspermanen');
+    $routes->match(['get', 'post'], 'restoreunit', 'UnitController::restoredata');
+
+    $routes->get('tampilformunit', 'UnitController::tampilform');
     $routes->get('pilihunit', 'PermintaanController::pilihunit');
 });
 

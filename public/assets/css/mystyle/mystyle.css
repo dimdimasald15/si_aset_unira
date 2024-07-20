@@ -39,6 +39,7 @@ table.dataTable tfoot td {
   background-color: #fff !important;
   padding: 4px !important;
 }
+
 .dataTables_wrapper .dataTables_filter input {
   border: 1px solid #aaa !important;
   border-radius: 3px !important;
@@ -54,10 +55,12 @@ table.dataTable tfoot td {
   border-top: 1px solid #f0eeee !important;
   border-bottom: 1px solid #f0eeee !important;
 }
+
 .table-flush tbody tr:first-child td,
 .table-flush tbody tr:first-child th {
   border-top: 0 !important;
 }
+
 .table-flush tbody tr:last-child td,
 .table-flush tbody tr:last-child th {
   border-bottom: 0 !important;
@@ -82,7 +85,7 @@ table.dataTable tfoot td {
 }
 
 /* Mengatur pesan kesalahan berada di bawah input */
-.form-group.has-icon-left .form-control.is-invalid + .invalid-feedback {
+.form-group.has-icon-left .form-control.is-invalid+.invalid-feedback {
   position: absolute !important;
   top: 100% !important;
   left: 0 !important;
@@ -104,14 +107,17 @@ table.dataTable tfoot td {
 .sidebar-wrapper .menu .sidebar-title {
   color: var(--bs-green) !important;
 }
+
 .sidebar-wrapper .menu .sidebar-link {
   color: var(--bs-green) !important;
 }
+
 .sidebar-wrapper .menu .sidebar-link i,
 .sidebar-wrapper .menu .sidebar-link svg {
   color: #7eb57c;
 }
-.sidebar-wrapper .menu .submenu .submenu-item.active > a {
+
+.sidebar-wrapper .menu .submenu .submenu-item.active>a {
   color: var(--bs-green) !important;
   font-weight: 725;
 }
@@ -153,14 +159,17 @@ table.dataTable tfoot td {
   border-color: var(--bs-green) !important;
   background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='none' stroke='%23fff' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M6 10h8'/%3E%3C/svg%3E");
 }
+
 .form-check .form-check-input.form-check-primary.form-check-glow {
   box-shadow: 0 0 5px #26875a !important;
 }
+
 .form-check-input:focus {
   border-color: #7cc7a4;
   outline: 0;
   box-shadow: 0 0 0 0.25rem rgba(67, 190, 129, 0.25);
 }
+
 .form-select:focus {
   border-color: #a1afdf;
   outline: 0;
@@ -260,11 +269,11 @@ table.dataTable tfoot td {
   transition: 0.5s;
 }
 
-input:checked + .slider {
+input:checked+.slider {
   background-color: #2ac67d;
 }
 
-input:checked + .slider:before {
+input:checked+.slider:before {
   transform: translateX(100%);
   box-shadow: inset 15px -4px 0px 15px #fff000;
 }
@@ -272,20 +281,24 @@ input:checked + .slider:before {
 .nav-pills .nav-link.active {
   box-shadow: 0 2px 10px rgba(25, 135, 84, 0.5);
 }
+
 .nav-tabs,
 .nav-tabs .nav-link {
   border: none;
 }
+
 .nav-tabs .nav-link:hover {
   border: none;
   text-shadow: 0 0 2px rgba(25, 135, 84, 0.3);
 }
+
 .nav-tabs .nav-link.active {
   border: none;
   position: relative;
   background-color: #ebf8f1 !important;
   color: var(--bs-green) !important;
 }
+
 .nav-tabs .nav-link.active:after {
   content: '';
   width: 100%;
@@ -295,4 +308,18 @@ input:checked + .slider:before {
   background-color: var(--bs-green) !important;
   left: 0;
   box-shadow: 0 2px 5px rgba(25, 135, 84, 0.5);
+}
+
+.dropdown-submenu {
+  position: relative !important;
+}
+
+.dropdown-submenu .dropdown-menu {
+  top: 0 !important;
+  left: 100% !important;
+  margin-top: -1px !important;
+}
+
+.dropdown-item {
+  padding: 0.45rem 0.75rem !important;
 }

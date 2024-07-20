@@ -1,30 +1,6 @@
 <?= $this->extend('/layouts/template') ?>
 
 <?= $this->section('content') ?>
-<div class="page-heading">
-  <div class="page-title">
-    <div class="row">
-      <div class="col-12 col-md-8 order-md-1 order-last">
-        <h3><?= $title ?></h3>
-        <p class="text-subtitle text-muted">Sistem Informasi Manajemen Aset Universitas Islam Raden Rahmat Malang</p>
-      </div>
-      <div class="col-12 col-md-4 order-md-2 order-first">
-        <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
-          <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
-            <li class="breadcrumb-item"><a href="dashboard"><i class="fa fa-home"></i></a></li>
-            <?php foreach ($breadcrumb as $crumb) : ?>
-              <?php if (end($breadcrumb) == $crumb) : ?>
-                <li class="breadcrumb-item"><?= $crumb['name'] ?></li>
-              <?php else : ?>
-                <li class="breadcrumb-item active" aria-current="page"><a href="#"><?= $crumb['name'] ?></a></li>
-              <?php endif ?>
-            <?php endforeach ?>
-          </ol>
-        </nav>
-      </div>
-    </div>
-  </div>
-</div>
 <section class="section">
   <div class="col-lg-12">
     <div class="row">
@@ -142,7 +118,7 @@
     getCountBarang('getcountbrg', brgpersediaan, '#brgsedia', 'kelola-barang#brgpersediaan');
     getCountProp('getcountgedung', '#gedung', 'gedung');
     getCountProp('getcountruang', '#ruang', 'ruang');
-    getCountBrgKeluar('Peminjaman', '#peminjaman', 'peminjaman-barang-tetap');
+    getCountBrgKeluar('Peminjaman', '#peminjaman', 'peminjaman-barang');
     getCountBrgKeluar('Permintaan', '#permintaan', 'permintaan-barang-persediaan');
   });
 
@@ -151,7 +127,7 @@
       type: "get",
       url: `dashboard/getcountbrgkeluar`,
       data: {
-        jenistrx: jenistrx,
+        jenistrx,
       },
       dataType: "json",
       success: function(response) {
@@ -204,13 +180,12 @@
     $.ajax({
       url: `dashboard/${method}`,
       data: {
-        jenis_kat: jenis_kat,
+        jenis_kat,
       },
       dataType: "json",
       success: function(response) {
         let totalval = Number(response.total_valuasi);
         let valuasiFormatted = 'Rp ' + totalval.toLocaleString('id-ID') + ',-';
-
 
         $(targetId).find('h6').after(`
         <h6 class="count font-extrabold">${response.result}</h6>

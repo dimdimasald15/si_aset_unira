@@ -1,3 +1,5 @@
+import { crud } from "./crud.js";
+
 const util = (() => {
     const clearIsInvalid = (idCard) => {
         if ($(idCard).find('input').hasClass('is-invalid') || $(idCard).find('select').hasClass('is-invalid')) {
@@ -29,42 +31,34 @@ const util = (() => {
         });
     }
 
-    const getCardOrModal = (datas) => {
-        let data = datas.data;
+    const fetchData = (datas, callback) => {
         $.ajax({
-            type: "post",
             url: datas.url,
-            data,
+            data: datas.data,
+            type: datas.type,
             dataType: "json",
-            success: function (response) {
-                if (datas.view === "modal") {
-                    $('.viewdata').html(response.data).show(500);
-                    $(`#${datas.modalId}`).modal('show');
-                } else {
-                    $('.viewdata').html(response.data).show(500);
-                }
-            },
+            success: callback,
             error: function (xhr, ajaxOptions, thrownError) {
                 alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
             }
-        });
+        })
     }
 
     const fetchDataFilter = (url, jenis_kat, selectId) => {
-        $.ajax({
+        let datas = {
             type: "get",
-            url: url,
-            data: { jenis_kat: jenis_kat },
-            dataType: "json",
-            success: function (response) {
-                const $select = $(`#${selectId}`);
-                $select.empty(); // Clear existing options
-                $select.append('<option value="">Pilih Semua</option>');
-                response.forEach(item => {
-                    $select.append(`<option value="${item.id}">${item.text}</option>`);
-                });
-            }
-        });
+            url,
+            data: { jenis_kat },
+        }
+        function callback(response) {
+            const $select = $(`#${selectId}`);
+            $select.empty(); // Clear existing options
+            $select.append('<option value="">Pilih Semua</option>');
+            response.forEach(item => {
+                $select.append(`<option value="${item.id}">${item.text}</option>`);
+            });
+        }
+        fetchData(datas, callback);
     }
 
     const filteringData = (jenis_kat) => {
@@ -95,31 +89,6 @@ const util = (() => {
         ctx.strokeRect(co, co, cs, cs + 10); // membuat garis tepi persegi panjang di sekitar gambar
     }
 
-    const formatResult = (data) => {
-        if (!data.id) {
-            return data.text;
-        }
-        var $result = $(
-            `<span><i class="bi bi-layers"> </i>${data.text}</span>`
-        );
-        return $result;
-    }
-
-    const formatResult2 = (data) => {
-        if (!data.id) {
-            return data.text;
-        }
-        var $result = $(
-            `<span><i class="bi bi-palette"> </i>${data.text} <span class="dot" style="height: 25px;
-                        width: 25px;
-                        background-color: ${data.kode};
-                        border-radius: 50%;
-                        display: inline-block;"></span></span>`
-        );
-
-        return $result;
-    }
-
     const rmIsInvalid = (id) => {
         $(`#${id}`).removeClass('is-invalid');
         $(`.err${id}`).html('');
@@ -135,21 +104,27 @@ const util = (() => {
 
     const handleValidationErrors = (fields, errors) => {
         fields.forEach(field => {
-            const id = field === "asal" ? `.${field}brg .form-check-input` : `#${field}`
+            const id = field.includes('.') ? `#${field.replace(/\./g, '\\.')}` : `#${field}`;
             if (errors[field]) {
                 $(id).addClass('is-invalid');
-                $(`.err${field}`).html(errors[field]);
+                $(`.err${field.replace(/\./g, '\\.')}`).html(errors[field]);
             } else {
                 $(id).removeClass('is-invalid');
-                $(`.err${field}`).html('');
+                $(`.err${field.replace(/\./g, '\\.')}`).html('');
             }
         });
     };
 
-    const clearFormatMt = (row) => {
-        $('.formsimpanmultiple').find("input").val("")
-        $('.formsimpanmultiple').find("select").html("")
-        $('.formsimpanmultiple').find("input[type='radio']").prop('checked', false);
+    const clearFormatMt = (form, row) => {
+        $(form).find(`.inputrow-${row}`).val("");
+        $(form).find(`.selectrow-${row}`).each(function () {
+            let idAttr = $(this).attr('id');
+            if (idAttr === `katid${row}` || idAttr === `warna${row}` || idAttr === `satuan${row}`) {
+                $(this).html(""); // Mengosongkan select
+            }
+        });
+        // Mengosongkan radio button di baris tertentu
+        $(form).find(`.radiorow-${row}`).prop('checked', false);
         $(`.hibah${row}`).hide();
         $(`.belibaru${row}`).hide();
         $(`.radiobelibekas${row}`).hide();
@@ -179,24 +154,106 @@ const util = (() => {
         })
     }
 
+    const selectReload = () => {
+        if (tableBrgTetap) {
+            tableBrgTetap.ajax.reload();
+        }
+        if (tableBrgPersediaan) {
+            tableBrgPersediaan.ajax.reload();
+        }
+        if (tableAlokasiBrg) {
+            tableAlokasiBrg.ajax.reload();
+        }
+        if (datarestore) {
+            datarestore.ajax.reload();
+        }
+    }
+
+    const hapusForm = (form) => {
+        // hapus tr yang diklik
+        $(form).parents('tr').remove();
+        currIndex--;
+        if (currIndex <= lastNumb) {
+            currIndex = lastNumb + 1;
+        }
+        //hapus tr sebelumnya
+        rowCount = $('.formtambahrow tr').length;
+        for (var i = 0; i < rowCount; i++) {
+            $('.formtambahrow tr').find('.btnhapusrow').hide();
+        }
+
+        rowCount === 1 ? $('.formtambahrow tr').find('.btnhapusrow').hide() :
+            $(".formtambahrow tr:last-child .btnhapusrow").show();
+    }
+
+    const getIdsForm = (selector) => {
+        // Array untuk menyimpan ID
+        let ids = [];
+        $(`#${selector}`).find('input, select, textarea').each(function () {
+            let id = $(this).attr('id');
+            if (id) {
+                ids.push(id);
+            }
+        });
+        return ids;
+    }
+
+    const rmValidationError = (selector, errorSelector) => {
+        $(selector).on('input change', function (e) {
+            e.preventDefault();
+            $(this).removeClass('is-invalid');
+            $(errorSelector).html('');
+        });
+    };
+
+    const initializeValidationHandlers = (input, j) => {
+        input.forEach((value) => {
+            rmValidationError(`#${value}${j ? j : ''}`, `.err${value}${j ? j : ''}`);
+        });
+    }
+
+    const getForm = (saveMethod, id, path) => {
+        let url = `${path ? path : `${nav}/tampilform`}`
+        const datas = {
+            url,
+            method: "GET",
+            data: {
+                saveMethod, id
+            }
+        };
+        crud.getForm(datas);
+    }
+    const clearForm = (form, selector) => {
+        $(`#${selector}`).find("input").val("")
+        $(`#${selector}`).find("select").each(() => {
+            if ($(this).attr('name') !== form) {
+                $(this).html("");
+            }
+        })
+    }
+
     return {
         imgQR,
+        getForm,
         plusBtn,
         minusBtn,
         closeBtn,
+        fetchData,
+        clearForm,
+        hapusForm,
+        getIdsForm,
         checkrowDef,
-        clearFormatMt,
-        formatResult,
         rmIsInvalid,
+        selectReload,
         showPassword,
         setFieldError,
+        clearFormatMt,
         filteringData,
-        formatResult2,
         handleCheckAll,
-        getCardOrModal,
         clearIsInvalid,
         handleSubmitSuccess,
         handleValidationErrors,
+        initializeValidationHandlers
     }
 })()
 

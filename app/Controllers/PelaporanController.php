@@ -490,6 +490,9 @@ class PelaporanController extends BaseController
                 'unseen_notification' => $count,
             ];
 
+            $pusher = $this->handleNotification();
+            $pusher->trigger('notifications-channel', 'pelaporan-event', $data);
+
             echo json_encode($data);
         }
     }

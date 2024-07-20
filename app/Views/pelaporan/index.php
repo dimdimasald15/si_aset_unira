@@ -4,28 +4,6 @@
 <?php echo helper('converter_helper');
 ?>
 <div class="page-heading email-application">
-  <div class="page-title">
-    <div class="row">
-      <div class="col-12 col-md-8 order-md-1 order-last">
-        <h3><?= $title; ?></h3>
-        <p class="text-subtitle text-muted">Kelola <?= strtolower($title); ?></p>
-      </div>
-      <div class="col-12 col-md-4 order-md-2 order-first">
-        <nav aria-label="breadcrumb" class="breadcrumb-header float-start float-lg-end">
-          <ol class="breadcrumb breadcrumb-links breadcrumb-dark">
-            <li class="breadcrumb-item"><a href="dashboard"><i class="fa fa-home"></i></a></li>
-            <?php foreach ($breadcrumb as $crumb) : ?>
-              <?php if (end($breadcrumb) == $crumb) : ?>
-                <li class="breadcrumb-item"><?= $crumb['name'] ?></li>
-              <?php else : ?>
-                <li class="breadcrumb-item active" aria-current="page"><a href="#"><?= $crumb['name'] ?></a></li>
-              <?php endif ?>
-            <?php endforeach ?>
-          </ol>
-        </nav>
-      </div>
-    </div>
-  </div>
   <section class="section content-area-wrapper bg-dark text-white shadow">
     <div class="sidebar-left bg-dark text-white">
       <div class="sidebar" id="sidebar2">
