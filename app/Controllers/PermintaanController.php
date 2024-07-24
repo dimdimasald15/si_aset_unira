@@ -62,114 +62,126 @@ class PermintaanController extends BaseController
 
     public function listdatapermintaan()
     {
-        if ($this->request->isAJAX()) {
-            $jenis = $this->request->getVar('jenis_kat');
-            $isRestore = filter_var($this->request->getGet('isRestore'), FILTER_VALIDATE_BOOLEAN);
-            $builder = $this->db->table('permintaan p')->select('p.id, p.anggota_id, p.barang_id, a.unit_id, u.singkatan, a.nama_anggota, p.jml_barang, p.created_at, p.created_by, p.deleted_at, p.deleted_by, k.nama_kategori, b.nama_brg, u.singkatan, s.kd_satuan')
-                ->join('anggota a', 'a.id = p.anggota_id')
-                ->join('unit u', 'u.id = a.unit_id')
-                ->join('barang b', 'b.id=p.barang_id')
-                ->join('kategori k', 'k.id=b.kat_id')
-                ->join('stok_barang sb', 'b.id=sb.barang_id')
-                ->join('satuan s', 's.id=b.satuan_id')
-                ->join('ruang r', 'r.id=sb.ruang_id')
-                ->where('r.id', 54)
-                ->where('k.jenis', $jenis);
+        if (!$this->request->isAJAX()) {
+            $data = $this->errorPage404();
+            return view('errors/mazer/error-404', $data);
+        }
+        $jenis = $this->request->getVar('jenis_kat');
+        $isRestore = filter_var($this->request->getGet('isRestore'), FILTER_VALIDATE_BOOLEAN);
+        $builder = $this->db->table('permintaan p')->select('p.id, p.anggota_id, p.tgl_minta, p.keterangan, p.barang_id, a.unit_id, u.singkatan, a.nama_anggota, p.jml_barang, p.created_at, p.created_by, p.deleted_at, p.deleted_by, k.nama_kategori, b.nama_brg, u.singkatan, s.kd_satuan')
+            ->join('anggota a', 'a.id = p.anggota_id')
+            ->join('unit u', 'u.id = a.unit_id')
+            ->join('barang b', 'b.id=p.barang_id')
+            ->join('kategori k', 'k.id=b.kat_id')
+            ->join('stok_barang sb', 'b.id=sb.barang_id')
+            ->join('satuan s', 's.id=b.satuan_id')
+            ->join('ruang r', 'r.id=sb.ruang_id')
+            ->where('r.id', 54)
+            ->where('k.jenis', $jenis);
 
-            return DataTable::of($builder)
-                ->addNumbering('no')
-                ->filter(function ($builder) use ($jenis, $isRestore) {
-                    if ($isRestore) {
-                        $builder->where('p.deleted_at IS NOT NULL');
-                        $builder->where('k.jenis', $jenis);
-                    } else {
-                        $builder->where('p.deleted_at', null);
-                        $builder->where('b.deleted_at', null);
-                        $builder->where('a.deleted_at', null);
-                        $builder->where('u.deleted_at', null);
-                        $builder->where('k.jenis', $jenis);
-                    }
-                })
-                ->postQuery(function ($builder) {
-                    $builder->orderBy('p.id', 'desc');
-                })
-                ->add('checkrow', function ($row) use ($isRestore) {
-                    if (!$isRestore) {
-                        return '<input type="checkbox" name="id[]" class="checkrow" value="' . $row->id . '">';
-                    }
-                })
-                ->add('action', function ($row) use ($isRestore, $jenis) {
-                    if ($isRestore) {
-                        return '
+        return DataTable::of($builder)
+            ->addNumbering('no')
+            ->filter(function ($builder) use ($jenis, $isRestore) {
+                if ($isRestore) {
+                    $builder->where('p.deleted_at IS NOT NULL');
+                    $builder->where('k.jenis', $jenis);
+                } else {
+                    $builder->where('p.deleted_at', null);
+                    $builder->where('b.deleted_at', null);
+                    $builder->where('a.deleted_at', null);
+                    $builder->where('u.deleted_at', null);
+                    $builder->where('k.jenis', $jenis);
+                }
+            })
+            ->postQuery(function ($builder) {
+                $builder->orderBy('p.id', 'desc');
+            })
+            ->add('checkrow', function ($row) use ($isRestore) {
+                if (!$isRestore) {
+                    return '<input type="checkbox" name="id[]" class="checkrow" value="' . $row->id . '">';
+                }
+            })
+            ->add('action', function ($row) use ($isRestore) {
+                if ($isRestore) {
+                    return '
                     <div class="btn-group mb-1">
                     <button type="button" class="btn btn-success btn-sm dropdown-toggle me-1" data-bs-toggle="dropdown" aria-expanded="false">
                         Action
                     </button>
                     <ul class="dropdown-menu shadow-lg">
-                        <li><a class="dropdown-item" onclick="restore(' . $row->id . ', ' . $row->barang_id . ',\'' . htmlspecialchars($row->nama_brg) . '\', \'' . htmlspecialchars($row->nama_anggota) . '\')"><i class="fa fa-undo"></i> Pulihkan</a>
+                        <li><a class="dropdown-item" onclick="minta.restore(' . $row->id . ', ' . $row->barang_id . ',\'' . htmlspecialchars($row->nama_brg) . '\', \'' . htmlspecialchars($row->nama_anggota) . '\')"><i class="fa fa-undo"></i> Pulihkan</a>
                         </li>
-                        <li><a class="dropdown-item" onclick="hapuspermanen(' . $row->id . ', \'' . htmlspecialchars($row->nama_brg) . '\', \'' . htmlspecialchars($row->nama_anggota) . '\', \'54\')"><i class="fa fa-trash-o"></i> Hapus Permanen</a>
+                        <li><a class="dropdown-item" onclick="minta.hapusPermanen(' . $row->id . ', \'' . htmlspecialchars($row->nama_brg) . '\', \'' . htmlspecialchars($row->nama_anggota) . '\', \'54\')"><i class="fa fa-trash-o"></i> Hapus Permanen</a>
                         </li>
                     </ul>
                     </div>
                     ';
-                    } else {
-                        return '<div class="btn-group btn-group-sm mb-1">
+                } else {
+                    return '<div class="btn-group btn-group-sm mb-1">
                     <button type="button" class="btn btn-success dropdown-toggle me-1" data-bs-toggle="dropdown" aria-expanded="false">
                         Action
                     </button>
                     <ul class="dropdown-menu shadow-lg">
-                        <li><a class="dropdown-item" onclick="edit(' . $row->id . ')"><i class="fa fa-pencil-square-o"></i> Update Permintaan</a>
+                        <li><a class="dropdown-item" onclick="minta.getForm(\'' . htmlspecialchars("update") . '\',' . $row->id . ')"><i class="fa fa-pencil-square-o"></i> Update</a>
                         </li>
-                        <li><a class="dropdown-item" onclick="hapus(' . $row->id . ', \'' . htmlspecialchars($row->nama_anggota) . '\', \'' . htmlspecialchars($row->nama_brg) . '\')"><i class="fa fa-trash-o"></i> Hapus Permintaan</a>
+                        <li><a class="dropdown-item" onclick="minta.hapus(' . $row->id . ', \'' . htmlspecialchars($row->nama_anggota) . '\', \'' . htmlspecialchars($row->nama_brg) . '\', \'' . htmlspecialchars($row->jml_barang) . '\', \'' . htmlspecialchars($row->kd_satuan) . '\')"><i class="fa fa-trash-o"></i> Hapus</a>
                         </li>
                     </ul>
                 </div>';
-                    }
-                })
-                ->toJson(true);
-        } else {
-            $data = $this->errorPage404();
-            return view('errors/mazer/error-404', $data);
-        }
+                }
+            })
+            ->toJson(true);
     }
 
-    public function tampilsingleform()
+    public function tampilform()
     {
-        if ($this->request->isAJAX()) {
-            $saveMethod = $this->request->getGet('saveMethod');
-            $nav = $this->request->getGet('nav');
-            $jenis_kat = $this->request->getGet('jenis_kat');
-
-            if ($saveMethod == "update") {
-                $data = [
-                    'globalId' => $this->request->getGet('globalId'),
-                    'saveMethod' => $saveMethod,
-                    'title' => 'Permintaan Barang',
-                    'nav' => $nav,
-                    'jenis_kat' => $jenis_kat,
-                ];
-            } else {
-                $data = [
-                    'globalId' => '',
-                    'saveMethod' => $saveMethod,
-                    'title' => 'Permintaan Barang',
-                    'nav' => $nav,
-                    'jenis_kat' => $jenis_kat,
-                ];
-            }
-
-            $msg = [
-                'data' => view('permintaan/singleform', $data),
-            ];
-
-            echo json_encode($msg);
-        } else {
+        if (!$this->request->isAJAX()) {
             $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
+        $saveMethod = $this->request->getGet('saveMethod');
+        $jenis_kat = $this->request->getGet('jenis_kat');
+        $id = $this->request->getGet('id');
+        $minta = '';
+        if ($id) {
+            $minta = $this->getpermintaanbyid($id);
+        }
+        $data = [
+            'id' => $id,
+            'saveMethod' => $saveMethod,
+            'title' => 'Permintaan Barang',
+            'jenis_kat' => $jenis_kat,
+            'minta' => $minta,
+        ];
+        $msg = [
+            'data' => view('permintaan/form', $data),
+        ];
+        echo json_encode($msg);
     }
 
+    public function getpermintaanbyid()
+    {
+        $id = $this->request->getGet('id');
+        $builder = $this->db->table('permintaan p')->select('a.nama_anggota, a.no_anggota, a.unit_id, a.level, u.singkatan, p.id, p.barang_id, p.jml_barang, p.anggota_id, p.keterangan, p.tgl_minta, b.nama_brg, b.satuan_id, s.kd_satuan, sb.sisa_stok')
+            ->join('anggota a', 'a.id=p.anggota_id')
+            ->join('unit u', 'u.id=a.unit_id')
+            ->join('barang b', 'b.id=p.barang_id')
+            ->join('stok_barang sb', 'b.id=sb.barang_id')
+            ->join('satuan s', 's.id=b.satuan_id')
+            ->where('p.id', $id)
+            ->get();
+        $data = $builder->getRow();
+        if (!empty($data)) {
+            $jmldata = 1;
+        } else {
+            $jmldata = 0;
+        }
+        $msg = [
+            'data' => $data,
+            'jmldata' => $jmldata,
+        ];
+        return json_encode($msg);
+    }
     public function tampilmodalcetak()
     {
         if (!$this->request->isAJAX()) {
@@ -187,7 +199,7 @@ class PermintaanController extends BaseController
         ];
 
         $msg = [
-            'sukses' => view('permintaan/modalcetak', $data)
+            'data' => view('permintaan/modalcetak', $data)
         ];
 
         echo json_encode($msg);
@@ -304,64 +316,62 @@ class PermintaanController extends BaseController
         }
         echo json_encode($list);
     }
-
+    private function validateGeneralFields()
+    {
+        $validation = \Config\Services::validation();
+        $rules = [
+            'anggota_id' => [
+                'label' => 'Nama peminta',
+                'rules' => 'required',
+                'errors' => [
+                    'required' => '{field} tidak boleh kosong',
+                ],
+            ],
+            'tgl_minta' => [
+                'label' => 'Tanggal minta',
+                'rules' => 'required',
+                'errors' => [
+                    'required' => '{field} tidak boleh kosong',
+                ],
+            ],
+        ];
+        if (!$this->validate($rules)) {
+            return $validation->getErrors();
+        }
+        return [];
+    }
+    private function validateItemFields($jmldata)
+    {
+        $validation = \Config\Services::validation();
+        $errors = [];
+        for ($a = 1; $a <= $jmldata; $a++) {
+            $rules = [
+                'barang_id' . $a => [
+                    'label' => 'Nama barang',
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => "{field} form $a tidak boleh kosong",
+                    ]
+                ],
+                'jml_barang' . $a => [
+                    'label' => 'Jumlah permintaan',
+                    'rules' => 'required',
+                    'errors' => [
+                        'required' => "{field} form $a tidak boleh kosong",
+                    ]
+                ],
+            ];
+            if (!$this->validate($rules)) {
+                $errors = array_merge($errors, $validation->getErrors());
+            }
+        }
+        return $errors;
+    }
     public function simpandata()
     {
         if ($this->request->isAJAX()) {
             $jmldata = $this->request->getVar('jmlbrg');
-
-            $validation = \Config\Services::validation();
-            $rules1 = array();
-            $errors1 = array();
-            if (array_key_exists('nama_anggota', $this->request->getVar())) {
-                // melakukan sesuatu jika nama_anggota ada dalam $_POST
-                $rules1 = [
-                    'nama_anggota' => [
-                        'label' => 'Nama peminta baru',
-                        'rules' => 'required',
-                        'errors' => [
-                            'required' => '{field} tidak boleh kosong',
-                        ],
-                    ],
-                    'level' => [
-                        'label' => 'Level peminta baru',
-                        'rules' => 'required',
-                        'errors' => [
-                            'required' => '{field} tidak boleh kosong',
-                        ],
-                    ],
-                    'no_anggota' => [
-                        'label' => 'Nomor ID peminta baru',
-                        'rules' => 'required|is_unique[anggota.no_anggota]',
-                        'errors' => [
-                            'required' => '{field} tidak boleh kosong',
-                            'is_unique' => '{field} sudah ada dan tidak boleh sama',
-                        ],
-                    ],
-                    'unit_id' => [
-                        'label' => 'Unit peminta baru',
-                        'rules' => 'required',
-                        'errors' => [
-                            'required' => '{field} tidak boleh kosong',
-                        ],
-                    ],
-                ];
-            } else {
-                // melakukan sesuatu jika nama_anggota tidak ada dalam $_POST
-                $rules1 = [
-                    'anggota_id' => [
-                        'label' => 'Nama peminta',
-                        'rules' => 'required',
-                        'errors' => [
-                            'required' => '{field} tidak boleh kosong',
-                        ],
-                    ],
-                ];
-            }
-
-            if (!$this->validate($rules1)) {
-                $errors1 = $validation->getErrors();
-            }
+            $errors1 = $this->validateGeneralFields();
             // check for errors
             if (!empty($errors1)) {
                 $msg = [
@@ -370,31 +380,7 @@ class PermintaanController extends BaseController
                 ];
             } else {
                 $jenistrx = $this->request->getVar('jenistrx');
-
-                $validation =  \Config\Services::validation();
-                $errors2 = array();
-                for ($a = 1; $a <= $jmldata; $a++) {
-                    $rules2 = [
-                        'barang_id' . $a => [
-                            'label' => 'Nama barang',
-                            'rules' => 'required',
-                            'errors' => [
-                                'required' => "{field} form $a tidak boleh kosong",
-                            ]
-                        ],
-                        'jml_barang' . $a => [
-                            'label' => 'Jumlah permintaan',
-                            'rules' => 'required',
-                            'errors' => [
-                                'required' => "{field} form $a tidak boleh kosong",
-                            ]
-                        ],
-                    ];
-                    if (!$this->validate($rules2)) {
-                        $errors2 = $validation->getErrors();
-                    }
-                }
-
+                $errors2 = $this->validateItemFields($jmldata);
                 // check for errors
                 if (!empty($errors2)) {
                     $msg = [
@@ -403,53 +389,27 @@ class PermintaanController extends BaseController
                     ];
                 } else {
                     $this->db->transStart();
-                    $agg_id = '';
-                    if (array_key_exists('nama_anggota', $_POST)) {
-                        // melakukan sesuatu jika nama_anggota ada dalam $_POST
-                        $nama_anggota = $this->request->getVar('nama_anggota');
-                        $level = $this->request->getVar('level');
-                        $no_anggota = $this->request->getVar('no_anggota');
-                        $unit_id = $this->request->getVar('unit_id');
-
-                        $simpananggota = [
-                            'nama_anggota' => $nama_anggota,
-                            'no_anggota' => $no_anggota,
-                            'level' => $level,
-                            'unit_id' => $unit_id,
-                        ];
-                        $insert1 = $this->anggota->setInsertData($simpananggota);
-                        $this->anggota->save($insert1);
-
-                        $agg_id = $this->anggota->insertID();
-                    } else {
-                        $agg_id = $this->request->getVar('anggota_id');
-                    }
-
-                    $anggota_id = array();
+                    $anggota_id = $this->request->getVar('anggota_id');
                     $barang_id = array();
                     $jml_barang = array();
                     for ($b = 1; $b <= $jmldata; $b++) {
-                        array_push($anggota_id, $agg_id);
                         array_push($barang_id, $this->request->getVar("barang_id$b"));
                         array_push($jml_barang, $this->request->getVar("jml_barang$b"));
                     }
 
                     for ($i = 0; $i < $jmldata; $i++) {
                         $simpanpermintaan = [
-                            'anggota_id' => $anggota_id[$i],
+                            'anggota_id' => $anggota_id,
                             'barang_id' => $barang_id[$i],
                             'jml_barang' => $jml_barang[$i],
+                            'tgl_minta' => $this->request->getVar('tgl_minta'),
+                            'keterangan' => $this->request->getVar('keterangan'),
                         ];
 
                         $insert2 = $this->permintaan->setInsertData($simpanpermintaan);
-
                         $this->permintaan->save($insert2);
-
                         $permintaan_id = $this->permintaan->insertID();
-
                         $stokbrg = $this->db->table('stok_barang')->select('*')->where('barang_id', $barang_id[$i])->get()->getRowArray();
-
-
                         $ubahstok = [
                             'jumlah_keluar' => (intval($stokbrg['jumlah_keluar']) + intval($jml_barang[$i])),
                             'sisa_stok' => (intval($stokbrg['sisa_stok']) - intval($jml_barang[$i])),
@@ -480,7 +440,7 @@ class PermintaanController extends BaseController
                         $msg = ['error' => 'Gagal menyimpan data permintaan'];
                     } else {
                         // Jika berhasil disimpan
-                        $msg = ['sukses' => "Sukses $jmldata data permintaan berhasil tersimpan"];
+                        $msg = ['success' => "Sukses $jmldata data permintaan berhasil tersimpan"];
                     }
                 }
             }
@@ -492,94 +452,13 @@ class PermintaanController extends BaseController
         }
     }
 
-    public function getpermintaanbyid()
-    {
-        if ($this->request->isAJAX()) {
-            $id = $this->request->getGet('id');
-            $builder = $this->db->table('permintaan p')->select('a.nama_anggota, a.no_anggota, a.unit_id, a.level, u.singkatan, p.id, p.barang_id, p.jml_barang, p.anggota_id, b.nama_brg, b.satuan_id, s.kd_satuan, sb.sisa_stok')
-                ->join('anggota a', 'a.id=p.anggota_id')
-                ->join('unit u', 'u.id=a.unit_id')
-                ->join('barang b', 'b.id=p.barang_id')
-                ->join('stok_barang sb', 'b.id=sb.barang_id')
-                ->join('satuan s', 's.id=sb.satuan_id')
-                ->where('p.id', $id)
-                ->get();
-            $data = $builder->getRow();
-            if (!empty($data)) {
-                $jmldata = 1;
-            } else {
-                $jmldata = 0;
-            }
 
-            $msg = [
-                'data' => $data,
-                'jmldata' => $jmldata,
-            ];
-
-            echo json_encode($msg);
-        } else {
-            $data = $this->errorPage404();
-            return view('errors/mazer/error-404', $data);
-        }
-    }
 
     public function updatedata($id)
     {
         if ($this->request->isAJAX()) {
             $jmldata = $this->request->getVar('jmlbrg');
-
-            $validation = \Config\Services::validation();
-            $rules1 = array();
-            $errors1 = array();
-            if (array_key_exists('nama_anggota', $this->request->getVar())) {
-                // melakukan sesuatu jika nama_anggota ada dalam $_POST
-                $rules1 = [
-                    'nama_anggota' => [
-                        'label' => 'Nama peminta baru',
-                        'rules' => 'required',
-                        'errors' => [
-                            'required' => '{field} tidak boleh kosong',
-                        ],
-                    ],
-                    'level' => [
-                        'label' => 'Level peminta baru',
-                        'rules' => 'required',
-                        'errors' => [
-                            'required' => '{field} tidak boleh kosong',
-                        ],
-                    ],
-                    'no_anggota' => [
-                        'label' => 'Nomor ID peminta baru',
-                        'rules' => 'required|is_unique[anggota.no_anggota]',
-                        'errors' => [
-                            'required' => '{field} tidak boleh kosong',
-                            'is_unique' => '{field} sudah ada dan tidak boleh sama',
-                        ],
-                    ],
-                    'unit_id' => [
-                        'label' => 'Unit peminta baru',
-                        'rules' => 'required',
-                        'errors' => [
-                            'required' => '{field} tidak boleh kosong',
-                        ],
-                    ],
-                ];
-            } else {
-                // melakukan sesuatu jika nama_anggota tidak ada dalam $_POST
-                $rules1 = [
-                    'anggota_id' => [
-                        'label' => 'Nama peminta',
-                        'rules' => 'required',
-                        'errors' => [
-                            'required' => '{field} tidak boleh kosong',
-                        ],
-                    ],
-                ];
-            }
-
-            if (!$this->validate($rules1)) {
-                $errors1 = $validation->getErrors();
-            }
+            $errors1 = $this->validateGeneralFields();
             // check for errors
             if (!empty($errors1)) {
                 $msg = [
@@ -588,31 +467,7 @@ class PermintaanController extends BaseController
                 ];
             } else {
                 $jenistrx = $this->request->getVar('jenistrx');
-
-                $validation =  \Config\Services::validation();
-                $errors2 = array();
-                for ($a = 1; $a <= $jmldata; $a++) {
-                    $rules2 = [
-                        'barang_id' . $a => [
-                            'label' => 'Nama barang',
-                            'rules' => 'required',
-                            'errors' => [
-                                'required' => "{field} form $a tidak boleh kosong",
-                            ]
-                        ],
-                        'jml_barang' . $a => [
-                            'label' => 'Jumlah permintaan',
-                            'rules' => 'required',
-                            'errors' => [
-                                'required' => "{field} form $a tidak boleh kosong",
-                            ]
-                        ],
-                    ];
-                    if (!$this->validate($rules2)) {
-                        $errors2 = $validation->getErrors();
-                    }
-                }
-
+                $errors2 = $this->validateItemFields($jmldata);
                 // check for errors
                 if (!empty($errors2)) {
                     $msg = [
@@ -717,6 +572,8 @@ class PermintaanController extends BaseController
                             $ubahminta = [
                                 'barang_id' => $barang_id[$i],
                                 'jml_barang' => $jml_barang[$i],
+                                'tgl_minta' => $this->request->getVar("tgl_minta"),
+                                'keterangan' => $this->request->getVar("keterangan"),
                             ];
                             $updateminta = $this->permintaan->setUpdateData($ubahminta);
 
@@ -751,6 +608,8 @@ class PermintaanController extends BaseController
                         } else if ($data_ditemukan && $isDeleted) {
                             $ubahminta = [
                                 'jml_barang' => intval($oldpermintaan['jml_barang']) + intval($jml_barang[$i]),
+                                'tgl_minta' => $this->request->getVar("tgl_minta"),
+                                'keterangan' => $this->request->getVar("keterangan"),
                                 'deleted_by' => null,
                                 'deleted_at' => null,
                             ];
@@ -800,30 +659,13 @@ class PermintaanController extends BaseController
                         }
                     }
 
-                    //update table anggota
-                    if (array_key_exists('nama_anggota', $this->request->getVar())) {
-                        $ubahanggota = [
-                            'nama_anggota' => $this->request->getVar('nama_anggota'),
-                            'level' => $this->request->getVar('level'),
-                            'unit_id' => $this->request->getVar('unit_id'),
-                        ];
-
-                        $update3 = $this->anggota->setUpdateData($ubahanggota);
-
-                        try {
-                            $this->anggota->update($permintaan['anggota_id'], $update3);
-                        } catch (Exception $e) {
-                            $msg = ['error' => "Pembaruan data anggota gagal: " . $e->getMessage()];
-                        }
-                    }
-
                     $this->db->transComplete();
                     if ($this->db->transStatus() === false) {
                         // Jika terjadi kesalahan pada transaction
                         $msg = ['error' => 'Gagal mengubah data permintaan'];
                     } else {
                         // Jika berhasil disimpan
-                        $msg = ['sukses' => "Sukses $jmldata data permintaan berhasil terupdate"];
+                        $msg = ['success' => "Sukses $jmldata data permintaan berhasil terupdate"];
                     }
                 }
             }
@@ -873,7 +715,7 @@ class PermintaanController extends BaseController
                 $this->permintaan->update($id, $ubahhapus);
                 $this->permintaan->setSoftDelete($id);
                 $msg = [
-                    'sukses' => "Data permintaan $nama_anggota dengan barang $nama_brg berhasil dihapus",
+                    'success' => "Data permintaan $nama_anggota dengan barang $nama_brg berhasil dihapus",
                 ];
                 echo json_encode($msg);
             } catch (\Exception $e) {
@@ -932,7 +774,7 @@ class PermintaanController extends BaseController
                 $this->permintaan->setSoftDelete($id[$i]);
             }
             $msg = [
-                'sukses' => "$jmldata data $jenis berhasil dihapus secara temporary",
+                'success' => "$jmldata data $jenis berhasil dihapus secara temporary",
             ];
 
             echo json_encode($msg);
@@ -947,7 +789,7 @@ class PermintaanController extends BaseController
         if ($this->request->isAJAX()) {
             $jenis = $this->request->getVar('jenis_kat');
             $ids = $this->request->getVar('id');
-            $idbrg = $this->request->getVar('barang_id');
+            $idbrg = $this->request->getVar('barangId');
             $id = explode(",", $ids);
             $barang_id = explode(",", $idbrg);
             $restoredata = [
@@ -966,7 +808,6 @@ class PermintaanController extends BaseController
                         ->getRowArray();
                     $stoksarpras = $this->db->table('stok_barang')->select('*')
                         ->where('barang_id', $barang_id[$key])->orderBy('id', 'DESC')->get()->getRowArray();
-                    // var_dump($stoksarpras);
                     //update table permintaan
                     $oldval = json_decode($historitrx1['old_value']);
                     $newval = json_decode($historitrx1['new_value']);
@@ -1003,7 +844,7 @@ class PermintaanController extends BaseController
                     $this->riwayattrx->inserthistori($stoksarpras['id'], $stoksarpras, $datastok, "pemulihan data permintaan " . $idminta, $lastQuery2, $field_update2);
 
                     $msg = [
-                        'sukses' => "Data Permintaan $jenis: $nama_brg berhasil dipulihkan",
+                        'success' => "Data Permintaan $jenis: $nama_brg berhasil dipulihkan",
                     ];
                 }
             } else {
@@ -1014,7 +855,6 @@ class PermintaanController extends BaseController
                         ->get()
                         ->getRowArray();
                     $stokbrgID = $historitrx1['stokbrg_id'];
-
                     $stoksarpras = $this->db->table('stok_barang')->select('*')
                         ->where('id', $stokbrgID)
                         ->where('barang_id', $barang_id[$key])->orderBy('id', 'DESC')->get()->getRowArray();
@@ -1054,7 +894,7 @@ class PermintaanController extends BaseController
 
                 if (count($id) > 0) {
                     $msg = [
-                        'sukses' => count($id) . " data permintaan " . strtolower($jenis) . " berhasil dipulihkan semuanya",
+                        'success' => count($id) . " data permintaan " . strtolower($jenis) . " berhasil dipulihkan semuanya",
                     ];
                 } else {
                     $msg = [
@@ -1069,38 +909,23 @@ class PermintaanController extends BaseController
         }
     }
 
-    public function hapuspermanen($id = [])
+    public function hapuspermanen($id = null)
     {
         if ($this->request->isAJAX()) {
-            $ids = $this->request->getVar('id');
-            $jenis = $this->request->getVar('jenis_kat');
-            $datapermintaan = [];
-            $id = explode(",", $ids);
-            if (count($id) === 1) {
-                $permintaanlama = $this->permintaan->select('*')->where('id', $id)->get()->getRowArray();
-                array_push($datapermintaan, $permintaanlama);
-
+            if ($id != null) {
+                $jenis = $this->request->getVar('jenis_kat');
                 $nama_brg = $this->request->getVar('nama_brg');
-
                 $this->permintaan->delete($id, true);
-
                 $msg = [
-                    'sukses' => "Data Permintaan $jenis: $nama_brg berhasil dihapus secara permanen",
+                    'success' => "Data permintaan $jenis: $nama_brg berhasil dihapus secara permanen",
                 ];
             } else {
-                $datapermintaan = [];
-                foreach ($id as $idminta) {
-                    $stoklama = $this->permintaan->select('*')->where('id', $idminta)->get()->getRowArray();
-                    array_push($datapermintaan, $stoklama);
-
-                    $this->permintaan->delete($idminta, true);
-                }
-
+                $this->permintaan->purgeDeleted();
+                $jmlhapus = $this->permintaan->db->affectedRows();
                 $msg = [
-                    'sukses' => count($id) . " data $jenis berhasil dihapus secara permanen",
+                    'success' => $jmlhapus . " data permintaan berhasil dihapus secara permanen",
                 ];
             }
-
             return json_encode($msg);
         } else {
             $data = $this->errorPage404();

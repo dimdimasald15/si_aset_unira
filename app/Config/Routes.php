@@ -150,7 +150,7 @@ $routes->group('admin/permintaan-barang', ['filter' => 'ceklogin'], function ($r
     $routes->match(['get', 'post'], 'restore', 'PermintaanController::restoredata');
     $routes->post('hapuspermanen/(:any)', 'PermintaanController::hapuspermanen/$1');
     $routes->match(['get', 'post'], 'hapuspermanen', 'PermintaanController::hapuspermanen');
-
+    $routes->get('tampilform', 'PermintaanController::tampilform');
     $routes->post('tampilmodalcetak', 'PermintaanController::tampilmodalcetak');
     $routes->get('pilihanggota', 'PermintaanController::carianggota');
     $routes->get('getpermintaanbyid', 'PermintaanController::getpermintaanbyid');

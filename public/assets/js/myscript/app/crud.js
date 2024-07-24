@@ -1,7 +1,7 @@
 import { util } from "./util.js";
 
 export const crud = (() => {
-    const viewDtControl = (index, data) => {
+    const viewDtControl = (index, data, format) => {
         // Add event listener for opening and closing details
         $(`#${index} tbody`).on('click', 'td.dt-control', function () {
             var tr = $(this).closest('tr');
@@ -17,16 +17,16 @@ export const crud = (() => {
             }
         });
     }
-    const initDataTable = (selector, url, columns, dataSrc) => {
+    const initDataTable = (selector, url, columns, order, statusProcess = true) => {
         return $(`#${selector}`).DataTable({
-            processing: true,
-            serverSide: true,
+            processing: statusProcess,
+            serverSide: statusProcess,
             ajax: {
                 url,
-                dataSrc
             },
-            order: [],
-            columns
+            order: order ? order : [],
+            columns,
+            columnDefs: []
         });
     };
 
@@ -144,7 +144,7 @@ export const crud = (() => {
         swalWarning(datas);
     }
 
-    const handleRestoreAll = (tableRestore, includeAdditionalData = false, path, text) => {
+    const handleRestoreAll = (tableRestore, includeAdditionalData = false, path, text, jenis_kat) => {
         let url = `${path ? path : `${nav}/restore`}`;
         var api = tableRestore.rows();
         var id = api.data().toArray().map(function (d) {

@@ -25,26 +25,27 @@ if (!function_exists('format_tanggal')) {
 }
 
 if (!function_exists('ubah_format_tanggal')) {
-  function ubah_format_tanggal($tanggal_awal) {
+  function ubah_format_tanggal($tanggal_awal)
+  {
     // Validasi format tanggal awal
     if (!preg_match('/^\d{1,2}\/\d{1,2}\/\d{4}$/', $tanggal_awal)) {
       throw new Exception("Format tanggal awal tidak valid");
     }
-  
+
     // Ubah format tanggal ke timestamp UNIX
     $timestamp = strtotime($tanggal_awal);
-  
+
     // Ubah timestamp UNIX ke format Y-m-d
     $tanggal_baru = date("Y-m-d", $timestamp);
-  
+
     return $tanggal_baru;
-  }  
+  }
 }
 
 if (!function_exists('format_uang')) {
   function format_uang($data)
   {
-    $harga_formatted = 'Rp ' . number_format($data, 0, ',', '.') . ',-';
+    $harga_formatted = 'Rp' . number_format($data, 0, ',', '.') . ',-';
     // echo $harga_formatted;
     return $harga_formatted;
   }

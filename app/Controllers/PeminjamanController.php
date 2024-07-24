@@ -284,7 +284,7 @@ class PeminjamanController extends BaseController
                 ];
             } else {
                 $this->db->transStart();
-                $agg_id = $this->request->getVar('anggota_id');
+                $anggota_id = $this->request->getVar('anggota_id');
                 $barang_id = array();
                 $jml_barang = array();
                 for ($b = 1; $b <= $jmldata; $b++) {
@@ -293,7 +293,7 @@ class PeminjamanController extends BaseController
                 }
                 for ($i = 0; $i < $jmldata; $i++) {
                     $simpanpeminjaman = [
-                        'anggota_id' => $agg_id,
+                        'anggota_id' => $anggota_id,
                         'barang_id' => $barang_id[$i],
                         'jml_barang' => $jml_barang[$i],
                         'tgl_pinjam' => $this->request->getVar('tgl_pinjam'),
@@ -351,7 +351,7 @@ class PeminjamanController extends BaseController
         ];
 
         $msg = [
-            'sukses' => view('peminjaman/modalcetak', $data)
+            'data' => view('peminjaman/modalcetak', $data)
         ];
 
         echo json_encode($msg);
@@ -638,6 +638,7 @@ class PeminjamanController extends BaseController
                             'barang_id' => $barang_id[$i],
                             'jml_barang' => $jml_barang[$i],
                             'tgl_pinjam' => $this->request->getVar("tgl_pinjam"),
+                            'keterangan' => $this->request->getVar("keterangan"),
                         ];
                         $updatepinjam = $this->peminjaman->setUpdateData($ubahpinjam);
 
@@ -665,6 +666,7 @@ class PeminjamanController extends BaseController
                         $ubahpinjam = [
                             'jml_barang' => intval($oldpeminjaman['jml_barang']) + intval($jml_barang[$i]),
                             'tgl_pinjam' => $this->request->getVar("tgl_pinjam"),
+                            'keterangan' => $this->request->getVar("keterangan"),
                             'deleted_by' => null,
                             'deleted_at' => null,
                         ];
@@ -955,7 +957,6 @@ class PeminjamanController extends BaseController
     public function hapuspermanen($id = null)
     {
         if ($this->request->isAJAX()) {
-            $datapeminjaman = [];
             if ($id != null) {
                 $jenis = $this->request->getVar('jenis_kat');
                 $nama_brg = $this->request->getVar('nama_brg');
@@ -970,7 +971,6 @@ class PeminjamanController extends BaseController
                     'success' => $jmlhapus . " data peminjaman berhasil dihapus secara permanen",
                 ];
             }
-
             return json_encode($msg);
         } else {
             $data = $this->errorPage404();

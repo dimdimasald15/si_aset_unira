@@ -41,7 +41,6 @@ export const unit = (() => {
         const table = crud.initDataTable(selector, url, columns);
         return table;
     };
-    const viewdtcontrol = (index, data) => crud.viewDtControl(index, data);
     const fillForm = (data, form) => {
         console.log(data);
         crud.fillForm(data, form, [
@@ -88,7 +87,6 @@ export const unit = (() => {
         fillForm,
         restoreAll,
         hapusPermanen,
-        viewdtcontrol,
         hapusPermanenAll,
         viewTableRestore,
         multipleDelete

@@ -45,10 +45,17 @@ class LaporanController extends BaseController
     public function index()
     {
         $breadcrumb = $this->getBreadcrumb();
+        $cards = [
+            ["id" => "brgtetap", "icon" => "fa-cubes", "color" => "purple", "title" => "Barang Tetap"],
+            ["id" => "brgpersediaan", "icon" => "fa-shopping-basket", "color" => "blue", "title" => "Barang Persediaan"],
+            ["id" => "peminjaman", "icon" => "fa-handshake-o", "color" => "pink", "title" => "Total Peminjam"],
+            ["id" => "permintaan", "icon" => "fa-file-text-o", "color" => "orange", "title" => "Total Peminta"],
+        ];
         $data = [
             'title' => 'Laporan',
             'nav' => 'laporan',
-            'breadcrumb' => $breadcrumb
+            'breadcrumb' => $breadcrumb,
+            'cards' => $cards,
         ];
 
         return view('laporan/index', $data);
@@ -134,7 +141,7 @@ class LaporanController extends BaseController
     private function hitungmintabarang($m, $y, $jenis)
     {
         $builder = $this->db->table('riwayat_barang rb')
-            ->select('rb.id, rb.barang_id AS b_id, b.nama_brg,b.kode_brg, b.warna, p.anggota_id, p.barang_id, a.unit_id, u.singkatan, a.nama_anggota, SUM(p.jml_barang) AS jml_barang, p.created_at, p.created_by, CAST(
+            ->select('rb.id, rb.barang_id AS b_id, b.nama_brg,b.kode_brg, b.warna, p.anggota_id, p.barang_id, a.unit_id, u.singkatan, a.nama_anggota, SUM(p.jml_barang) AS jml_barang, p.tgl_minta, p.created_at, p.created_by, CAST(
             REPLACE(
                 COALESCE(
                     IF(JSON_EXTRACT(rb.old_value, \'$.harga_beli\') IS NULL,
@@ -456,7 +463,7 @@ class LaporanController extends BaseController
     private function permintaanbarang($tgl_permintaan, $jenis)
     {
         $builder = $this->db->table('riwayat_barang rb')
-            ->select("rb.id, rb.barang_id AS b_id, b.nama_brg,  p.anggota_id, p.barang_id, a.unit_id, u.singkatan, a.nama_anggota, p.jml_barang, p.created_at, p.created_by")
+            ->select("rb.id, rb.barang_id AS b_id, b.nama_brg,  p.anggota_id, p.barang_id, a.unit_id, u.singkatan, a.nama_anggota, p.jml_barang, p.tgl_minta, p.created_at, p.created_by")
             ->select("CAST(
                 REPLACE(
                     COALESCE(
@@ -695,7 +702,7 @@ class LaporanController extends BaseController
             ->join('barang b', 'b.id=p.barang_id')
             ->join('stok_barang sb', 'b.id=sb.barang_id')
             ->join('satuan s', 'b.satuan_id = s.id');
-        if (empty($y)) {
+        if (empty($y) || $y == "null") {
             $builder->where('YEAR(p.created_at)', date('Y'));
         } else if (!empty($m) && !empty($y)) {
             $builder->where("MONTH(p.created_at)", $m);
@@ -823,28 +830,38 @@ class LaporanController extends BaseController
 
     public function getcountbrg()
     {
-        if ($this->request->isAJAX()) {
-            $jenis = $this->request->getGet('jenis_kat');
-            $m = $this->request->getGet('m');
-            $y = $this->request->getGet('y');
-            $query = $this->db->table('barang b')->select('COUNT(b.nama_brg) as result, SUM(b.harga_jual * sb.sisa_stok) AS total_valuasi')
-                ->join('stok_barang sb', 'b.id=sb.barang_id')
-                ->join('kategori k', 'k.id=b.kat_id');
-            if (!empty($m) && !empty($y)) {
-                $query->where("MONTH(b.created_at)", $m);
-                $query->where("YEAR(b.created_at)", $y);
-            } else if (!empty($y)) {
-                $query->where("YEAR(b.created_at)", $y);
-            }
-            $query->where('k.jenis', $jenis)
-                ->where('b.deleted_at is null');
-            $msg = $query->get()->getRowArray();
-            echo json_encode($msg);
-        } else {
+        if (!$this->request->isAJAX()) {
             $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
+
+        $jenis = $this->request->getGet('jenis_kat');
+        $m = $this->request->getGet('m');
+        $y = $this->request->getGet('y');
+        $query = $this->db->table('barang b')
+            ->select('COUNT(b.id) as result, SUM(b.harga_jual * sb.sisa_stok) AS total_valuasi')
+            ->join('stok_barang sb', 'b.id=sb.barang_id')
+            ->join('kategori k', 'k.id=b.kat_id')
+            ->where('k.jenis', $jenis)
+            ->where('b.deleted_at is null');
+
+        if (!empty($m) && !empty($y)) {
+            $query->where("MONTH(b.created_at)", $m);
+            $query->where("YEAR(b.created_at)", $y);
+        } else if (!empty($y)) {
+            $query->where("YEAR(b.created_at)", $y);
+        }
+
+        $result = $query->get()->getRowArray();
+
+        $msg = [
+            'total_valuasi' => $result['total_valuasi'],
+            'result' => $result['result']
+        ];
+
+        echo json_encode($msg);
     }
+
 
     public function getcountbrgkeluar()
     {

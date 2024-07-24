@@ -39,7 +39,7 @@
           if (isBulanTahun($key1)) {
         ?>
             <tr>
-              <td class="text-center" style="font-style : bold;" colspan="9">Peminjaman Bulan <?= $key1 ?></td>
+              <td class="text-center" style="font-style:'bold';" colspan="9">Peminjaman Bulan <?= $key1 ?></td>
             </tr>
           <?php
           }
@@ -64,7 +64,6 @@
             $no = 1;
             foreach ($row1 as $key => $row2) {
               $currNamaAnggota = $row2['nama_anggota'];
-
               if ($currNamaAnggota !== $prevNamaAnggota) {
                 $rowspanCount = countRowsWithSameNamaAnggota($row1, $currNamaAnggota);
             ?>
@@ -118,7 +117,6 @@
                   </td>
                 </tr>
             <?php }
-
               $prevNamaAnggota = $currNamaAnggota;
             }
             ?>

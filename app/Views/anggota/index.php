@@ -169,64 +169,11 @@
   let tableAnggota, tableUnit;
   $(document).ready(function() {
     tableUnit = unit.listData("table-unit", `${nav}/listdataunit?isRestore=0`);
-    unit.viewdtcontrol('table-unit', tableUnit);
+    anggota.viewdtcontrol('table-unit', tableUnit);
     tableAnggota = anggota.listData("table-anggota", `${nav}/listdataanggota?isRestore=0`);
     anggota.viewdtcontrol('table-anggota', tableAnggota);
     util.handleCheckAll('#checkAllUnit', `.checkRowUnit`);
     util.handleCheckAll('#checkAllAnggota', `.checkRowAnggota`);
   });
-
-  function format(d) {
-    var formattedDate = renderFormatTime(d.created_at);
-
-    let addunit = `<table class="table" style="padding:20px;">
-    <tr>
-          <th>${d.kategori_unit}</th>
-          <td class="align-top">:</td>
-            <td class="align-top">${(d.singkatan)? `
-                ${d.singkatan}
-              `:`-`}
-              </td>
-          </tr>
-          <th>Deskripsi</th>
-          <td class="align-top">:</td>
-            <td class="align-top">${(d.deskripsi)? `
-                ${d.deskripsi}
-              `:`-`}
-              </td>
-          </tr>
-          </tr>
-          <tr>
-          <th>Keterangan</th>
-          <td class="align-top">:</td>
-            <td class="align-top">dibuat tanggal ${formattedDate} oleh ${d.created_by}
-              </td>
-          </tr>
-      </table>`;
-
-    let addanggota = `<table class="table" style="padding:20px;">
-            <tr>
-            <th>Nomor Handphone</th>
-              <td>:</td>
-              <td>${(d.no_hp)? `
-                  ${d.no_hp}
-                `:`-`}
-                </td>
-            </tr>
-            <tr>
-              <th>Level</th>
-              <td>:</td>
-              <td>${d.level}</td>
-          </tr>
-          <tr>
-          <th>Keterangan</th>
-            <td class="align-top">:</td>
-              <td class="align-top">dibuat tanggal ${formattedDate} oleh ${d.created_by}
-                </td>
-            </tr>
-        </table>`;
-    return (`${(d.deskripsi)? `
-        ${addunit}`:`${addanggota}`}`);
-  }
 </script>
 <?= $this->endSection() ?>

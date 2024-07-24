@@ -43,20 +43,20 @@ class DashboardController extends BaseController
 
     public function index()
     {
-        $segments = $this->uri->getSegments();
-        $breadcrumb = [];
-        $link = '';
-
-        foreach ($segments as $segment) {
-            $link .= '/' . $segment;
-            $name = ucwords(str_replace('-', ' ', $segment));
-            $breadcrumb[] = ['name' => $name, 'link' => $link];
-        }
-
+        $breadcrumb = $this->getBreadcrumb();
+        $cards = [
+            ["id" => "brgtetap", "icon" => "fa-cubes", "color" => "purple", "title" => "Barang Tetap"],
+            ["id" => "brgpersediaan", "icon" => "fa-shopping-basket", "color" => "blue", "title" => "Barang Persediaan"],
+            ["id" => "gedung", "icon" => "fa-building-o", "color" => "red", "title" => "Gedung"],
+            ["id" => "peminjaman", "icon" => "fa-handshake-o", "color" => "pink", "title" => "Total Peminjam"],
+            ["id" => "permintaan", "icon" => "fa-file-text-o", "color" => "orange", "title" => "Total Peminta"],
+            ["id" => "ruang", "icon" => "fa-map-marker", "color" => "green", "title" => "Ruang"],
+        ];
         $data = [
             'title' => 'Dashboard',
             'nav' => 'dashboard',
-            'breadcrumb' => $breadcrumb
+            'breadcrumb' => $breadcrumb,
+            'cards' => $cards
         ];
 
         return view('dashboard/index', $data);

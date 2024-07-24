@@ -6,8 +6,6 @@ body {
   font-family: serif;
   color: #000000;
   margin: 2em;
-  /* color: #fff; */
-  /* background-color: #000; */
 }
 
 /* override styles when printing */
@@ -19,12 +17,6 @@ body {
   }
 }
 
-.h1,
-.h2,
-.h3,
-.h4,
-.h5,
-.h6,
 h1,
 h2,
 h3,
@@ -39,17 +31,13 @@ h6 {
 }
 
 @page {
-  margin: 180px 50px;
-}
-
-@page {
+  margin: 180px 30px;
   header: header;
   footer: footer;
 }
 
-table {
-  page-break-after: always;
-}
+/* @page {
+} */
 
 #header {
   position: fixed;
