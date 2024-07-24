@@ -323,3 +323,16 @@ input:checked+.slider:before {
 .dropdown-item {
   padding: 0.45rem 0.75rem !important;
 }
+
+.select_warna {
+  /* background: #ffd5ba !important; */
+  background: #ddf8c6 !important;
+  color: #000;
+}
+
+/* Untuk tema gelap */
+.table-dark tbody tr.select_warna {
+  background: #555 !important;
+  /* Sesuaikan dengan warna yang cocok untuk tema gelap */
+  color: #fff;
+}

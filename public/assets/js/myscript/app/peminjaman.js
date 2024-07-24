@@ -61,7 +61,7 @@ export const peminjaman = (() => {
                 !['checkrow', 'keterangan', 'tgl_pinjam', 'tgl_kembali'].includes(column.data)
             );
         }
-        const table = crud.initDataTable(selector, url, columns, json => json.data);
+        const table = crud.initDataTable(selector, url, columns);
         return table;
     };
     const getForm = (saveMethod, id, status) => {
@@ -165,80 +165,6 @@ export const peminjaman = (() => {
         crud.handleRestore(data, textTitle, tableRestore, "restore")
     }
     const restoreAll = () => crud.handleRestoreAll(tableRestore, true)
-    const appendRowFormPinjam = (row) => {
-        let saveMethod = $("#formpeminjaman").attr('saveMethod');
-        for (var i = 1; i <= row; i++) {
-            $('#tambahrow tr').find('.btnhapusrow').hide();
-            (function (j) {
-                selectOption.barang(`barang_id${j}`, $("#jenis_kat").val());
-                $(`#barang_id${j}`).on('change', function (e) {
-                    e.preventDefault();
-                    util.rmIsInvalid(`barang_id${j}`);
-                    util.rmIsInvalid(`satuan${j}`);
-                    var b_id = $(this).val();
-                    var r_id = 54;
-                    const fieldsToReset = ["barang_id", "sisastok", "jml_barang", "satuan"]
-                    barang.isDuplicate(b_id, fieldsToReset, j);
-                    if (b_id != null && r_id != null) {
-                        function callback(response) {
-                            $(`#satuan${j}`).prop('disabled', true);
-                            $(`#satuan${j}`).html('<option value = "' + response.satuan_id + '" selected >' + response.kd_satuan + '</option>');
-                            $(`#sisastok${j}`).val(response.sisa_stok);
-                            if (saveMethod == "update") {
-                                sisa_stok_lama.pop();
-                                $(`#jumlah${j}`).val('');
-                            }
-                            sisa_stok_lama.push(response.sisa_stok);
-                        }
-                        const datas = {
-                            barang_id: b_id,
-                            ruang_id: r_id
-                        }
-                        barang.checkRuangBrg(datas, callback);
-                    } else {
-                        fieldsToReset.slice(1).forEach((val, id) => {
-                            $(`#${val}${j}`).html('');
-                            if (val === "satuan") $(`#${val}${j}`).prop('disabled', false);
-                        })
-                    }
-                });
-                selectOption.satuan(`satuan${j}`);
-                $(`#jml_barang${j}`).on('input', function (e) {
-                    util.rmIsInvalid(`jml_barang${j}`);
-                    if ($(this).val() == '') {
-                        if (saveMethod == "update") {
-                            var sisa_stok_update = parseInt(sisa_stok_lama[j - 1]) + parseInt(jumlah_lama[j - 1]);
-                            $('#formpeminjaman').find(`input[name='sisa_stok${j}']`).val(sisa_stok_update);
-                        } else {
-                            $('#formpeminjaman').find(`input[name='sisa_stok${j}']`).val(sisa_stok_lama[j - 1]);
-                        }
-                    } else {
-                        var jml_minta = $(this).val();
-                        if (saveMethod == "update") {
-                            var sisa_stok_baru = parseInt(sisa_stok_lama[j - 1]) + parseInt(jumlah_lama[j - 1]) - parseInt(jml_minta);
-                        } else {
-                            var sisa_stok_baru = parseInt(sisa_stok_lama[j - 1]) - parseInt(jml_minta);
-                        }
-                        $(`#sisastok${j}`).val(sisa_stok_baru);
-                    }
-                    if ($(`#sisastok${j}`).val() < 0) {
-                        $(`#sisastok${j}`).val(0)
-                        $(`#sisastok${j}`).addClass('is-invalid');
-                        $(`.errsisastok${j}`).html('sisa stok tidak boleh kurang dari 0');
-                        $(`#jumlah${j}`).addClass('is-invalid');
-                        $(`.errjumlah${j}`).html('input tidak boleh lebih dari ' + sisa_stok_lama[j - 1]);
-                    } else {
-                        $(`#sisastok${j}`).val(sisa_stok_baru)
-                        $(`#sisastok${j}`).removeClass('is-invalid');
-                        $(`.errsisastok${j}`).html('');
-                        $(`#jmlkeluar${j}`).removeClass('is-invalid');
-                        $(`.errjmlkeluar${j}`).html('');
-                    }
-                })
-            })(i)
-
-        }
-    }
     const submit = (form, event) => {
         event.preventDefault();
         const idForm = $(form).attr('id');
@@ -393,17 +319,13 @@ export const peminjaman = (() => {
     const multipleDelete = (form, event) => crud.handleMultipleDelete(form, event, [tablePinjam], '.checkrow', "", jenis_kat);
     const printPdf = (opsi) => {
         let datas = {
-            type: "post",
+            method: "post", view: "modal", modalId: "modalcetakpeminjaman",
             url: `${nav}/tampilmodalcetak`,
             data: {
                 jenis_kat, opsi
             },
         };
-        const callback = (response) => {
-            $('.viewmodal').html(response.sukses).show(500);
-            $('#modalcetakpeminjaman').modal('show');
-        };
-        util.fetchData(datas, callback);
+        crud.getForm(datas);
     }
     return {
         hapus,
@@ -422,6 +344,5 @@ export const peminjaman = (() => {
         hapusPermanenAll,
         viewTableRestore,
         getDataPeminjaman,
-        appendRowFormPinjam,
     }
 })()

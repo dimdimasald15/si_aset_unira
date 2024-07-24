@@ -22,7 +22,7 @@ const renderFormatTime = (data, type, full, meta) => {
   return new Date(year, month - 1, day, hours, minutes, seconds).toLocaleDateString('id-ID', options);
 };
 
-function set_tahun() {
+function set_year() {
   var skrg = new Date(Date.now());
   var end = skrg.getFullYear()
   var html = `<option value="">Semua Tahun</option>`
@@ -33,7 +33,7 @@ function set_tahun() {
   $("#selecttahun").html(html)
 }
 
-function set_bulan() {
+function set_month() {
   var namaBulan = [
     "Januari", "Februari", "Maret", "April", "Mei", "Juni",
     "Juli", "Agustus", "September", "Oktober", "November", "Desember"
@@ -46,3 +46,43 @@ function set_bulan() {
 
   $("#selectbulan").html(html);
 }
+
+// Function to initialize the year and month selectors
+function initializeMonthAndYears() {
+  set_year();
+  set_month();
+}
+
+function counterNumber(targetId, angka, fixvalue) {
+  $(targetId)
+    .prop('Counter', 0)
+    .animate({
+      Counter: angka,
+    }, {
+      duration: 3000,
+      easing: 'swing',
+      step: function (now) {
+        $(this).text(Math.ceil(now));
+      },
+      complete: function () {
+        $(this).text(fixvalue); // Menggantikan teks dengan valuasiFormatted setelah selesai melakukan counter
+      },
+    });
+}
+
+const formatCurrency = (number) => {
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR'
+  }).format(number);
+};
+
+const formatCommaSeparated = (text) => {
+  let items = text.split(', ');
+  let lastItem = items.pop();
+  if (items.length > 0) {
+    return items.join(', ') + ', dan ' + lastItem;
+  } else {
+    return lastItem;
+  }
+};

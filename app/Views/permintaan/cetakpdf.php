@@ -31,15 +31,15 @@
   <div id="content">
     <h2 class="text-center"><?= $title ?> (<?= $haritanggal ?>)</h2>
     <?php if (count($permintaan) > 0) { ?>
-      <p>Tabel 1. <?= $title ?></p>
       <table>
+        <caption>Tabel 1. <?= $title ?></caption>
         <?php
         foreach ($permintaan as $key1 => $row1) {
           // echo isBulanTahun($key1);
           if (isBulanTahun($key1)) {
         ?>
             <tr>
-              <td class="text-center" style="font-style : bold;" colspan="7">Permintaan Bulan <?= $key1 ?></td>
+              <td class="text-center" style="font-style : bold;" colspan="8">Permintaan Bulan <?= $key1 ?></td>
             </tr>
           <?php
           }
@@ -51,28 +51,52 @@
               <th>Unit</th>
               <th>Nama Barang</th>
               <th>Jumlah</th>
+              <th>Tanggal</th>
               <th>Harga Beli</th>
               <th>Total Valuasi</th>
             </tr>
           </thead>
           <tbody>
             <?php
-            foreach ($row1 as $key2 => $row2) {
+            // Gabungkan data berdasarkan nama peminta dan unit
+            $groupedData = [];
+            foreach ($row1 as $row2) {
+              $key = $row2['nama_anggota'] . '|' . $row2['singkatan'];
+              if (!isset($groupedData[$key])) {
+                $groupedData[$key] = [
+                  'nama_anggota' => $row2['nama_anggota'],
+                  'singkatan' => $row2['singkatan'],
+                  'tgl_minta' => $row2['tgl_minta'],
+                  'barang' => [],
+                  'total_val' => 0
+                ];
+              }
+              $groupedData[$key]['barang'][] = $row2;
+              $groupedData[$key]['total_val'] += (int)$row2['totalval'];
+            }
+
+            $no = 1;
+            foreach ($groupedData as $group) {
+              foreach ($group['barang'] as $index => $barang) {
             ?>
-              <tr>
-                <td class="text-center"><?= $key2 + 1 ?></td>
-                <td><?= $row2['nama_anggota'] ?></td>
-                <td><?= $row2['singkatan'] ?></td>
-                <td><?= $row2['nama_brg'] ?></td>
-                <td><?= $row2['jml_barang'] . ' ' . $row2['kd_satuan'] ?></td>
-                <td class="td_uang"><?= $row2['hargabeli'] ?></td>
-                <td class="td_uang"><?= $row2['totalval'] ?></td>
-              </tr>
+                <tr>
+                  <?php if ($index == 0) { ?>
+                    <td class="text-center" rowspan="<?= count($group['barang']) ?>"><?= $no++ ?></td>
+                    <td rowspan="<?= count($group['barang']) ?>"><?= $group['nama_anggota'] ?></td>
+                    <td rowspan="<?= count($group['barang']) ?>"><?= $group['singkatan'] ?></td>
+                  <?php } ?>
+                  <td><?= $barang['nama_brg'] ?></td>
+                  <td><?= $barang['jml_barang'] . ' ' . $barang['kd_satuan'] ?></td>
+                  <td><?= date('d/m/Y', strtotime($row2['tgl_minta'])) ?></td>
+                  <td class="td_uang"><?= $barang['hargabeli'] ?></td>
+                  <td class="td_uang"><?= $barang['totalval'] ?></td>
+                </tr>
             <?php
+              }
             }
             ?>
             <tr>
-              <td class="text-right" colspan="6" style="font-style:'bold';text-align: right;">Total pengeluaran bulan <?= $key1 ?></td>
+              <td class="text-right" colspan="7" style="font-style:'bold';text-align: right;">Total pengeluaran bulan <?= $key1 ?></td>
               <td class="td_uang">
                 <?php
                 $total = 0;
@@ -86,7 +110,7 @@
           <?php
         } ?>
           <tr>
-            <td class="text-right" colspan="6" style="font-style:'bold';text-align: right;">Total pengeluaran keseluruhan</td>
+            <td class="text-right" colspan="7" style="font-style:'bold';text-align: right;">Total pengeluaran keseluruhan</td>
             <td class="td_uang">
               <?php
               $total = 0;

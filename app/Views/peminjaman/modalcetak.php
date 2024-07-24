@@ -27,9 +27,9 @@
             <?= csrf_field(); ?>
             <div class="row d-flex justify-content-center">
               <div class="col-md-12">
-                <input type="text" name="jenis_kat" value="<?= $jenis_kat ?>" hidden>
-                <input type="text" name="keterangan" value="Peminjaman" hidden>
-                <input type="text" name="opsi" value="<?= $opsi ?>" hidden>
+                <input type="hidden" name="jenis_kat" value="<?= $jenis_kat ?>">
+                <input type="hidden" name="keterangan" value="Peminjaman">
+                <input type="hidden" name="opsi" value="<?= $opsi ?>">
                 <div class="row g-2 mb-1">
                   <?php if ($opsi == "opsi1") { ?>
                     <div class="col-md-12">
@@ -85,7 +85,6 @@
 </div>
 <script>
   $(document).ready(function() {
-    set_tahun();
-    set_bulan();
+    initializeMonthAndYears()
   });
 </script>

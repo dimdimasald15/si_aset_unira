@@ -466,7 +466,7 @@ const barang = (() => {
         crud.handleRestore(data, title, tableRestore, "restore");
     }
 
-    const restoreAll = () => crud.handleRestoreAll(tableRestore, true)
+    const restoreAll = () => crud.handleRestoreAll(tableRestore, true, '', '', '')
 
     const selectItem = () => {
         util.selectReload();

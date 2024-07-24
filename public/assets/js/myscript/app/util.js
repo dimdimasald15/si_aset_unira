@@ -68,11 +68,25 @@ const util = (() => {
 
     const handleCheckAll = (checkbox, target) => {
         $(checkbox).click(function () {
-            $(target).prop('checked', this.checked);
+            const isChecked = this.checked;
+            $(target).prop('checked', isChecked);
+            if (isChecked) {
+                $(target).closest('tr').addClass('select_warna');
+            } else {
+                $(target).closest('tr').removeClass('select_warna');
+            }
         });
 
         $(document).on('click', target, function () {
-            $(checkbox).prop('checked', $(target).length === $(target + ':checked').length);
+            const allChecked = $(target).length === $(target + ':checked').length;
+            $(checkbox).prop('checked', allChecked);
+
+            const isChecked = $(this).prop('checked');
+            if (isChecked) {
+                $(this).closest('tr').addClass('select_warna');
+            } else {
+                $(this).closest('tr').removeClass('select_warna');
+            }
         });
     }
 
@@ -94,8 +108,8 @@ const util = (() => {
         $(`.err${id}`).html('');
     }
 
-    const showPassword = (value) => {
-        if ($(value).is(':checked')) {
+    const showPassword = (form) => {
+        if ($(form).is(':checked')) {
             $('#password').attr('type', 'text');
         } else {
             $('#password').attr('type', 'password');
@@ -223,6 +237,7 @@ const util = (() => {
         };
         crud.getForm(datas);
     }
+
     const clearForm = (form, selector) => {
         $(`#${selector}`).find("input").val("")
         $(`#${selector}`).find("select").each(() => {
@@ -230,6 +245,125 @@ const util = (() => {
                 $(this).html("");
             }
         })
+    }
+
+    const appendRowItemTransaction = (row, form) => {
+        let saveMethod = form.attr('saveMethod');
+        for (var i = 1; i <= row; i++) {
+            $('#tambahrow tr').find('.btnhapusrow').hide();
+            (function (j) {
+                selectOption.barang(`barang_id${j}`, jenis_kat);
+                $(`#barang_id${j}`).on('change', function (e) {
+                    e.preventDefault();
+                    rmIsInvalid(`barang_id${j}`);
+                    rmIsInvalid(`satuan${j}`);
+                    var b_id = $(`#barang_id${j}`).val();
+                    var r_id = 54;
+                    const fieldToReset = ["barang_id", "satuan", "jumlah"];
+                    barang.isDuplicate(b_id, fieldToReset, j);
+                    if (b_id != null && r_id != null) {
+                        function callback(response) {
+                            $(`#satuan${j}`).prop('disabled', true);
+                            $(`#satuan${j}`).html('<option value = "' + response.satuan_id + '" selected >' + response.kd_satuan + '</option>');
+                            $(`#sisastok${j}`).val(response.sisa_stok);
+                            if (saveMethod == "update") {
+                                sisa_stok_lama.pop();
+                                $(`#jumlah${j}`).val('');
+                            }
+                            sisa_stok_lama.push(response.sisa_stok);
+                        }
+                        const datas = {
+                            barang_id: b_id,
+                            ruang_id: r_id
+                        }
+                        barang.checkRuangBrg(datas, callback);
+                    } else {
+                        $(`#jumlah${j}`).html('');
+                        $(`#satuan${j}`).prop('disabled', false);
+                        $(`#satuan${j}`).html('');
+                    }
+                });
+                selectOption.satuan(`satuan${j}`);
+                $(`#jml_barang${j}`).on('input', function (e) {
+                    e.preventDefault();
+                    rmIsInvalid(`jml_barang${j}`);
+                    if ($(this).val() == '') {
+                        if (saveMethod == "update") {
+                            var sisa_stok_update = parseInt(sisa_stok_lama[j - 1]) + parseInt(jumlah_lama[j - 1]);
+                            form.find(`input[name='sisa_stok${j}']`).val(sisa_stok_update);
+                        } else {
+                            form.find(`input[name='sisa_stok${j}']`).val(sisa_stok_lama[j - 1]);
+                        }
+                    } else {
+                        var jml_minta = $(this).val();
+                        if (saveMethod == "update") {
+                            var sisa_stok_baru = parseInt(sisa_stok_lama[j - 1]) + parseInt(jumlah_lama[j - 1]) - parseInt(jml_minta);
+                        } else {
+                            var sisa_stok_baru = parseInt(sisa_stok_lama[j - 1]) - parseInt(jml_minta);
+                        }
+                        $(`#sisastok${j}`).val(sisa_stok_baru);
+                    }
+                    if ($(`#sisastok${j}`).val() < 0) {
+                        $(`#sisastok${j}`).val(0)
+                        $(`#sisastok${j}`).addClass('is-invalid');
+                        $(`.errsisastok${j}`).html('sisa stok tidak boleh kurang dari 0');
+                        $(`#jumlah${j}`).addClass('is-invalid');
+                        $(`.errjumlah${j}`).html('input tidak boleh lebih dari ' + sisa_stok_lama[j - 1]);
+                    } else {
+                        $(`#sisastok${j}`).val(sisa_stok_baru);
+                        $(`#sisastok${j}`).removeClass('is-invalid');
+                        rmIsInvalid(`sisastok${j}`);
+                        rmIsInvalid(`jmlkeluar${j}`);
+                    }
+                })
+            })(i)
+        }
+    }
+
+    const addRowItemTransaction = (form) => {
+        var index = currIndex++;
+        $("#tambahrow").append(`
+      <tr>
+        <td>${index}</td>
+        <td>
+          <select name="barang_id${index}" class="form-select p-2" id="barang_id${index}" style="width: 400px;"></select>
+          <div class="invalid-feedback errbarang_id${index}"></div>
+        </td>
+        <td> <input type="number" class="form-control" id="sisastok${index}" placeholder="Sisa Stok Barang"  name="sisa_stok${index}" readonly>
+          <div class="invalid-feedback errsisastok${index}"></div>
+        </td>
+        <td> <input type="number" min="1" class="form-control" id="jml_barang${index}" placeholder="Masukkan Jumlah Permintaan Barang" name="jml_barang${index}">
+          <div class="invalid-feedback errjml_barang${index}"></div>
+        </td>
+        <td>
+          <select name="satuan_id${index}" class="form-select p-2" id="satuan${index}"></select>
+          <div class="invalid-feedback errsatuan${index}"></div>
+        </td>
+        <td style="width:1px; white-space:nowrap;">
+          <button type="button" class="btn btn-danger btn-sm btnhapusrow" onClick="util.deleteRowItemTransaction(this)">
+          <i class="fa fa-times"></i>
+          </button>
+        </td>
+      </tr>
+    `);
+        rowCount = $('#tambahrow tr').length;
+        appendRowItemTransaction(rowCount, form);
+        $("#tambahrow tr:last-child .btnhapusrow").show();
+    }
+
+    const deleteRowItemTransaction = (form) => {
+        $(form).parents('tr').remove();
+        currIndex--;
+        if (currIndex <= lastNumb) {
+            currIndex = lastNumb + 1;
+        }
+        //hapus tr sebelumnya
+        rowCount = $('#tambahrow tr').length;
+        for (var i = 0; i < rowCount; i++) {
+            $('#tambahrow tr').find('.btnhapusrow').hide();
+        }
+        rowCount === 1 ? $('#tambahrow tr').find('.btnhapusrow').hide() :
+            $("#tambahrow tr:last-child .btnhapusrow").show();
     }
 
     return {
@@ -253,7 +387,10 @@ const util = (() => {
         clearIsInvalid,
         handleSubmitSuccess,
         handleValidationErrors,
-        initializeValidationHandlers
+        deleteRowItemTransaction,
+        appendRowItemTransaction,
+        addRowItemTransaction,
+        initializeValidationHandlers,
     }
 })()
 

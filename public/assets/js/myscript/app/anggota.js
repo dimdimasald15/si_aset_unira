@@ -43,7 +43,54 @@ export const anggota = (() => {
         const table = crud.initDataTable(selector, url, columns);
         return table;
     };
-    const viewdtcontrol = (index, data) => crud.viewDtControl(index, data);
+    const viewdtcontrol = (index, data) => {
+        function format(d) {
+            const formattedDate = renderFormatTime(d.created_at);
+
+            let addunit = `
+                <table class="table" style="padding:20px;">
+                    <tr>
+                        <th>${d.kategori_unit}</th>
+                        <td class="align-top">:</td>
+                        <td class="align-top">${d.singkatan ? d.singkatan : '-'}</td>
+                    </tr>
+                    <tr>
+                        <th>Deskripsi</th>
+                        <td class="align-top">:</td>
+                        <td class="align-top">${d.deskripsi ? d.deskripsi : '-'}</td>
+                    </tr>
+                    <tr>
+                        <th>Keterangan</th>
+                        <td class="align-top">:</td>
+                        <td class="align-top">dibuat tanggal ${formattedDate} oleh ${d.created_by}</td>
+                    </tr>
+                </table>
+            `;
+
+            let addanggota = `
+                <table class="table" style="padding:20px;">
+                    <tr>
+                        <th>Nomor Handphone</th>
+                        <td>:</td>
+                        <td>${d.no_hp ? d.no_hp : '-'}</td>
+                    </tr>
+                    <tr>
+                        <th>Level</th>
+                        <td>:</td>
+                        <td>${d.level}</td>
+                    </tr>
+                    <tr>
+                        <th>Keterangan</th>
+                        <td class="align-top">:</td>
+                        <td class="align-top">dibuat tanggal ${formattedDate} oleh ${d.created_by}</td>
+                    </tr>
+                </table>
+            `;
+
+            return d.deskripsi ? addunit : addanggota;
+        }
+        crud.viewDtControl(index, data, format);
+    }
     const handleNoAnggota = (level, noAnggotaValue = '') => {
         const noAnggotaContainer = $('.no_anggota');
         noAnggotaContainer.hide().html('');

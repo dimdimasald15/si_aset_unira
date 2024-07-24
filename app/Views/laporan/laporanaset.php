@@ -30,8 +30,8 @@
   <div id="content">
     <h2 class="text-center">Laporan Aset Universitas Islam Raden Rahmat</h2>
     <?php if (count($brgtetap) > 0) { ?>
-      <p class="mb-1 mt-3">Tabel 1. Laporan Barang Tetap</p>
-      <table>
+      <table style="page-break-after: always;">
+        <caption>Tabel 1. Laporan Barang Tetap</caption>
         <thead class="text-center">
           <tr>
             <th>No.</th>
@@ -71,9 +71,9 @@
     <?php } else { ?>
       <p class="text-center mt-5" style="font-style: italic bold;">Data Kosong! Barang tidak tersedia</p>
     <?php } ?>
-    <p class="mb-1 mt-3">Tabel 2. Laporan Pembelian Barang Tetap</p>
     <?php if (count($belibrgtetap) > 0) { ?>
-      <table>
+      <table style="page-break-after: always;">
+        <caption>Tabel 2. Laporan Pembelian Barang Tetap</caption>
         <?php
         foreach ($belibrgtetap as $key1 => $row1) {
           // echo isBulanTahun($key1);
@@ -145,9 +145,9 @@
     <?php } else { ?>
       <p class="text-center mt-5" style="font-style: italic bold;">Data Kosong! Tidak ada pembelian barang tetap pada <?= $bulantahun ?></p>
     <?php } ?>
-    <p class="mb-1 mt-3">Tabel 3. Laporan Permintaan Barang Persediaan</p>
     <?php if (count($permintaan) > 0) { ?>
       <table>
+        <caption>Tabel 3. Laporan Permintaan Barang Persediaan</caption>
         <?php
         foreach ($permintaan as $key1 => $row1) {
           // echo isBulanTahun($key1);
@@ -217,7 +217,7 @@
     <?php } else { ?>
       <p class="text-center mt-5" style="font-style: italic bold;">Data Kosong! Tidak ada permintaan barang persediaan pada <?= $bulantahun ?></p>
     <?php } ?>
-    <!-- <p class="mb-1 mt-3">the fourth page</p> -->
+    <!-- <n>the fourth page</p> -->
   </div>
   <div id="footer">
     <p class="page"></p>
