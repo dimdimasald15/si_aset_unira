@@ -326,8 +326,9 @@ input:checked+.slider:before {
 
 .select_warna {
   /* background: #ffd5ba !important; */
-  background: #ddf8c6 !important;
-  color: #000;
+  /* background: #ddf8c6 !important; */
+  background: #e0fced !important;
+  color: var(--bs-green);
 }
 
 /* Untuk tema gelap */
