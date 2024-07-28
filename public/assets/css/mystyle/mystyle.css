@@ -326,8 +326,9 @@ input:checked+.slider:before {
 
 .select_warna {
   /* background: #ffd5ba !important; */
-  background: #ddf8c6 !important;
-  color: #000;
+  /* background: #ddf8c6 !important; */
+  background: #e0fced !important;
+  color: var(--bs-green);
 }
 
 /* Untuk tema gelap */
@@ -335,4 +336,8 @@ input:checked+.slider:before {
   background: #555 !important;
   /* Sesuaikan dengan warna yang cocok untuk tema gelap */
   color: #fff;
+}
+
+.sidebar-wrapper .menu .sidebar-item.active.has-sub .sidebar-link:after {
+  content: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9" style="fill:none;stroke:white;stroke-width:1"></polyline></svg>');
 }

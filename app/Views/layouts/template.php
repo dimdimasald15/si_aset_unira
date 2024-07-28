@@ -33,9 +33,10 @@ helper('converter_helper');
     <link rel="stylesheet" href="<?= base_url() ?>assets/css/app.css">
     <link rel="stylesheet" href="<?= base_url() ?>assets/css/mystyle/mystyle.css">
     <link rel="stylesheet" href="<?= base_url() ?>assets/css/mystyle/custom.css">
-    <?= $this->renderSection('styles') ?>
     <link rel="stylesheet" href="<?= base_url() ?>assets/vendors/iconly/bold.css">
     <link rel="stylesheet" href="<?= base_url() ?>assets/vendors/DataTables/DataTables-1.13.3/css/dataTables.jqueryui.css">
+    <!-- cropperjs -->
+    <link href="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.css" rel="stylesheet">
     <!-- sweetalert2 -->
     <link href="<?= base_url() ?>assets/vendors/sweetalert2/sweetalert2.min.css" rel="stylesheet" type="text/css">
     <!-- Selectize.js -->
@@ -44,6 +45,7 @@ helper('converter_helper');
     <link href="<?= base_url() ?>assets/vendors/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
     <script src="<?= base_url() ?>assets/vendors/jquery/jquery.min.js"></script>
+    <?= $this->renderSection('styles') ?>
     <!-- Select2 -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
@@ -56,11 +58,10 @@ helper('converter_helper');
     <!-- module js -->
     <script type="module" src="<?= base_url() ?>assets/js/myscript/app.js" defer></script>
     <!-- Cropper.js -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" integrity="sha512-cyzxRvewl+FOKTtpBzYjW6x6IAYUCZy3sGP40hn+DQkqeluGRCax7qztK2ImL64SA+C7kVWdLI6wvdlStawhyw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js" integrity="sha512-6lplKUSl86rUVprDIjiW8DuOniNX8UDoRATqZSds/7t6zCQZfaCe3e5zcGaQwxa8Kpn5RTM9Fvl3X2lLV4grPQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
     <!-- HTML2Canvasjs -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
-    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <!-- pdfmake -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js" integrity="sha512-a9NgEEK7tsCvABL7KqtUTQjl69z7091EVPpw5KxPlZ93T141ffe1woLtbXTX+r2/8TtTvRX/v4zTL2UlMUPgwg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <!-- qrCodejS -->

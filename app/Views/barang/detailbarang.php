@@ -85,7 +85,7 @@
                 <div class="card-body" style="padding: 0.5rem 0.5rem 0.5rem 5rem;">
                   <div class="row">
                     <?php if ($barang->foto_barang) { ?>
-                      <img src="<?= base_url() ?>/assets/images/foto_barang/<?= $barang->foto_barang ?>" alt="Gambar Barang" class="rounded mx-auto d-block" style="width:300px; height:auto;">
+                      <img src="<?= base_url() ?>/assets/images/foto_barang/<?= $barang->foto_barang ?>" alt="Gambar Barang" class="rounded mx-auto d-block">
                     <?php } else { ?>
                       <img src="https://via.placeholder.com/150x150.png?text=No+Image" alt="No Image" class="rounded mx-auto d-block" style="width:150px; height:auto;">
                     <?php } ?>
@@ -153,7 +153,7 @@
                             <td class="table-light" style="width:10px"> <strong>:</strong> </td>
                             <td><?php
                                 $harga_beli = $barang->harga_beli;
-                                $harga_beli_formatted = 'Rp ' . number_format($harga_beli, 0, ',', '.') . ',-';
+                                $harga_beli_formatted = 'Rp' . number_format($harga_beli, 0, ',', '.') . ',-';
                                 echo $harga_beli_formatted;
                                 ?>
                             </td>
@@ -163,7 +163,7 @@
                             <td class="table-light" style="width:10px"> <strong>:</strong> </td>
                             <td><?php
                                 $harga_jual = $barang->harga_jual;
-                                $harga_jual_formatted = 'Rp ' . number_format($harga_jual, 0, ',', '.') . ',-';
+                                $harga_jual_formatted = 'Rp' . number_format($harga_jual, 0, ',', '.') . ',-';
                                 echo $harga_jual_formatted;
                                 ?></td>
                           </tr>

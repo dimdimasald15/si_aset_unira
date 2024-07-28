@@ -277,12 +277,13 @@ const barang = (() => {
         crud.getForm(datas);
     }
 
-    const upload = (id, nama_brg, foto_barang) => {
+    const upload = (id, nama_brg, path_foto, foto_barang) => {
         const datas = {
             method: "POST",
             url: `${nav}/tampilcardupload`,
+            view: "modal", modalId: "modalForm",
             data: {
-                id, nama_brg, nav, foto_barang
+                id, nama_brg, path_foto, foto_barang
             }
         }
         crud.getForm(datas);
@@ -429,30 +430,6 @@ const barang = (() => {
         });
     }
 
-    const handleSubmitError = (errors, rowCount) => {
-        let errorasal = [];
-        for (let key in errors) {
-            if (errors.hasOwnProperty(key) && key.startsWith('asal')) {
-                errorasal.push(errors[key]);
-            }
-        }
-
-        for (let i = 1; i <= rowCount; i++) {
-            util.setFieldError(`#jenis_kat${i}`, errors[`jenis_kat.${i - 1}`]);
-            util.setFieldError(`#katid${i}`, errors[`kat_id.${i - 1}`]);
-            util.setFieldError(`#skbrgfix${i}`, errors[`kode_brg.${i - 1}`]);
-            util.setFieldError(`#namabarang${i}`, errors[`nama_brg.${i - 1}`]);
-            util.setFieldError(`#merk${i}`, errors[`merk.${i - 1}`]);
-            util.setFieldError(`#warna${i}`, errors[`warna.${i - 1}`]);
-            util.setFieldError(`.asalbrg${i} .form-check-input`, errorasal.length ? errorasal[i - 1] : null);
-            util.setFieldError(`#hargabeli${i}`, errors[`harga_beli.${i - 1}`]);
-            util.setFieldError(`#hargajual${i}`, errors[`harga_jual.${i - 1}`]);
-            util.setFieldError(`#lokasi${i}`, errors[`ruang_id.${i - 1}`]);
-            util.setFieldError(`#jmlmasuk${i}`, errors[`jumlah_masuk.${i - 1}`]);
-            util.setFieldError(`#satuan${i}`, errors[`satuan_id.${i - 1}`]);
-        }
-    }
-
     const viewTableRestore = () => {
         function callback() {
             tableRestore = listData('table-restore', `${nav}/listdatabarang?isRestore=1`);
@@ -494,27 +471,6 @@ const barang = (() => {
             tableBrgPersediaan.ajax.reload();
             util.filteringData('Barang Persediaan');
         }
-    }
-
-    const insertMultiple = (form, event) => {
-        event.preventDefault();
-        let formdata = new FormData(form);
-        formdata.append('jmldata', rowCount);
-        const callback = (response) => {
-            if (response.error) {
-                handleSubmitError(response.error, rowCount);
-            } else {
-                const tables = [tableBrgTetap, tableBrgPersediaan];
-                util.handleSubmitSuccess(response.success, tables);
-            }
-        };
-        const datas = {
-            type: "post",
-            url: `${nav}/insertmultiple`,
-            data: formdata,
-        }
-        crud.submitAjax(datas, callback);
-        return false;
     }
 
     const isDuplicate = (idbrg, fieldsToReset, row) => {
@@ -562,7 +518,6 @@ const barang = (() => {
         hapusMultiple,
         hapusPermanen,
         formTambahBaru,
-        insertMultiple,
         selectCategory,
         formTambahStok,
         transferBarang,

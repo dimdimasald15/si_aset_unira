@@ -11,6 +11,7 @@ import { peminjaman } from "./app/peminjaman.js";
 import { permintaan } from "./app/permintaan.js";
 import { dashboard } from "./app/dashboard.js";
 import { laporanaset } from "./app/laporanaset.js";
+import { formBarang } from "./app/formBarang.js";
 import { notification } from "./notification.js";
 import { kodebrg } from "./app/kodebarang.js";
 
@@ -28,4 +29,5 @@ window.unit = unit;
 window.kategori = kategori;
 window.dashboard = dashboard;
 window.aset = laporanaset;
+window.formbrg = formBarang;
 window.notif = notification;

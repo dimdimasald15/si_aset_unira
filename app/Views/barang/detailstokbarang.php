@@ -1,5 +1,61 @@
+<?php
+function generateGalleryItems($path_foto, $images)
+{
+  $html = '<div class="row justify-content-center">';
+  $count = count($images);
+  foreach ($images as $index => $image) {
+    // Penggunaan operator ternary untuk class
+    $col_class = ($count > 0 && $count < 3) ? "col-lg-6 col-md-6" : "col-lg-3 col-md-3";
+
+    $html .= '
+            <a href="#" class="' . $col_class . ' row justify-content-center mb-2" data-bs-toggle="modal" data-bs-target="#modalDetail">
+                <img data-bs-target="#lightboxCarousel" data-bs-slide-to="' . $index . '" src="' . base_url() . $path_foto . $image . '" class="img-fluid shadow-md responsive-img">
+            </a>';
+  }
+  $html .= '</div>';
+  return $html;
+}
+
+function generateCarouselItems($path_foto, $images)
+{
+  $html = '<div class="carousel-inner ratio ratio-16x9 bg-dark">';
+  foreach ($images as $index => $image) {
+    $activeClass = $index === 0 ? ' active' : '';
+    $html .= '
+          <div class="carousel-item text-center' . $activeClass . '">
+              <img src="' . base_url() . $path_foto . $image . '" class="img-fluid mh-100">
+          </div>';
+  }
+  $html .= '</div>';
+  return $html;
+}
+?>
 <?= $this->extend('/layouts/template2') ?>
 
+<?= $this->section('content') ?>
+<style>
+  .responsive-img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+  }
+
+  @media (max-width: 768px) {
+    .responsive-img {
+      width: 70%;
+      height: 150px;
+    }
+  }
+
+  @media (max-width: 576px) {
+    .responsive-img {
+      width: 50%;
+      height: 100px;
+    }
+  }
+</style>
+
+<?= $this->endSection() ?>
 <?= $this->section('content') ?>
 <div class="row" id="laporanaset" style="display:none;"></div>
 <?php if ($barang) { ?>
@@ -13,14 +69,16 @@
           </div>
         </div>
         <div class="card-body" style="padding: 0.5rem 1rem 1rem 1rem;">
-          <div class="row">
-            <?php if ($barang->foto_barang) { ?>
-              <img src="<?= base_url() ?>/assets/images/foto_barang/<?= $barang->foto_barang ?>" alt="Gambar Barang" class="rounded mx-auto d-block shadow-sm" style="width:300px; height:auto;">
-            <?php } else { ?>
-              <img src="https://via.placeholder.com/150x150.png?text=No+Image" alt="No Image" class="rounded mx-auto d-block shadow-sm" style="width:150px; height:auto;">
-            <?php } ?>
-          </div>
-          <div class="row mt-5">
+          <?php if ($barang->foto_barang) { ?>
+            <div class="row justify-content-center">
+              <div class="col-md-8">
+                <?= generateGalleryItems($barang->path_foto, json_decode($barang->foto_barang)) ?>
+              </div>
+            </div>
+          <?php } else { ?>
+            <img src="https://via.placeholder.com/150x150.png?text=No+Image" alt="No Image" class="rounded mx-auto d-block shadow-sm" style="width:150px; height:auto;">
+          <?php } ?>
+          <div class="row mt-3">
             <div class="col-lg-12">
               <div class="table-responsive">
                 <table class="table table-responsive-sm table-borderless ">
@@ -144,4 +202,27 @@
     </div>
   </div>
 <?php } ?>
+<div class="modal fade" id="modalDetail" tabindex="-1" aria-labelledby="modalDetailLabel" aria-hidden="true">
+  <div class="modal-dialog modal-md modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalDetailLabel"><?= $barang->nama_brg ?></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="lightboxCarousel" class="carousel slide">
+          <?= generateCarouselItems($barang->path_foto, json_decode($barang->foto_barang)); ?>
+          <button class="carousel-control-prev" type="button" data-bs-target="#lightboxCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#lightboxCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 <?= $this->endSection() ?>

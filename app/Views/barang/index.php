@@ -34,6 +34,8 @@
         margin: auto;
     }
 </style>
+<link src="<?= base_url() ?>assets/vendors/jquery/jquery.imagesloader.css">
+<script src="<?= base_url() ?>assets/vendors/jquery/jquery.imagesloader-1.0.1.js"></script>
 <?= $this->endSection() ?>
 <?= $this->section('content') ?>
 <section class="section">
@@ -196,8 +198,6 @@
     let saveMethod, globalId;
     let jenistrx = `${title.toLowerCase()}`;
     let tableBrgTetap, tableBrgPersediaan, tableAlokasiBrg;
-    // deklarasi variabel untuk menyimpan data lokasi
-    var lokasiSarprasCache = null;
     let kd_brg = null;
     let katid = null;
     const tabId = <?= json_encode($tabId) ?>;

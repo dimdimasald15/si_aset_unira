@@ -19,6 +19,26 @@
             <span>Dashboard</span>
           </a>
         </li>
+        <li class="sidebar-item <?= ($nav == 'kategori' || $nav == 'gedung' || $nav == 'ruang' || $nav == 'anggota') ? 'active' : '' ?> has-sub">
+          <a href="#" class='sidebar-link'>
+            <i class="bi bi-table"></i>
+            <span>Master Data</span>
+          </a>
+          <ul class="submenu  <?= ($nav == 'kategori' || $nav == 'gedung' || $nav == 'ruang' || $nav == 'anggota') ? 'active submenu-open' : '' ?>">
+            <li class="submenu-item <?= ($nav == 'kategori') ? 'active' : '' ?>">
+              <a href="kategori" class='submenu-link'>Data Kategori</a>
+            </li>
+            <li class="submenu-item <?= ($nav == 'gedung') ? 'active' : '' ?>">
+              <a href="gedung" class='submenu-link'>Data Gedung</a>
+            </li>
+            <li class="submenu-item <?= ($nav == 'ruang') ? 'active' : '' ?>">
+              <a href="ruang" class='submenu-link'>Data Ruang</a>
+            </li>
+            <li class="submenu-item <?= ($nav == 'anggota') ? 'active' : '' ?>">
+              <a href="anggota" class='submenu-link'>Data Anggota & Unit</a>
+            </li>
+          </ul>
+        </li>
         <li class="sidebar-item <?= ($nav == 'kelola-barang') ? 'active' : '' ?>">
           <a href="kelola-barang" class='sidebar-link'>
             <i class="bi bi-box"></i>
@@ -37,34 +57,10 @@
             <span>Permintaan Barang</span>
           </a>
         </li>
-        <li class="sidebar-item <?= ($nav == 'kategori') ? 'active' : '' ?>">
-          <a href="kategori" class='sidebar-link'>
-            <i class="bi bi-layers"></i>
-            <span>Kategori</span>
-          </a>
-        </li>
-        <li class="sidebar-item <?= ($nav == 'ruang') ? 'active' : '' ?>">
-          <a href="ruang" class='sidebar-link'>
-            <i class="bi bi-building"></i>
-            <span>Ruang</span>
-          </a>
-        </li>
-        <li class="sidebar-item <?= ($nav == 'gedung') ? 'active' : '' ?>">
-          <a href="gedung" class='sidebar-link'>
-            <i class="bi bi-building"></i>
-            <span>Gedung</span>
-          </a>
-        </li>
         <li class="sidebar-item <?= ($nav == 'laporan') ? 'active' : '' ?>">
           <a href="laporan" class='sidebar-link'>
             <i class="bi bi-file-earmark-bar-graph"></i>
             <span>Laporan Aset</span>
-          </a>
-        </li>
-        <li class="sidebar-item <?= ($nav == 'anggota') ? 'active' : '' ?>">
-          <a href="anggota" class='sidebar-link'>
-            <i class="bi bi-people"></i>
-            <span>Anggota & Unit</span>
           </a>
         </li>
       </ul>

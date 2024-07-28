@@ -111,6 +111,7 @@ export const crud = (() => {
             type,
             url: datas.url,
             data,
+            enctype: datas.enctype ? datas.enctype : 'application/x-www-form-urlencoded',
             contentType: false,
             processData: false,
             dataType: "json",
@@ -178,7 +179,6 @@ export const crud = (() => {
     }
 
     const handleDeleteAll = (tableRestore, path, string, data) => {
-        console.log(data);
         let titles = string ? string : title;
         var api = tableRestore.rows();
         if (api.count() === 0) { // jika tidak ada data
