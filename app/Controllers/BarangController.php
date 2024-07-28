@@ -64,7 +64,7 @@ class BarangController extends BaseController
             $hal = array_key_exists('hal', $this->request->getVar()) ? $this->request->getVar('hal') : '';
             $isRestore = filter_var($this->request->getGet('isRestore'), FILTER_VALIDATE_BOOLEAN);
             $builder = $this->db->table('stok_barang sb')
-                ->select('sb.id, sb.barang_id, k.nama_kategori, b.nama_brg, b.warna, b.harga_beli, b.kode_brg, b.foto_barang, b.asal, b.toko, b.instansi, sb.jumlah_masuk, sb.jumlah_keluar, sb.sisa_stok, b.kat_id, sb.ruang_id, b.satuan_id, sb.created_at, sb.created_by, sb.deleted_at, sb.deleted_by, r.nama_ruang, s.kd_satuan')
+                ->select('sb.id, sb.barang_id, k.nama_kategori, b.nama_brg, b.warna, b.harga_beli, b.kode_brg, b.path_foto, b.foto_barang, b.asal, b.toko, b.instansi, sb.jumlah_masuk, sb.jumlah_keluar, sb.sisa_stok, b.kat_id, sb.ruang_id, b.satuan_id, sb.created_at, sb.created_by, sb.deleted_at, sb.deleted_by, r.nama_ruang, s.kd_satuan')
                 ->join('barang b', 'b.id=sb.barang_id')
                 ->join('kategori k', 'k.id=b.kat_id ')
                 ->join('ruang r', 'sb.ruang_id = r.id')
@@ -136,7 +136,7 @@ class BarangController extends BaseController
                         if (!$hal) {
                             $action .= '<li><a class="dropdown-item" onclick="barang.edit(' . $row->barang_id . ')"><i class="fa fa-pencil-square-o"></i> Update Barang</a>
                             </li>
-                            <li><a class="dropdown-item" onclick="barang.upload(' . $row->barang_id . ', \'' . htmlspecialchars($row->nama_brg) . '\', \'' . htmlspecialchars($row->foto_barang) . '\')"><i class="bi bi-image"></i> Update Gambar Barang</a>
+                            <li><a class="dropdown-item" onclick="barang.upload(' . $row->barang_id . ', \'' . htmlspecialchars($row->nama_brg) . '\', \'' . htmlspecialchars($row->path_foto) . '\', \'' . htmlspecialchars($row->foto_barang) . '\')"><i class="bi bi-image"></i> Update Gambar Barang</a>
                             </li>';
                         }
 
@@ -160,15 +160,27 @@ class BarangController extends BaseController
         if ($this->request->isAJAX()) {
             $id = $this->request->getVar('id');
             $nama_brg = $this->request->getVar('nama_brg');
-            $fotobrg = $this->request->getVar('foto_barang');
-            $nav = $this->request->getVar('nav');
+            $foto_barang = $this->request->getVar('foto_barang');
+            $path_foto = $this->request->getVar('path_foto');
+            $decoded_foto_barang = html_entity_decode($foto_barang, ENT_QUOTES, 'UTF-8');
+            // Decode JSON menjadi array PHP
+            $photos = json_decode($decoded_foto_barang, true);
+            // Inisialisasi array untuk menyimpan hasil
+            $imagesToLoad = [];
+            // Proses data
+            if (is_array($photos)) {
+                foreach ($photos as $image) {
+                    $imagesToLoad[] = [
+                        'Url' => base_url() . $path_foto . $image,
+                        'Name' => $image
+                    ];
+                }
+            }
 
             $data = [
                 'id' => $id,
                 'nama_brg' => $nama_brg,
-                'fotobrg' => $fotobrg,
-                'nav' => $nav,
-                'title' => 'Barang Tetap',
+                'photos' => json_encode($imagesToLoad),
             ];
 
             $msg = [
@@ -188,7 +200,9 @@ class BarangController extends BaseController
         $kode_brg = str_replace('-', '.', $kdbrg);
         $ruang_id = substr($url, strrpos($url, "-") + 1); // mendapatkan string "6"
 
-        $query   = $this->db->table('stok_barang sb')->select('sb.*, k.nama_kategori, b.nama_brg, b.kode_brg, b.foto_barang, b.harga_beli, b.harga_jual, b.asal, b.toko, b.instansi, b.no_seri, b.no_dokumen, b.merk, b.tgl_pembelian, b.warna, sb.ruang_id, r.nama_ruang, b.satuan_id, s.kd_satuan, b.created_at, b.created_by, b.deleted_at')
+        $query   = $this->db->table('stok_barang sb')->select('sb.*, k.nama_kategori, b.nama_brg, b.kode_brg, 
+        b.path_foto, b.foto_barang, b.harga_beli, b.harga_jual, b.asal, b.toko, b.instansi, b.no_seri, b.no_dokumen, b.merk,
+        b.tgl_pembelian, b.warna, sb.ruang_id, r.nama_ruang, b.satuan_id, s.kd_satuan, b.created_at, b.created_by, b.deleted_at')
             ->join('barang b', 'sb.barang_id = b.id')
             ->join('kategori k', 'b.kat_id = k.id')
             ->join('ruang r', 'sb.ruang_id = r.id')
@@ -1589,83 +1603,73 @@ class BarangController extends BaseController
 
     public function simpanupload()
     {
-        if ($this->request->isAJAX()) {
-            $id = $this->request->getVar('id');
-
-            $validation = \Config\Services::validation();
-
-            $valid = $this->validate([
-                'foto_barang' => [
-                    'label' => 'Upload Foto',
-                    'rules' => 'uploaded[foto_barang]|mime_in[foto_barang,image/png,image/jpeg,image/jpg]|is_image[foto_barang]',
-                    'errors' => [
-                        'uploaded' => '{field} wajib diisi',
-                        'mime_in' => 'Harus dalam bentuk gambar, jangan file lain',
-                        'is_image' => 'Harus dalam bentuk gambar, jangan file lain',
-                        'max_size' => 'Ukuran file terlalu besar. Maksimal 1024KB',
-                    ],
-                ],
-            ]);
-
-            if (!$valid) {
-                $msg = [
-                    'error' => [
-                        'fotobrg' => $validation->getError('foto_barang'),
-                    ]
-                ];
-            } else {
-                $cekdata = $this->barang->find($id);
-
-                $fotolama = $cekdata['foto_barang'];
-
-                if ($fotolama != NULL || $fotolama != "") {
-                    unlink(FCPATH . '/assets/images/foto_barang/' . $fotolama);
-                }
-                // tangkap file foto
-                $filefoto = $this->request->getFile('foto_barang');
-                $filename = $filefoto->getRandomName();
-                // simpan file yang di-cropped saja
-                $gambar = $this->request->getVar('cropped_image');
-                list($type, $gambar) = explode(';', $gambar);
-                list(, $gambar) = explode(',', $gambar);
-                $gambar = base64_decode($gambar);
-                $namafile = str_replace(' ', '_', strtolower($filename));
-                // Menghapus ekstensi .jpg jika ada
-                $namafile = str_replace('.jpg', '', $namafile);
-                // Menghapus ekstensi .png jika ada
-                $namafile = str_replace('.png', '', $namafile);
-
-                // Menambahkan kembali ekstensi .png
-                $namafile .= '.png';
-
-                file_put_contents(FCPATH . '/assets/images/foto_barang/' . $namafile, $gambar);
-
-                $updatefoto = [
-                    'foto_barang' => $namafile
-                ];
-
-                // Panggil fungsi setInsertData dari model sebelum data diupdate
-                $ubahfoto = $this->barang->setUpdateData($updatefoto);
-
-                $field_update = $this->updatedfield($cekdata, $updatefoto);
-
-                $this->barang->update($id, $ubahfoto);
-
-                // Periksa apakah query terakhir adalah operasi update
-                $lastQuery = $this->db->getLastQuery();
-
-                $this->riwayatbarang->inserthistori($id, $cekdata, $updatefoto, $lastQuery, $field_update);
-
-                $msg = [
-                    'success' => 'File foto berhasil diupload'
-                ];
-            }
-
-            echo json_encode($msg);
-        } else {
+        if (!$this->request->isAJAX()) {
             $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
+        $files = $this->request->getFiles('file');
+        echo "<pre>";
+        var_dump($files);
+        echo "</pre>";
+        die;
+        if (!$files) {
+            return $this->response->setJSON(['status' => 'error', 'message' => 'No files uploaded']);
+        }
+        $id = $this->request->getVar('id');
+        $cekdata = $this->barang->find($id);
+        $pathlama = $cekdata['path_foto'];
+        $fotolama = json_decode($cekdata['foto_barang']);
+        $path_upload = $pathlama ? $pathlama : "assets/images/foto_barang/$id/";
+        $filenames = [];
+        if ($fotolama !== null || $pathlama !== null) {
+            foreach ($files as $key => $file) {
+                $clientName = $file->getClientName();
+                if ($file !== null && !$file->hasMoved()) {
+                    if (empty($clientName) && isset($fotolama[$key])) {
+                        $filename = $fotolama[$key];
+                    } else {
+                        $filename = $file->getRandomName();
+                        if (isset($fotolama[$key])) unlink(FCPATH . $path_upload . $fotolama[$key]);
+                        $file->move(FCPATH . $path_upload, $filename);
+                    }
+                    array_push($filenames, $filename);
+                } else {
+                    $msg = ['error' => 'Invalid file or no file uploaded.'];
+                }
+            }
+        } else {
+            foreach ($files as $key => $file) {
+                if ($file !== null && !$file->hasMoved()) {
+                    $clientName = $file->getClientName();
+                    if (!empty($clientName)) {
+                        $filename = $file->getRandomName();
+                        $file->move(FCPATH . $path_upload, $filename);
+                        array_push($filenames, $filename);
+                    }
+                } else {
+                    $msg = ['error' => 'Invalid file or no file uploaded.'];
+                }
+            }
+        }
+
+        $updatefoto = [
+            'path_foto' => $path_upload,
+            'foto_barang' => json_encode($filenames)
+        ];
+        // Panggil fungsi setInsertData dari model sebelum data diupdate
+        $ubahfoto = $this->barang->setUpdateData($updatefoto);
+        $field_update = $this->updatedfield($cekdata, $updatefoto);
+        $this->barang->update($id, $ubahfoto);
+        // Periksa apakah query terakhir adalah operasi update
+        $lastQuery = $this->db->getLastQuery();
+
+        $this->riwayatbarang->inserthistori($id, $cekdata, $updatefoto, $lastQuery, $field_update);
+
+        $msg = [
+            'success' => 'File foto berhasil diupload'
+        ];
+
+        echo json_encode($msg);
     }
 
     public function hapusTemporaryRuangLain($id, $barang_id, $idsarpras)

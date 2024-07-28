@@ -359,16 +359,3 @@ if (!function_exists('ubahTanggal')) {
     return $result;
   }
 }
-
-if (!function_exists('countRowsWithSameNamaAnggota')) {
-  function countRowsWithSameNamaAnggota($data, $currentNamaAnggota)
-  {
-    $count = 0;
-    foreach ($data as $row) {
-      if ($row['nama_anggota'] === $currentNamaAnggota) {
-        $count++;
-      }
-    }
-    return $count;
-  }
-}

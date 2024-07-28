@@ -100,5 +100,5 @@ class Autoload extends AutoloadConfig
      * @var string[]
      * @phpstan-var list<string>
      */
-    public $helpers = ['converter_helper'];
+    public $helpers = ['converter_helper', 'global_function_helper'];
 }

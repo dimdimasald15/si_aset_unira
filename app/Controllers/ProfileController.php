@@ -23,15 +23,7 @@ class ProfileController extends BaseController
 
     public function index()
     {
-        $segments = $this->uri->getSegments();
-        $breadcrumb = [];
-        $link = '';
-
-        foreach ($segments as $segment) {
-            $link .= '/' . $segment;
-            $breadcrumb[] = ['name' => ucfirst($segment), 'link' => $link];
-        }
-
+        $breadcrumb = $this->getBreadcrumb();
         $petugas = $this->pengguna->select('id, nip, username, email, foto, role')->where('username', $_SESSION['username'])->get()->getRow();
 
         // var_dump($petugas);

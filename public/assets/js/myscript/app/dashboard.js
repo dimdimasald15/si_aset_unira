@@ -21,7 +21,7 @@ export const dashboard = (() => {
             dataType: "json",
             success: function (response) {
                 let totalval = Number(response.total_valuasi);
-                let valuasiFormatted = 'Rp ' + totalval.toLocaleString('id-ID') + ',-';
+                let valuasiFormatted = 'Rp' + totalval.toLocaleString('id-ID') + ',-';
                 $(targetId).find('h6').after(`
                     <div class="refreshCard">
                     <h6 class="count font-extrabold">${response.result}</h6>

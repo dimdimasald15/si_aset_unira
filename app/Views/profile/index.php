@@ -274,7 +274,7 @@
                                         <div class="col-md-10">
                                             <div class="form-group has-icon-left">
                                                 <div class="position-relative">
-                                                    <input type="email" class="form-control" id="email" value="<?= $petugas->email ?>" readonly />
+                                                    <input type="email" class="form-control" id="email" value="<?= obfuscateEmail($petugas->email) ?>" readonly />
                                                     <div class="form-control-icon">
                                                         <i class="bi bi-envelope"></i>
                                                     </div>

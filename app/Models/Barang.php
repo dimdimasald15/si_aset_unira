@@ -9,7 +9,7 @@ class Barang extends Model
 {
     protected $table = "barang";
     protected $primaryKey = 'id';
-    protected $allowedFields = ['id', 'kat_id', 'satuan_id', 'kode_brg', 'nama_brg', 'merk', 'warna', 'tipe', 'asal', 'harga_beli', 'harga_jual', 'kondisi', 'tindakan_kerusakan', 'toko', 'instansi', 'no_seri', 'no_dokumen', 'foto_barang', 'tgl_pembelian', 'created_at', 'created_by', 'updated_by', 'updated_at', 'deleted_by', 'deleted_at'];
+    protected $allowedFields = ['id', 'kat_id', 'satuan_id', 'kode_brg', 'nama_brg', 'merk', 'warna', 'tipe', 'asal', 'harga_beli', 'harga_jual', 'kondisi', 'tindakan_kerusakan', 'toko', 'instansi', 'no_seri', 'no_dokumen', 'path_foto', 'foto_barang', 'tgl_pembelian', 'created_at', 'created_by', 'updated_by', 'updated_at', 'deleted_by', 'deleted_at'];
     protected $useSoftDeletes   = true;
     protected $useTimestamps = false;
     protected $createdField  = 'created_at';
