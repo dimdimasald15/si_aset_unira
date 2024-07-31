@@ -1,35 +1,3 @@
-<?php
-function generateGalleryItems($path_foto, $images)
-{
-  $html = '<div class="row justify-content-center">';
-  $count = count($images);
-  foreach ($images as $index => $image) {
-    // Penggunaan operator ternary untuk class
-    $col_class = ($count > 0 && $count < 3) ? "col-lg-6 col-md-6" : "col-lg-3 col-md-3";
-
-    $html .= '
-            <a href="#" class="' . $col_class . ' row justify-content-center mb-2" data-bs-toggle="modal" data-bs-target="#modalDetail">
-                <img data-bs-target="#lightboxCarousel" data-bs-slide-to="' . $index . '" src="' . base_url() . $path_foto . $image . '" class="img-fluid shadow-md responsive-img">
-            </a>';
-  }
-  $html .= '</div>';
-  return $html;
-}
-
-function generateCarouselItems($path_foto, $images)
-{
-  $html = '<div class="carousel-inner ratio ratio-16x9 bg-dark">';
-  foreach ($images as $index => $image) {
-    $activeClass = $index === 0 ? ' active' : '';
-    $html .= '
-          <div class="carousel-item text-center' . $activeClass . '">
-              <img src="' . base_url() . $path_foto . $image . '" class="img-fluid mh-100">
-          </div>';
-  }
-  $html .= '</div>';
-  return $html;
-}
-?>
 <?= $this->extend('/layouts/template2') ?>
 
 <?= $this->section('content') ?>
@@ -203,7 +171,7 @@ function generateCarouselItems($path_foto, $images)
   </div>
 <?php } ?>
 <div class="modal fade" id="modalDetail" tabindex="-1" aria-labelledby="modalDetailLabel" aria-hidden="true">
-  <div class="modal-dialog modal-md modal-dialog-centered">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="modalDetailLabel"><?= $barang->nama_brg ?></h5>

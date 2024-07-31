@@ -56,7 +56,7 @@
           <div class="col-md-6">
             <label for="unit" class="form-label">Unit <?= $title ?></label>
             <div class="input-group mb-3">
-              <span class="input-group-text" id="basic-addon1"><i class="bi bi-card-text"></i></span>
+              <!-- <span class="input-group-text" id="basic-addon1"><i class="bi bi-card-text"></i></span> -->
               <select name="unit_id" class="form-select p-2" id="unit_id"></select>
               <div class="invalid-feedback errunit_id"></div>
             </div>

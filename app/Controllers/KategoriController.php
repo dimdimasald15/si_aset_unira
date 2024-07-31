@@ -352,7 +352,7 @@ class KategoriController extends BaseController
                     $updatedata = $this->kategori->setUpdateData($data);
                     // Perbarui data di database
                     $this->kategori->update($id, $updatedata);
-                    $msg = ['success' => 'Data kategori: ' . $data['nama_kategori'] . ' berhasil terupdate'];
+                    $msg = ['success' => 'Data kategori: ' . $data['nama_kategori'] . ' berhasil diperbarui'];
                 }
             }
 

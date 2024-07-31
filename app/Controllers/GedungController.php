@@ -193,7 +193,7 @@ class GedungController extends BaseController
                 $updatedata = $this->gedung->setUpdateData($data);
                 // Perbarui data di database
                 $this->gedung->update($id, $updatedata);
-                $msg = ['success' => 'Data gedung: ' . $data['nama_gedung'] . ' berhasil terupdate'];
+                $msg = ['success' => 'Data gedung: ' . $data['nama_gedung'] . ' berhasil diperbarui'];
             }
         }
         echo json_encode($msg);

@@ -58,6 +58,7 @@ function renderTable($isRestore = false)
     </div>
     <div class="card-body table-minta">
       <form class="formmultipledelete" onSubmit="minta.multipleDelete(this, event)">
+        <?= csrf_field() ?>
         <div class="row m-1">
           <div class="col-md-6 pb-0 pt-3 px-0 d-flex flex-row justify-content-start">
             <div class="mx-1">

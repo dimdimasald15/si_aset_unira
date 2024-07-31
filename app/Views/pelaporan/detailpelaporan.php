@@ -1,7 +1,7 @@
-<div class="media-body">
+<div class="media-body" id="detail_laporan_kerusakan">
   <div class="email-scroll-area ps ps--active-y">
     <!-- email details  -->
-    <div class="row">
+    <div class="row" style="height: 100%;">
       <div class="col-12">
         <div class="email-detail-head">
           <div class="card" role="tablist">
@@ -13,13 +13,13 @@
                   </div>
                 </div>
                 <div class="media-body-text mt-25">
-                  <span class="text-primary nama"></span>
-                  <span class="d-sm-inline d-none" id="noanggota"></span>
-                  <small class="text-muted d-block" id="level"></small>
+                  <span class="text-primary nama"><?= $pelaporan->nama_anggota ?></span>
+                  <span class="d-sm-inline d-none" id="noanggota">&lt; <?= $pelaporan->no_anggota ?> &gt;</span>
+                  <small class="text-muted d-block" id="level"><?= $pelaporan->level ?></small>
                 </div>
               </div>
               <div class="information d-sm-flex align-items-center">
-                <small class="text-muted me-3" id="created_at"></small>
+                <small class="text-muted me-3" id="created_at"><?= $pelaporan->created_at ?></small>
                 <span class="favorite text-secondary">
                   <svg class="bi" width="1.5em" height="1.5em" fill="currentColor">
                     <use xlink:href="<?= base_url() ?>assets/vendors/bootstrap-icons/bootstrap-icons.svg#star" />
@@ -27,88 +27,36 @@
                 </span>
               </div>
             </div>
-            <!-- <div id="collapse7" role="tabpanel" aria-labelledby="headingCollapse7" class="collapse show"> -->
             <div class="card-content">
-              <div class="card-body py-1">
-                <p class="fw-bolder" id="title"></p>
-                <p class="subject"></p>
-                <p id='deskripsi'></p>
+              <div class="card-body py-3" style="overflow-y: scroll; height:50vh;">
+                <p class="fw-bolder" id="title"><?= $pelaporan->title ?></p>
+                <p class="subject">
+                  Subject : <?= $pelaporan->jml_barang . ' ' . $pelaporan->kd_satuan . ' ' . $pelaporan->nama_brg ?>
+                </p>
+                <p id='deskripsi'>
+                  <?= $pelaporan->deskripsi ?>
+                </p>
                 <p class="mb-0">Hormat kami,</p>
                 <br>
-                <p class="text-bold-500 nama"></p>
+                <p class="text-bold-500 nama"><?= $pelaporan->nama_anggota ?></p>
               </div>
               <div class="card-footer pt-0 border-top">
                 <label class="sidebar-label">File foto kerusakan</label>
                 <ul class="list-unstyled mb-0">
-                  <li class="cursor-pointer pb-25" id="foto">
-                  </li>
+                  <?php foreach (json_decode($pelaporan->foto) as $index => $foto) { ?>
+                    <li class="cursor-pointer mb-1" id="foto-<?= $index; ?>">
+                      <a href="#" data-bs-toggle="modal" data-bs-target="#modalDetail" onClick="util.viewModalPhotos('<?= $no_laporan; ?>', <?= $index; ?>)">
+                        <img data-bs-target="#lightboxCarousel" data-bs-slide-to="<?= $index; ?>" src="<?= base_url('assets/imgext/File-JPG-Image-icon.png'); ?>">
+                        <small class="text-muted ms-1 attchement-text"><?= $foto; ?></small>
+                      </a>
+                    </li>
+                  <?php } ?>
                 </ul>
               </div>
             </div>
-            <!-- </div> -->
           </div>
         </div>
       </div>
     </div>
   </div>
 </div>
-
-<script>
-  $(document).ready(function() {
-    var no_laporan = "<?= $no_laporan ?>";
-    $.ajax({
-      type: "post",
-      url: "notification/getLaporanByNoLaporan",
-      data: {
-        no_laporan: no_laporan,
-      },
-      dataType: "json",
-      success: function(response) {
-        $('.nama').html(response.nama_anggota);
-        $('#noanggota').html(`&lt; ${response.no_anggota} &gt;`);
-        $('#level').html(response.level);
-        $('#created_at').html(ubahTanggal(response.created_at));
-        $('#title').html(response.title);
-        $('.subject').html(`Subject : ${response.jml_barang} ${response.kd_satuan} ${response.nama_brg}`);
-        $('#deskripsi').html(response.deskripsi);
-        $('#foto').html(`
-        <img src="<?= base_url() ?>assets/images/foto_kerusakan/${response.foto}" alt="${response.foto}.png" width="400">
-                    <small class="text-muted ms-1 attchement-text">${response.foto}</small>
-        `);
-      }
-    });
-  });
-
-  function ubahTanggal(date) {
-    // array hari dan bulan
-    const Hari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
-    const Bulan = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-
-    // pemisahan tahun, bulan, hari, dan waktu
-    if (date) {
-      if (new Date(date).toDateString() === new Date().toDateString()) {
-        const timestamp = new Date(date).getTime();
-        const currentTimestamp = new Date().getTime();
-        const timeDiff = currentTimestamp - timestamp;
-
-        if (timeDiff < 60000) {
-          return Math.floor(timeDiff / 1000) + " detik yang lalu";
-        } else if (timeDiff < 3600000) {
-          return Math.floor(timeDiff / 60000) + " menit yang lalu";
-        } else if (timeDiff < 86400000) {
-          return Math.floor(timeDiff / 3600000) + " jam yang lalu";
-        }
-      } else {
-        const tahun = date.substr(0, 4);
-        const bulan = date.substr(5, 2);
-        const tgl = date.substr(8, 2);
-        const jam = date.substr(11, 5);
-        // const menit = date.substr(14, 2);
-        const hari = new Date(date).getDay();
-        return Hari[hari] + ", " + tgl + " " + Bulan[parseInt(bulan) - 1] + " " + tahun + " " + jam;
-      }
-    }
-
-    return "";
-  }
-</script>

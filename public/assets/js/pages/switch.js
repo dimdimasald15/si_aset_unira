@@ -37,7 +37,7 @@
     var cardbodies = document.querySelectorAll('.card-body');
     var headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
     var navbar = document.querySelectorAll('.navbar');
-
+    var emailLists = document.querySelectorAll(".media");
     // Add classes to tables
     tables.forEach((table) => {
       table.classList.add('table-dark', 'text-white');
@@ -66,6 +66,10 @@
     // Add classes to headings
     headings.forEach((heading) => {
       heading.classList.add('text-white');
+    });
+    // Add classes to headings
+    emailLists.forEach((emailList) => {
+      emailList.classList.add('bg-dark', 'text-white');
     });
 
     // set light switch input to true

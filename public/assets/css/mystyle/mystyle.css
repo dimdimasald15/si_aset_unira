@@ -341,3 +341,15 @@ input:checked+.slider:before {
 .sidebar-wrapper .menu .sidebar-item.active.has-sub .sidebar-link:after {
   content: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-down"><polyline points="6 9 12 15 18 9" style="fill:none;stroke:white;stroke-width:1"></polyline></svg>');
 }
+
+.carousel-control-next,
+.carousel-control-prev {
+  border: 0 !important;
+  background: 0 0;
+}
+
+.carousel-control-next:hover,
+.carousel-control-prev:hover {
+  background-color: rgb(29, 29, 29);
+  opacity: 0.1 !important;
+}

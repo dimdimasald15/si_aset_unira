@@ -248,7 +248,7 @@ class RuangController extends BaseController
                 $updatedata = $this->ruang->setUpdateData($data);
                 // Perbarui data di database
                 $this->ruang->update($id, $updatedata);
-                $msg = ['success' => 'Data ruangan: ' . $data['nama_ruang'] . ' berhasil terupdate'];
+                $msg = ['success' => 'Data ruangan: ' . $data['nama_ruang'] . ' berhasil diperbarui'];
             }
         }
 

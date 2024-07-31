@@ -35,8 +35,8 @@ $routes->get('auth', 'Auth::index');
 $routes->get('auth/login', 'Auth::login');
 $routes->get('logout', 'Auth::logout');
 $routes->get('detail-barang/(:segment)', 'BarangController::detailbarang/$1');
+$routes->get('detail-barang/tampilmodalphotos', 'BarangController::tampilmodalphotos');
 $routes->get('laporan-kerusakan-aset/(:segment)', 'PelaporanController::tampilpelaporanaset/$1');
-$routes->post('laporan-kerusakan-aset/simpan-laporan', 'PelaporanController::simpanlaporan');
 $routes->get('laporan-kerusakan-aset/edit-laporan/(:segment)', 'PelaporanController::tampileditlaporan/$1');
 $routes->post('laporan-kerusakan-aset/update-laporan/(:segment)', 'PelaporanController::updatelaporan/$1');
 
@@ -113,6 +113,7 @@ $routes->group('admin/kelola-barang', ['filter' => 'ceklogin'], function ($route
     $routes->match(['get', 'post'], 'restore', 'BarangController::restoredata');
     $routes->post('hapuspermanen', 'BarangController::hapuspermanen');
     $routes->get('detail-barang/(:any)', 'BarangController::detailbarang/$1');
+    $routes->get('detail-barang/tampilmodalphotos', 'BarangController::tampilmodalphotos');
     $routes->post('multipledelete', 'BarangController::deletetemporary');
 
     $routes->post('tampilexportexcel', 'BarangController::tampilexportexcel');
@@ -189,7 +190,6 @@ $routes->group('admin/peminjaman-barang', ['filter' => 'ceklogin'], function ($r
     $routes->post('updatedatakembali', 'PeminjamanController::updatedatakembali');
     $routes->get('getdatapeminjaman', 'PeminjamanController::getdatapeminjaman');
     $routes->get('pilihpeminjam', 'PeminjamanController::pilihanggota');
-    // $routes->get('detail-barang/(:any)', 'BarangController::detailbarang/$1');
 });
 
 $routes->group('admin/laporan', ['filter' => 'ceklogin'], function ($routes) {
@@ -229,7 +229,8 @@ $routes->group('admin/anggota', ['filter' => 'ceklogin'], function ($routes) {
 
 $routes->group('admin/pengguna', ['filter' => 'ceklogin'], function ($routes) {
     $routes->get('/', 'PenggunaController::index');
-    $routes->get('listdatapengguna', 'PenggunaController::listdatapengguna');
+    $routes->get('listdata', 'PenggunaController::listdata');
+    $routes->get('tampilform', 'PenggunaController::getForm');
     $routes->post('simpan', 'PenggunaController::simpandata');
     $routes->post('update/(:any)', 'PenggunaController::updatedata/$1');
     $routes->post('hapus/(:any)', 'PenggunaController::hapusdata/$1');
@@ -238,19 +239,21 @@ $routes->group('admin/pengguna', ['filter' => 'ceklogin'], function ($routes) {
 
 $routes->group('admin/profile', ['filter' => 'ceklogin'], function ($routes) {
     $routes->get('/', 'ProfileController::index');
+    $routes->get('tampilform', 'ProfileController::tampilform');
     $routes->post('ubahpassword', 'ProfileController::ubahpassword');
     $routes->post('gantifoto', 'ProfileController::gantifoto');
     $routes->post('getfotobyusername', 'ProfileController::getfotobyusername');
-    $routes->post('tampilformeditprofil', 'ProfileController::tampilformeditprofil');
+    $routes->post('tampilform', 'ProfileController::tampilformeditprofil');
     $routes->get('getprofilebynip', 'ProfileController::getprofilebynip');
     $routes->post('updatedata/(:any)', 'ProfileController::updatedata/$1');
 });
 
 $routes->group('admin/notification', ['filter' => 'ceklogin'], function ($routes) {
     $routes->get('/', 'PelaporanController::index');
+    $routes->post('tampilmodalphotos', 'PelaporanController::tampilmodalphotos');
     $routes->match(['get', 'post'], '/detail/(:any)', 'PelaporanController::tampildetailpelaporan/$1');
     $routes->post('multipledelete', 'PelaporanController::multipledeletetemporary');
-    $routes->post('restoredata', 'PelaporanController::restoredata');
+    $routes->post('restore', 'PelaporanController::restoredata');
     $routes->post('multipledeletepermanen', 'PelaporanController::multipledeletepermanen');
     $routes->post('getnotifikasipelaporan', 'PelaporanController::getnotifikasipelaporan');
     $routes->post('notifikasipersediaan', 'BarangController::notifikasipersediaan');
@@ -259,7 +262,6 @@ $routes->group('admin/notification', ['filter' => 'ceklogin'], function ($routes
     $routes->get('tampildetailpelaporan/(:any)', 'PelaporanController::tampildetailpelaporan/$1');
     $routes->post('getLaporanByNoLaporan', 'PelaporanController::getLaporanByNoLaporan');
 });
-
 /*
  * --------------------------------------------------------------------
  * Additional Routing

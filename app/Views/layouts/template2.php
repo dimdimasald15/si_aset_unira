@@ -51,6 +51,7 @@
 
   <!-- HTML2PDFJS -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <link src="<?= base_url() ?>assets/vendors/jquery/jquery.imagesloader.css">
 
   <?= $this->renderSection('styles') ?>
 
@@ -64,14 +65,23 @@
           <div class="row justify-content-center">
             <div class="col-xl-8 col-lg-8 col-md-8 px-5">
               <div class="text-center mb-3">
-                <img src="<?= base_url('assets/images/logo/logounira.jpg') ?>" style="max-width: 60px;border:2px solid white;">
+                <img src="<?= base_url('assets/images/logo/logounira.jpg') ?>" style="max-width: 60px;border:2px solid white;" alt="logo-unira">
               </div>
               <p class="text-lead text-white">Sistem Informasi Manajemen Aset UNIRA Malang</p>
             </div>
           </div>
         </div>
         <?= $this->renderSection('content') ?>
-
+        <footer class="row justify-content-center my-3 text-white">
+          <div class="col-lg-9 col-md-9 col-12 clearfix mb-0">
+            <div class="float-start">
+              <p>©2023 <a href="https://uniramalang.ac.id/" target="_blank" class="text-white">Universitas Islam Raden Rahmat Malang</a></p>
+            </div>
+            <div class="float-end">
+              <p>Created with <span class="text-danger"><i class="bi bi-heart"></i></span> using Mazer by <a href="http://ahmadsaugi.com" target="_blank" class="text-white">A. Saugi</a></p>
+            </div>
+          </div>
+        </footer>
       </div>
     </div>
   </div>
@@ -83,9 +93,16 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
 <!-- Optional Js -->
 <script src="<?= base_url('assets/vendors/sweetalert2/sweetalert2.all.min.js') ?>"></script>
+<script>
+  const BASE_URL = "<?= base_url() ?>";
+  let nav = "<?= $nav ?>";
+  let title = "<?= $title ?>";
+</script>
+<script type="module" src="<?= base_url('assets/js/report-breakdown-assets/report-assets.js') ?>"></script>
 <script src=" https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment-with-locales.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/locale/id.min.js" integrity="sha512-he8U4ic6kf3kustvJfiERUpojM8barHoz0WYpAUDWQVn61efpm3aVAD8RWL8OloaDDzMZ1gZiubF9OSdYBqHfQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="<?= base_url() ?>assets/vendors/jquery/jquery.imagesloader-1.0.1.js"></script>
 <?= $this->renderSection('javascript') ?>
 </body>
 

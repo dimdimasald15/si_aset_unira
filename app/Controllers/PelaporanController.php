@@ -16,16 +16,8 @@ use App\Controllers\BaseController;
 
 class PelaporanController extends BaseController
 {
-    protected $barang;
-    protected $kategori;
-    protected $uri;
-    protected $stokbarang;
-    protected $riwayatbarang;
-    protected $ruang;
-    protected $riwayattrx;
-    protected $pelaporan;
-    protected $notifikasi;
-    protected $anggota;
+    protected $barang, $kategori, $path_foto_kerusakan, $stokbarang, $riwayatbarang;
+    protected $ruang, $riwayattrx, $pelaporan, $notifikasi, $anggota, $uri;
     public function __construct()
     {
         $this->barang = new Barang();
@@ -38,6 +30,7 @@ class PelaporanController extends BaseController
         $this->notifikasi = new Notifikasi();
         $this->anggota = new Anggota();
         $this->uri = service('uri');
+        $this->path_foto_kerusakan = 'assets/images/foto_kerusakan/';
     }
     public function tampilpelaporanaset($url)
     {
@@ -45,7 +38,9 @@ class PelaporanController extends BaseController
         $kode_brg = str_replace('-', '.', $kdbrg);
         $ruang_id = substr($url, strrpos($url, "-") + 1); // mendapatkan string "6"
 
-        $query = $this->db->table('stok_barang sb')->select('sb.*, k.nama_kategori, b.nama_brg, b.kode_brg, b.foto_barang, b.harga_beli, b.harga_jual, b.asal, b.toko, b.instansi, b.no_seri, b.no_dokumen, b.merk, b.tgl_pembelian, b.warna, sb.ruang_id, r.nama_ruang, b.satuan_id, s.kd_satuan, b.created_at, b.created_by, b.deleted_at')
+        $query = $this->db->table('stok_barang sb')->select('sb.*, k.nama_kategori, b.nama_brg, b.kode_brg, b.path_foto, b.foto_barang, 
+                b.harga_beli, b.harga_jual, b.asal, b.toko, b.instansi, b.no_seri, b.no_dokumen, b.merk, b.tgl_pembelian, b.warna, sb.ruang_id, 
+                r.nama_ruang, b.satuan_id, s.kd_satuan, b.created_at, b.created_by, b.deleted_at')
             ->join('barang b', 'sb.barang_id = b.id')
             ->join('kategori k', 'b.kat_id = k.id')
             ->join('ruang r', 'sb.ruang_id = r.id')
@@ -54,7 +49,6 @@ class PelaporanController extends BaseController
             ->where('sb.ruang_id', $ruang_id)
             ->groupBy('b.id')
             ->get();
-
         $result = $query->getRow();
         if ($result) {
             $title = $result->nama_brg . ' di ' . $result->nama_ruang;
@@ -67,6 +61,7 @@ class PelaporanController extends BaseController
         $randomNumber = rand(111111111, 999999999); // Menghasilkan angka acak antara 1000 dan 9999
         $no_laporan = "LP-" . $today . "-" . $randomNumber; // Menggabungkan tanggal hari ini dengan angka acak
         $data = [
+            'nav' => "pelaporan",
             'title' => $title,
             'barang' => $result,
             'no_laporan' => $no_laporan,
@@ -74,6 +69,35 @@ class PelaporanController extends BaseController
         ];
 
         return view('pelaporan/tampilpelaporanaset', $data);
+    }
+
+
+
+    public function tampileditlaporan($no_laporan)
+    {
+        $query = $this->db->table('pelaporan_kerusakan p')->select('p.*, a.nama_anggota, a.level, a.no_anggota, b.nama_brg, s.kd_satuan, r.nama_ruang, sb.barang_id, sb.ruang_id, b.satuan_id, b.kode_brg, u.singkatan')
+            ->join('anggota a', 'a.id=p.anggota_id')
+            ->join('unit u', 'u.id=a.unit_id')
+            ->join('stok_barang sb', 'sb.id=p.stokbrg_id')
+            ->join('barang b', 'b.id=sb.barang_id')
+            ->join('ruang r', 'r.id=sb.ruang_id')
+            ->join('satuan s', 's.id=b.satuan_id')
+            ->where('p.no_laporan', $no_laporan);
+
+        $laporan = $query->get()->getRow();
+        $path = $this->path_foto_kerusakan . "$laporan->no_laporan/";
+        $imagesToLoad = convert_string_to_array_photos($path, $laporan->foto);
+        $kode_brg = $laporan->kode_brg;
+        $ruang_id = $laporan->ruang_id;
+        $url_detail_brg = 'detail-barang/' . str_replace(".", "-", $kode_brg) . "-" . $ruang_id;
+        $data = [
+            'laporan' => $laporan,
+            'url_detail_brg' => $url_detail_brg,
+            'title' => 'Form Ubah Laporan',
+            'nav' => 'edit-laporan',
+            'photos' => json_encode($imagesToLoad),
+        ];
+        return view('pelaporan/editlaporan', $data);
     }
 
     public function cekanggota()
@@ -134,18 +158,15 @@ class PelaporanController extends BaseController
             ];
         } else {
             $msg = [
-                'sukses' => 200
+                'success' => 200
             ];
         }
 
         echo json_encode($msg);
     }
 
-    public function simpanlaporan()
+    protected function getValidationRules($includeAnggotaId = false)
     {
-        $validation = \Config\Services::validation();
-        $rules = [];
-        $errors = [];
         $rules = [
             'jml_barang' => [
                 'label' => 'Jumlah barang rusak',
@@ -154,19 +175,15 @@ class PelaporanController extends BaseController
                     'required' => "{field} tidak boleh kosong",
                 ],
             ],
-            'foto_barang' => [
-                'label' => 'Upload Foto',
-                'rules' => 'uploaded[foto_barang]|mime_in[foto_barang,image/png,image/jpeg,image/jpg]|is_image[foto_barang]',
+            'deskripsi' => [
+                'label' => 'Deskripsi kerusakan',
+                'rules' => 'required',
                 'errors' => [
-                    'uploaded' => '{field} wajib diisi',
-                    'mime_in' => 'Harus dalam bentuk gambar, jangan file lain',
-                    'is_image' => 'Harus dalam bentuk gambar, jangan file lain',
-                    'max_size' => 'Ukuran file terlalu besar. Maksimal 1024KB',
+                    'required' => '{field} tidak boleh kosong',
                 ],
             ],
         ];
-
-        if ($this->request->getVar('pilihan') == "anggota lama") {
+        if ($includeAnggotaId) {
             $rules['anggota_id'] = [
                 'label' => 'Nama anggota',
                 'rules' => 'required',
@@ -175,44 +192,35 @@ class PelaporanController extends BaseController
                 ],
             ];
         }
+        return $rules;
+    }
+
+
+    protected function validateRequest($rules)
+    {
+        $validation = \Config\Services::validation();
         if (!$this->validate($rules)) {
-            $errors = $validation->getErrors();
+            return $validation->getErrors();
         }
+        return [];
+    }
+
+    public function simpanlaporan()
+    {
+        $includeAnggotaId = $this->request->getVar('pilihan') == "anggota lama";
+        $rules = $this->getValidationRules($includeAnggotaId);
+        $errors = $this->validateRequest($rules);
+
         if (!empty($errors)) {
-            $msg = [
-                'error' => $errors,
-            ];
+            $msg = ['error' => $errors];
         } else {
             $this->db->transStart();
-            // tangkap file foto
-            $filefoto = $this->request->getFile('foto_barang');
-            $filename = $filefoto->getRandomName();
-            $namaBaru = str_replace(' ', '_', strtolower($filename));
-            // Menghapus ekstensi .jpg jika ada
-            $namaBaru = str_replace('.jpg', '', $namaBaru);
-            // Menghapus ekstensi .png jika ada
-            $namaBaru = str_replace('.png', '', $namaBaru);
-
-            // Menambahkan kembali ekstensi .png
-            $namaBaru .= '.png';
-
-            $filefoto->move(FCPATH . '/assets/images/foto_kerusakan/', $namaBaru);
-
-            $anggota_id = "";
-            $no_laporan = $this->request->getVar('no_laporan');
-            if ($this->request->getVar('pilihan') == "anggota lama") {
-                $anggota_id = $this->request->getVar('anggota_id');
-
-                $simpanlaporan = [
-                    'stokbrg_id' => $this->request->getVar('stokbrg_id'),
-                    'anggota_id' => $anggota_id,
-                    'no_laporan' => $no_laporan,
-                    'jml_barang' => $this->request->getVar('jml_barang'),
-                    'title' => $this->request->getVar('title'),
-                    'deskripsi' => $this->request->getVar('deskripsi'),
-                    'foto' => $namaBaru,
-                ];
-            } else {
+            $files = $this->request->getFiles();
+            if (!$files['files']) {
+                $msg = ['error' => 'Invalid file or no file uploaded.'];
+            }
+            $id_anggota_baru = null;
+            if ($this->request->getVar('pilihan') == "anggota baru") {
                 $simpananggota = [
                     'no_anggota' => $this->request->getVar('no_anggota'),
                     'nama_anggota' => $this->request->getVar('nama_anggota'),
@@ -220,51 +228,62 @@ class PelaporanController extends BaseController
                     'level' => $this->request->getVar('level'),
                     'unit_id' => $this->request->getVar('unit_id'),
                 ];
-
                 $insertanggota = $this->anggota->setInsertData($simpananggota);
-
                 $this->db->table('anggota')->insert($insertanggota);
-
-                $anggota_id = $this->anggota->insertID();
-
-                $simpanlaporan = [
-                    'stokbrg_id' => $this->request->getVar('stokbrg_id'),
-                    'anggota_id' => $anggota_id,
-                    'no_laporan' => $no_laporan,
-                    'jml_barang' => $this->request->getVar('jml_barang'),
-                    'title' => $this->request->getVar('title'),
-                    'deskripsi' => $this->request->getVar('deskripsi'),
-                    'foto' => $namaBaru,
-                ];
+                $id_anggota_baru = $this->anggota->insertID();
             }
+            $no_laporan = $this->request->getVar('no_laporan');
+            $id_anggota_lama = $this->request->getVar('anggota_id');
+            $anggota_id = $id_anggota_lama ? $id_anggota_lama : $id_anggota_baru;
+            $filenames = [];
+            foreach ($files['files'] as $key => $file) {
+                if ($file !== null && !$file->hasMoved()) {
+                    $clientName = $file->getClientName();
+                    if (!empty($clientName)) {
+                        $filename = $file->getRandomName();
+                        $file->move(FCPATH . $this->path_foto_kerusakan . "$no_laporan/", $filename);
+                        array_push($filenames, $filename);
+                    }
+                } else {
+                    $msg = ['error' => 'Invalid file or no file uploaded.'];
+                }
+            }
+            $simpanlaporan = [
+                'stokbrg_id' => $this->request->getVar('stokbrg_id'),
+                'anggota_id' => $anggota_id,
+                'no_laporan' => $no_laporan,
+                'jml_barang' => $this->request->getVar('jml_barang'),
+                'title' => $this->request->getVar('title'),
+                'deskripsi' => $this->request->getVar('deskripsi'),
+                'foto' => json_encode($filenames),
+            ];
+
             $data_anggota = $this->anggota->find($anggota_id);
             $namaanggota = $data_anggota['nama_anggota'];
             $insertlaporan = $this->pelaporan->setInsertData($simpanlaporan, $namaanggota);
-
             $this->db->table('pelaporan_kerusakan')->insert($insertlaporan);
 
             $laporan_id = $this->db->insertID();
-
             $simpannotif = [
                 'laporan_id' => $laporan_id,
+                'petugas_id' => NULL,
                 'viewed_by_admin' => 0,
             ];
-
             $insertnotif = $this->notifikasi->setInsertData($simpannotif, $namaanggota);
-
             try {
                 $this->db->table('notifikasi')->insert($insertnotif);
             } catch (Exception $e) {
                 $msg = ['error' => "Simpan data notifikasi: " . $e->getMessage()];
             }
-
+            $db_error = $this->db->error();
             $this->db->transComplete();
             if ($this->db->transStatus() === false) {
                 // Jika terjadi kesalahan pada transaction
-                $msg = ['error' => 'Gagal menyimpan data pelaporan aset'];
+                var_dump($db_error['message']);
+                $msg = ['error' => 'Gagal menyimpan data pelaporan aset.'];
             } else {
                 $msg = [
-                    'sukses' => "Laporan anda berhasil terkirim. Terima kasih telah melapor.",
+                    'success' => "Laporan anda berhasil terkirim. Terima kasih telah melapor.",
                     'laporan_id' => $no_laporan
                 ];
             }
@@ -273,100 +292,46 @@ class PelaporanController extends BaseController
         echo json_encode($msg);
     }
 
-    public function tampileditlaporan($no_laporan)
-    {
-        $query = $this->db->table('pelaporan_kerusakan p')->select('p.*, a.nama_anggota, a.level, a.no_anggota, b.nama_brg, s.kd_satuan, r.nama_ruang, sb.barang_id, sb.ruang_id, b.satuan_id, b.kode_brg, u.singkatan')
-            ->join('anggota a', 'a.id=p.anggota_id')
-            ->join('unit u', 'u.id=a.unit_id')
-            ->join('stok_barang sb', 'sb.id=p.stokbrg_id')
-            ->join('barang b', 'b.id=sb.barang_id')
-            ->join('ruang r', 'r.id=sb.ruang_id')
-            ->join('satuan s', 's.id=b.satuan_id')
-            ->where('p.no_laporan', $no_laporan);
-
-        $laporan = $query->get()->getRow();
-        $kode_brg = $laporan->kode_brg;
-        $ruang_id = $laporan->ruang_id;
-        $url_detail_brg = base_url() . 'laporan-kerusakan-aset/' . str_replace(".", "-", $kode_brg) . "-" . $ruang_id;
-        $data = [
-            'laporan' => $laporan,
-            'url_detail_brg' => $url_detail_brg,
-            'title' => 'Form Ubah Laporan'
-        ];
-        return view('pelaporan/editlaporan', $data);
-    }
-
     public function updatelaporan($id)
     {
-        $validation = \Config\Services::validation();
-        $rules = [];
-        $errors = [];
-        $rules = [
-            'jml_barang' => [
-                'label' => 'Jumlah barang rusak',
-                'rules' => 'required',
-                'errors' => [
-                    'required' => "{field} tidak boleh kosong",
-                ],
-            ],
-            'foto_barang' => [
-                'label' => 'Upload Foto',
-                'rules' => 'uploaded[foto_barang]|mime_in[foto_barang,image/png,image/jpeg,image/jpg]|is_image[foto_barang]',
-                'errors' => [
-                    'uploaded' => '{field} wajib diisi',
-                    'mime_in' => 'Harus dalam bentuk gambar, jangan file lain',
-                    'is_image' => 'Harus dalam bentuk gambar, jangan file lain',
-                    'max_size' => 'Ukuran file terlalu besar. Maksimal 1024KB',
-                ],
-            ],
-        ];
-        if (!$this->validate($rules)) {
-            $errors = $validation->getErrors();
-        }
+        $rules = $this->getValidationRules();
+        $errors = $this->validateRequest($rules);
+
         if (!empty($errors)) {
-            $msg = [
-                'error' => $errors,
-            ];
+            $msg = ['error' => $errors];
         } else {
+            $this->db->transStart();
             $cekdata = $this->pelaporan->find($id);
             $no_laporan = $cekdata['no_laporan'];
-
-            $fotolama = $cekdata['foto'];
-
-            if (!empty($fotolama)) {
-                $pathToPhoto = FCPATH . '/assets/images/foto_kerusakan/' . $fotolama;
-                if (file_exists($pathToPhoto)) {
-                    unlink($pathToPhoto);
+            $pathlama = $this->path_foto_kerusakan . "$no_laporan/";
+            $fotolama = json_decode($cekdata['foto']);
+            $files = $this->request->getFiles();
+            if (!$files['files']) {
+                $msg = ['error' => 'Invalid file or no file uploaded.'];
+            }
+            $filenames = [];
+            if ($fotolama !== null || $pathlama !== null) {
+                foreach ($files['files'] as $key => $file) {
+                    $clientName = $file->getClientName();
+                    if ($clientName !== "" && !$file->hasMoved()) {
+                        $filename = $file->getRandomName();
+                        if (isset($fotolama[$key])) unlink(FCPATH . $pathlama . $fotolama[$key]);
+                        $file->move(FCPATH . $pathlama, $filename);
+                        array_push($filenames, $filename);
+                    } else {
+                        $msg = ['error' => 'Invalid file or no file uploaded.'];
+                    }
                 }
             }
 
-            $filefoto = $this->request->getFile('foto_barang');
-
-            if ($filefoto->isValid() && !$filefoto->hasMoved()) {
-                $filename = $filefoto->getRandomName();
-                $namaBaru = str_replace(' ', '_', strtolower($filename));
-
-                // Menghapus ekstensi .jpg jika ada
-                $namaBaru = str_replace('.jpg', '', $namaBaru);
-
-                // Menghapus ekstensi .png jika ada
-                $namaBaru = str_replace('.png', '', $namaBaru);
-
-                // Menambahkan kembali ekstensi .png
-                $namaBaru .= '.png';
-
-                $filefoto->move(FCPATH . '/assets/images/foto_kerusakan/', $namaBaru);
-            }
-
             $anggota_id = $this->request->getVar('anggota_id');
-
             $ubahlaporan = [
                 'stokbrg_id' => $this->request->getVar('stokbrg_id'),
                 'anggota_id' => $anggota_id,
                 'jml_barang' => $this->request->getVar('jml_barang'),
                 'title' => $this->request->getVar('title'),
                 'deskripsi' => $this->request->getVar('deskripsi'),
-                'foto' => $namaBaru,
+                'foto' => json_encode($filenames),
             ];
 
             $data_anggota = $this->anggota->find($anggota_id);
@@ -375,11 +340,18 @@ class PelaporanController extends BaseController
             $updatelaporan = $this->pelaporan->setUpdateData($ubahlaporan, $namaanggota);
 
             $this->db->table('pelaporan_kerusakan')->where('id', $id)->update($updatelaporan);
-
-            $msg = [
-                'sukses' => "Laporan anda berhasil diupdate. Terima kasih telah melapor.",
-                'laporan_id' => $no_laporan
-            ];
+            $db_error = $this->db->error();
+            $this->db->transComplete();
+            if ($this->db->transStatus() === false) {
+                // Jika terjadi kesalahan pada transaction
+                var_dump($db_error['message']);
+                $msg = ['error' => 'Gagal menyimpan perubahan data pelaporan aset.'];
+            } else {
+                $msg = [
+                    'success' => "Laporan anda berhasil diperbarui. Terima kasih telah melapor.",
+                    'laporan_id' => $no_laporan
+                ];
+            }
         }
 
         echo json_encode($msg);
@@ -504,28 +476,10 @@ class PelaporanController extends BaseController
             $no_laporan = $this->request->getGet('no_laporan');
         }
         $page    = isset($_GET["page_pelaporan"]) ? (int)$_GET["page_pelaporan"] : 1;
-
-        $segments = $this->uri->getSegments();
-        $breadcrumb = [];
-        $link = '';
-
-        foreach ($segments as $segment) {
-            $link .= '/' . $segment;
-            $name = ucwords(str_replace('-', ' ', $segment));
-            $breadcrumb[] = ['name' => $name, 'link' => $link];
-        }
+        $breadcrumb = $this->getBreadcrumb();
 
         if ($no_laporan) {
-            $query = $this->db->table('pelaporan_kerusakan p')->select('p.*, a.nama_anggota, a.no_anggota, a.level, u.singkatan,n.id as notif_id, n.viewed_by_admin,b.nama_brg, s.kd_satuan')
-                ->join('anggota a', 'a.id=p.anggota_id')
-                ->join('unit u', 'u.id=a.unit_id')
-                ->join('stok_barang sb', 'sb.id=p.stokbrg_id')
-                ->join('barang b', 'b.id=sb.barang_id')
-                ->join('satuan s', 's.id=b.satuan_id')
-                ->join('notifikasi n', 'p.id=n.laporan_id')
-                ->where('p.no_laporan', $no_laporan);
-            $pelaporan = $query->get()->getRow();
-
+            $pelaporan = $this->pelaporan->getDataByNoLaporan($no_laporan);
             $id = session()->get('id');
 
             $ubahnotif = [
@@ -547,6 +501,7 @@ class PelaporanController extends BaseController
             $notviewed = $this->db->table('notifikasi n')->select('*')->where('viewed_by_admin', 0);
             $belumdibaca = count($notviewed->get()->getResult());
         }
+
         $data = [
             'title' => 'Notifikasi Kerusakan Aset',
             'nav' => 'notification',
@@ -567,7 +522,7 @@ class PelaporanController extends BaseController
             return view('errors/mazer/error-404', $data);
         }
         $viewed = array_key_exists('viewed', $this->request->getGet()) ? $this->request->getGet('viewed') : '';
-
+        $pelaporan = $this->pelaporan->getDataByNoLaporan($no_laporan);
         if ($viewed == 0) {
             $query = $this->db->table('notifikasi n')->select('n.*')->join('pelaporan_kerusakan p', 'p.id=n.laporan_id')->where('no_laporan', $no_laporan)->get();
             $notif = $query->getRow();
@@ -586,9 +541,34 @@ class PelaporanController extends BaseController
 
         $data = [
             'no_laporan' => $no_laporan,
+            'pelaporan' => $pelaporan,
         ];
         $msg = [
             'data' => view('pelaporan/detailpelaporan', $data),
+        ];
+
+        echo json_encode($msg);
+    }
+
+    public function tampilmodalphotos()
+    {
+        if (!$this->request->isAJAX()) {
+            $data = $this->errorPage404();
+            return view('errors/mazer/error-404', $data);
+        }
+        $no_laporan = $this->request->getVar("id");
+        $index = $this->request->getVar("index");
+        $pelaporan = $this->pelaporan->getDataByNoLaporan($no_laporan);
+        $path = $this->path_foto_kerusakan . "$no_laporan/";
+
+        $data = [
+            "title" => "Laporan $no_laporan",
+            "pelaporan" => $pelaporan,
+            "path" => $path,
+            "index" => $index,
+        ];
+        $msg = [
+            'data' => view('pelaporan/modalPhotos', $data),
         ];
 
         echo json_encode($msg);
@@ -642,27 +622,6 @@ class PelaporanController extends BaseController
         echo json_encode($msg);
     }
 
-    public function getLaporanByNoLaporan()
-    {
-        if (!$this->request->isAJAX()) {
-            $data = $this->errorPage404();
-            return view('errors/mazer/error-404', $data);
-        }
-        $no_laporan = $this->request->getVar('no_laporan');
-        $query = $this->db->table('pelaporan_kerusakan p')->select('p.*, a.nama_anggota, a.no_anggota, a.level, u.singkatan, n.viewed_by_admin,b.nama_brg, s.kd_satuan')
-            ->join('anggota a', 'a.id=p.anggota_id')
-            ->join('unit u', 'u.id=a.unit_id')
-            ->join('stok_barang sb', 'sb.id=p.stokbrg_id')
-            ->join('barang b', 'b.id=sb.barang_id')
-            ->join('satuan s', 's.id=b.satuan_id')
-            ->join('notifikasi n', 'p.id=n.laporan_id')
-            ->where('p.no_laporan', $no_laporan);
-
-        $pelaporan = $query->get()->getRow();
-
-        echo json_encode($pelaporan);
-    }
-
     public function multipledeletetemporary()
     {
         if (!$this->request->isAJAX()) {
@@ -671,26 +630,16 @@ class PelaporanController extends BaseController
         }
 
         $jmldata = $this->request->getVar('jmldata');
-        $ids = $this->request->getVar('ids');
-        $id = explode(",", $ids);
-
-        if (count($id) === 1) {
-            $notif = $this->db->table('notifikasi')->select('*')->where('laporan_id', $id[0])->get()->getRow();
-
+        $id = $this->request->getVar('id');
+        foreach ($id as $laporan_id) {
+            $notif = $this->db->table('notifikasi')->select('*')->where('laporan_id', $laporan_id)->get()->getRow();
             $this->notifikasi->setSoftDelete($notif->id);
             $softdelete = $this->pelaporan->setSoftDelete();
-            $this->db->table('pelaporan_kerusakan')->where('id', $id[0])->update($softdelete);
-        } else {
-            foreach ($id as $laporan_id) {
-                $notif = $this->db->table('notifikasi')->select('*')->where('laporan_id', $laporan_id)->get()->getRow();
-                $this->notifikasi->setSoftDelete($notif->id);
-                $softdelete = $this->pelaporan->setSoftDelete();
-                $this->db->table('pelaporan_kerusakan')->where('id', $laporan_id)->update($softdelete);
-            }
+            $this->db->table('pelaporan_kerusakan')->where('id', $laporan_id)->update($softdelete);
         }
 
         $msg = [
-            'sukses' => "$jmldata data pelaporan kerusakan aset berhasil dihapus secara permanen",
+            'success' => "$jmldata data laporan kerusakan aset berhasil dihapus secara temporary",
         ];
 
         echo json_encode($msg);
@@ -703,30 +652,25 @@ class PelaporanController extends BaseController
             return view('errors/mazer/error-404', $data);
         }
 
-        $jmldata = $this->request->getVar('jmldata');
-        $ids = $this->request->getVar('ids');
-        $id = explode(",", $ids);
-
-        if (count($id) === 1) {
-            $notif = $this->db->table('notifikasi')->select('*')->where('laporan_id', $id[0])->get()->getRow();
-
+        $id = $this->request->getVar('id');
+        $jmldata = count($id);
+        foreach ($id as $laporan_id) {
+            $query = $this->pelaporan->select("*")->where('id', $laporan_id)->get()->getRow();
+            $no_laporan = $query->no_laporan;
+            $directoryPath = FCPATH . $this->path_foto_kerusakan . $no_laporan;
+            // Delete folder $directoryPath
+            $this->pelaporan->deleteDirectory($directoryPath);
+            $notif = $this->db->table('notifikasi')->select('*')->where('laporan_id', $laporan_id)->get()->getRow();
             $this->notifikasi->delete($notif->id, true);
-            $this->pelaporan->delete($id[0], true);
-        } else {
-            foreach ($id as $laporan_id) {
-                $notif = $this->db->table('notifikasi')->select('*')->where('laporan_id', $laporan_id)->get()->getRow();
-
-                $this->notifikasi->delete($notif->id, true);
-                $this->pelaporan->delete($laporan_id, true);
-            }
+            $this->pelaporan->delete($laporan_id, true);
         }
-
         $msg = [
-            'sukses' => "$jmldata data pelaporan kerusakan aset berhasil dihapus secara permanen",
+            'success' => "$jmldata data laporan kerusakan aset berhasil dihapus secara permanen",
         ];
 
         echo json_encode($msg);
     }
+
 
     public function restoredata()
     {
@@ -734,35 +678,20 @@ class PelaporanController extends BaseController
             $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
-
-        $jmldata = $this->request->getVar('jmldata');
-        $ids = $this->request->getVar('ids');
-        $id = explode(",", $ids);
-
-        if (count($id) === 1) {
-            $notif = $this->db->table('notifikasi')->select('*')->where('laporan_id', $id[0])->get()->getRow();
-
-            $notifRestore = $this->notifikasi->setRestoreData();
+        $id = $this->request->getVar('id');
+        $jmldata = count($id);
+        $notifRestore = $this->notifikasi->setRestoreData();
+        foreach ($id as $laporan_id) {
+            $notif = $this->db->table('notifikasi')->select('*')->where('laporan_id', $laporan_id)->get()->getRow();
             $this->notifikasi->update($notif->id, $notifRestore);
 
             $pelaporanRestore = $this->pelaporan->setRestoreData();
 
-            $this->db->table('pelaporan_kerusakan')->where('id', $id[0])->update($pelaporanRestore);
-        } else {
-            foreach ($id as $laporan_id) {
-                $notif = $this->db->table('notifikasi')->select('*')->where('laporan_id', $laporan_id)->get()->getRow();
-
-                $notifRestore = $this->notifikasi->setRestoreData();
-                $this->notifikasi->update($notif->id, $notifRestore);
-
-                $pelaporanRestore = $this->pelaporan->setRestoreData();
-
-                $this->db->table('pelaporan_kerusakan')->where('id', $laporan_id)->update($pelaporanRestore);
-            }
+            $this->db->table('pelaporan_kerusakan')->where('id', $laporan_id)->update($pelaporanRestore);
         }
 
         $msg = [
-            'sukses' => "$jmldata data pelaporan kerusakan aset berhasil dihapus secara permanen",
+            'success' => "$jmldata data laporan kerusakan aset berhasil dipulihkan",
         ];
 
         echo json_encode($msg);
@@ -811,7 +740,7 @@ class PelaporanController extends BaseController
             return view('errors/mazer/error-404', $data);
         }
         $search = $this->request->getGet('search');
-        $level = $this->request->getGet('level');
+        $level = $this->request->getGet('jenis_kat');
         if ($level && !empty($search)) {
             $dataanggota = $this->db->table('anggota a')
                 ->select('a.*, u.singkatan')

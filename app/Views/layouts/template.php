@@ -55,8 +55,6 @@ helper('converter_helper');
         let title = "<?= $title ?>";
         let isLogin = "<?= $_SESSION["isLoggedIn"] ?>";
     </script>
-    <!-- module js -->
-    <script type="module" src="<?= base_url() ?>assets/js/myscript/app.js" defer></script>
     <!-- Cropper.js -->
     <script src="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/exif-js"></script>
@@ -124,7 +122,8 @@ helper('converter_helper');
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/locale/id.min.js" integrity="sha512-he8U4ic6kf3kustvJfiERUpojM8barHoz0WYpAUDWQVn61efpm3aVAD8RWL8OloaDDzMZ1gZiubF9OSdYBqHfQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="<?= base_url() ?>assets/vendors/chartjs/Chart.min.js"></script>
     <script src="<?= base_url() ?>assets/js/myscript/helperscript.js"></script>
-
+    <!-- module js -->
+    <script type="module" src="<?= base_url() ?>assets/js/admin-page/admin.js" defer></script>
     <script>
         $(document).ready(function() {
             notif.getNotification();
