@@ -45,14 +45,14 @@
                       <button data-operation="main" class="btn btn-block btn-success btn-sm rounded-pill" type="button"><span class="fa fa-angle-double-up mr-2"></span> Main</button>
                     </div>
                   </div>
-                  <div class="row mt-2">
+                  <!-- <div class="row mt-2">
                     <div class="col-6 p-0 pr-1">
                       <button data-operation="left" class="btn btn-block btn-outline-success btn-sm rounded-pill" type="button">&laquo; left</button>
                     </div>
                     <div class="col-6 p-0 pl-1">
                       <button data-operation="right" class="btn btn-block btn-outline-success btn-sm rounded-pill" type="button">right &raquo;</button>
                     </div>
-                  </div>
+                  </div> -->
                   <div class="row mt-2">
                     <div class="col-6 p-0 pr-1">
                       <button data-operation="rotateanticlockwise" class="btn btn-block btn-outline-success btn-sm rounded-pill" type="button"><span class="fa fa-undo mr-2"></span> Rotasi</button>

@@ -3,7 +3,7 @@
 <?= $this->section('content') ?>
 <section class="section">
   <div class="row">
-    <div class="col-12 col-md-12 bg-dark viewdata shadow bg-dark shadow" style="display:none;"></div>
+    <div class="col-12 col-md-12 viewdata shadow-sm" style="display:none;"></div>
   </div>
   <div class="row">
     <div class="col-lg-6">
@@ -50,6 +50,7 @@
         </div>
         <div class="card-body table-unit">
           <form id="formDeleteUnit" onSubmit="unit.multipleDelete(this, event)">
+            <?= csrf_field() ?>
             <div class="row m-1">
               <div class="col-md-12 pb-0 pt-3 px-0 d-flex justify-content-end">
                 <button type="submit" class="btn btn-danger btn-DeleteUnit">
@@ -127,6 +128,7 @@
         </div>
         <div class="card-body table-anggota">
           <form id="formDeleteAnggota" onSubmit="anggota.multipleDelete(this, event)">
+            <?= csrf_field() ?>
             <div class="row m-1">
               <div class="col-md-12 pb-0 pt-3 px-0 d-flex justify-content-end">
                 <button type="submit" class="btn btn-danger btn-DeleteAnggota">

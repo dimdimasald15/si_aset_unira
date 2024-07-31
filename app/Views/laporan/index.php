@@ -21,8 +21,8 @@
 <?= $this->endSection() ?>
 <?= $this->section('content') ?>
 <section class="section">
-  <div class="card mb-3 bg-dark text-white shadow">
-    <div class="card-header bg-dark text-white shadow-sm">
+  <div class="card mb-3 shadow">
+    <div class="card-header shadow-sm">
       <h4 class="card-title">Custom Filters</h4>
     </div>
     <div class="card-body bg-dark text-white">
@@ -71,15 +71,15 @@
       <?php endforeach; ?>
     </div>
   </div>
-  <div class="card mb-3 bg-dark text-white shadow datalist-barang">
-    <div class="card-header bg-dark text-white shadow-sm">
+  <div class="card mb-3 shadow datalist-barang">
+    <div class="card-header shadow-sm">
       <div class="row justify-content-between align-items-center">
         <div class="col-md-7">
           <h4 class="card-title">Analisa Alokasi Barang Tetap</h4>
         </div>
       </div>
     </div>
-    <div class="card-body bg-dark text-white table-lokasibrg">
+    <div class="card-body table-lokasibrg">
       <div class="table-responsive py-4">
         <table class="table table-flush cell-border mb-3" id="table-lokasibrg" width="100%">
           <thead class="thead-dark">
@@ -95,21 +95,21 @@
   </div>
   <div class="row">
     <div class="col-lg-6">
-      <div class="card mb-3 bg-dark text-white shadow">
-        <div class="card-header bg-dark text-white shadow-sm">
+      <div class="card mb-3 shadow">
+        <div class="card-header shadow-sm">
           <div class="col-md-12">
             <h6 class="surtitle">Analisa Permintaan Barang</h6>
             <h4 class="card-title">Chart Permintaan Barang Berdasarkan Unit</h4>
           </div>
         </div>
-        <div class="card-body bg-dark text-white mt-5">
+        <div class="card-body mt-5">
           <canvas id="chart-permintaan"></canvas>
         </div>
       </div>
     </div>
     <div class="col-lg-6">
-      <div class="card mb-3 bg-dark text-white shadow">
-        <div class="card-header bg-dark text-white shadow-sm">
+      <div class="card mb-3 shadow">
+        <div class="card-header shadow-sm">
           <div class="col-md-12">
             <h6 class="surtitle">Analisa Permintaan Barang</h6>
             <h4 class="card-title">Table Permintaan Barang</h4>

@@ -19,13 +19,7 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 
 class BarangController extends BaseController
 {
-    protected $barang;
-    protected $kategori;
-    protected $uri;
-    protected $stokbarang;
-    protected $riwayatbarang;
-    protected $ruang;
-    protected $riwayattrx;
+    protected $barang, $kategori, $stokbarang, $riwayatbarang, $ruang, $riwayattrx, $uri;
     public function __construct()
     {
         $this->barang = new Barang();
@@ -162,20 +156,7 @@ class BarangController extends BaseController
             $nama_brg = $this->request->getVar('nama_brg');
             $foto_barang = $this->request->getVar('foto_barang');
             $path_foto = $this->request->getVar('path_foto');
-            $decoded_foto_barang = html_entity_decode($foto_barang, ENT_QUOTES, 'UTF-8');
-            // Decode JSON menjadi array PHP
-            $photos = json_decode($decoded_foto_barang, true);
-            // Inisialisasi array untuk menyimpan hasil
-            $imagesToLoad = [];
-            // Proses data
-            if (is_array($photos)) {
-                foreach ($photos as $image) {
-                    $imagesToLoad[] = [
-                        'Url' => base_url() . $path_foto . $image,
-                        'Name' => $image
-                    ];
-                }
-            }
+            $imagesToLoad = convert_string_to_array_photos($path_foto, $foto_barang);
 
             $data = [
                 'id' => $id,
@@ -196,23 +177,7 @@ class BarangController extends BaseController
 
     public function detailbarang($url)
     {
-        $kdbrg = substr($url, 0, strrpos($url, "-")); // mendapatkan string "C-02-06-01-001"
-        $kode_brg = str_replace('-', '.', $kdbrg);
-        $ruang_id = substr($url, strrpos($url, "-") + 1); // mendapatkan string "6"
-
-        $query   = $this->db->table('stok_barang sb')->select('sb.*, k.nama_kategori, b.nama_brg, b.kode_brg, 
-        b.path_foto, b.foto_barang, b.harga_beli, b.harga_jual, b.asal, b.toko, b.instansi, b.no_seri, b.no_dokumen, b.merk,
-        b.tgl_pembelian, b.warna, sb.ruang_id, r.nama_ruang, b.satuan_id, s.kd_satuan, b.created_at, b.created_by, b.deleted_at')
-            ->join('barang b', 'sb.barang_id = b.id')
-            ->join('kategori k', 'b.kat_id = k.id')
-            ->join('ruang r', 'sb.ruang_id = r.id')
-            ->join('satuan s', 'b.satuan_id = s.id')
-            ->where('b.kode_brg', $kode_brg)
-            ->where('sb.ruang_id', $ruang_id)
-            ->groupBy('b.id')
-            ->get();
-
-        $result = $query->getRow();
+        $result = $this->barang->getDataByKodeBarang($url);
         if ($result) {
             $title = 'Detail Barang ' . $result->nama_brg . ' di ' . $result->nama_ruang;
         } else {
@@ -222,6 +187,7 @@ class BarangController extends BaseController
         $data = [
             'title' => $title,
             'barang' => $result,
+            'nav' => 'detail-barang'
         ];
 
         return view('barang/detailstokbarang', $data);
@@ -1592,7 +1558,7 @@ class BarangController extends BaseController
 
                 $this->riwayattrx->inserthistori($sb_id, $stokbrglama, $updatestok, $jenistrx, $lastQuery, $field_update);
 
-                $msg = ['success' => "Data barang: $namabrg di $nama_ruang berhasil terupdate"];
+                $msg = ['success' => "Data barang: $namabrg di $nama_ruang berhasil diperbarui"];
             }
             echo json_encode($msg);
         } else {
@@ -1607,11 +1573,7 @@ class BarangController extends BaseController
             $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
-        $files = $this->request->getFiles('file');
-        echo "<pre>";
-        var_dump($files);
-        echo "</pre>";
-        die;
+        $files = $this->request->getFiles();
         if (!$files) {
             return $this->response->setJSON(['status' => 'error', 'message' => 'No files uploaded']);
         }
@@ -1622,23 +1584,19 @@ class BarangController extends BaseController
         $path_upload = $pathlama ? $pathlama : "assets/images/foto_barang/$id/";
         $filenames = [];
         if ($fotolama !== null || $pathlama !== null) {
-            foreach ($files as $key => $file) {
+            foreach ($files['files'] as $key => $file) {
                 $clientName = $file->getClientName();
                 if ($file !== null && !$file->hasMoved()) {
-                    if (empty($clientName) && isset($fotolama[$key])) {
-                        $filename = $fotolama[$key];
-                    } else {
-                        $filename = $file->getRandomName();
-                        if (isset($fotolama[$key])) unlink(FCPATH . $path_upload . $fotolama[$key]);
-                        $file->move(FCPATH . $path_upload, $filename);
-                    }
+                    $filename = $file->getRandomName();
+                    if (isset($fotolama[$key])) unlink(FCPATH . $pathlama . $fotolama[$key]);
+                    $file->move(FCPATH . $pathlama, $filename);
                     array_push($filenames, $filename);
                 } else {
                     $msg = ['error' => 'Invalid file or no file uploaded.'];
                 }
             }
         } else {
-            foreach ($files as $key => $file) {
+            foreach ($files['files'] as $key => $file) {
                 if ($file !== null && !$file->hasMoved()) {
                     $clientName = $file->getClientName();
                     if (!empty($clientName)) {

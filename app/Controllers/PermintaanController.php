@@ -665,7 +665,7 @@ class PermintaanController extends BaseController
                         $msg = ['error' => 'Gagal mengubah data permintaan'];
                     } else {
                         // Jika berhasil disimpan
-                        $msg = ['success' => "Sukses $jmldata data permintaan berhasil terupdate"];
+                        $msg = ['success' => "Sukses $jmldata data permintaan berhasil diperbarui"];
                     }
                 }
             }

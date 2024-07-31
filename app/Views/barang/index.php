@@ -39,9 +39,9 @@
 <?= $this->endSection() ?>
 <?= $this->section('content') ?>
 <section class="section">
-    <div class="col-12 col-md-12 bg-dark viewdata shadow bg-dark shadow" style="display:none;"></div>
-    <div class="card shadow mb-3 text-white bg-dark shadow">
-        <div class="card-header text-white bg-dark shadow-sm">
+    <div class="col-12 col-md-12 viewdata shadow-sm" style="display:none;"></div>
+    <div class="card shadow mb-3">
+        <div class="card-header shadow-sm">
             <h4 class="card-title">Custom Filter</h4>
         </div>
         <div class=" card-body">
@@ -62,8 +62,8 @@
         </div>
     </div>
 
-    <div class="card mb-3 text-white bg-dark shadow datalist-barang">
-        <div class="card-header text-white bg-dark shadow-sm">
+    <div class="card mb-3 shadow datalist-barang">
+        <div class="card-header shadow-sm">
             <div class="row justify-content-between align-items-center">
                 <div class="col-md-7">
                     <h4 class="card-title">Data Barang</h4>
@@ -110,6 +110,7 @@
         </div>
         <div class="card-body table-barang">
             <form class="formmultipledelete" onSubmit="barang.hapusMultiple(this, event)">
+                <?= csrf_field() ?>
                 <div class="row m-1">
                     <div class="col-md-6 pb-0 pt-3 px-0 d-flex flex-row justify-content-start">
                         <div class="btn-group">

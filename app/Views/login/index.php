@@ -40,7 +40,7 @@
   <!-- JQuery -->
   <script src="<?= base_url() ?>/assets/js/jquery-3.6.3.js"></script>
   <script src="<?= base_url() ?>assets/js/myscript/helperscript.js"></script>
-  <script type="module" src="<?= base_url() ?>/assets/js/myscript/app.js"></script>
+  <script type="module" src="<?= base_url() ?>/assets/js/login-page/app.js"></script>
   <!-- Pusherjs -->
   <script src="https://js.pusher.com/8.2.0/pusher.min.js"></script>
 
@@ -52,7 +52,7 @@
       <div class="col-lg-5 col-12">
         <div id="auth-left">
           <div class="auth-logo">
-            <a href="/auth"><img src="<?= base_url() ?>/assets/images/logo/logouniralandscape.jpg" alt="Logo"></a>
+            <a href="/auth"><img src="<?= base_url() ?>/assets/images/logo/logouniralandscape.png" alt="Logo"></a>
           </div>
           <h1 class="auth-title">Login.</h1>
           <p class="auth-subtitle mb-5">Selamat datang di Sistem Informasi Manajemen Aset
@@ -73,12 +73,11 @@
               </div>
             </div>
             <div class="form-check form-check-lg d-flex align-items-end">
-              <input class="form-check-input me-2" type="checkbox" onClick="util.showPassword(this)" class="m-1">
+              <input class="form-check-input me-2" id="show-password" type="checkbox" class="m-1">
               <label class="form-check-label text-gray-600" for="show-password"> Show password </label>
             </div>
             <button class="btn btn-success btn-block btn-lg shadow-lg mt-3 btnlogin" type="submit">Log in</button>
           </form>
-
         </div>
       </div>
       <div class="col-lg-7 d-none d-lg-block">
@@ -88,5 +87,10 @@
     </div>
   </div>
 </body>
+<script>
+  $(document).ready(() => {
+    util.togglePasswordVisibility("#show-password", ['#password'])
+  })
+</script>
 
 </html>

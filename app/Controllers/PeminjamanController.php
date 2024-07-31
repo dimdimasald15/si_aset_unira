@@ -710,7 +710,7 @@ class PeminjamanController extends BaseController
                     $msg = ['error' => 'Gagal mengubah data peminjaman'];
                 } else {
                     // Jika berhasil disimpan
-                    $msg = ['success' => "Sukses $jmldata data peminjaman berhasil terupdate"];
+                    $msg = ['success' => "Sukses $jmldata data peminjaman berhasil diperbarui"];
                 }
             }
         }

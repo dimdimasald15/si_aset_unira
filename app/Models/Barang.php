@@ -52,4 +52,24 @@ class Barang extends Model
         ];
         $this->update($id, $data);
     }
+
+    public function getDataByKodeBarang($url)
+    {
+        $kdbrg = substr($url, 0, strrpos($url, "-")); // mendapatkan string "C-02-06-01-001"
+        $kode_brg = str_replace('-', '.', $kdbrg);
+        $ruang_id = substr($url, strrpos($url, "-") + 1); // mendapatkan string "6"
+
+        $query   = $this->db->table('stok_barang sb')->select('sb.*, k.nama_kategori, b.nama_brg, b.kode_brg, 
+        b.path_foto, b.foto_barang, b.harga_beli, b.harga_jual, b.asal, b.toko, b.instansi, b.no_seri, b.no_dokumen, b.merk,
+        b.tgl_pembelian, b.warna, sb.ruang_id, r.nama_ruang, b.satuan_id, s.kd_satuan, b.created_at, b.created_by, b.deleted_at')
+            ->join('barang b', 'sb.barang_id = b.id')
+            ->join('kategori k', 'b.kat_id = k.id')
+            ->join('ruang r', 'sb.ruang_id = r.id')
+            ->join('satuan s', 'b.satuan_id = s.id')
+            ->where('b.kode_brg', $kode_brg)
+            ->where('sb.ruang_id', $ruang_id)
+            ->groupBy('b.id')
+            ->get();
+        return $query->getRow();
+    }
 }

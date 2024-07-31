@@ -2,7 +2,7 @@
 
 <?= $this->section('content') ?>
 <section class="section">
-  <div class="col-12 col-md-12 bg-dark viewdata shadow bg-dark shadow" style="display:none;"></div>
+  <div class="col-12 col-md-12 viewdata shadow-sm" style="display:none;"></div>
   <div class="card shadow mb-3 datalist-kategori">
     <div class="card-header shadow-sm">
       <div class="row justify-content-between align-items-center">
