@@ -61,15 +61,14 @@ class PeminjamanController extends BaseController
         $jenis = $this->request->getVar('jenis_kat');
         $isRestore = filter_var($this->request->getGet('isRestore'), FILTER_VALIDATE_BOOLEAN);
         $status = $this->request->getVar('status');
-        $builder = $this->db->table('peminjaman p')->select('p.id, p.anggota_id, p.barang_id, p.jml_barang,p.keterangan, p.kondisi_pinjam, p.kondisi_kembali, p.jml_hari, p.tgl_pinjam, p.tgl_kembali, p.status, p.created_at, p.created_by, p.deleted_at, p.deleted_by, a.unit_id, a.nama_anggota, k.nama_kategori, b.nama_brg, u.singkatan, s.kd_satuan')
+        $builder = $this->db->table('peminjaman p')->select('p.id, p.anggota_id, p.barang_id, p.jml_barang,p.keterangan, p.kondisi_pinjam, p.kondisi_kembali, p.jml_hari, p.tgl_pinjam, p.tgl_kembali, p.status, p.created_at, p.created_by, p.deleted_at, p.deleted_by, 
+        a.nama_anggota, b.nama_brg, u.singkatan, s.kd_satuan')
             ->join('anggota a', 'a.id = p.anggota_id')
             ->join('barang b', 'b.id=p.barang_id')
             ->join('kategori k', 'k.id=b.kat_id')
             ->join('unit u', 'u.id = a.unit_id')
-            ->join('stok_barang sb', 'b.id=sb.barang_id')
             ->join('satuan s', 's.id=b.satuan_id')
             ->where('k.jenis', $jenis);
-
         return DataTable::of($builder)
             ->filter(function ($builder) use ($jenis, $isRestore, $status) {
                 if ($isRestore && $status == 0) {
@@ -142,6 +141,7 @@ class PeminjamanController extends BaseController
         $id = $this->request->getGet('id');
         $jenis_kat = $this->request->getGet('jenis_kat');
         $status = $this->request->getGet('status');
+
         $pinjam = '';
         if ($id) {
             $pinjam = $this->getpeminjamanbyid($id);
@@ -166,11 +166,10 @@ class PeminjamanController extends BaseController
 
     private function getpeminjamanbyid($id)
     {
-        $builder = $this->db->table('peminjaman p')->select('a.nama_anggota, a.no_anggota, a.unit_id, a.level, u.singkatan, p.*, b.nama_brg, b.satuan_id, sb.sisa_stok, s.kd_satuan')
+        $builder = $this->db->table('peminjaman p')->select('a.nama_anggota, a.no_anggota, a.unit_id, a.level, u.singkatan, p.*, b.nama_brg, b.satuan_id, s.kd_satuan')
             ->join('anggota a', 'a.id=p.anggota_id')
             ->join('unit u', 'u.id=a.unit_id')
             ->join('barang b', 'b.id=p.barang_id')
-            ->join('stok_barang sb', 'b.id=sb.barang_id')
             ->join('satuan s', 's.id=b.satuan_id')
             ->where('p.id', $id)
             ->get();
@@ -382,7 +381,6 @@ class PeminjamanController extends BaseController
             $data = $this->db->table('peminjaman p')->select('a.nama_anggota, p.*, b.nama_brg, s.kd_satuan')
                 ->join('anggota a', 'a.id=p.anggota_id')
                 ->join('barang b', 'b.id=p.barang_id')
-                ->join('stok_barang sb', 'b.id=sb.barang_id')
                 ->join('satuan s', 's.id=b.satuan_id')
                 ->where('p.anggota_id', $anggota_id)
                 ->like('p.tgl_pinjam', "$tgl_pinjam%")

@@ -19,7 +19,7 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 
 class BarangController extends BaseController
 {
-    protected $barang, $kategori, $stokbarang, $riwayatbarang, $ruang, $riwayattrx, $uri;
+    protected $barang, $kategori, $stokbarang, $riwayatbarang, $ruang, $riwayattrx, $uri, $path_foto_barang;
     public function __construct()
     {
         $this->barang = new Barang();
@@ -29,6 +29,7 @@ class BarangController extends BaseController
         $this->stokbarang = new StokBarang();
         $this->riwayattrx = new RiwayatTransaksi();
         $this->uri = service('uri');
+        $this->path_foto_barang = "assets/images/foto_barang/";
     }
 
     public function index()
@@ -439,7 +440,7 @@ class BarangController extends BaseController
                                 'merk' => $merk,
                                 'warna' => $warna,
                                 'tipe' => $tipe,
-                                'asal' => $sheet_data[$i][6],
+                                'asal' => strtolower($sheet_data[$i][6]),
                                 'toko' => $sheet_data[$i][7],
                                 'instansi' => $sheet_data[$i][8],
                                 'harga_beli' => $sheet_data[$i][9],
@@ -1486,7 +1487,7 @@ class BarangController extends BaseController
                     'merk' => $this->request->getVar('merk'),
                     'warna' => $this->request->getVar('warna'),
                     'tipe' => $this->request->getVar('tipe'),
-                    'asal' => $this->request->getVar('asal'),
+                    'asal' => strtolower($this->request->getVar('asal')),
                     'toko' => $this->request->getVar('toko'),
                     'instansi' => $this->request->getVar('instansi'),
                     'no_seri' => $this->request->getVar('no_seri'),
@@ -1581,7 +1582,7 @@ class BarangController extends BaseController
         $cekdata = $this->barang->find($id);
         $pathlama = $cekdata['path_foto'];
         $fotolama = json_decode($cekdata['foto_barang']);
-        $path_upload = $pathlama ? $pathlama : "assets/images/foto_barang/$id/";
+        $path_upload = $pathlama ? $pathlama : $this->path_foto_barang . $id . "/";
         $filenames = [];
         if ($fotolama !== null || $pathlama !== null) {
             foreach ($files['files'] as $key => $file) {
@@ -1722,12 +1723,13 @@ class BarangController extends BaseController
             $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
-        $nama_brg = $this->request->getVar('nama_brg');
-        $nama_ruang = $this->request->getVar('nama_ruang');
-        $idruang = $this->request->getVar('ruangId');
+        $inputData = $this->request->getVar();
+        $nama_brg = $inputData->nama_brg;
+        $nama_ruang = $inputData->nama_ruang;
+        $idruang = $inputData->ruangId;
         $idsarpras = 54;
-        $ids = $this->request->getVar('id');
-        $idbrg = $this->request->getVar('barangId');
+        $ids = $inputData->id;
+        $idbrg = $inputData->barangId;
         $id = explode(",", $ids);
         $barang_id = explode(",", $idbrg);
         $ruang_id = explode(",", $idruang);
@@ -1797,8 +1799,9 @@ class BarangController extends BaseController
         if ($this->db->transStatus() === false) {
             $msg = ['error' => 'Gagal memulihkan data stok barang'];
         } else {
+            $pesan = isset($nama_brg) ? "Sukses memulihkan data stok barang $nama_brg" : "Sukses memulihkan semua data stok barang.";
             // Jika berhasil disimpan
-            $msg = ['success' => "Sukses memulihkan data stok barang."];
+            $msg = ['success' => $pesan];
         }
 
         return json_encode($msg);
@@ -1830,7 +1833,9 @@ class BarangController extends BaseController
                         $this->barang->delete($stoklama[$key]['barang_id'], true);
 
                         if ($baranglama['foto_barang'] != NULL) {
-                            unlink(FCPATH . 'assets/images/foto_barang/' . $baranglama['foto_barang']);
+                            $directoryPath = FCPATH . $this->path_foto_barang . $id;
+                            // Delete folder $directoryPath
+                            deleteDirectory($directoryPath);
                         }
                     }
 
@@ -1987,7 +1992,7 @@ class BarangController extends BaseController
                     'merk' => $merk[$i],
                     'warna' => $warna[$i],
                     'tipe' => $tipe[$i],
-                    'asal' => $asal[$i],
+                    'asal' => strtolower($asal[$i]),
                     'toko' => $toko[$i],
                     'instansi' => $instansi[$i],
                     'no_seri' => $no_seri[$i],
@@ -2101,30 +2106,17 @@ class BarangController extends BaseController
             return view('errors/mazer/error-404', $data);
         }
 
-        $query = $this->db->table('stok_barang sb')
-            ->select('sb.*, k.nama_kategori, b.nama_brg,b.warna, b.harga_beli, b.kode_brg, b.foto_barang, s.kd_satuan')
-            ->join('barang b', 'b.id=sb.barang_id')
-            ->join('kategori k', 'k.id=b.kat_id ')
-            ->join('ruang r', 'sb.ruang_id = r.id')
-            ->join('satuan s', 'b.satuan_id = s.id')
-            ->where('k.jenis', 'Barang Persediaan')
-            ->where('sb.deleted_at', null)
-            ->where('b.deleted_at', null)
-            ->having('sb.sisa_stok <= 3');
-
-        $result = $query->orderBy('sb.id', 'DESC')->limit(5)->get()->getResultArray();
-
-
+        $low_stock_items = $this->stokbarang->fetchLowStockItems();
         $output = '';
-        if (count($result) > 0) {
+        if (count($low_stock_items) > 0) {
             $output .= '<li>
                                 <h5 class="dropdown-header">Notifikasi Barang Persediaan</h5>
                                 <hr class="dropdown-divider">
                             </li>';
-            foreach ($result as $row) {
+            foreach ($low_stock_items as $row) {
                 $output .= '
                     <li style="background-color:rgb(25, 135, 84, 0.1);">
-                        <a href="#" class="dropdown-item" style="padding: 0.3rem 1.5rem;">
+                        <a href="#" class="dropdown-item">
                           <div class="d-flex w-100 justify-content-between align-items-center">
                           <div>
                           <h6 class="mb-1"> ' . $row["nama_brg"] . '</h6>';
@@ -2147,7 +2139,7 @@ class BarangController extends BaseController
 
         $data = [
             'notification' => $output,
-            'unseen_notification' => count($result),
+            'unseen_notification' => count($low_stock_items),
         ];
 
         $pusher = $this->handleNotification();

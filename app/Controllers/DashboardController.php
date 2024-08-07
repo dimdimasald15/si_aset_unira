@@ -142,4 +142,13 @@ class DashboardController extends BaseController
         ];
         echo json_encode($msg);
     }
+
+    public function pusherconfig()
+    {
+        $pusherConfig = [
+            'key' => getenv('PUSHER_KEY'),
+            'cluster' => getenv('PUSHER_CLUSTER')
+        ];
+        echo json_encode($pusherConfig);
+    }
 }

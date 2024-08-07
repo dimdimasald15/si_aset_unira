@@ -98,19 +98,19 @@
               <div class="col-md-5 mb-3 asalbrg">
                 <label class="form-label">Asal <?= $title; ?></label>
                 <div class="form-check">
-                  <input class="form-check-input" type="radio" name="asal" id="belibaru" value="Beli baru">
+                  <input class="form-check-input" type="radio" name="asal" id="belibaru" value="beli baru">
                   <label class="form-check-label" for="belibaru">
                     Beli Baru
                   </label>
                 </div>
                 <div class="form-check">
-                  <input class="form-check-input" type="radio" name="asal" id="belibekas" value="Beli bekas">
+                  <input class="form-check-input" type="radio" name="asal" id="belibekas" value="beli bekas">
                   <label class="form-check-label" for="belibekas">
                     Beli Bekas
                   </label>
                 </div>
                 <div class="form-check">
-                  <input class="form-check-input" type="radio" name="asal" id="hibah" value="Hibah">
+                  <input class="form-check-input" type="radio" name="asal" id="hibah" value="hibah">
                   <label class="form-check-label" for="hibah">
                     Hibah
                   </label>
@@ -259,9 +259,9 @@
 
     $.ajax({
       type: "post",
-      url: "<?= $nav . '/getbarangbyany' ?>",
+      url: `${nav}/getbarangbyany`,
       data: {
-        id: <?= $id ?>,
+        id: globalId,
       },
       dataType: "json",
       success: function(response) {
@@ -365,34 +365,18 @@
       $(".asalbrg .form-check-input").removeClass("is-invalid");
       $(".errasalbrg").html('');
     });
-    const inputId = ["namabarang","merk","hargabeli","satuan","jmlmasuk"];
+    const inputId = ["namabarang", "lokasi", "merk", "hargabeli", "satuan", "jmlmasuk"];
     util.initializeValidationHandlers(inputId);
     selectOption.satuan("satuan");
-
-    $('#lokasi').on('change', function(e) {
-      e.preventDefault();
-      $('#lokasi').removeClass('is-invalid');
-      $('.errorlokasi').html('');
-    })
-    $('#satuan').on('change', function(e) {
-      e.preventDefault();
-      $('#satuan').removeClass('is-invalid');
-      $('.errorsatuan').html('');
-    })
-    $('#jmlmasuk').on('input', function(e) {
-      e.preventDefault();
-      $('#jmlmasuk').removeClass('is-invalid');
-      $('.errorjmlmasuk').html('');
-    })
 
     $('#formEditBarang').submit(function(e) {
       e.preventDefault();
 
       let url = ""
       if (saveMethod == "update") {
-        url = "<?= $nav ?>/updatebarang/" + globalId;
+        url = `${nav}/updatebarang/` + globalId;
       } else if (saveMethod == "add") {
-        url = "<?= $nav ?>/simpanbarang";
+        url = `${nav}/simpanbarang`;
       }
 
       var formdata = new FormData(this);
@@ -406,7 +390,7 @@
 
       $.ajax({
         type: "post",
-        url: url,
+        url,
         data: formdata,
         processData: false,
         contentType: false,
@@ -416,18 +400,18 @@
         },
         complete: function() {
           $('.btnsimpan').removeAttr('disable');
-          $('.btnsimpan').html('Simpan');
+          $('.btnsimpan').html('Update');
         },
         success: function(result) {
           var response = JSON.parse(result);
-          const fields = ['katid','kodebrg','namabarang','merk','warna','asalbrg','lokasi','hargabeli','jmlmasuk','satuan'];
+          const fields = ['katid', 'kodebrg', 'namabarang', 'merk', 'warna', 'asalbrg', 'lokasi', 'hargabeli', 'jmlmasuk', 'satuan'];
           if (response.error) {
-            util.handleValidationErrors (fields, response.error);
+            util.handleValidationErrors(fields, response.error);
           } else {
             $('#tampilformeditbarang').hide(500);
             Swal.fire(
               'Berhasil!',
-              response.sukses,
+              response.success,
               'success'
             ).then((result) => {
               tableBrgTetap.ajax.reload();
@@ -488,9 +472,7 @@
     }
 
     $('#formEditBarang').find("input[name='nama_brg']").val(nama_brg)
-    $('#formEditBarang').find("select[name='warna']").html(`
-    <option>${warna}</option>
-    `)
+    $('#formEditBarang').find("select[name='warna']").html(`<option>${warna}</option>`)
     $('#formEditBarang').find("input[name='merk']").val(merk)
     $('#formEditBarang').find("input[name='toko']").val(toko)
     $('#formEditBarang').find("input[name='tipe']").val(tipe)
@@ -508,13 +490,13 @@
       inputtglbeli = tgl_pembelian;
     }
     $('#formEditBarang').find("input[name='tgl_pembelian']").val(inputtglbeli);
-
-    if (asal === 'Beli baru') {
+    let asalbrg = asal.toLowerCase();
+    if (asalbrg === 'beli baru') {
       $('#belibaru').prop('checked', true);
       $('.belibaru').show();
       $('.hibah').hide();
       $('.radiobelibekas').hide();
-    } else if (asal == 'Beli bekas') {
+    } else if (asalbrg == 'beli bekas') {
       $('#belibekas').prop('checked', true);
       $('.radiobelibekas').hide();
       if (toko == null || toko == '') {
@@ -524,7 +506,7 @@
         $('.belibaru').show();
         $('.hibah').hide();
       }
-    } else if (asal == 'Hibah') {
+    } else if (asalbrg == 'hibah') {
       $('#hibah').prop('checked', true);
       $('.hibah').show();
       $('.belibaru').hide();

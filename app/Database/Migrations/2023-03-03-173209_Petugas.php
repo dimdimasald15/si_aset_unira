@@ -37,7 +37,7 @@ class Petugas extends Migration
             'role' => [
                 'type' => 'role_enum',
                 // 'constraint' => ['Administrator', 'Petugas'],
-                'null'=> false
+                'null' => false
             ],
             'foto' => [
                 'type' => 'varchar',
@@ -71,6 +71,10 @@ class Petugas extends Migration
                 'type' => 'datetime',
                 'null' => TRUE,
             ],
+            'api_token' => [
+                'type' => 'text',
+                'null' => true
+            ],
         ]);
         $this->forge->addPrimaryKey('id');
         $this->forge->createTable('petugas');
@@ -80,7 +84,7 @@ class Petugas extends Migration
     {
         $this->forge->dropTable('petugas');
 
-         // Menghapus tipe data ENUM setelah tabel dihapus
-         $this->db->query("DROP TYPE role_enum");
+        // Menghapus tipe data ENUM setelah tabel dihapus
+        $this->db->query("DROP TYPE role_enum");
     }
 }

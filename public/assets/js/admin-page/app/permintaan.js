@@ -77,6 +77,8 @@ export const permintaan = (() => {
         function isiForm(data, jmldata, form) {
             crud.fillForm(data, form, [
                 ['id', 'id'],
+                ['tgl_minta', 'tgl_minta'],
+                ['keterangan', 'keterangan'],
                 ['anggota_id', 'nama_anggota'],
             ]);
             for (let i = 1; i <= jmldata; i++) {

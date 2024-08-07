@@ -5,16 +5,21 @@ namespace App\Controllers;
 use App\Models\Kategori;
 use \Hermawan\DataTables\DataTable;
 use App\Controllers\BaseController;
+use App\Services\DeleteTemporaryService;
+use App\Services\RestoreService;
 
 class KategoriController extends BaseController
 {
-    protected $kategori, $uri, $title;
+    protected $kategori, $uri, $title, $restoreService, $deleteTemporaryService;
     public function __construct()
     {
         $this->kategori = new Kategori();
         $this->uri = service('uri');
         $this->title = "Kategori";
+        $this->restoreService = new RestoreService();
+        $this->deleteTemporaryService = new DeleteTemporaryService($this->kategori);
     }
+
     public function index()
     {
         $breadcrumb = $this->getBreadcrumb();
@@ -119,57 +124,52 @@ class KategoriController extends BaseController
         return json_encode($row);
     }
 
-    public function restoredata($id = [])
+    public function restoredata()
     {
-        if ($this->request->isAJAX()) {
-            $ids = $this->request->getVar('id');
-            $nama_kategori = $this->request->getVar('nama_kategori');
-            $id = explode(",", $ids);
-            $restoredata = [
-                'deleted_by' => null,
-                'deleted_at' => null,
-            ];
+        if (!$this->request->isAJAX()) {
+            $data = $this->errorPage404();
+            return view('errors/mazer/error-404', $data);
+        }
 
-            $this->db->transStart();
-            foreach ($id as $key => $kategoriId) {
-                $kategori = $this->db->table('kategori')->select('*')->where('id', $kategoriId)->get()->getRowArray();
-                if ($kategori['deleted_at'] !== NULL) {
-                    $this->kategori->update($kategoriId, $restoredata);
-                }
-            }
-            $this->db->transComplete();
+        $inputData = $this->request->getHeaderLine('Content-Type') === 'application/json' ?
+            json_decode($this->request->getBody(), true) :
+            $this->request->getVar();
 
-            if ($this->db->transStatus() === false) {
-                $msg = ['error' => 'Gagal memulihkan data kategori'];
-            } else {
-                $msg = ['success' => "Sukses memulihkan data kategori."];
-            }
+        $ids = explode(",", $inputData['id']);
+        $nama_kategori = isset($inputData['nama_kategori']) ? $inputData['nama_kategori'] : "";
 
-            return json_encode($msg);
-        } else exit("Maaf tidak dapat diproses");
+        $columnNames = [
+            'nama' => 'kategori',
+            'value' => $nama_kategori
+        ];
+
+        $msg = $this->restoreService->restoreData('kategori', $ids, $columnNames);
+
+        echo json_encode($msg);
     }
 
     public function hapuspermanen($id = null)
     {
-        if ($this->request->isAJAX()) {
-            if ($id != null) {
-                $nama_kategori = $this->request->getVar('nama_kategori');
+        if (!$this->request->isAJAX()) {
+            $data = $this->errorPage404();
+            return view('errors/mazer/error-404', $data);
+        }
+        if ($id != null) {
+            $nama_kategori = $this->request->getVar('nama_kategori');
 
-                $this->kategori->delete($id, true);
+            $this->kategori->delete($id, true);
 
-                $msg = [
-                    'success' => "Data kategori: $nama_kategori berhasil dihapus secara permanen",
-                ];
-            } else {
-                $this->kategori->purgeDeleted();
-                $jmlhapus = $this->kategori->db->affectedRows();
-                $msg = [
-                    'success' => "$jmlhapus data kategori berhasil dihapus secara permanen",
-                ];
-            }
-
-            return json_encode($msg);
-        } else exit("Maaf tidak dapat diproses");
+            $msg = [
+                'success' => "Data kategori: $nama_kategori berhasil dihapus secara permanen",
+            ];
+        } else {
+            $this->kategori->purgeDeleted();
+            $jmlhapus = $this->kategori->db->affectedRows();
+            $msg = [
+                'success' => "$jmlhapus data kategori berhasil dihapus secara permanen",
+            ];
+        }
+        return json_encode($msg);
     }
 
 
@@ -363,28 +363,15 @@ class KategoriController extends BaseController
         }
     }
 
-
     public function hapusdata($id)
     {
-        if ($this->request->isAJAX()) {
-            $inputData = json_decode($this->request->getBody(), true);
-            $nama_kategori = $inputData["nama_kategori"];
-            try {
-                $this->kategori->setSoftDelete($id);
-
-                $msg = [
-                    'success' => "Data kategori : $nama_kategori berhasil dihapus",
-                ];
-                echo json_encode($msg);
-            } catch (\Exception $e) {
-                $msg = [
-                    'error' => $e->getMessage(),
-                ];
-                echo json_encode($msg);
-            }
-        } else {
+        if (!$this->request->isAJAX()) {
             $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
+        $inputData = json_decode($this->request->getBody(), true);
+        $nama_kategori = $inputData["nama_kategori"];
+        $msg = $this->deleteTemporaryService->softDelete($id, 'kategori', $nama_kategori);
+        echo json_encode($msg);
     }
 }

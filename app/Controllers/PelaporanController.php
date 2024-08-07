@@ -386,80 +386,16 @@ class PelaporanController extends BaseController
             ];
             return view('errors/mazer/error-404', $data);
         }
-        helper('converter_helper');
         $view = $this->request->getVar('view');
         if (isset($view)) {
-            $query = $this->db->table('pelaporan_kerusakan p')->select('p.*,a.nama_anggota, a.no_anggota, a.level, u.singkatan, n.viewed_by_admin')
-                ->join('anggota a', 'a.id=p.anggota_id')
-                ->join('unit u', 'u.id=a.unit_id')
-                ->join('notifikasi n', 'p.id=n.laporan_id')
-                ->where('n.deleted_at IS NULL')
-                ->where('a.deleted_at IS NULL')
-                ->where('p.deleted_at IS NULL');
+            $notifications = $this->pelaporan->getNotifications();
+            $output = $this->generateNotificationOutput($notifications);
 
-            $result = $query->orderBy('n.viewed_by_admin', 'ASC')
-                ->orderBy('p.id', 'DESC')
-                ->limit(5)
-                ->get()->getResultArray();
-
-            $output = '';
-
-            if (count($result) > 0) {
-                $output .= '<li>
-                                <h5 class="dropdown-header">Pelaporan Kerusakan Aset</h5>
-                                <hr class="dropdown-divider">
-                            </li>';
-                foreach ($result as $row) {
-                    if (!$row['viewed_by_admin']) {
-                        $output .= '
-                        <li style="background-color:rgb(25, 135, 84, 0.1);">
-                        <a href="' . site_url('admin/notification?no_laporan=') . $row['no_laporan'] . '" class="dropdown-item" style="padding: 0.3rem 1.5rem;">
-                          <div class="d-flex w-100 justify-content-around align-items-center">
-                          <div>
-                          <h6 class="mb-1"> ' . $row["nama_anggota"] . ' (' . $row["no_anggota"] . ')-' . $row["level"] . '</h6>
-                          <p class="mb-1">' . $row["title"] . '</p>
-                          <small>' . ubahTanggal($row["created_at"]) . '</small>
-                          </div>
-                            <small style="margin-left:15px;"><i class="bi bi-circle-fill text-warning"></i></small>
-                          </div>
-                        </a>
-                      </li>
-                        ';
-                    } else {
-                        $output .= '
-                        <li>
-                        <a href="' . site_url('admin/notification?no_laporan=') . $row['no_laporan'] . '" class="dropdown-item" style="padding: 0.3rem 1.5rem;">
-                          <div class="d-flex w-100 justify-content-between align-items-center">
-                          <div>
-                          <h6 class="mb-1"> ' . $row["nama_anggota"] . ' (' . $row["no_anggota"] . ')-' . $row["level"] . '</h6>
-                          <p class="mb-1">' . $row["title"] . '</p>
-                          <small>' . ubahTanggal($row["created_at"]) . '</small>
-                          </div>
-                          <span style="margin-left:15px;"><i class="bi bi-eye text-secondary"></i></span>
-                          </div>
-                        </a>
-                      </li>
-                        ';
-                    }
-                }
-            } else {
-                $output .= '<li><a href="#" class="dropdown-item" class="text-bold text-italic">Tidak ada notifikasi baru ditemukan</a></li>';
-            }
-
-
-            $query2 = $this->db->table('notifikasi n')->select('n.*')
-                ->join('pelaporan_kerusakan p', 'p.id=n.laporan_id')
-                ->join('anggota a', 'a.id=p.anggota_id')
-                ->where('n.viewed_by_admin', 0)
-                ->where('n.deleted_at IS NULL')
-                ->where('a.deleted_at IS NULL')
-                ->where('p.deleted_at IS NULL');
-            $result2 = $query2->get()->getResultArray();
-            $count = count($result2);
+            $unseenCount = $this->pelaporan->getUnseenNotificationCount();
 
             $data = [
                 'notification' => $output,
-                'unseen_notification' => $count,
+                'unseen_notification' => $unseenCount,
             ];
 
             $pusher = $this->handleNotification();
@@ -467,6 +403,47 @@ class PelaporanController extends BaseController
 
             echo json_encode($data);
         }
+    }
+
+    private function generateNotificationOutput($notifications)
+    {
+        if (count($notifications) > 0) {
+            $output = '<li>
+                        <h5 class="dropdown-header">Notifikasi Pelaporan Kerusakan Aset</h5>
+                        <hr class="dropdown-divider">
+                    </li>';
+
+            foreach ($notifications as $row) {
+                $isUnseen = !$row['viewed_by_admin'];
+                $bgColor = $isUnseen ? 'background-color:rgb(25, 135, 84, 0.1);' : '';
+                $icon = $isUnseen ? '<i class="bi bi-circle-fill text-warning"></i>' : '<i class="bi bi-eye text-secondary"></i>';
+
+                // Cek jumlah kata pada title
+                $title = $row["title"];
+                $words = explode(' ', $title);
+                if (count($words) > 6) {
+                    $title = implode(' ', array_slice($words, 0, 6)) . '<br>' . implode(' ', array_slice($words, 6));
+                }
+
+                $output .= '
+                <li style="' . $bgColor . '">
+                    <a href="' . site_url('admin/notification?no_laporan=') . $row['no_laporan'] . '" class="dropdown-item">
+                      <div class="d-flex w-100 justify-content-between align-items-center">
+                          <div>
+                              <h6 class="mb-1"> ' . $row["nama_anggota"] . ' (' . $row["no_anggota"] . ')-' . $row["level"] . '</h6>
+                              <p class="mb-1">' . $title . '</p>
+                              <small>' . ubahTanggal($row["created_at"]) . '</small>
+                          </div>
+                          <span style="margin-left:15px;">' . $icon . '</span>
+                      </div>
+                    </a>
+                </li>';
+            }
+        } else {
+            $output = '<li><a href="#" class="dropdown-item text-bold text-italic">Tidak ada notifikasi baru ditemukan</a></li>';
+        }
+
+        return $output;
     }
 
     public function index()

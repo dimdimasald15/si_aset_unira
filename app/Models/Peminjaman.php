@@ -53,4 +53,53 @@ class Peminjaman extends Model
         ];
         $this->update($id, $data);
     }
+
+    public function fetchPeminjamanData($tgl_peminjaman, $m, $y, $jenis)
+    {
+        $builder = $this->db->table('peminjaman p')
+            ->select('p.*, a.nama_anggota, b.nama_brg, u.singkatan, s.kd_satuan')
+            ->join('anggota a', 'a.id = p.anggota_id')
+            ->join('barang b', 'b.id = p.barang_id')
+            ->join('kategori k', 'k.id = b.kat_id')
+            ->join('unit u', 'u.id = a.unit_id')
+            ->join('satuan s', 's.id = b.satuan_id')
+            ->where('k.jenis', $jenis)
+            ->where('k.deleted_at', null)
+            ->where('b.deleted_at', null)
+            ->where('p.deleted_at', null);
+
+        if ($tgl_peminjaman) {
+            $builder->like("p.created_at", $tgl_peminjaman . "%");
+        } else {
+            $builder->where('YEAR(p.created_at)', $y ? $y : date('Y'));
+            if ($m) {
+                $builder->where('MONTH(p.created_at)', $m);
+            }
+        }
+
+        $builder->orderBy('p.id', 'ASC');
+        $results = $builder->get()->getResultArray();
+
+        $tgldibuat = array_map(function ($val) {
+            return format_tanggal($val['created_at']);
+        }, $results);
+
+        foreach ($results as $key => &$result) {
+            $result['tgldibuat'] = $tgldibuat[$key];
+        }
+
+        $groupedData = [];
+
+        foreach ($results as &$item) {
+            $dateString = $item["tgldibuat"];
+            $haritanggal = $tgl_peminjaman ? $dateString : explode(" ", $dateString)[2] . " " . explode(" ", $dateString)[3];
+
+            if (!isset($groupedData[$haritanggal])) {
+                $groupedData[$haritanggal] = [];
+            }
+            $groupedData[$haritanggal][] = $item;
+        }
+
+        return $groupedData;
+    }
 }

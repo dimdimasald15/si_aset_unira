@@ -287,6 +287,7 @@ export const kategori = (() => {
             $('#kd_kategori').val('');
             $('#deskripsi').val('');
             $('#subkode4-other').on('keyup', function () {
+                console.log($('#subkode4-other').val());
                 if (subkode1 !== 'other1' && subkode2 !== 'other2' && subkode3 !== 'other3') {
                     getSubkodeOther(subkode1, subkode2, subkode3, $('#subkode4-other').val());
                 } else if (subkode1 !== 'other1' && subkode2 !== 'other2', subkode3 == 'other3') {
@@ -307,7 +308,7 @@ export const kategori = (() => {
         var subkd1other = (typeof skother1 !== 'undefined') ? skother1 : '';
         var subkd2other = (typeof skother2 !== 'undefined') ? skother2 : '';
         var subkd3other = (typeof skother3 !== 'undefined') ? skother3 : '';
-        var subkd4other = (typeof skother4 !== 'undefined') ? skother3 : '';
+        var subkd4other = (typeof skother4 !== 'undefined') ? skother4 : '';
 
         if (subkd2other == '' && subkd3other == '' && subkd4other == '') {
             $('#kd_kategori').val(`${subkd1other}`)

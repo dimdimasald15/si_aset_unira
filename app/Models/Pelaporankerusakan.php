@@ -89,6 +89,36 @@ class Pelaporankerusakan extends Model
         return $query->get()->getRow();
     }
 
+    public function getNotifications()
+    {
+        return $this->db->table('pelaporan_kerusakan p')
+            ->select('p.*,a.nama_anggota, a.no_anggota, a.level, u.singkatan, n.viewed_by_admin')
+            ->join('anggota a', 'a.id=p.anggota_id')
+            ->join('unit u', 'u.id=a.unit_id')
+            ->join('notifikasi n', 'p.id=n.laporan_id')
+            ->where('n.deleted_at IS NULL')
+            ->where('a.deleted_at IS NULL')
+            ->where('p.deleted_at IS NULL')
+            ->orderBy('n.viewed_by_admin', 'ASC')
+            ->orderBy('p.id', 'DESC')
+            ->limit(5)
+            ->get()
+            ->getResultArray();
+    }
+
+    public function getUnseenNotificationCount()
+    {
+        return $this->db->table('notifikasi n')
+            ->select('n.*')
+            ->join('pelaporan_kerusakan p', 'p.id=n.laporan_id')
+            ->join('anggota a', 'a.id=p.anggota_id')
+            ->where('n.viewed_by_admin', 0)
+            ->where('n.deleted_at IS NULL')
+            ->where('a.deleted_at IS NULL')
+            ->where('p.deleted_at IS NULL')
+            ->countAllResults();
+    }
+
     public function deleteDirectory($dir)
     {
         if (!file_exists($dir)) {

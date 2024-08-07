@@ -39,7 +39,7 @@
           if (isBulanTahun($key1)) {
         ?>
             <tr>
-              <td class="text-center" style="font-style:'bold';" colspan="9">Peminjaman Bulan <?= $key1 ?></td>
+              <td class="text-center" colspan="9"><b>Peminjaman Bulan <?= $key1 ?></b></td>
             </tr>
           <?php
           }

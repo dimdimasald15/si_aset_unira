@@ -5,15 +5,18 @@ namespace App\Controllers;
 use App\Models\Anggota;
 use \Hermawan\DataTables\DataTable;
 use App\Controllers\BaseController;
+use App\Services\DeleteTemporaryService;
+use App\Services\RestoreService;
 
 class AnggotaController extends BaseController
 {
-    protected $anggota;
-    protected $uri;
+    protected $anggota, $uri, $restoreService, $deleteTemporaryService;
     public function __construct()
     {
         $this->anggota = new Anggota();
         $this->uri = service('uri');
+        $this->restoreService = new RestoreService();
+        $this->deleteTemporaryService = new DeleteTemporaryService($this->anggota);
     }
 
     public function index()
@@ -210,55 +213,32 @@ class AnggotaController extends BaseController
             $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
-
         $inputData = json_decode($this->request->getBody(), true);
         $nama_anggota = $inputData["nama_anggota"];
-        try {
-            $this->anggota->setSoftDelete($id);
-
-            $msg = [
-                'success' => "Data anggota $nama_anggota berhasil dihapus secara sementara",
-            ];
-            echo json_encode($msg);
-        } catch (\Exception $e) {
-            $msg = [
-                'error' => $e->getMessage(),
-            ];
-            echo json_encode($msg);
-        }
+        $msg = $this->deleteTemporaryService->softDelete($id, 'anggota', $nama_anggota);
+        echo json_encode($msg);
     }
 
-    public function restoredata($id = [])
+    public function restoredata()
     {
         if (!$this->request->isAJAX()) {
             $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
 
-        $ids = $this->request->getVar('id');
-        $id = explode(",", $ids);
-        $restoredata = [
-            'deleted_by' => null,
-            'deleted_at' => null,
+        $inputData = $this->request->getHeaderLine('Content-Type') === 'application/json' ?
+            json_decode($this->request->getBody(), true) :
+            $this->request->getVar();
+
+        $ids = explode(",", $inputData['id']);
+        $nama_anggota = isset($inputData['nama_anggota']) ? $inputData['nama_anggota'] : "";
+
+        $columnNames = [
+            'nama' => 'anggota',
+            'value' => $nama_anggota
         ];
-        if (count($id) === 1) {
-            foreach ($id as $key => $idanggota) {
-                $nama_anggota = $this->request->getVar('nama_anggota');
-                $this->anggota->update($idanggota, $restoredata);
 
-                $msg = [
-                    'success' => "Data anggota $nama_anggota berhasil dipulihkan",
-                ];
-            }
-        } else {
-            foreach ($id as $key => $idanggota) {
-                $this->anggota->update($idanggota, $restoredata);
-            }
-
-            $msg = [
-                'success' => count($id) . " Data anggota berhasil dipulihkan",
-            ];
-        }
+        $msg = $this->restoreService->restoreData('anggota', $ids, $columnNames);
 
         echo json_encode($msg);
     }

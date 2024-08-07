@@ -39,7 +39,7 @@
           if (isBulanTahun($key1)) {
         ?>
             <tr>
-              <td class="text-center" style="font-style : bold;" colspan="8">Permintaan Bulan <?= $key1 ?></td>
+              <td class="text-center" colspan="8"><b>Permintaan Bulan <?= $key1 ?></b></td>
             </tr>
           <?php
           }
@@ -96,31 +96,33 @@
             }
             ?>
             <tr>
-              <td class="text-right" colspan="7" style="font-style:'bold';text-align: right;">Total pengeluaran bulan <?= $key1 ?></td>
-              <td class="td_uang">
-                <?php
-                $total = 0;
-                foreach ($row1 as $key2 => $row2) {
-                  $total += (int) $row2["total_val"];
-                }
-                echo format_uang($total);
-                ?>
+              <td class="text-right" colspan="7" style="text-align: right;"><b>Total pengeluaran bulan <?= $key1 ?></b></td>
+              <td class="td_uang"><b>
+                  <?php
+                  $total = 0;
+                  foreach ($row1 as $key2 => $row2) {
+                    $total += (int) $row2["total_val"];
+                  }
+                  echo format_uang($total);
+                  ?>
+                </b>
               </td>
             </tr>
           <?php
         } ?>
           <tr>
-            <td class="text-right" colspan="7" style="font-style:'bold';text-align: right;">Total pengeluaran keseluruhan</td>
-            <td class="td_uang">
-              <?php
-              $total = 0;
-              foreach ($permintaan as $key1 => $row1) {
-                foreach ($row1 as $key2 => $row2) {
-                  $total += (int) $row2["total_val"];
+            <td class="text-right" colspan="7" style="text-align: right;"><b>Total pengeluaran keseluruhan</b></td>
+            <td class="td_uang"><b>
+                <?php
+                $total = 0;
+                foreach ($permintaan as $key1 => $row1) {
+                  foreach ($row1 as $key2 => $row2) {
+                    $total += (int) $row2["total_val"];
+                  }
                 }
-              }
-              echo format_uang($total);
-              ?>
+                echo format_uang($total);
+                ?>
+              </b>
             </td>
           </tr>
           </tbody>

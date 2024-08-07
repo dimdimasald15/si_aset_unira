@@ -115,19 +115,19 @@
                                                 <div class="col-md-5 mb-3 asalbrg<?= $no ?>">
                                                     <label class="form-label">Asal <?= $title; ?></label>
                                                     <div class="form-check">
-                                                        <input class="form-check-input radiorow-<?= $no ?>" type="radio" name="asal<?= $no ?>" id="belibaru<?= $no ?>" value="Beli baru">
+                                                        <input class="form-check-input radiorow-<?= $no ?>" type="radio" name="asal<?= $no ?>" id="belibaru<?= $no ?>" value="beli baru">
                                                         <label class="form-check-label" for="belibaru<?= $no ?>">
                                                             Beli Baru
                                                         </label>
                                                     </div>
                                                     <div class="form-check">
-                                                        <input class="form-check-input radiorow-<?= $no ?>" type="radio" name="asal<?= $no ?>" id="belibekas<?= $no ?>" value="Beli bekas">
+                                                        <input class="form-check-input radiorow-<?= $no ?>" type="radio" name="asal<?= $no ?>" id="belibekas<?= $no ?>" value="beli bekas">
                                                         <label class="form-check-label" for="belibekas<?= $no ?>">
                                                             Beli Bekas
                                                         </label>
                                                     </div>
                                                     <div class="form-check">
-                                                        <input class="form-check-input radiorow-<?= $no ?>" type="radio" name="asal<?= $no ?>" id="hibah<?= $no ?>" value="Hibah">
+                                                        <input class="form-check-input radiorow-<?= $no ?>" type="radio" name="asal<?= $no ?>" id="hibah<?= $no ?>" value="hibah">
                                                         <label class="form-check-label" for="hibah<?= $no ?>">
                                                             Hibah
                                                         </label>

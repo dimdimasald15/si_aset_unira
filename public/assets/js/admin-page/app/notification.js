@@ -1,22 +1,44 @@
 export const notification = (() => {
-    var pusher = new Pusher('f04a9e3d37bbfe1cfb52', {
-        cluster: 'ap1'
+    let pusher; // Declare pusher variable here
+    let channel; // Declare channel variable here
+
+    // Create a promise that resolves when Pusher is initialized
+    const pusherInitPromise = new Promise((resolve, reject) => {
+        fetch(`dashboard/pusherconfig`)
+            .then(response => response.json())
+            .then(config => {
+                pusher = new Pusher(config.key, {
+                    cluster: config.cluster
+                });
+                // Subscribe to the channel
+                channel = pusher.subscribe('notifications-channel');
+                // Resolve the promise
+                resolve();
+            })
+            .catch(error => {
+                console.error('Error fetching Pusher config:', error);
+                reject(error);
+            });
     });
 
-    // Subscribe to the channel and bind to events
-    var channel = pusher.subscribe('notifications-channel');
     const getNotification = () => {
-        reportMsg();
-        supplyItems();
-        // Bind to pelaporan event
-        channel.bind('pelaporan-event', function (data) {
-            updateReport(data);
+        pusherInitPromise.then(() => {
+            reportMsg();
+            supplyItems();
+
+            // Bind to pelaporan event
+            channel.bind('pelaporan-event', function (data) {
+                updateReport(data);
+            });
+
+            // Bind to notifpersediaan event
+            channel.bind('supplyItems-event', function (data) {
+                updateSupplyItems(data);
+            });
+        }).catch(error => {
+            console.error('Pusher initialization failed:', error);
         });
-        // Bind to notifpersediaan event
-        channel.bind('supplyItems-event', function (data) {
-            updateSupplyItems(data);
-        });
-    }
+    };
 
     const reportMsg = () => {
         $.post("notification/getnotifikasipelaporan", { view: 'view' });

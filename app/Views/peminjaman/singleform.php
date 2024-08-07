@@ -14,7 +14,7 @@
           <div class="col-md-6">
             <label for="anggota_id" class="form-label">Nama Peminjam</label>
             <div class="input-group mb-3">
-              <span class="input-group-text"><i class="bi bi-person"></i></span>
+              <!-- <span class="input-group-text"><i class="bi bi-person"></i></span> -->
               <select class="form-select" name="anggota_id" id="anggota_id"></select>
               <div class="invalid-feedback erranggota_id"></div>
             </div>
@@ -98,8 +98,8 @@
   var rowCount = '';
 
   $(document).ready(function() {
-    let lastNumb = parseInt("<?= $no ?>");
-    let currIndex = lastNumb + 1;
+    lastNumb = parseInt("<?= $no ?>");
+    currIndex = lastNumb + 1;
     var level = '';
     let form = $('#formpeminjaman');
     let saveMethod = form.attr('saveMethod');

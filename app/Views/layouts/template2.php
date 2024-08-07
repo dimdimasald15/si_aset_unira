@@ -29,6 +29,11 @@
   <link rel="stylesheet" href="<?= base_url() ?>/assets/vendors/bootstrap-icons/bootstrap-icons.css">
   <link rel="stylesheet" href="<?= base_url() ?>/assets/css/app.css">
   <link rel="stylesheet" href="<?= base_url() ?>/assets/css/mystyle/mystyle.css">
+  <style>
+    a:hover {
+      color: #b9b9b9 !important;
+    }
+  </style>
   <?= $this->renderSection('styles') ?>
   <link rel="stylesheet" href="<?= base_url() ?>/assets/vendors/iconly/bold.css">
   <!-- sweetalert2 -->
@@ -73,12 +78,12 @@
         </div>
         <?= $this->renderSection('content') ?>
         <footer class="row justify-content-center my-3 text-white">
-          <div class="col-lg-9 col-md-9 col-12 clearfix mb-0">
-            <div class="float-start">
-              <p>©2023 <a href="https://uniramalang.ac.id/" target="_blank" class="text-white">Universitas Islam Raden Rahmat Malang</a></p>
-            </div>
-            <div class="float-end">
-              <p>Created with <span class="text-danger"><i class="bi bi-heart"></i></span> using Mazer by <a href="http://ahmadsaugi.com" target="_blank" class="text-white">A. Saugi</a></p>
+          <div class="col-lg-9 col-md-9 col-sm-12 clearfix mb-0">
+            <div class="text-center">
+              <p>©2023 <a href="https://uniramalang.ac.id/" target="_blank" class="text-white">
+                  Universitas Islam Raden Rahmat Malang
+                </a>
+              </p>
             </div>
           </div>
         </footer>

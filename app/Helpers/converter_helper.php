@@ -217,50 +217,13 @@ if (!function_exists('format_warna')) {
 }
 
 if (!function_exists('format_bulan')) {
-  function format_bulan($string)
+  function format_bulan($bulan)
   {
-    switch ($string) {
-      case $string == 1:
-        $bulan = "Januari";
-        break;
-      case $string == 2:
-        $bulan = "Februari";
-        break;
-      case $string == 3:
-        $bulan = "Maret";
-        break;
-      case $string == 4:
-        $bulan = "April";
-        break;
-      case $string == 5:
-        $bulan = "Mei";
-        break;
-      case $string == 6:
-        $bulan = "Juni";
-        break;
-      case $string == 7:
-        $bulan = "Juli";
-        break;
-      case $string == 8:
-        $bulan = "Agustus";
-        break;
-      case $string == 9:
-        $bulan = "September";
-        break;
-      case $string == 10:
-        $bulan = "Oktober";
-        break;
-      case $string == 11:
-        $bulan = "November";
-        break;
-      case $string == 12:
-        $bulan = "Desember";
-        break;
-      default:
-        return false;
-    }
-
-    return $bulan;
+    $bulanArray = [
+      1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April', 5 => 'Mei', 6 => 'Juni',
+      7 => 'Juli', 8 => 'Agustus', 9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+    ];
+    return $bulanArray[(int)$bulan];
   }
 }
 if (!function_exists('isBulanTahun')) {

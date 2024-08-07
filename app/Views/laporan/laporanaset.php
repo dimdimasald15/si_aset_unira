@@ -43,7 +43,9 @@
           </tr>
         </thead>
         <tbody>
-          <?php foreach ($brgtetap as $key => $row) :
+          <?php
+          $total = 0;
+          foreach ($brgtetap as $key => $row) :
           ?>
             <tr>
               <td class="text-center"><?= $key + 1 ?></td>
@@ -53,18 +55,13 @@
               <td class="td_uang"><?= $row['hargajual'] ?></td>
               <td class="td_uang"><?= $row['totalval'] ?></td>
             </tr>
-          <?php endforeach; ?>
+          <?php
+            $total += (int) $row["total_val"];
+          endforeach;
+          ?>
           <tr>
-            <td class="text-right" colspan="5" style="font-style:'bold';text-align: right;">Total Kekayaan Aset</td>
-            <td class="td_uang">
-              <?php
-              $total = 0;
-              foreach ($brgtetap as $key => $row) {
-                $total += (int) $row["total_val"];
-              }
-              echo format_uang($total);
-              ?>
-            </td>
+            <td class="text-right" colspan="5" style="text-align: right;"><b>Total Kekayaan Aset</b></td>
+            <td class="td_uang"><b><?= format_uang($total) ?></b></td>
           </tr>
         </tbody>
       </table>
@@ -75,16 +72,14 @@
       <table style="page-break-after: always;">
         <caption>Tabel 2. Laporan Pembelian Barang Tetap</caption>
         <?php
-        foreach ($belibrgtetap as $key1 => $row1) {
-          // echo isBulanTahun($key1);
-          if (isBulanTahun($key1)) {
-        ?>
+        $t_tahunan = 0; // Inisialisasi total tahunan di luar loop bulan
+        foreach ($belibrgtetap as $key1 => $row1) :
+          $t_bulanan = 0; // Inisialisasi total bulanan untuk setiap bulan
+          if (isBulanTahun($key1)) :  ?>
             <tr>
-              <td class="text-center" style="font-style : bold;" colspan="6">Pembelian Bulan <?= $key1 ?></td>
+              <td class="text-center" style="font-weight: bold;" colspan="6">Pembelian Bulan <?= $key1 ?></td>
             </tr>
-          <?php
-          }
-          ?>
+          <?php endif; ?>
           <thead class="text-center">
             <tr>
               <th>No.</th>
@@ -96,52 +91,33 @@
             </tr>
           </thead>
           <tbody>
-            <?php
-            foreach ($row1 as $key2 => $row2) {
-            ?>
+            <?php foreach ($row1 as $key2 => $row2) { ?>
               <tr>
                 <td class="text-center"><?= $key2 + 1 ?></td>
                 <td><?= $row2['kode_brg'] ?></td>
-                <td style="width:210px;"><?= $row2['nama_brg'] . " (" . format_warna($row['warna']) . ")"  ?></td>
+                <td style="width:210px;"><?= $row2['nama_brg'] . " (" . format_warna($row2['warna']) . ")" ?></td>
                 <td><?= $row2['jml_msk'] . ' ' . $row2['kd_satuan'] ?></td>
-                <td class="td_uang"><?=
-                                    format_uang($row2['hrg_beli_brg'])
-                                    ?></td>
+                <td class="td_uang"><?= format_uang($row2['hrg_beli_brg']) ?></td>
                 <td class="td_uang"><?= format_uang($row2['total_harga']) ?></td>
               </tr>
             <?php
+              $t_bulanan += (int)$row2["total_harga"]; // Tambahkan ke total bulanan
+              $t_tahunan += (int)$row2["total_harga"]; // Tambahkan ke total tahunan
             }
             ?>
-            <tr>
-              <td class="text-right" colspan="5" style="font-style:'bold';text-align: right;">Total pengeluaran bulan <?= $key1 ?></td>
-              <td class="td_uang">
-                <?php
-                $t_bulanan = 0;
-                foreach ($row1 as $key2 => $row2) {
-                  $t_bulanan += (int) $row2["total_harga"];
-                }
-                echo format_uang($t_bulanan);
-                ?>
-              </td>
-            </tr>
-          <?php
-        } ?>
+            <!-- <tr>
+              <td class="text-right" colspan="5" style="font-weight: bold;text-align: right;">Total Pengeluaran bulan <?= $key1 ?></td>
+              <td class="td_uang"><b><?php // format_uang($t_bulanan); 
+                                      ?></b></td>
+            </tr> -->
+          <?php endforeach ?>
           <tr>
-            <td class="text-right" colspan="5" style="font-style:'bold';text-align: right;">Total pengeluaran keseluruhan</td>
-            <td class="td_uang">
-              <?php
-              $t_tahunan = 0;
-              foreach ($belibrgtetap as $key1 => $row1) {
-                foreach ($row1 as $key2 => $row2) {
-                  $t_tahunan += (int) $row2["total_harga"];
-                }
-              }
-              echo format_uang($t_tahunan);
-              ?>
-            </td>
+            <td class="text-right" colspan="5" style="font-weight: bold;text-align: right;">Total Pengeluaran Keseluruhan</td>
+            <td class="td_uang"><b><?= format_uang($t_tahunan); ?></b></td>
           </tr>
           </tbody>
       </table>
+
     <?php } else { ?>
       <p class="text-center mt-5" style="font-style: italic bold;">Data Kosong! Tidak ada pembelian barang tetap pada <?= $bulantahun ?></p>
     <?php } ?>
@@ -149,16 +125,14 @@
       <table>
         <caption>Tabel 3. Laporan Permintaan Barang Persediaan</caption>
         <?php
+        $t_tahunan2 = 0;
         foreach ($permintaan as $key1 => $row1) {
-          // echo isBulanTahun($key1);
-          if (isBulanTahun($key1)) {
-        ?>
+          $t_bulanan2 = 0;
+          if (isBulanTahun($key1)) { ?>
             <tr>
-              <td class="text-center" style="font-style : bold;" colspan="6">Permintaan Bulan <?= $key1 ?></td>
+              <td class="text-center" colspan="6"><b>Permintaan Bulan <?= $key1 ?></b></td>
             </tr>
-          <?php
-          }
-          ?>
+          <?php } ?>
           <thead class="text-center">
             <tr>
               <th>No.</th>
@@ -170,9 +144,7 @@
             </tr>
           </thead>
           <tbody>
-            <?php
-            foreach ($row1 as $key2 => $row2) {
-            ?>
+            <?php foreach ($row1 as $key2 => $row2) { ?>
               <tr>
                 <td class="text-center"><?= $key2 + 1 ?></td>
                 <td><?= $row2['kode_brg'] ?></td>
@@ -182,35 +154,18 @@
                 <td class="td_uang"><?= $row2['totalval'] ?></td>
               </tr>
             <?php
+              $t_bulanan2 += (int)$row2["total_val"]; // Tambahkan ke total bulanan
+              $t_tahunan2 += (int)$row2["total_val"]; // Tambahkan ke total tahunan
             }
             ?>
             <tr>
-              <td class="text-right" colspan="5" style="font-style:'bold';text-align: right;">Total Pengeluaran bulan <?= $key1 ?></td>
-              <td class="td_uang">
-                <?php
-                $t_bulanan = 0;
-                foreach ($row1 as $key2 => $row2) {
-                  $t_bulanan += (int) $row2["total_val"];
-                }
-                echo format_uang($t_bulanan);
-                ?>
-              </td>
+              <td class="text-right" colspan="5" style="font-weight: bold;text-align: right;">Total Pengeluaran bulan <?= $key1 ?></td>
+              <td class="td_uang"><b><?= format_uang($t_bulanan2); ?></b></td>
             </tr>
-          <?php
-        } ?>
+          <?php } ?>
           <tr>
-            <td class="text-right" colspan="5" style="font-style:'bold';text-align: right;">Total Pengeluaran Keseluruhan</td>
-            <td class="td_uang">
-              <?php
-              $t_tahunan = 0;
-              foreach ($permintaan as $key1 => $row1) {
-                foreach ($row1 as $key2 => $row2) {
-                  $t_tahunan += (int) $row2["total_val"];
-                }
-              }
-              echo format_uang($t_tahunan);
-              ?>
-            </td>
+            <td class="text-right" colspan="5" style="font-weight: bold;text-align: right;">Total Pengeluaran Keseluruhan</td>
+            <td class="td_uang"><b><?= format_uang($t_tahunan2); ?></b></td>
           </tr>
           </tbody>
       </table>

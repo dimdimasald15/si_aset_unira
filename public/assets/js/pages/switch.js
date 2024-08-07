@@ -37,6 +37,7 @@
     var cardbodies = document.querySelectorAll('.card-body');
     var headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
     var navbar = document.querySelectorAll('.navbar');
+    var sidebarWrapper = document.querySelectorAll('.sidebar-wrapper');
     var emailLists = document.querySelectorAll(".media");
     // Add classes to tables
     tables.forEach((table) => {
@@ -45,6 +46,10 @@
 
     // Add classes to navbar
     navbar.forEach((nav) => {
+      nav.classList.add('bg-dark', 'text-white');
+    });
+    // Add classes to sidebarWrapper
+    sidebarWrapper.forEach((nav) => {
       nav.classList.add('bg-dark', 'text-white');
     });
 
