@@ -392,6 +392,14 @@ const util = (() => {
         }
         fetchData(datas, callback);
     }
+    const closeBtnMt = (formSelector, cardSelector) => {
+        let tableSelector = $('.table-body tr');
+        let rowCount = tableSelector.length;
+        tableSelector.slice(1).remove();
+        util.clearIsInvalid(formSelector);
+        util.clearFormatMt(formSelector, rowCount);
+        $(cardSelector).hide(500);
+    }
 
     return {
         imgQR,
@@ -399,6 +407,7 @@ const util = (() => {
         plusBtn,
         minusBtn,
         closeBtn,
+        closeBtnMt,
         fetchData,
         clearForm,
         hapusForm,

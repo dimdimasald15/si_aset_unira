@@ -77,3 +77,28 @@ if (!function_exists('generateCarouselItems')) {
         return $html;
     }
 }
+
+if (!function_exists('deleteDirectory')) {
+    function deleteDirectory($dir)
+    {
+        if (!file_exists($dir)) {
+            return true;
+        }
+        if (!is_dir($dir)) {
+            return unlink($dir);
+        }
+        $items = scandir($dir);
+        foreach ($items as $item) {
+            if ($item == '.' || $item == '..') {
+                continue;
+            }
+            $path = $dir . DIRECTORY_SEPARATOR . $item;
+            if (is_dir($path)) {
+                deleteDirectory($path); // Panggilan rekursif ke fungsi statis
+            } else {
+                unlink($path);
+            }
+        }
+        return rmdir($dir);
+    }
+}

@@ -23,9 +23,25 @@
 <section class="section">
   <div class="card mb-3 shadow">
     <div class="card-header shadow-sm">
-      <h4 class="card-title">Custom Filters</h4>
+      <h4 class="card-title">Filter Cetak Laporan Aset</h4>
     </div>
     <div class="card-body bg-dark text-white">
+      <div class="viewalert">
+        <div class="alert alert-info" role="alert">
+          <div class="row">
+            <div class="col-auto-1 col-md-1 col-sm-1">
+              <p class="fs-1"><i class="bi bi-info-circle"></i></p>
+            </div>
+            <div class="col-auto-10 col-md-10 col-sm-10 p-0">
+              <p>Jika anda tidak memilih bulan dan tahun di bawah ini, maka halaman akan menampilkan laporan aset sepanjang tahun <?= date('Y') ?>.
+              </p>
+            </div>
+            <div class="col-auto-1 col-md-1 col-sm-1 d-flex justify-content-end">
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          </div>
+        </div>
+      </div>
       <form action="<?= $nav ?>/cetak" method="post" id="cetak-laporan">
         <?= csrf_field() ?>
         <div class="row mt-3">

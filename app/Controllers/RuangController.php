@@ -4,17 +4,21 @@ namespace App\Controllers;
 
 use App\Models\Ruang;
 use App\Controllers\BaseController;
+use App\Services\DeleteTemporaryService;
+use App\Services\RestoreService;
 use \Hermawan\DataTables\DataTable;
 
 class RuangController extends BaseController
 {
-    protected $ruang, $uri, $title;
+    protected $ruang, $uri, $title, $restoreService, $deleteTemporaryService;
 
     public function __construct()
     {
         $this->ruang = new Ruang();
         $this->uri = service('uri');
         $this->title = "Ruang";
+        $this->restoreService = new RestoreService();
+        $this->deleteTemporaryService = new DeleteTemporaryService($this->ruang);
     }
 
     public function index()
@@ -80,62 +84,52 @@ class RuangController extends BaseController
         }
     }
 
-    public function restoredata($id = [])
+    public function restoredata()
     {
         if (!$this->request->isAJAX()) {
             $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
-        $ids = $this->request->getVar('id');
-        $nama_ruang = $this->request->getVar('nama_ruang');
-        $id = explode(",", $ids);
-        $restoredata = [
-            'deleted_by' => null,
-            'deleted_at' => null,
+
+        $inputData = $this->request->getHeaderLine('Content-Type') === 'application/json' ?
+            json_decode($this->request->getBody(), true) :
+            $this->request->getVar();
+
+        $ids = explode(",", $inputData['id']);
+        $nama_ruang = isset($inputData['nama_ruang']) ? $inputData['nama_ruang'] : "";
+
+        $columnNames = [
+            'nama' => 'ruang',
+            'value' => $nama_ruang
         ];
 
-        $this->db->transStart();
-        foreach ($id as $key => $ruangId) {
-            $ruang = $this->db->table('ruang')->select('*')->where('id', $ruangId)->get()->getRowArray();
-            if ($ruang['deleted_at'] !== NULL) {
-                $this->ruang->update($ruangId, $restoredata);
-            }
-        }
-        $this->db->transComplete();
+        $msg = $this->restoreService->restoreData('ruang', $ids, $columnNames);
 
-        if ($this->db->transStatus() === false) {
-            $msg = ['error' => 'Gagal memulihkan data ruangan'];
-        } else {
-            $msg = ['success' => "Sukses memulihkan data ruang."];
-        }
-
-        return json_encode($msg);
+        echo json_encode($msg);
     }
 
     public function hapuspermanen($id = null)
     {
-        if ($this->request->isAJAX()) {
-            if ($id != null) {
-                $nama_ruang = $this->request->getVar('nama_ruang');
-
-                $this->ruang->delete($id, true);
-
-                $msg = [
-                    'success' => "Data ruangan $nama_ruang berhasil dihapus secara permanen",
-                ];
-            } else {
-                $this->ruang->purgeDeleted();
-                $jmlhapus = $this->ruang->db->affectedRows();
-                $msg = [
-                    'success' => "$jmlhapus data ruangan berhasil dihapus secara permanen",
-                ];
-            }
-
-            return json_encode($msg);
-        } else {
+        if (!$this->request->isAJAX()) {
             $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
+        if ($id != null) {
+            $nama_ruang = $this->request->getVar('nama_ruang');
+
+            $this->ruang->delete($id, true);
+
+            $msg = [
+                'success' => "Data ruangan $nama_ruang berhasil dihapus secara permanen",
+            ];
+        } else {
+            $this->ruang->purgeDeleted();
+            $jmlhapus = $this->ruang->db->affectedRows();
+            $msg = [
+                'success' => "$jmlhapus data ruangan berhasil dihapus secara permanen",
+            ];
+        }
+        return json_encode($msg);
     }
 
     public function getgedung()
@@ -255,25 +249,15 @@ class RuangController extends BaseController
         echo json_encode($msg);
     }
 
-
     public function hapusdata($id)
     {
-        if ($this->request->isAJAX()) {
-            $inputData = json_decode($this->request->getBody(), true);
-            $nama_ruang = $inputData["nama_ruang"];
-            try {
-                $this->ruang->setSoftDelete($id);
-
-                $msg = [
-                    'success' => "Data ruang $nama_ruang berhasil dihapus",
-                ];
-                echo json_encode($msg);
-            } catch (\Exception $e) {
-                $msg = [
-                    'error' => $e->getMessage(),
-                ];
-                echo json_encode($msg);
-            }
-        } else exit('Maaf tidak dapat diproses');
+        if (!$this->request->isAJAX()) {
+            $data = $this->errorPage404();
+            return view('errors/mazer/error-404', $data);
+        }
+        $inputData = json_decode($this->request->getBody(), true);
+        $nama_ruang = $inputData["nama_ruang"];
+        $msg = $this->deleteTemporaryService->softDelete($id, 'ruang', $nama_ruang);
+        echo json_encode($msg);
     }
 }

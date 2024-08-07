@@ -17,7 +17,15 @@ class App extends BaseConfig
      *
      *    http://example.com/
      */
-    public string $baseURL = BASE;
+    // Base URL dari .env jika ada, jika tidak ada maka dari BASE
+    public string $baseURL;
+
+    public function __construct()
+    {
+        require_once FCPATH . '../app/Config/Constants.php';
+        $this->baseURL = getenv('app.baseURL') ?: BASE;
+        parent::__construct();
+    }
     // public string $baseURL = 'http://localhost/';
 
     /**

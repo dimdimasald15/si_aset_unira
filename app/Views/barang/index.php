@@ -1,37 +1,9 @@
 <?= $this->extend('/layouts/template'); ?>
 <?= $this->section('styles') ?>
 <style>
-    img {
-        display: block;
-        max-width: 100%;
-    }
-
-    .preview {
-        overflow: hidden;
-        width: 160px;
-        height: 160px;
-        margin: 10px;
-        border: 1px solid red;
-    }
-
-    .modal-lg {
-        max-width: 1000px !important;
-    }
-
-    .img-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: auto;
-        /* sesuaikan dengan tinggi gambar yang ingin di crop */
-        overflow: hidden;
-    }
-
-    .img-container img {
-        display: block;
-        max-width: 100%;
-        max-height: 100%;
-        margin: auto;
+    div.qrcode_barang img {
+        width: 60px !important;
+        height: 60px !important;
     }
 </style>
 <link src="<?= base_url() ?>assets/vendors/jquery/jquery.imagesloader.css">
@@ -151,7 +123,7 @@
                 <ul class="nav nav-tabs mt-3" id="myTab" role="tablist">
                     <?php foreach ($tabId as $i => $row) : ?>
                         <li class="nav-item" role="presentation">
-                            <a class="nav-link <?= $row === 'brgtetap' ? 'active' : '' ?>" onClick="barang.navLink()" id="<?= $row ?>-tab" data-bs-toggle="tab" href="#<?= $row ?>" role="tab" aria-controls="<?= $row ?>" aria-selected="true"><?= $tabName[$i] ?></a>
+                            <a class="nav-link <?= $row === 'brgtetap' ? 'active' : '' ?>" onClick="barang.navLink(this)" id="<?= $row ?>-tab" data-bs-toggle="tab" href="#<?= $row ?>" role="tab" aria-controls="<?= $row ?>" aria-selected="true"><?= $tabName[$i] ?></a>
                         </li>
                     <?php endforeach ?>
                 </ul>
@@ -210,18 +182,6 @@
             e.stopPropagation();
             e.preventDefault();
         });
-        $('#checkall1, #checkall2, #checkall3').prop('checked', false)
-        var hrefTab = window.location.hash;
-
-        if (!hrefTab) {
-            hrefTab = '#brgtetap';
-        }
-
-        $('.nav-link').removeClass('active');
-        $('.nav-link[href="' + hrefTab + '"]').addClass('active');
-
-        $('.tab-pane').removeClass('show active');
-        $(hrefTab).addClass('show active');
 
         // Initialize DataTables for each tab content
         tableBrgTetap = barang.listData('table-brgtetap',

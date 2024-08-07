@@ -72,59 +72,54 @@
   var id = "<?= $id ?>";
   var kdbrg = '';
   var idlokasi = '';
-
-  // Get the card element
   var card = $('.card-label')[0];
 
   $(document).ready(function() {
-    $.ajax({
+    let datas = {
       type: "get",
       url: `${nav}/getdatastokbarangbyid`,
       data: {
-        id: id
+        id
       },
-      dataType: "json",
-      success: function(response) {
-        // set title
-        var kodebarang = response.kode_brg;
-        idlokasi = response.ruang_id;
-        kdbrg = kodebarang.split(".").join("-");
-        const logo = `${BASE_URL}assets/images/logo/logounira.jpg`;
-        namabrg = response.nama_brg;
-        const urlqrcode = `${BASE_URL}detail-barang/${kdbrg}-${idlokasi}`;
-        const dateStr = response.tgl_pembelian;
-        const date = new Date(dateStr);
-        const options = {
-          day: 'numeric',
-          month: 'long',
-          year: 'numeric'
-        };
-        const tglbeli = date.toLocaleDateString('id-ID', options);
+    }
 
-        $('#title').text(
-          `Cetak Label Barang - ${response.kode_brg} - ${response.nama_ruang}`
-        );
+    function callback(response) {
+      var kodebarang = response.kode_brg;
+      idlokasi = response.ruang_id;
+      kdbrg = kodebarang.split(".").join("-");
+      const logo = `${BASE_URL}assets/images/logo/logounira.jpg`;
+      namabrg = response.nama_brg;
+      const urlqrcode = `${BASE_URL}detail-barang/${kdbrg}-${idlokasi}`;
+      const dateStr = response.tgl_pembelian;
+      const date = new Date(dateStr);
+      const options = {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      };
+      const tglbeli = date.toLocaleDateString('id-ID', options);
 
-        const icon = new Image();
-        icon.onload = function() {
-          // create qr code with logo
-          var qrcode = new QRCode('qrcode', {
-            text: `${urlqrcode}`,
-            width: 500,
-            height: 500,
-            correctLevel: QRCode.CorrectLevel.H,
-            colorDark: "#000000",
-            colorLight: "#ffffff",
-          });
-          util.imgQR(qrcode._oDrawing._elCanvas, this, 0.2);
-        }
-        icon.src = logo;
+      $('#title').text(
+        `Cetak Label - ${response.nama_brg} - ${response.nama_ruang}`
+      );
 
-        $('#urlqr').append(`<p class="fs-5 fw-bolder fst-italic">${kodebarang}.${idlokasi}</p>`);
-      },
-      error: function(xhr, ajaxOptions, thrownError) {
-        alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
+      const icon = new Image();
+      icon.onload = function() {
+        // create qr code with logo
+        var qrcode = new QRCode('qrcode', {
+          text: `${urlqrcode}`,
+          width: 500,
+          height: 500,
+          correctLevel: QRCode.CorrectLevel.H,
+          colorDark: "#000000",
+          colorLight: "#ffffff",
+        });
+        util.imgQR(qrcode._oDrawing._elCanvas, this, 0.2);
       }
-    });
+      icon.src = logo;
+
+      $('#urlqr').append(`<p class="fs-5 fw-bolder fst-italic">${kodebarang}.${idlokasi}</p>`);
+    }
+    util.fetchData(datas, callback);
   });
 </script>

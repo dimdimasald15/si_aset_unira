@@ -2,14 +2,7 @@ import { crud } from "./crud.js";
 import { reportAssets } from "../../report-breakdown-assets/app/reportAssets.js";
 export const formBarang = (() => {
     // let currIndex = lastNumb + 1;
-    const closeBtnMultiple = () => {
-        let rowCount = $('.table-body tr').length;
-        console.log(rowCount);
-        $('.table-body tr').slice(1).remove();
-        util.clearIsInvalid('#formsimpanmultiple');
-        util.clearFormatMt("#formsimpanmultiple", rowCount);
-        $('#cardmultipleinsert').hide(500);
-    }
+    const closeBtnMultiple = () => util.closeBtnMt('#formsimpanmultiple', '#cardmultipleinsert');
     const handleAddRow = (formId, currIndex) => {
         var index = currIndex++;
         var appendRow = forms(index);
@@ -120,19 +113,19 @@ export const formBarang = (() => {
                                     <div class="col-md-5 mb-3 asalbrg${index}">
                                         <label class="form-label">Asal <?= $title; ?></label>
                                         <div class="form-check">
-                                            <input class="form-check-input radiorow-${index}" type="radio" name="asal${index}" id="belibaru${index}" value="Beli baru">
+                                            <input class="form-check-input radiorow-${index}" type="radio" name="asal${index}" id="belibaru${index}" value="beli baru">
                                             <label class="form-check-label" for="belibaru${index}">
                                                 Beli Baru
                                             </label>
                                         </div>
                                         <div class="form-check">
-                                            <input class="form-check-input radiorow-${index}" type="radio" name="asal${index}" id="belibekas${index}" value="Beli bekas">
+                                            <input class="form-check-input radiorow-${index}" type="radio" name="asal${index}" id="belibekas${index}" value="beli bekas">
                                             <label class="form-check-label" for="belibekas${index}">
                                                 Beli Bekas
                                             </label>
                                         </div>
                                         <div class="form-check">
-                                            <input class="form-check-input radiorow-${index}" type="radio" name="asal${index}" id="hibah${index}" value="Hibah">
+                                            <input class="form-check-input radiorow-${index}" type="radio" name="asal${index}" id="hibah${index}" value="hibah">
                                             <label class="form-check-label" for="hibah${index}">
                                                 Hibah
                                             </label>
@@ -416,6 +409,7 @@ export const formBarang = (() => {
             })(i);
         }
     }
+
     const insertMultiple = (form, rowCount, event) => {
         event.preventDefault();
         let formdata = new FormData(form);
@@ -460,6 +454,7 @@ export const formBarang = (() => {
             util.setFieldError(`#satuan${i}`, errors[`satuan_id.${i - 1}`]);
         }
     }
+
     const setUpImageLoader = () => {
         return $('#imageLoader').attr({
             'data-type': 'imagesloader',
@@ -548,6 +543,7 @@ export const formBarang = (() => {
         };
         submitForm(datas, callback);
     };
+
     const updateReport = (form, event, urlDetailBrg) => {
         event.preventDefault();
         let laporan_id = $(form).find('[name="id"]').val()

@@ -39,7 +39,7 @@
         <div class="card-body" style="padding: 0.5rem 1rem 1rem 1rem;">
           <?php if ($barang->foto_barang) { ?>
             <div class="row justify-content-center">
-              <div class="col-md-8">
+              <div class="col-md-12">
                 <?= generateGalleryItems($barang->path_foto, json_decode($barang->foto_barang)) ?>
               </div>
             </div>

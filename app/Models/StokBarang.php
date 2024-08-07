@@ -63,4 +63,21 @@ class StokBarang extends Model
 
         return $datasarpras;
     }
+    public function fetchLowStockItems()
+    {
+        return $this->db->table('stok_barang sb')
+            ->select('sb.*, k.nama_kategori, b.nama_brg, b.warna, b.harga_beli, b.kode_brg, b.foto_barang, s.kd_satuan')
+            ->join('barang b', 'b.id=sb.barang_id')
+            ->join('kategori k', 'k.id=b.kat_id')
+            ->join('ruang r', 'sb.ruang_id = r.id')
+            ->join('satuan s', 'b.satuan_id = s.id')
+            ->where('k.jenis', 'Barang Persediaan')
+            ->where('sb.deleted_at', null)
+            ->where('b.deleted_at', null)
+            ->having('sb.sisa_stok <= 3')
+            ->orderBy('sb.id', 'DESC')
+            ->limit(5)
+            ->get()
+            ->getResultArray();
+    }
 }

@@ -3,20 +3,20 @@
 namespace App\Controllers;
 
 use App\Models\Unit;
-use App\Models\Anggota;
-
+use App\Services\RestoreService;
 use \Hermawan\DataTables\DataTable;
 use App\Controllers\BaseController;
-use CodeIgniter\Database\Exceptions\DatabaseException;
+use App\Services\DeleteTemporaryService;
 
 class UnitController extends BaseController
 {
-    protected $unit;
-    protected $uri;
+    protected $unit, $uri, $restoreService, $deleteTemporaryService;
     public function __construct()
     {
         $this->unit = new Unit();
         $this->uri = service('uri');
+        $this->restoreService = new RestoreService();
+        $this->deleteTemporaryService = new DeleteTemporaryService($this->unit);
     }
 
     public function listdata()
@@ -202,22 +202,10 @@ class UnitController extends BaseController
             $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
-
         $inputData = json_decode($this->request->getBody(), true);
         $nama_unit = $inputData["nama_unit"];
-        try {
-            $this->unit->setSoftDelete($id);
-
-            $msg = [
-                'success' => "Data unit $nama_unit berhasil dihapus secara sementara",
-            ];
-            echo json_encode($msg);
-        } catch (\Exception $e) {
-            $msg = [
-                'error' => $e->getMessage(),
-            ];
-            echo json_encode($msg);
-        }
+        $msg = $this->deleteTemporaryService->softDelete($id, 'unit', $nama_unit);
+        echo json_encode($msg);
     }
 
     public function multipledelete()
@@ -267,37 +255,26 @@ class UnitController extends BaseController
         echo json_encode($msg);
     }
 
-    public function restoredata($id = [])
+    public function restoredata()
     {
         if (!$this->request->isAJAX()) {
             $data = $this->errorPage404();
             return view('errors/mazer/error-404', $data);
         }
 
-        $ids = $this->request->getVar('id');
-        $id = explode(",", $ids);
-        $restoredata = [
-            'deleted_by' => null,
-            'deleted_at' => null,
+        $inputData = $this->request->getHeaderLine('Content-Type') === 'application/json' ?
+            json_decode($this->request->getBody(), true) :
+            $this->request->getVar();
+
+        $ids = explode(",", $inputData['id']);
+        $nama_unit = isset($inputData['nama_unit']) ? $inputData['nama_unit'] : "";
+
+        $columnNames = [
+            'nama' => 'unit',
+            'value' => $nama_unit
         ];
-        if (count($id) === 1) {
-            foreach ($id as $key => $idunit) {
-                $nama_unit = $this->request->getVar('nama_unit');
-                $this->unit->update($idunit, $restoredata);
 
-                $msg = [
-                    'success' => "Data unit $nama_unit berhasil dipulihkan",
-                ];
-            }
-        } else {
-            foreach ($id as $key => $idunit) {
-                $this->unit->update($idunit, $restoredata);
-            }
-
-            $msg = [
-                'success' => count($id) . " Data unit berhasil dipulihkan",
-            ];
-        }
+        $msg = $this->restoreService->restoreData('unit', $ids, $columnNames);
 
         echo json_encode($msg);
     }

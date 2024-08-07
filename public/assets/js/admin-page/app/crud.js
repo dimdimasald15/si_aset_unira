@@ -31,6 +31,10 @@ export const crud = (() => {
     };
 
     const swalWarning = (datas) => {
+        // Determine contentType and processData based on data type
+        const isFormData = datas.data instanceof FormData;
+        const contentType = isFormData ? false : 'application/json';
+        const processData = !isFormData;
         Swal.fire({
             title: datas.title,
             icon: 'warning',
@@ -47,15 +51,14 @@ export const crud = (() => {
                     url: datas.url,
                     data: datas.data,
                     dataType: 'json',
-                    contentType: datas.contentType ? datas.contentType : false,
-                    processData: datas.processData,
+                    contentType: datas.contentType ? datas.contentType : contentType,
+                    processData: datas.processData !== undefined ? datas.processData : processData,
                     success: function (response) {
                         if (response.success) {
                             Swal.fire(
                                 'Berhasil', response.success, 'success'
                             ).then((result) => {
                                 if (datas.action === "temporary") {
-                                    console.log(datas.tables.length);
                                     if (datas.tables.length > 0) {
                                         datas.tables.forEach(table => {
                                             table.ajax.reload(null, false); // false untuk mempertahankan paging
@@ -136,7 +139,8 @@ export const crud = (() => {
         });
     }
 
-    const handleDelete = (url, data, title, tables, action, text) => {
+    const handleDelete = (url, data, title, tables, action, textTitle) => {
+        let text = textTitle ? textTitle : `Data yang terhapus dapat dipulihkan melalui Recycle Bin`;
         const datas = {
             data, url, processData: false, action, title, text, tables
         }
@@ -287,8 +291,8 @@ export const crud = (() => {
             );
             return;
         }
-        let textTitle = `Multiple Delete`;
-        let text = `Apakah kamu yakin ingin menghapus ${jmldata.length} data secara temporary?`;
+        let textTitle = `Apakah kamu yakin ingin menghapus ${jmldata.length} data`;
+        let text = `Data yang terhapus dapat dipulihkan melalui Recycle Bin`;
         let url = `${nav}/multipledelete${string}`;
         handleDelete(url, formdata, textTitle, tables, "temporary", text);
         return false;

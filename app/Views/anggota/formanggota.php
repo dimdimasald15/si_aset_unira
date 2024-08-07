@@ -24,14 +24,6 @@
         <input type="hidden" name="id" id="id">
         <div class="row g-2 mb-1">
           <div class="col-md-6">
-            <label for="namaanggota" class="form-label">Nama <?= $title ?></label>
-            <div class="input-group mb-3">
-              <span class="input-group-text"><i class="bi bi-person"></i></span>
-              <input type="text" class="form-control" placeholder="Masukkan Nama Anggota" id="nama_anggota" name="nama_anggota">
-              <div class="invalid-feedback errnama_anggota"></div>
-            </div>
-          </div>
-          <div class="col-md-6">
             <div class="row mb-2">
               <label for="level">Level <?= $title ?></label>
             </div>
@@ -47,6 +39,15 @@
               </div>
             </div>
           </div>
+          <div class="col-md-6">
+            <label for="namaanggota" class="form-label">Nama <?= $title ?></label>
+            <div class="input-group mb-3">
+              <span class="input-group-text"><i class="bi bi-person"></i></span>
+              <input type="text" class="form-control" placeholder="Masukkan Nama Anggota" id="nama_anggota" name="nama_anggota">
+              <div class="invalid-feedback errnama_anggota"></div>
+            </div>
+          </div>
+
         </div>
       </div>
       <div class="col-md-12">

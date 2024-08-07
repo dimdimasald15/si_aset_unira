@@ -1,5 +1,5 @@
 <div id="sidebar" class="active">
-  <div class="sidebar-wrapper shadow active text-white bg-dark">
+  <div class="sidebar-wrapper shadow active">
     <div class="sidebar-header">
       <div class="d-flex justify-content-between align-items-center">
         <div class="logo col-lg-8">
@@ -19,12 +19,13 @@
             <span>Dashboard</span>
           </a>
         </li>
-        <li class="sidebar-item <?= ($nav == 'kategori' || $nav == 'gedung' || $nav == 'ruang' || $nav == 'anggota') ? 'active' : '' ?> has-sub">
+        <?php $activeNavs = ['kategori', 'gedung', 'ruang', 'anggota', 'pengguna']; ?>
+        <li class="sidebar-item <?= in_array($nav, $activeNavs) ? 'active' : '' ?> has-sub">
           <a href="#" class='sidebar-link'>
             <i class="bi bi-table"></i>
             <span>Master Data</span>
           </a>
-          <ul class="submenu  <?= ($nav == 'kategori' || $nav == 'gedung' || $nav == 'ruang' || $nav == 'anggota') ? 'active submenu-open' : '' ?>">
+          <ul class="submenu <?= in_array($nav, $activeNavs) ? 'active submenu-open' : '' ?>">
             <li class="submenu-item <?= ($nav == 'kategori') ? 'active' : '' ?>">
               <a href="kategori" class='submenu-link'>Data Kategori</a>
             </li>

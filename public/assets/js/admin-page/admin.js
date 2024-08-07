@@ -14,6 +14,7 @@ import { formBarang } from "./app/formBarang.js";
 import { notification } from "./app/notification.js";
 import { pelaporan } from "./app/pelaporan.js";
 import { users } from "./app/users.js";
+import { formAddStock } from "./app/formTambahStokBarang.js";
 import { kodebrg } from "./app/kodebarang.js";
 
 window.barang = barang;
@@ -33,3 +34,4 @@ window.aset = laporanaset;
 window.report = pelaporan;
 window.formbrg = formBarang;
 window.notif = notification;
+window.formAddStock = formAddStock;

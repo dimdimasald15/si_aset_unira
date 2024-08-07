@@ -54,6 +54,7 @@ $routes->group('admin/dashboard', ['filter' => 'ceklogin'], function ($routes) {
     $routes->get('getcountgedung', 'DashboardController::getcountgedung');
     $routes->get('getcountruang', 'DashboardController::getcountruang');
     $routes->get('getcountbrg', 'DashboardController::getcountbrg');
+    $routes->get('pusherconfig', 'DashboardController::pusherconfig');
 });
 
 $routes->group('admin/gedung', ['filter' => 'ceklogin'], function ($routes) {

@@ -43,7 +43,7 @@ const barang = (() => {
             {
                 data: null,
                 render: function (data, type, row) {
-                    return '<div id="qrcode-' + row.id + '"></div>';
+                    return '<div id="qrcode-' + row.id + '" class="qrcode_barang"></div>';
                 },
                 visible: jenis_kat == "Barang Persediaan" || isRestore ? false :
                     true, // menghilangkan tanda kutip di sini
@@ -167,6 +167,7 @@ const barang = (() => {
     }
 
     const downloadLabelPdf = () => {
+        console.log(card.clientWidth, card.clientHeight);
         // Menampilkan tombol loading
         $('#cetakpdf').attr('disabled', 'disabled');
         $('#cetakpdf').html('<i class="fa fa-spin fa-spinner"></i> Loading...');
@@ -453,14 +454,16 @@ const barang = (() => {
         util.selectReload();
     }
 
-    const navLink = () => {
+    const navLink = (form) => {
         // Hide all tab content
         $('.tab-pane').removeClass('show active');
         // Show the corresponding tab content based on the clicked tab
-        var targetTab = $(this).attr('href');
+        var targetTab = $(form).attr('href');
         $(targetTab).addClass('show active');
         // Redraw the DataTable for the current tab to load the data from the server
         util.checkrowDef(tabId);
+        $("table tbody tr td").removeClass("select_warna");
+        $('#checkall1, #checkall2, #checkall3').prop('checked', false)
         if (targetTab === '#brgtetap') {
             tableBrgTetap.ajax.reload();
             util.filteringData('Barang Tetap');
