@@ -39,8 +39,6 @@ helper('converter_helper');
     <link href="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.css" rel="stylesheet">
     <!-- sweetalert2 -->
     <link href="<?= base_url() ?>assets/vendors/sweetalert2/sweetalert2.min.css" rel="stylesheet" type="text/css">
-    <!-- Selectize.js -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/css/selectize.bootstrap5.css" integrity="sha512-pZE3NzBgokXUM9YLBGQIw99omcxiRdkMhZkz0o7g0VjC0tCFlBUqbcLKUuX8+jfsZgiZNIWFiLuZpLxXoxi53w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!-- fontawesome -->
     <link href="<?= base_url() ?>assets/vendors/font-awesome-4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
@@ -54,6 +52,7 @@ helper('converter_helper');
         let nav = "<?= $nav ?>";
         let title = "<?= $title ?>";
         let isLogin = "<?= $_SESSION["isLoggedIn"] ?>";
+        let token = "<?= $_SESSION["token"] ?>";
     </script>
     <!-- Cropper.js -->
     <script src="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.js"></script>
@@ -117,7 +116,6 @@ helper('converter_helper');
     <script src="<?= base_url() ?>assets/vendors/DataTables/datatables.min.js"></script>
     <script src="<?= base_url() ?>assets/vendors/DataTables/DataTables-1.13.3/js/jquery.dataTables.min.js"></script>
     <script src="<?= base_url() ?>assets/vendors/sweetalert2/sweetalert2.all.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.15.2/js/selectize.js" integrity="sha512-TCP0r/hsoR3XYFxxMqmxeCZSmHWkjdBiAGy+0xcQ+JU0hOBZMHho7O0x/bXZUf3DH6kcbGhuZFxONYXxMzd7EA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment-with-locales.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/locale/id.min.js" integrity="sha512-he8U4ic6kf3kustvJfiERUpojM8barHoz0WYpAUDWQVn61efpm3aVAD8RWL8OloaDDzMZ1gZiubF9OSdYBqHfQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>

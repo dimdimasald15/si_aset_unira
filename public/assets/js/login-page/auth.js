@@ -33,13 +33,13 @@ export const auth = (() => {
                 if (response.error) {
                     util.handleValidationErrors(fields, response.error);
                 }
-                if (response.sukses) {
+                if (response.success) {
                     Toast.fire({
                         icon: "success",
                         title: "Login successfully"
                     });
                     setTimeout(() => {
-                        window.location = response.sukses.link;
+                        window.location = response.success.link;
                     }, 2000);
                 }
             },
@@ -48,6 +48,7 @@ export const auth = (() => {
             }
         });
     };
+
 
     return {
         login

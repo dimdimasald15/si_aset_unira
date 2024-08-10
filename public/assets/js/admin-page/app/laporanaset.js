@@ -133,7 +133,10 @@ export const laporanaset = (() => {
             const response = await $.ajax({
                 type: "GET",
                 url: `${nav}/getdatachartpermintaan?m=${bulan}&y=${tahun}`,
-                dataType: "json"
+                headers: {
+                    authorization: `Bearer ${token}`
+                },
+                dataType: "json",
             });
 
             const chartData = formatChartData(response);
@@ -238,10 +241,13 @@ export const laporanaset = (() => {
         }
     }
 
+    const submit = (form, event) => crud.handlePrintSubmit(form, event, "Cetak Laporan");
+
     return {
         viewdtcontrol,
         initializeDashboard,
         setupChangeListener,
-        refreshAllChart
+        refreshAllChart,
+        submit
     }
 })()

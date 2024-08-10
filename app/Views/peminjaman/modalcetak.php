@@ -21,7 +21,7 @@
         <h5 class="modal-title text-white" id="title"><?= $title ?></h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <form action="peminjaman-barang/cetak" method="post">
+      <form action="peminjaman-barang/cetak" method="post" onSubmit="pinjam.downloadPdf(this,event)">
         <div class="modal-body modal-body-label">
           <div class="container">
             <?= csrf_field(); ?>

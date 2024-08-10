@@ -59,7 +59,9 @@ class BarangController extends BaseController
             $hal = array_key_exists('hal', $this->request->getVar()) ? $this->request->getVar('hal') : '';
             $isRestore = filter_var($this->request->getGet('isRestore'), FILTER_VALIDATE_BOOLEAN);
             $builder = $this->db->table('stok_barang sb')
-                ->select('sb.id, sb.barang_id, k.nama_kategori, b.nama_brg, b.warna, b.harga_beli, b.kode_brg, b.path_foto, b.foto_barang, b.asal, b.toko, b.instansi, sb.jumlah_masuk, sb.jumlah_keluar, sb.sisa_stok, b.kat_id, sb.ruang_id, b.satuan_id, sb.created_at, sb.created_by, sb.deleted_at, sb.deleted_by, r.nama_ruang, s.kd_satuan')
+                ->select('sb.id, sb.barang_id, k.nama_kategori, b.nama_brg, b.warna, b.harga_beli, b.kode_brg, b.path_foto, b.foto_barang, 
+                b.asal, b.toko, b.instansi, sb.jumlah_masuk, sb.jumlah_keluar, sb.sisa_stok, b.kat_id, sb.ruang_id, b.satuan_id, sb.created_at, 
+                sb.created_by, sb.deleted_at, sb.deleted_by, r.nama_ruang, s.kd_satuan')
                 ->join('barang b', 'b.id=sb.barang_id')
                 ->join('kategori k', 'k.id=b.kat_id ')
                 ->join('ruang r', 'sb.ruang_id = r.id')
@@ -164,7 +166,6 @@ class BarangController extends BaseController
                 'nama_brg' => $nama_brg,
                 'photos' => json_encode($imagesToLoad),
             ];
-
             $msg = [
                 'data' => view('barang/cardupload', $data),
             ];
@@ -259,8 +260,9 @@ class BarangController extends BaseController
 
     public function templateinputbarang()
     {
-        $jenis_kat = $this->request->getPost('jenis_kat');
-        $katid = $this->request->getPost('kat_id');
+        $input = $this->request->getVar();
+        $jenis_kat = $input['jenis_kat'];
+        $katid = $input['katid'];
         $kategori = $this->kategori->select('id, kd_kategori, nama_kategori')->whereIn('id', $katid)->findAll();
         $units = [];
         foreach ($kategori as $item) {
@@ -1587,13 +1589,14 @@ class BarangController extends BaseController
         if ($fotolama !== null || $pathlama !== null) {
             foreach ($files['files'] as $key => $file) {
                 $clientName = $file->getClientName();
-                if ($file !== null && !$file->hasMoved()) {
+                if ($file !== null && !$file->hasMoved() && $clientName !== "") {
                     $filename = $file->getRandomName();
+                    // echo "<pre>";
+                    // var_dump($clientName, $filename);
+                    // echo "</pre>";
                     if (isset($fotolama[$key])) unlink(FCPATH . $pathlama . $fotolama[$key]);
                     $file->move(FCPATH . $pathlama, $filename);
                     array_push($filenames, $filename);
-                } else {
-                    $msg = ['error' => 'Invalid file or no file uploaded.'];
                 }
             }
         } else {

@@ -1,4 +1,3 @@
-import { util } from "./util.js";
 import { crud } from "./crud.js";
 
 const barang = (() => {
@@ -12,6 +11,9 @@ const barang = (() => {
             serverSide: true,
             ajax: {
                 url: ajaxUrl,
+                headers: {
+                    authorization: `Bearer ${token}`
+                },
                 data: function (d) {
                     d.barang = $('#selectbarang').val()
                     d.kategori = $('#selectkategori').val()
@@ -135,7 +137,7 @@ const barang = (() => {
         const kdbrg = kd_brg.split(".").join("-");
         const loc_id = ruang_id;
 
-        window.location.href = `${nav}/detail-barang/${kdbrg}-${loc_id}`;
+        window.location.href = `/detail-barang/${kdbrg}-${loc_id}`;
     }
 
     const cetakLabel = (id) => {
@@ -167,7 +169,6 @@ const barang = (() => {
     }
 
     const downloadLabelPdf = () => {
-        console.log(card.clientWidth, card.clientHeight);
         // Menampilkan tombol loading
         $('#cetakpdf').attr('disabled', 'disabled');
         $('#cetakpdf').html('<i class="fa fa-spin fa-spinner"></i> Loading...');
@@ -404,7 +405,8 @@ const barang = (() => {
             contentType: false,
             processData: false,
             headers: {
-                'X-CSRF-TOKEN': form.querySelector('input[name="csrf_test_name"]').value
+                'X-CSRF-TOKEN': form.querySelector('input[name="csrf_test_name"]').value,
+                'authorization': `Bearer ${token}`
             },
             dataType: "json",
             beforeSend: function () {
@@ -498,6 +500,7 @@ const barang = (() => {
         $.ajax({
             type: "post",
             url: `${nav}/cekbrgdanruang`,
+            headers: { 'authorization': `Bearer ${token}` },
             data,
             dataType: "json",
             success: successCallback

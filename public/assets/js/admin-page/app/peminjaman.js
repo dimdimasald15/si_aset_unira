@@ -182,7 +182,7 @@ export const peminjaman = (() => {
             }
         };
         const datas = {
-            type: "post", url, data: formdata,
+            url, data: formdata,
         }
         crud.submitAjax(datas, callback);
         return false;
@@ -198,7 +198,7 @@ export const peminjaman = (() => {
         formdata.append('jmldata', rowCount);
         formdata.append('saveMethod', saveMethod);
         const datas = {
-            type: "post", url, data: formdata,
+            url, data: formdata,
         }
         const callback = (response) => {
             const fields = util.getIdsForm(idForm);
@@ -327,6 +327,7 @@ export const peminjaman = (() => {
         };
         crud.getForm(datas);
     }
+    const downloadPdf = (form, event) => crud.handlePrintSubmit(form, event)
     return {
         hapus,
         submit,
@@ -334,6 +335,7 @@ export const peminjaman = (() => {
         restore,
         listData,
         printPdf,
+        downloadPdf,
         fillForm,
         fillForm2,
         restoreAll,

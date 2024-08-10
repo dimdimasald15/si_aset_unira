@@ -33,10 +33,14 @@ const util = (() => {
     }
 
     const fetchData = (datas, callback) => {
+        const token = sessionStorage.getItem("token");
         $.ajax({
             url: datas.url,
             data: datas.data,
             type: datas.type,
+            headers: {
+                authorization: `Bearer ${token}`
+            },
             dataType: "json",
             success: callback,
             error: function (xhr, ajaxOptions, thrownError) {

@@ -97,7 +97,7 @@ class ProfileController extends BaseController
             } else {
                 // Update password baru ke database
                 $this->pengguna->update($id, [
-                    'password' => password_hash($this->request->getVar('password_baru'), PASSWORD_DEFAULT),
+                    'password' => password_hash($this->request->getVar('password_baru'), PASSWORD_BCRYPT),
                 ]);
                 $msg = [
                     'success' => 'Password berhasil diubah.',

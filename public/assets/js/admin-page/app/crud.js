@@ -22,7 +22,9 @@ export const crud = (() => {
             processing: statusProcess,
             serverSide: statusProcess,
             ajax: {
-                url,
+                url, headers: {
+                    authorization: `Bearer ${token}`
+                },
             },
             order: order ? order : [],
             columns,
@@ -48,6 +50,9 @@ export const crud = (() => {
             if (result.isConfirmed) {
                 $.ajax({
                     type: "post",
+                    headers: {
+                        authorization: `Bearer ${token}`
+                    },
                     url: datas.url,
                     data: datas.data,
                     dataType: 'json',
@@ -98,6 +103,9 @@ export const crud = (() => {
         $.ajax({
             type: method,
             url: datas.url,
+            headers: {
+                authorization: `Bearer ${token}`
+            },
             data,
             dataType: "json",
             success: function (response) {
@@ -115,29 +123,44 @@ export const crud = (() => {
         });
     }
 
-    const submitAjax = (datas, successCallback) => {
-        let type = datas.type;
-        let data = datas.data ?? datas.data;
+    const submitAjax = (datas, successCallback, options = {}) => {
+        const {
+            button = "Simpan",
+            responseType = 'json',
+            showSpinner = true,
+            spinnerSelector = '.btnsimpan',
+            method = 'POST'
+        } = options;
+
         $.ajax({
-            type,
+            type: method,
             url: datas.url,
-            data,
-            enctype: datas.enctype ? datas.enctype : 'application/x-www-form-urlencoded',
+            headers: {
+                authorization: `Bearer ${token}`
+            },
+            data: datas.data ?? datas.data,
+            enctype: datas.enctype || 'application/x-www-form-urlencoded',
             contentType: false,
             processData: false,
-            dataType: "json",
+            dataType: responseType === 'blob' ? undefined : 'json', // Hanya tetapkan jika bukan blob
+            xhrFields: responseType === 'blob' ? { responseType: 'blob' } : {},
             beforeSend: function () {
-                setButtonState('.btnsimpan', true, '', 'fa fa-spin fa-spinner');
+                if (showSpinner) {
+                    setButtonState(spinnerSelector, true, '', 'fa fa-spin fa-spinner');
+                }
             },
             complete: function () {
-                setButtonState('.btnsimpan', false, 'Simpan', '');
+                if (showSpinner) {
+                    setButtonState(spinnerSelector, false, button, '');
+                }
             },
             success: successCallback,
             error: function (xhr, ajaxOptions, thrownError) {
-                alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
+                alert(`${xhr.status}\n${xhr.responseText}\n${thrownError}`);
             }
         });
-    }
+    };
+
 
     const handleDelete = (url, data, title, tables, action, textTitle) => {
         let text = textTitle ? textTitle : `Data yang terhapus dapat dipulihkan melalui Recycle Bin`;
@@ -224,11 +247,42 @@ export const crud = (() => {
 
         const datas = {
             url,
-            type: "POST",
             data: new FormData(form)
         };
 
-        submitAjax(datas, callback);
+        submitAjax(datas, callback, { button: "Simpan" });
+        return false;
+    };
+    const handlePrintSubmit = (form, event, button) => {
+        event.preventDefault();
+        const url = $(form).attr('action');
+        function successCallback(response, status, xhr) {
+            const disposition = xhr.getResponseHeader('Content-Disposition');
+            let filename = "Laporan.pdf"; // Nama default
+
+            if (disposition && disposition.indexOf('filename=') !== -1) {
+                const matches = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/.exec(disposition);
+                if (matches != null && matches[1]) {
+                    filename = matches[1].replace(/['"]/g, '');
+                }
+            }
+
+            const blob = new Blob([response], { type: 'application/pdf' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+        const datas = {
+            url,
+            data: new FormData(form)
+        };
+
+        submitAjax(datas, successCallback, { responseType: 'blob', button });
         return false;
     };
 
@@ -300,6 +354,7 @@ export const crud = (() => {
 
     return {
         submitAjax,
+        handlePrintSubmit,
         getForm,
         swalWarning,
         initDataTable,

@@ -35,3 +35,4 @@ window.report = pelaporan;
 window.formbrg = formBarang;
 window.notif = notification;
 window.formAddStock = formAddStock;
+

@@ -82,6 +82,9 @@
     $.ajax({
       // type: "post",
       url: "notification/tampildetailpelaporan/" + string,
+      headers: {
+        authorization: `Bearer ${token}`
+      },
       data: {
         viewed: viewed,
       },

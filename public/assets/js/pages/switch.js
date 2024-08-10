@@ -36,8 +36,10 @@
     var cardheaders = document.querySelectorAll('.card-header');
     var cardbodies = document.querySelectorAll('.card-body');
     var headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
+    // var aHref = document.querySelectorAll('a');
     var navbar = document.querySelectorAll('.navbar');
     var sidebarWrapper = document.querySelectorAll('.sidebar-wrapper');
+    var dropdownMenu = document.querySelectorAll('.dropdown-menu');
     var emailLists = document.querySelectorAll(".media");
     // Add classes to tables
     tables.forEach((table) => {
@@ -49,8 +51,12 @@
       nav.classList.add('bg-dark', 'text-white');
     });
     // Add classes to sidebarWrapper
-    sidebarWrapper.forEach((nav) => {
-      nav.classList.add('bg-dark', 'text-white');
+    sidebarWrapper.forEach((side) => {
+      side.classList.add('bg-dark', 'text-white');
+    });
+    // Add classes to dropdownMenu
+    dropdownMenu.forEach((drop) => {
+      drop.classList.add('bg-dark', 'text-white');
     });
 
     // Add classes to cards
@@ -72,6 +78,10 @@
     headings.forEach((heading) => {
       heading.classList.add('text-white');
     });
+    // Add classes to aHref
+    // aHref.forEach((ahref) => {
+    //   ahref.style.color = '#49b454';
+    // });
     // Add classes to headings
     emailLists.forEach((emailList) => {
       emailList.classList.add('bg-dark', 'text-white');

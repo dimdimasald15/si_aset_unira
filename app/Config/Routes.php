@@ -113,8 +113,6 @@ $routes->group('admin/kelola-barang', ['filter' => 'ceklogin'], function ($route
     $routes->post('restore/(:any)', 'BarangController::restoredata/$1');
     $routes->match(['get', 'post'], 'restore', 'BarangController::restoredata');
     $routes->post('hapuspermanen', 'BarangController::hapuspermanen');
-    $routes->get('detail-barang/(:any)', 'BarangController::detailbarang/$1');
-    $routes->get('detail-barang/tampilmodalphotos', 'BarangController::tampilmodalphotos');
     $routes->post('multipledelete', 'BarangController::deletetemporary');
 
     $routes->post('tampilexportexcel', 'BarangController::tampilexportexcel');
