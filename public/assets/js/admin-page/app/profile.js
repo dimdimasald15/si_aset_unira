@@ -74,6 +74,9 @@ class PictureUpdate {
     fireAJAX(url, data, element) {
         $.ajax({
             url: url,
+            headers: {
+                authorization: `Bearer ${token}`
+            },
             type: 'POST',
             data: data,
             contentType: false,

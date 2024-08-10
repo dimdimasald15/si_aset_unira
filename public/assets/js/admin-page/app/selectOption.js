@@ -42,6 +42,9 @@ export const selectOption = (() => {
             width: datas.width || "100%",
             ajax: {
                 url: datas.url,
+                headers: {
+                    authorization: `Bearer ${token}`
+                },
                 dataType: 'json',
                 delay: 250,
                 data: (params) => ({ search: params.term, jenis_kat }),
@@ -65,52 +68,21 @@ export const selectOption = (() => {
         util.rmIsInvalid(`jenis_kat`);
     }
 
-    const selectizeOption = (datas) => {
-        const jenis_kat = datas.jenis_kat || '';
-        var $select = $(`#${datas.id}`).selectize({
-            preload: true,
-            valueField: 'id',
-            labelField: 'text',
-            searchField: 'text',
-            create: false,
-            load: function (query, callback) {
-                if (!query.length) return callback();
-                $.ajax({
-                    url: datas.url,
-                    type: 'GET',
-                    dataType: 'json',
-                    data: { search: query, jenis_kat },
-                    success: function (res) {
-                        callback(res);
-                    },
-                    error: function () {
-                        callback();
-                    }
-                });
-            }
-        });
-
-        // Contoh penggunaan untuk clear button
-        var control = $select[0].selectize;
-
-        $('#button-clear').on('click', function () {
-            control.clear();
-        });
-
-    }
-
     const multiCategory = (id, form) => {
-        $(`#${id}`).attr('multiple', 'multiple');
         const jenis_kat = $(form).val();
-        const datas = {
-            id,
-            jenis_kat,
-            url: `${nav}/pilihkategori`,
+        if (jenis_kat === "") {
+            $(`#${id}`).attr('disabled', true);
+        } else {
+            $(`#${id}`).html('');
+            $(`#${id}`).removeAttr('disabled');
+            const datas = {
+                id,
+                jenis_kat,
+                url: `${nav}/pilihkategori`,
+            }
+            select2Option(datas);
+            util.rmIsInvalid(`jenis_kat`);
         }
-
-        selectizeOption(datas);
-
-        util.rmIsInvalid(`jenis_kat`);
     }
 
     const warna = (id, width) => {
@@ -130,6 +102,16 @@ export const selectOption = (() => {
             url: `${nav}/pilihsatuan`,
             templateResult: formatResult,
             placeholder: "Pilih Satuan",
+        }
+        select2Option(datas);
+    }
+    const lokasi = (id) => {
+        const datas = {
+            id,
+            url: `${nav}/pilihlokasi`,
+            templateResult: formatResult,
+            width: "50%",
+            placeholder: "Pilih Lokasi",
         }
         select2Option(datas);
     }
@@ -186,6 +168,7 @@ export const selectOption = (() => {
         unit,
         warna,
         satuan,
+        lokasi,
         barang,
         anggota,
         peminjam,

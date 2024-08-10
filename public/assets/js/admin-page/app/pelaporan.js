@@ -121,6 +121,9 @@ export const pelaporan = (() => {
         if (keywords !== '') {
             $.ajax({
                 type: 'get',
+                headers: {
+                    authorization: `Bearer ${token}`
+                },
                 url: `${nav}/tampilcardpelaporan`,
                 data: { keywords, isRestored: bool },
                 dataType: 'json',

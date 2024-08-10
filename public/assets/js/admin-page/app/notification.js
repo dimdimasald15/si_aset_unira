@@ -1,10 +1,13 @@
 export const notification = (() => {
     let pusher; // Declare pusher variable here
     let channel; // Declare channel variable here
-
-    // Create a promise that resolves when Pusher is initialized
     const pusherInitPromise = new Promise((resolve, reject) => {
-        fetch(`dashboard/pusherconfig`)
+        fetch(`dashboard/pusherconfig`, {
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}` // Tambahkan header Authorization
+            }
+        })
             .then(response => response.json())
             .then(config => {
                 pusher = new Pusher(config.key, {
@@ -41,7 +44,14 @@ export const notification = (() => {
     };
 
     const reportMsg = () => {
-        $.post("notification/getnotifikasipelaporan", { view: 'view' });
+        $.ajax({
+            type: "POST",
+            url: "notification/getnotifikasipelaporan",
+            data: { view: 'view' },
+            headers: {
+                'Authorization': `Bearer ${token}` // Tambahkan header Authorization
+            },
+        })
     }
 
     const showNotification = (show, off) => {
@@ -87,7 +97,14 @@ export const notification = (() => {
     }
 
     const supplyItems = () => {
-        $.post("notification/notifikasipersediaan");
+        $.ajax({
+            type: "POST",
+            url: "notification/notifikasipersediaan",
+            data: { view: 'view' },
+            headers: {
+                'Authorization': `Bearer ${token}` // Tambahkan header Authorization
+            },
+        })
     }
 
     return {

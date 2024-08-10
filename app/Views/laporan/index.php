@@ -42,7 +42,7 @@
           </div>
         </div>
       </div>
-      <form action="<?= $nav ?>/cetak" method="post" id="cetak-laporan">
+      <form action="<?= $nav ?>/cetak" method="post" id="cetak-laporan" onSubmit="aset.submit(this, event)">
         <?= csrf_field() ?>
         <div class="row mt-3">
           <input type="text" name="keterangan" id="keterangan" value="Semua Laporan" hidden>
@@ -59,7 +59,7 @@
             </div>
           </div>
           <div class="col-sm-4 d-flex justify-content-end">
-            <button type="submit" class="btn btn-primary btncetak"><i class="fa fa-file-pdf-o"></i> Cetak Laporan</button>
+            <button type="submit" class="btn btn-primary btnsimpan"><i class="fa fa-file-pdf-o"></i> Cetak Laporan</button>
           </div>
         </div>
       </form>
@@ -69,7 +69,7 @@
     <div class="row">
       <?php foreach ($cards as $card) : ?>
         <div class="col-6 col-lg-3 col-md-6">
-          <div class="card shadow text-white bg-dark">
+          <div class="card shadow">
             <div class="card-body px-3 py-3">
               <div class="row" id="<?= $card['id'] ?>">
                 <div class="col-md-4">

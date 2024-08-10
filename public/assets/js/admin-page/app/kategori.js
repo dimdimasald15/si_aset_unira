@@ -82,18 +82,6 @@ export const kategori = (() => {
     const hapusPermanenAll = () => {
         crud.handleDeleteAll(tableRestore);
     }
-    const fetchData = (datas, callback) => {
-        $.ajax({
-            url: datas.url,
-            data: datas.data,
-            type: datas.type,
-            dataType: "json",
-            success: callback,
-            error: function (xhr, ajaxOptions, thrownError) {
-                alert(xhr.status, +"\n" + xhr.responseText + "\n" + thrownError);
-            }
-        })
-    }
     const getSubkode1 = (jenis, kode1) => {
         let url = `${nav}/getsubkode1`;
         const datas = {
@@ -117,7 +105,7 @@ export const kategori = (() => {
                 });
             }
         }
-        fetchData(datas, callback);
+        util.fetchData(datas, callback);
     }
     const getSubkode2 = (subkode1, kode2) => {
         let url = `${nav}/getsubkode2`;
@@ -142,7 +130,7 @@ export const kategori = (() => {
             }
         }
 
-        fetchData(datas, callback);
+        util.fetchData(datas, callback);
     }
     const getSubkode3 = (subkode1, subkode2, kode3) => {
         let url = `${nav}/getsubkode3`;
@@ -169,7 +157,7 @@ export const kategori = (() => {
             }
         }
 
-        fetchData(datas, callback);
+        util.fetchData(datas, callback);
     }
     const getSubkode4 = (subkode1, subkode2, subkode3, kode4) => {
         let url = `${nav}/getsubkode4`;
@@ -195,7 +183,7 @@ export const kategori = (() => {
             }
         }
 
-        fetchData(datas, callback);
+        util.fetchData(datas, callback);
     }
     const handleSubkode1Change = (form, jenis) => {
         subkode1 = $(form).val();
@@ -326,7 +314,7 @@ export const kategori = (() => {
         subkd2 = (typeof subkd2 !== 'undefined' && subkd2 !== 'other2') ? subkd2 : '';
         subkd3 = (typeof subkd3 !== 'undefined' && subkd3 !== 'other3') ? subkd3 : '';
         subkd4 = (typeof subkd4 !== 'undefined' && subkd4 !== 'other4') ? subkd4 : '';
-        $.ajax({
+        let datas = {
             type: "post",
             url: `${nav}/getnamakategori`,
             data: {
@@ -336,17 +324,17 @@ export const kategori = (() => {
                 subkode4: subkd4,
                 jenis,
             },
-            dataType: "json",
-            success: function (response) {
-                if (response != null) {
-                    $('#nama_kategori').val(response.nama_kategori)
-                    $('#deskripsi').val(response.deskripsi)
-                } else {
-                    $('#nama_kategori').val('')
-                    $('#deskripsi').val('')
-                }
+        }
+        function successCallback(response) {
+            if (response != null) {
+                $('#nama_kategori').val(response.nama_kategori)
+                $('#deskripsi').val(response.deskripsi)
+            } else {
+                $('#nama_kategori').val('')
+                $('#deskripsi').val('')
             }
-        });
+        }
+        util.fetchData(datas, successCallback);
     }
 
     function validateInputOther(skd, skdother) {

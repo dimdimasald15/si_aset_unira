@@ -1,5 +1,6 @@
 <?= $this->extend('/layouts/template'); ?>
 <?= $this->section('styles') ?>
+<link rel="stylesheet" href="<?= base_url('assets/css/pages/choices.css') ?>">
 <style>
     div.qrcode_barang img {
         width: 60px !important;
@@ -167,6 +168,7 @@
 
 <?= $this->endSection() ?>
 <?= $this->section('javascript') ?>
+<script src="<?= base_url('assets/vendors/choices.js/choices.js') ?>"></script>
 <script>
     let saveMethod, globalId;
     let jenistrx = `${title.toLowerCase()}`;

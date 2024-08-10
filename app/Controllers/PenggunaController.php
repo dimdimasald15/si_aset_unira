@@ -37,6 +37,9 @@ class PenggunaController extends BaseController
         $builder = $this->db->table('petugas')
             ->select('id, nip, email, username, password, role, created_by, created_at, deleted_at')
             ->where("id !=", $id);
+        if (session()->get('role') === "Petugas") {
+            $builder->where("role != Petugas");
+        }
         return DataTable::of($builder)
             ->addNumbering('no')
             ->filter(function ($builder) {
@@ -137,6 +140,7 @@ class PenggunaController extends BaseController
                 'rules' => 'required',
                 'errors' => [
                     'required' => '{field} tidak boleh kosong',
+                    'min_length' => '{field} minimal 8 karakter.'
                 ]
             ];
         }
@@ -158,7 +162,7 @@ class PenggunaController extends BaseController
             'nip' => $this->request->getVar('nip'),
             'email' => $this->request->getVar('email'),
             'username' => $this->request->getVar('username'),
-            'password' => password_hash($this->request->getVar('password'), PASSWORD_DEFAULT),
+            'password' => password_hash($this->request->getVar('password'), PASSWORD_BCRYPT),
             'role' => $this->request->getVar('role'),
         ];
 

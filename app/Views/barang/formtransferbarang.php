@@ -140,6 +140,9 @@
         type: "post",
         url: `${nav}/transferbarang`,
         data: formdata,
+        headers: {
+          authorization: `Bearer ${token}`
+        },
         contentType: false,
         processData: false,
         beforeSend: function() {
@@ -225,88 +228,10 @@
   function formlooping(row) {
     for (var i = 1; i <= row; i++) {
       (function(j) {
-        $(`#idbrg${j}`).select2({
-          placeholder: 'Piih Nama Barang',
-          minimumInputLength: 1,
-          allowClear: true,
-          width: "50%",
-          ajax: {
-            url: `${nav}/pilihbarang`,
-            dataType: 'json',
-            delay: 250,
-            data: function(params) {
-              return {
-                search: params.term,
-              }
-            },
-            processResults: function(data, page) {
-              return {
-                results: data
-              };
-            },
-            cache: true
-          },
-          templateResult: util.formatResult,
-        });
-
-        $(`#satuan${j}`).select2({
-          placeholder: 'Piih Satuan',
-          minimumInputLength: 1,
-          allowClear: true,
-          width: "100%",
-          ajax: {
-            url: `${nav}/pilihsatuan`,
-            dataType: 'json',
-            delay: 250,
-            data: function(params) {
-              return {
-                search: params.term,
-              }
-            },
-            processResults: function(data, page) {
-              return {
-                results: data
-              };
-            },
-            cache: true
-          },
-          templateResult: util.formatResult,
-        });
-
-        $(`#lokasi${j}`).select2({
-          placeholder: 'Piih lokasi',
-          minimumInputLength: 1,
-          allowClear: true,
-          width: "50%",
-          ajax: {
-            url: `${nav}/pilihlokasi`,
-            dataType: 'json',
-            delay: 250,
-            data: function(params) {
-              return {
-                search: params.term,
-              }
-            },
-            processResults: function(data, page) {
-              return {
-                results: data
-              };
-            },
-            cache: true
-          },
-          templateResult: util.formatResult,
-        });
-
-        $(`#lokasi${j}`).on('change', function(e) {
-          e.preventDefault();
-          $(`#lokasi${j}`).removeClass('is-invalid');
-          $(`.errorlokasi${j}`).html('');
-        })
-        $(`#satuan${j}`).on('change', function(e) {
-          e.preventDefault();
-          $(`#satuan${j}`).removeClass('is-invalid');
-          $(`.errorsatuan${j}`).html('');
-        })
+        selectOption.satuan(`satuan${j}`);
+        selectOption.lokasi(`lokasi${j}`);
+        const inputId = ["lokasi"];
+        util.initializeValidationHandlers(inputId, j);
 
         $(`#jmlkeluar${j}`).on('input', function(e) {
           e.preventDefault();

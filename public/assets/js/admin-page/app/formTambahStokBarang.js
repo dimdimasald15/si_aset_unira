@@ -169,7 +169,6 @@ export const formAddStock = (() => {
             }
         };
         const datas = {
-            type: "post",
             url: `${nav}/updatedatastokmultiple`,
             data: formdata,
         }

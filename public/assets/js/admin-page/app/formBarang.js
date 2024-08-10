@@ -335,11 +335,12 @@ export const formBarang = (() => {
                         }
                     } else {
                         var kdbrglama = `${$(`#subkdkategori${j}`).val()}.${$(`#skbarang${j}`).val()}`;
-
                         var kodebrgbaru;
-
                         $.ajax({
                             type: "post",
+                            headers: {
+                                authorization: `Bearer ${token}`
+                            },
                             url: `${nav}/getbarangbyany`,
                             data: {
                                 kode_brg: kdbrglama,
@@ -423,7 +424,6 @@ export const formBarang = (() => {
             }
         };
         const datas = {
-            type: "post",
             url: `${nav}/insertmultiple`,
             data: formdata,
         }
@@ -499,7 +499,6 @@ export const formBarang = (() => {
         let files = imagesloader.data('format.imagesloader').AttachmentArray;
         handleFileUploads(formData, files);
         const datas = {
-            type: "post",
             url: `${nav}/simpanupload`,
             data: formData,
             enctype: 'multipart/form-data',
@@ -522,7 +521,6 @@ export const formBarang = (() => {
         event.preventDefault();
         let formData = new FormData(form);
         const datas = {
-            type: "post",
             url: `${nav}/simpan-laporan`,
             data: formData,
             enctype: 'multipart/form-data',
@@ -550,7 +548,6 @@ export const formBarang = (() => {
         let formData = new FormData(form);
 
         const datas = {
-            type: "post",
             url: `${BASE_URL}/laporan-kerusakan-aset/update-laporan/${laporan_id}`,
             data: formData,
             enctype: 'multipart/form-data',
@@ -596,9 +593,11 @@ export const formBarang = (() => {
             </div>
         `).show(500);
     }
+    const downloadTemplate = (form, event) => crud.handlePrintSubmit(form, event);
 
     return {
         handleAddRow, looping, closeBtnMultiple, insertMultiple,
-        initUploadPhotos, submitUpload, submitReport, updateReport
+        initUploadPhotos, submitUpload, submitReport, updateReport,
+        downloadTemplate
     }
 })()

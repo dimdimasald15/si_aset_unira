@@ -348,23 +348,25 @@ class LaporanController extends BaseController
                     'haritanggal' => !empty($haritanggal) ? $haritanggal : $bulantahun,
                 ]);
             }
-
             // Load HTML content into Dompdf
             $dompdf->loadHtml($htmlContent);
-
             // Set paper size and orientation
             $dompdf->setPaper('A4', 'portrait');
-
             // Render HTML as PDF
             $dompdf->render();
-
-            // Output the generated PDF
-            $dompdf->stream($filename, ['Attachment' => false]);
+            // Bersihkan output buffer
+            ob_end_clean();
+            // Atur header untuk nama file
+            header('Content-Type: application/pdf');
+            header('Content-Disposition: inline; filename="' . $filename . '"');
+            // Kirim PDF ke klien
+            $dompdf->stream($filename, ["Attachment" => false]); // Attachment false to open in browser
+            exit;
         } catch (Exception $e) {
             echo "An error occurred while rendering the PDF: " . $e->getMessage();
         }
 
-        exit(0);
+        // exit(0);
     }
 
     public function getdatachartpermintaan()

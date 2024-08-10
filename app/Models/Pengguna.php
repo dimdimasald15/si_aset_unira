@@ -59,6 +59,6 @@ class Pengguna extends Model
         $builder = $this->db->table($this->table);
 
         $builder->where('id', $id);
-        $builder->update(['password' => password_hash($newPassword, PASSWORD_DEFAULT)]);
+        $builder->update(['password' => password_hash($newPassword, PASSWORD_BCRYPT)]);
     }
 }

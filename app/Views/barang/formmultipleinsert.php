@@ -292,6 +292,5 @@
         var formId = $('#formsimpanmultiple');
         var rowCount = $('.table-body tr').length;
         formbrg.looping(formId, rowCount);
-        // loadLokasi(rowCount);
     });
 </script>

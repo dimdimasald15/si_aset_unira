@@ -260,6 +260,9 @@
     $.ajax({
       type: "post",
       url: `${nav}/getbarangbyany`,
+      headers: {
+        authorization: `Bearer ${token}`
+      },
       data: {
         id: globalId,
       },
@@ -391,6 +394,9 @@
       $.ajax({
         type: "post",
         url,
+        headers: {
+          authorization: `Bearer ${token}`
+        },
         data: formdata,
         processData: false,
         contentType: false,

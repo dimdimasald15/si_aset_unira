@@ -6,7 +6,7 @@
     <div class="row">
       <?php foreach ($cards as $card) : ?>
         <div class="col-6 col-lg-4 col-md-6">
-          <div class="card shadow text-white bg-dark">
+          <div class="card shadow">
             <div class="card-body px-3 py-3">
               <div class="row" id="<?= $card['id'] ?>">
                 <div class="col-md-4">

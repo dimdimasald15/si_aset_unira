@@ -144,7 +144,7 @@ export const permintaan = (() => {
             }
         };
         const datas = {
-            type: "post", url, data: formdata,
+            url, data: formdata,
         }
         crud.submitAjax(datas, callback);
         return false;
@@ -160,6 +160,8 @@ export const permintaan = (() => {
         };
         crud.getForm(datas);
     }
+    const downloadPdf = (form, event) => crud.handlePrintSubmit(form, event)
+
     return {
         hapus,
         submit,
@@ -167,6 +169,7 @@ export const permintaan = (() => {
         restore,
         listData,
         printPdf,
+        downloadPdf,
         fillForm,
         restoreAll,
         hapusPermanen,

@@ -4,6 +4,9 @@ export const kodebrg = (() => {
             url,
             type: method,
             data: { katid },
+            headers: {
+                authorization: `Bearer ${token}`
+            },
             dataType: "json",
             success: callback,
             error: function (xhr, ajaxOptions, thrownError) {
