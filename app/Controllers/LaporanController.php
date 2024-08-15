@@ -34,12 +34,6 @@ class LaporanController extends BaseController
         $this->permintaan = new Permintaan();
         $this->peminjaman = new Peminjaman();
         $this->uri = service('uri');
-        if (isset($session->username)) {
-            return redirect()->to('admin/dashboard');
-        } else {
-            // jika variabel $_SESSION['username'] belum didefinisikan, redirect ke halaman login
-            return redirect()->to('/auth');
-        }
     }
 
     public function index()
@@ -61,23 +55,17 @@ class LaporanController extends BaseController
         return view('laporan/index', $data);
     }
 
+    private function reset_sql_mode()
+    {
+        $sql = "SET sql_mode=(SELECT REPLACE(@@sql_mode, 'ONLY_FULL_GROUP_BY', ''));";
+        return $this->db->query($sql);
+    }
+
     public function getdatalokasibrg()
     {
         if ($this->request->isAJAX()) {
-            $builder = $this->db->table('stok_barang sb')
-                ->select('sb.ruang_id, sb.created_at, sb.created_by, r.nama_ruang, s.nama_satuan, count(sb.barang_id) as count_brg, GROUP_CONCAT(CONCAT(b.nama_brg, " (", sb.sisa_stok, " ", s.kd_satuan, ")") SEPARATOR ", ") AS nama_brg, 
-                (SELECT SUM(sb2.sisa_stok * b2.harga_jual) FROM stok_barang sb2 JOIN barang b2 ON b2.id = sb2.barang_id WHERE sb2.ruang_id = sb.ruang_id AND sb2.deleted_at IS NULL AND b2.deleted_at IS NULL) AS total_valuasi')
-                ->join('barang b', 'b.id=sb.barang_id')
-                ->join('kategori k', 'k.id=b.kat_id ')
-                ->join('ruang r', 'sb.ruang_id = r.id')
-                ->join('satuan s', 'b.satuan_id = s.id')
-                ->where('sb.deleted_at', null)
-                ->where('b.deleted_at', null)
-                ->where('k.jenis', "Barang Tetap")
-                ->groupBy('sb.ruang_id')
-                ->orderBy('sb.id', 'desc');
-
-            $lokasi = $builder->get()->getResultArray();
+            $this->reset_sql_mode();
+            $lokasi = $this->stokbarang->fetchAlokasiBarang();
             $msg = [
                 'data' => $lokasi,
             ];
@@ -265,15 +253,10 @@ class LaporanController extends BaseController
                     $bulantahun = "tahun " . $tahun;
                     $filename = 'laporan-aset-' . $tahun;
                 }
-
                 $brgtetap = $this->hitungstokbarang($bulan, $tahun);
-                $kat_tetap = $this->getkategoriaset("Barang Tetap");
-                $kat_sedia = $this->getkategoriaset("Barang Persediaan");
                 $permintaan = $this->hitungmintabarang($bulan, $tahun, "Barang Persediaan");
                 $belibrgtetap = $this->pembelian_brg_tetap($bulan, $tahun);
                 $data = [
-                    'kat_tetap' => $kat_tetap,
-                    'kat_sedia' => $kat_sedia,
                     'brgtetap' => $brgtetap,
                     'permintaan' => $permintaan,
                     'belibrgtetap' => $belibrgtetap,
@@ -371,6 +354,7 @@ class LaporanController extends BaseController
 
     public function getdatachartpermintaan()
     {
+        $this->reset_sql_mode();
         $m = $this->request->getGet('m');
         $y = $this->request->getGet('y');
         $initialArray = $this->permintaan->fetchChartData($m, $y);
@@ -381,6 +365,7 @@ class LaporanController extends BaseController
     public function getdatatablepermintaan()
     {
         if ($this->request->isAJAX()) {
+            $this->reset_sql_mode();
             $m = $this->request->getGet('m');
             $y = $this->request->getGet('y');
             $msg = [

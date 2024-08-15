@@ -118,33 +118,41 @@ class RiwayatBarang extends Model
         $selectFields = "rb.id, rb.barang_id AS b_id, b.nama_brg, p.anggota_id, p.barang_id, a.unit_id, u.singkatan, a.nama_anggota, s.kd_satuan, p.tgl_minta, p.created_at, p.created_by";
         $selectFields .= $isHitung ? ", b.kode_brg, b.warna, SUM(p.jml_barang) AS jml_barang" : ", p.jml_barang";
 
-        $builder = $this->db->table('riwayat_barang rb')
-            ->select($selectFields)
-            ->select("CAST(
-            REPLACE(
-                COALESCE(
-                    IF(JSON_EXTRACT(rb.old_value, '$.harga_beli') IS NULL,
-                        (
-                            SELECT JSON_EXTRACT(rb2.old_value, '$.harga_beli')
-                            FROM riwayat_barang rb2
-                            WHERE rb2.barang_id = rb.barang_id
-                            AND YEAR(rb2.created_at) < YEAR(rb.created_at)
-                            ORDER BY YEAR(rb2.created_at) DESC
-                            LIMIT 1
-                        ),
+        // Menyederhanakan query JSON, karena MySQL 5.7 mungkin tidak mendukung JSON_EXTRACT dengan baik
+        $hargaBeliQuery = "
+            COALESCE(
+                (
+                    SELECT
+                        CAST(REPLACE(
+                            JSON_UNQUOTE(
+                                JSON_EXTRACT(rb2.old_value, '$.harga_beli')
+                            ),
+                            '\"', ''
+                        ) AS UNSIGNED)
+                    FROM riwayat_barang rb2
+                    WHERE rb2.barang_id = rb.barang_id
+                    AND YEAR(rb2.created_at) < YEAR(rb.created_at)
+                    ORDER BY YEAR(rb2.created_at) DESC
+                    LIMIT 1
+                ),
+                CAST(REPLACE(
+                    JSON_UNQUOTE(
                         JSON_EXTRACT(rb.new_value, '$.harga_beli')
                     ),
-                    b.harga_beli
-                ),
-                '\"',
-                ''
-            ) AS UNSIGNED
-        ) AS harga_beli", false)
+                    '\"', ''
+                ) AS UNSIGNED),
+                b.harga_beli
+            ) AS harga_beli
+        ";
+
+        $builder = $this->db->table('riwayat_barang rb')
+            ->select($selectFields)
+            ->select($hargaBeliQuery, false)
             ->select(($isHitung ? "SUM(p.jml_barang)" : "p.jml_barang") . " * harga_beli AS total_val", false)
             ->join('barang b', 'b.id = rb.barang_id')
             ->join('kategori k', 'k.id = b.kat_id')
-            ->join('stok_barang sb', 'b.id=sb.barang_id')
-            ->join('satuan s', 's.id=b.satuan_id')
+            ->join('stok_barang sb', 'b.id = sb.barang_id')
+            ->join('satuan s', 's.id = b.satuan_id')
             ->join('permintaan p', 'p.barang_id = b.id')
             ->join('anggota a', 'a.id = p.anggota_id')
             ->join('unit u', 'u.id = a.unit_id')

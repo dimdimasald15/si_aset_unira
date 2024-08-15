@@ -80,4 +80,25 @@ class StokBarang extends Model
             ->get()
             ->getResultArray();
     }
+
+    public function fetchAlokasiBarang()
+    {
+        $builder = $this->db->table('stok_barang sb')
+            ->select('sb.ruang_id, r.nama_ruang, s.nama_satuan, count(sb.barang_id) as count_brg, 
+                GROUP_CONCAT(CONCAT(b.nama_brg, " (", sb.sisa_stok, " ", s.kd_satuan, ")") SEPARATOR ", ") AS nama_brg, 
+                (SELECT SUM(sb2.sisa_stok * b2.harga_jual) 
+                FROM stok_barang sb2 
+                JOIN barang b2 ON b2.id = sb2.barang_id 
+                WHERE sb2.ruang_id = sb.ruang_id AND sb2.deleted_at IS NULL AND b2.deleted_at IS NULL) AS total_valuasi')
+            ->join('barang b', 'b.id=sb.barang_id')
+            ->join('kategori k', 'k.id=b.kat_id ')
+            ->join('ruang r', 'sb.ruang_id = r.id')
+            ->join('satuan s', 'b.satuan_id = s.id')
+            ->where('sb.deleted_at', null)
+            ->where('b.deleted_at', null)
+            ->where('k.jenis', "Barang Tetap")
+            ->groupBy('sb.ruang_id, r.nama_ruang')
+            ->orderBy('sb.id', 'desc');
+        return $builder->get()->getResultArray();
+    }
 }

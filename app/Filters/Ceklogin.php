@@ -16,6 +16,15 @@ class Ceklogin implements FilterInterface
     $this->session = session();
   }
 
+  public function errorPage403($title, $msg)
+  {
+    $data = [
+      'title' => $title,
+      'msg' => $msg,
+    ];
+    return $data;
+  }
+
   public function before(RequestInterface $request, $arguments = null)
   {
     if (!session('isLoggedIn')) {
@@ -40,11 +49,10 @@ class Ceklogin implements FilterInterface
     if (!in_array($path, $excludedPaths, true)) {
       $header = $request->getServer("HTTP_AUTHORIZATION");
       if (!$header) {
-        $response = service("response");
-        return $response->setJSON([
-          'status' => false,
-          'message' => 'Access denied'
-        ])->setStatusCode(ResponseInterface::HTTP_UNAUTHORIZED);
+        $response = service('response');
+        $data = $this->errorPage403('Unauthorized', 'Access denied');
+        $response->setStatusCode(403);
+        return $response->setBody(view('errors/mazer/error-403', $data));
       } else {
         try {
           $token = explode(' ', $header)[1];
@@ -53,10 +61,9 @@ class Ceklogin implements FilterInterface
           $this->session->set('user', (array)$decoded);
         } catch (Exception $e) {
           $response = service("response");
-          return $response->setJSON([
-            'status' => false,
-            'message' => 'Token invalid: ' . $e->getMessage()
-          ])->setStatusCode(ResponseInterface::HTTP_UNAUTHORIZED);
+          $data = $this->errorPage403('Unauthorized', 'Token invalid: ' . $e->getMessage());
+          $response->setStatusCode(403);
+          return $response->setBody(view('errors/mazer/error-403', $data));
         }
       }
     }

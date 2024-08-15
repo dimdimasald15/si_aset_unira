@@ -116,19 +116,22 @@ class RiwayatTransaksi extends Model
 
     public function initializeBuilderPembelianBrgTetap()
     {
-        return $this->db->table('riwayat_transaksi rt')->select('rt.id, b.kode_brg, b.nama_brg, b.warna, rb.field AS field_rb,
-        CASE 
-            WHEN rb.field="Semua Field" THEN CAST(REPLACE(JSON_EXTRACT(rb.new_value, \'$.harga_beli\'),\'"\',\'\') AS UNSIGNED)
-            ELSE CAST(REPLACE(JSON_EXTRACT(rb.new_value, \'$.harga_beli\'),\'"\',\'\') AS UNSIGNED)
-        END AS hrg_beli_brg, rt.jenis_transaksi, rt.field AS field_rt, CASE 
-            WHEN rt.jenis_transaksi = "Tambah Stok Barang Tetap Masuk di Sarpras" THEN CAST(REPLACE(JSON_EXTRACT(rt.new_value, \'$.jumlah_masuk\'),\'"\',\'\') AS SIGNED)-CAST(REPLACE(JSON_EXTRACT(rt.old_value, \'$.jumlah_masuk\'),\'"\',\'\') AS SIGNED)
-            ELSE CAST(REPLACE(JSON_EXTRACT(rt.new_value, \'$.jumlah_masuk\'),\'"\',\'\') AS UNSIGNED)
-            END AS jml_msk, s.kd_satuan, rt.created_at')
-            ->join('stok_barang sb', 'sb.id=rt.stokbrg_id')
-            ->join('barang b', 'b.id=sb.barang_id')
-            ->join('satuan s', 's.id=b.satuan_id')
-            ->join('riwayat_barang rb', 'b.id=rb.barang_id')
-            ->join('kategori k', 'k.id=b.kat_id')
+        return $this->db->table('riwayat_transaksi rt')
+            ->select('rt.id, b.kode_brg, b.nama_brg, b.warna, rb.field AS field_rb,
+                CASE 
+                    WHEN rb.field = "Semua Field" THEN CAST(REPLACE(JSON_UNQUOTE(JSON_EXTRACT(rb.new_value, \'$.harga_beli\')), \'"\', \'\') AS UNSIGNED)
+                    ELSE CAST(REPLACE(JSON_UNQUOTE(JSON_EXTRACT(rb.new_value, \'$.harga_beli\')), \'"\', \'\') AS UNSIGNED)
+                END AS hrg_beli_brg, rt.jenis_transaksi, rt.field AS field_rt, 
+                CASE 
+                    WHEN rt.jenis_transaksi = "Tambah Stok Barang Tetap Masuk di Sarpras" 
+                    THEN CAST(REPLACE(JSON_UNQUOTE(JSON_EXTRACT(rt.new_value, \'$.jumlah_masuk\')), \'"\', \'\') AS SIGNED) - CAST(REPLACE(JSON_UNQUOTE(JSON_EXTRACT(rt.old_value, \'$.jumlah_masuk\')), \'"\', \'\') AS SIGNED)
+                    ELSE CAST(REPLACE(JSON_UNQUOTE(JSON_EXTRACT(rt.new_value, \'$.jumlah_masuk\')), \'"\', \'\') AS UNSIGNED)
+                END AS jml_msk, s.kd_satuan, rt.created_at')
+            ->join('stok_barang sb', 'sb.id = rt.stokbrg_id')
+            ->join('barang b', 'b.id = sb.barang_id')
+            ->join('satuan s', 's.id = b.satuan_id')
+            ->join('riwayat_barang rb', 'b.id = rb.barang_id')
+            ->join('kategori k', 'k.id = b.kat_id')
             ->where('(rt.field LIKE "%jumlah_masuk%" OR rt.field = "Semua Field")')
             ->where('(rt.jenis_transaksi LIKE "%Barang tetap masuk%")')
             ->where($this->generateCaseStatement());
@@ -138,38 +141,41 @@ class RiwayatTransaksi extends Model
     {
         return '( CASE
             WHEN b.nama_brg IN (
-                SELECT b.nama_brg FROM riwayat_transaksi rt
+                SELECT b.nama_brg 
+                FROM riwayat_transaksi rt
                 JOIN stok_barang sb ON sb.id = rt.stokbrg_id
                 JOIN barang b ON b.id = sb.barang_id
                 WHERE rt.jenis_transaksi IN ("barang tetap masuk", "Tambah Stok Barang Tetap Masuk di Sarpras", "Update barang tetap masuk")
-                GROUP BY nama_brg
+                GROUP BY b.nama_brg
                 HAVING COUNT(DISTINCT rt.jenis_transaksi) = 3
-            ) THEN (rt.jenis_transaksi <> "barang tetap masuk" OR rt.field <> "Semua field")
+            ) THEN (rt.jenis_transaksi <> "barang tetap masuk" OR rt.field <> "Semua Field")
             WHEN b.nama_brg IN (
                 SELECT b.nama_brg
                 FROM riwayat_transaksi rt
                 JOIN stok_barang sb ON sb.id = rt.stokbrg_id
                 JOIN barang b ON b.id = sb.barang_id
                 WHERE rt.jenis_transaksi IN ("barang tetap masuk", "Update barang tetap masuk")
-                GROUP BY nama_brg
+                GROUP BY b.nama_brg
                 HAVING COUNT(DISTINCT rt.jenis_transaksi) = 2
-            ) THEN (rt.jenis_transaksi <> "barang tetap masuk" OR rt.field <> "Semua field")
+            ) THEN (rt.jenis_transaksi <> "barang tetap masuk" OR rt.field <> "Semua Field")
             WHEN b.nama_brg IN (
-                SELECT b.nama_brg FROM riwayat_transaksi rt
+                SELECT b.nama_brg 
+                FROM riwayat_transaksi rt
                 JOIN stok_barang sb ON sb.id = rt.stokbrg_id
                 JOIN barang b ON b.id = sb.barang_id
                 WHERE rt.jenis_transaksi IN ("barang tetap masuk", "Tambah Stok Barang Tetap Masuk di Sarpras")
-                GROUP BY nama_brg
+                GROUP BY b.nama_brg
                 HAVING COUNT(DISTINCT rt.jenis_transaksi) = 2
             ) THEN 1
             WHEN b.nama_brg IN (
-                SELECT b.nama_brg FROM riwayat_transaksi rt
+                SELECT b.nama_brg 
+                FROM riwayat_transaksi rt
                 JOIN stok_barang sb ON sb.id = rt.stokbrg_id
                 JOIN barang b ON b.id = sb.barang_id
                 WHERE rt.jenis_transaksi = "barang tetap masuk"
-                GROUP BY nama_brg
+                GROUP BY b.nama_brg
                 HAVING COUNT(DISTINCT rt.jenis_transaksi) = 1
-            ) THEN (rt.jenis_transaksi = "barang tetap masuk" OR rt.field = "Semua field")
+            ) THEN (rt.jenis_transaksi = "barang tetap masuk" OR rt.field = "Semua Field")
         END)';
     }
 }
