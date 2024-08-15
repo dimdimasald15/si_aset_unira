@@ -18,7 +18,7 @@
                         </label>
                     </li>
                     <li class="nav-item dropdown me-1">
-                        <a class="nav-link active dropdown-toggle count" data-bs-toggle="button" id="pelaporanmasuk" 
+                        <a class="nav-link active dropdown-toggle count" data-bs-toggle="button" id="pelaporanmasuk"
                             onClick="notif.showNotification('showpelaporan','shownotif')" aria-expanded="false">
                             <i class='bi bi-envelope bi-sub fs-4 text-gray-600'></i>
                             <span class="badge rounded-pill badge-sm badge-notification bg-danger" style="color:white;cursor:pointer;" id="pelaporan_count"></span>
@@ -26,10 +26,10 @@
                         <ul class="dropdown-menu dropdown-menu-end" id="showpelaporan" aria-labelledby="pelaporanmasuk"></ul>
                     </li>
                     <li class="nav-item dropdown me-3">
-                        <a class="nav-link active dropdown-toggle" data-bs-toggle="button" id="notifpersediaan" 
-                            onClick="notif.showNotification('shownotif','showpelaporan')"  aria-expanded="false">
-                        <i class='bi bi-bell bi-sub fs-4 text-gray-600'></i>
-                        <span class="badge rounded-pill badge-sm badge-notification bg-warning" style="color:black;cursor:pointer;" id="notification_count"></span>
+                        <a class="nav-link active dropdown-toggle" data-bs-toggle="button" id="notifpersediaan"
+                            onClick="notif.showNotification('shownotif','showpelaporan')" aria-expanded="false">
+                            <i class='bi bi-bell bi-sub fs-4 text-gray-600'></i>
+                            <span class="badge rounded-pill badge-sm badge-notification bg-warning" style="color:black;cursor:pointer;" id="notification_count"></span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" id="shownotif" aria-labelledby="dropdownMenuButton"></ul>
                     </li>

@@ -38,6 +38,7 @@
         let nav = "<?= $nav ?>";
         let title = "<?= $title ?>";
         let isLogin = "<?= $_SESSION["isLoggedIn"] ?>";
+	let token = "<?= $_SESSION["token"] ?>";
     </script>
     </style>
 </head>

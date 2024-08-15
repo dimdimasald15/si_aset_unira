@@ -38,9 +38,11 @@
             <li class="submenu-item <?= ($nav == 'anggota') ? 'active' : '' ?>">
               <a href="anggota" class='submenu-link'>Data Anggota & Unit</a>
             </li>
-            <li class="submenu-item <?= ($nav == 'pengguna') ? 'active' : '' ?>">
-              <a href="pengguna" class='submenu-link'>Data Pengguna</a>
-            </li>
+            <?php if (session('role') !== "Petugas"): ?>
+              <li class="submenu-item <?= ($nav == 'pengguna') ? 'active' : '' ?>">
+                <a href="pengguna" class='submenu-link'>Data Pengguna</a>
+              </li>
+            <?php endif ?>
           </ul>
         </li>
         <li class="sidebar-item <?= ($nav == 'kelola-barang') ? 'active' : '' ?>">

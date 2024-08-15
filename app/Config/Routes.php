@@ -32,6 +32,7 @@ $routes->setAutoRoute(true);
 // $routes->group('', ['filter' => 'login'], function ($routes) {
 // });
 $routes->get('auth', 'Auth::index');
+$routes->get('auth/hash', 'Auth::hash');
 $routes->get('auth/login', 'Auth::login');
 $routes->get('logout', 'Auth::logout');
 $routes->get('detail-barang/(:segment)', 'BarangController::detailbarang/$1');
